@@ -1,5 +1,5 @@
 import {BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom"
-import {Toaster} from "react-hot-toast"
+import toast, {Toaster} from "react-hot-toast"
 
 import LogIn from "./pages/Authentication/LogIn";
 import SetPassword from "./pages/Authentication/SetPassword";
@@ -54,14 +54,12 @@ function App() {
 
     const fetchProducts = async () => {
      
-        const { json , ok , error } = await getAllProducts(user);
+        const { json , ok  } = await getAllProducts(user);
     
         if (!ok) {
-          setError(error)
+          toast.error(json.error)
       
         } else {
-
-          setError(null)
           dispatchProducts({ type: 'SET_PRODUCTS', payload: json });
           
         }
@@ -71,15 +69,13 @@ function App() {
  
     const fetchCategories = async () =>{
 
-      const {json, ok , error} = await getAllCategories(user);
+      const {json, ok} = await getAllCategories(user);
 
 
       if (!ok) {
-        setError(error)
+        toast.error(json.error)
     
       } else {
-
-        setError(null)
         dispatchCategories({type: 'SET_CATEGORIES', payload: json});
         
       }
@@ -90,10 +86,10 @@ function App() {
 
     const fetchOrders = async () => {
 
-      const {json, ok , error} = await getAllOrders(user);
+      const {json, ok} = await getAllOrders(user);
       
       if(!ok){
-        setError(error)
+        toast.error(json.error)
       }else{
         dispatchOrders({type: 'SET_ORDERS', payload: json});
       }
@@ -103,10 +99,10 @@ function App() {
 
     const fetchUsers = async () => {
 
-      const {json, ok, error } = await getAllUsers(user);
+      const {json, ok } = await getAllUsers(user);
 
       if(!ok){
-          setError(error)
+        toast.error(json.error)
       }else{
           dispatchUsers({type: 'SET_USERS', payload: json});
       }
