@@ -55,7 +55,7 @@ function App() {
     const fetchProducts = async () => {
      
         const { json , ok  } = await getAllProducts(user);
-        console.log("json", json)
+        
     
         if (!ok) {
           toast.error(json.error)

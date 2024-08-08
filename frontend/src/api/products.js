@@ -3,7 +3,7 @@
 export const getAllProducts = async (user) => {
    
     try {
-      const response = await fetch('/api/products/', {
+      const response = await fetch('/api/products', {
         headers: {
           "Authorization": `Bearer ${user.token}`
         }

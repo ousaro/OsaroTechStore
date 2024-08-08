@@ -1,6 +1,6 @@
 export const getAllUsers = async (user) => {
     try{
-        const response = await fetch('/api/users/',{
+        const response = await fetch('/api/users',{
           headers: {
             "Authorization" : `Brearer ${user.token}`
           }

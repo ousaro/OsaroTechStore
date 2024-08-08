@@ -1,7 +1,7 @@
 export const getAllOrders = async (user) => {
     try{
         
-        const response = await fetch('/api/orders/',{
+        const response = await fetch('/api/orders',{
           headers: {
             "Authorization" : `Bearer ${user.token}`
           }

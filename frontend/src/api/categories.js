@@ -4,7 +4,7 @@ export const getAllCategories = async (user) => {
 
     
     try{ 
-        const response = await fetch('/api/categories/', {
+        const response = await fetch('/api/categories', {
           headers: {
             'Authorization' :  `Bearer ${user.token}` 
           }
