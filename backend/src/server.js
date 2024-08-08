@@ -26,17 +26,17 @@ const mongoURI = process.env.MONGO_URI;
 // create express app
 const app = express();
 
-// const corsOptions = {
-//     origin: process.env.CLIENT_ORIGIN || process.env.CLIENT_URL, // Allow only your client URL
-//     credentials: true, // Allows sending cookies with requests
-// };
+const corsOptions = {
+    origin: process.env.CLIENT_URL, // Allow only your client URL
+    credentials: true, // Allows sending cookies with requests
+};
 
 
 // MiddleWare
 app.use(express.json({ limit: '50mb' })); // allow using body in post request
 app.use(express.urlencoded({ limit: '50mb', extended: true })); // allow using body in post request
 app.use(cookieParser()); // allow using cookie in request
-//app.use(cors(corsOptions)); // allow cross-origin requests
+app.use(cors(corsOptions)); // allow cross-origin requests
 
 
 app.use(session({
@@ -61,12 +61,6 @@ app.use((req, res, next) => { // middleware to log the request path and method
     next()
 })
 
-
-app.use(express.static('public'));
-
-app.get('/manifest.json', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'manifest.json'));
-});
 
 
 // import routes
