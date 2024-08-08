@@ -8,8 +8,10 @@ export const getAllProducts = async (user) => {
           "Authorization": `Bearer ${user.token}`
         }
       });
-  
+
+      
       const json = await response.json();
+      console.log(json)
 
       return {json: json, ok: response.ok};
 
