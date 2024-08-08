@@ -19,15 +19,9 @@ dotenv.config();
 
 // variables
 const port = process.env.PORT || 5000;
-//const mongoURI = process.env.NODE_ENV === 'test' ? process.env.MONGO_URI_TEST : process.env.NODE_ENV === 'development' ? process.env.MONGO_URI_DEV : process.env.MONGO_URI;
-const username = process.env.MONGO_INITDB_ROOT_USERNAME;
-const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
-const host = process.env.MONGO_HOST;
-const portDb = process.env.MONGO_PORT;
-const dbName = process.env.MONGO_DB_NAME;
 
-const mongoURI = `mongodb://${username}:${password}@${host}:${portDb}/${dbName}`;
-//const mongoURI = `mongodb://${host}:${portDb}/${dbName}`;
+const mongoURI = process.env.MONGO_URI;
+
 
 // create express app
 const app = express();
