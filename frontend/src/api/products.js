@@ -11,7 +11,7 @@ export const getAllProducts = async (user) => {
 
       
       const json = await response.json();
-      console.log(json)
+      
 
       return {json: json, ok: response.ok};
 
