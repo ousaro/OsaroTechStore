@@ -7,6 +7,7 @@ import ConfimPasswordInput from "../../components/Inputs/ConfimPasswordInput";
 import PasswordInput from "../../components/Inputs/PasswordInput";
 import { updateUserPassword } from "../../api/users";
 import {toast} from "react-hot-toast"
+import LoadingOverlay from "../../components/OtherComponents/LoadingOverlay";
 
 
 const UserProfileChangePassword = () => {
@@ -16,6 +17,8 @@ const UserProfileChangePassword = () => {
 
 
     const [showMenu, setShowMenu] = useState(false);
+
+    const [changingPass, setChangingPass] = useState(false)
  
     const newPasswordInitialState = {
         currentPassword: "",
@@ -45,6 +48,8 @@ const UserProfileChangePassword = () => {
 
    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setChangingPass(true)
     
         if (userNewPassword.newPassword !== userNewPassword.confirmPassword) {
             toast.error("Passwords do not match" )
@@ -61,6 +66,8 @@ const UserProfileChangePassword = () => {
             toast.success('Password updated successfully!')
             setUserNewPassword(newPasswordInitialState)
         }
+
+        setChangingPass(false)
     };
     
 
@@ -108,6 +115,8 @@ const UserProfileChangePassword = () => {
                         </form>
                     </div>
                 </div>
+
+                <LoadingOverlay show={changingPass} message={"Changing password..."}/>
             </main>
            
         </div>

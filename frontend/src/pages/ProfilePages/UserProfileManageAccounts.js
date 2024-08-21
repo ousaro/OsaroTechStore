@@ -6,6 +6,7 @@ import { useAuthContext } from "../../hooks/useAuthContext";
 import {useUsersContext} from "../../hooks/useUsersContext"
 import {  updateUser, deleteUser, updateUserPassword } from "../../api/users";
 import {toast} from "react-hot-toast"
+import LoadingOverlay from "../../components/OtherComponents/LoadingOverlay";
 
 
 const UserProfileManageAccounts = () => {
@@ -18,6 +19,8 @@ const UserProfileManageAccounts = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [editMode, setEditMode] = useState(null);
  
+    const [resetingPass, setResetingPass] = useState(false)
+    const [deletingAccount, setDeletingAccount] = useState(false)
    
     const [editableUser, setEditableUser] = useState({ id: null, name: "", email: "" });
 
@@ -62,6 +65,8 @@ const UserProfileManageAccounts = () => {
 
     const handleDeleteUser = async (userId) => {
 
+        setDeletingAccount(true)
+
         const {json, ok} = await deleteUser(user,userId)
 
         if(!ok){
@@ -70,10 +75,14 @@ const UserProfileManageAccounts = () => {
             dispatch({type: 'DELETE_USER', payload: json});
             toast.success(`${userId} deleted Successfully!`)
         }
+
+        setDeletingAccount(false)
         
     };
 
     const resetPassword = async (userId) => {
+
+        setResetingPass(true)
 
         const resetPassword = process.env.REACT_APP_FOR_PASSWORD_RESET
 
@@ -86,6 +95,8 @@ const UserProfileManageAccounts = () => {
         }else{
             toast.success(`${userId} password is reset`)
         }
+
+        setResetingPass(false)
         
     };
 
@@ -199,6 +210,9 @@ const UserProfileManageAccounts = () => {
                         </div>
                     </div>
                 </div>
+
+
+                <LoadingOverlay show={deletingAccount || resetingPass} message={deletingAccount ? "Deleting account..." : "Resetting password...."} />
             </main>
            
         </div>

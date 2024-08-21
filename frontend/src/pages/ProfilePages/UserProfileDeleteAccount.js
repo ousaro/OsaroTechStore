@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { deleteUser } from "../../api/users";
 import {toast} from "react-hot-toast"
+import LoadingOverlay from "../../components/OtherComponents/LoadingOverlay";
 
 const UserProfileDeletePassword = () => {
 
@@ -18,6 +19,7 @@ const UserProfileDeletePassword = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [error, setError] = useState(null)
+    const [deleting, setDeleting] = useState(false)
 
     const handleShowMenu = () => {
         setShowMenu(!showMenu);
@@ -35,6 +37,8 @@ const UserProfileDeletePassword = () => {
     };
 
     const confirmDelete = async () => {
+
+        setDeleting(true)
         const promise = deleteUser(user, user._id);
         
         toast.promise(
@@ -60,6 +64,8 @@ const UserProfileDeletePassword = () => {
             dispatch({ type: 'LOGOUT' });
             navigate("/LogIn");
         }
+
+        setDeleting(false)
     };
 
 
@@ -130,6 +136,8 @@ const UserProfileDeletePassword = () => {
                         </div>
                     </div>
                 </div>
+
+                <LoadingOverlay  show={deleting} message={"Deleting account..."}/>
             </main>
             
         </div>

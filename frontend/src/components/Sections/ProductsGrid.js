@@ -13,6 +13,7 @@ import { updateUser } from "../../api/users"
 import {useUsersContext} from "../../hooks/useUsersContext"
 import { openModal, closeModal } from "../../utils/utils"
 import {toast} from "react-hot-toast"
+import LoadingOverlay from "../OtherComponents/LoadingOverlay"
 
 
 
@@ -21,13 +22,14 @@ const ProductsGrid = ({products,category, admin}) => {
   
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {user} = useAuthContext();
   const {dispatch} = useProductsContext();
   const {users} = useUsersContext()
 
  
     
-    const handleHover = (event) => {
+      const handleHover = (event) => {
         const productId = event.currentTarget.getAttribute('data-product-id');
         const productActions = document.querySelector(`.product-actions-grid[data-product-id="${productId}"]`);
         const productCard = document.querySelector(`.product-card-grid[data-product-id="${productId}"]`);
@@ -73,6 +75,7 @@ const ProductsGrid = ({products,category, admin}) => {
 
       const handleProductDelete = async (productId) => {
 
+        setIsDeleting(true)
           const {json, ok} = await deleteProduct(user, productId)
 
           if(!ok){
@@ -85,6 +88,7 @@ const ProductsGrid = ({products,category, admin}) => {
              toast.success("Item remouved successfuly")
               
           }
+          setIsDeleting(false)
 
          
     };
@@ -222,6 +226,7 @@ const ProductsGrid = ({products,category, admin}) => {
                   )}
                 </div> 
 
+                  <LoadingOverlay show={isDeleting}  message={"Deleting product..."}/>
                 
             </div>
         </section>

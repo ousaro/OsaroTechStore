@@ -6,11 +6,13 @@ import { updateOrder, deleteOrder } from '../../api/orders';
 import {toast} from "react-hot-toast"
 import { useEffect, useState } from 'react';
 
-const OrderTable = () => {
+
+const OrderTable = ({setUpdatingState}) => {
    
     const {user} = useAuthContext();
     const {orders, dispatch} = useOrdersContext();
 
+  
     const admin = user.admin;
     
     const [userOrder, setUserOrder] = useState([]);
@@ -77,6 +79,8 @@ const OrderTable = () => {
 
 
     const handleStatusChange = async (orderID, newStatus) => {
+
+        setUpdatingState(true)
       
         if(newStatus !== "Cancelled"){
 
@@ -107,6 +111,8 @@ const OrderTable = () => {
            
             
         }
+
+        setUpdatingState(false)
 
        
     };
@@ -159,6 +165,7 @@ const OrderTable = () => {
                     </tbody>
                 </table>
             </div>
+          
         </div>
     );
 };

@@ -3,6 +3,7 @@ import { deleteCategory, addNewCategory } from '../../api/categories';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useCategoriesContext } from '../../hooks/useCategoriesContext';
 import {toast} from "react-hot-toast"
+import LoadingOverlay from './LoadingOverlay';
 
 const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModalDeleteOpen}) => {
 
@@ -18,6 +19,9 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
     }
     
     const [newCategory, setNewCategory] = useState(initialCategoryState);
+
+    const [isSubmiting, setIsSubmiting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleCategoryChange = (e) => {
@@ -37,7 +41,7 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
 
     const handleCategorySubmit = async (e) => {
         e.preventDefault()
-
+        setIsSubmiting(true)
 
         const {json, ok, emptyFields: categoryEmptyFields} = await addNewCategory(user, newCategory)
        
@@ -55,10 +59,13 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
             setIsModalOpen(false); // Close the modal after category is added
             toast.success(`${json.name} category added successfully!`)
         }
+
+        setIsSubmiting(false)
     };
 
     const handleCategoryDelete = async (categoryId) => {
 
+        setIsDeleting(true)
         const {json, ok} = await deleteCategory(user, categoryId);
         
         if(!ok){
@@ -69,6 +76,7 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
             dispatchCategories({ type: "DELETE_CATEGORY", payload: json });
             toast.success(`${json.name} category deleted successfully!`)
         }
+        setIsDeleting(false)
     };
 
     
@@ -178,6 +186,9 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
                         </div>
                     </div>
                 )}
+
+
+                <LoadingOverlay  show={isSubmiting || isDeleting} message={isSubmiting ? "Adding category..." : "Deleting category..."}/>
         </div>
     );
 }

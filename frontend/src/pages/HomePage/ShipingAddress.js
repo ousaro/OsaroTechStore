@@ -10,6 +10,7 @@ import { updateUser } from '../../api/users';
 import { getSessionById } from '../../api/sessions';
 import { updateLocalStorage } from '../../utils/utils';
 import {toast} from "react-hot-toast"
+import LoadingOverlay from '../../components/OtherComponents/LoadingOverlay';
 
 
 const ShippingAddressForm = () => {
@@ -27,6 +28,8 @@ const ShippingAddressForm = () => {
         postalCode: "",
         country: ""
     });
+
+    const [submitting, setSubmitting] = useState(false);
 
 
     // Set the cart products with their quantities
@@ -82,6 +85,7 @@ const ShippingAddressForm = () => {
    // Place the order
     const placeOrder = async () => {
           
+      setSubmitting(true)
         // Define the order data
         const orderData = {
             ownerId: user._id,
@@ -116,6 +120,8 @@ const ShippingAddressForm = () => {
           toast.success("Your order has been placed successfully");
             
         }
+
+        setSubmitting(false)
 
        
     };
@@ -199,6 +205,8 @@ const ShippingAddressForm = () => {
                     Place Order
                     </button>
                 </div>
+
+                <LoadingOverlay show={submitting} message={"Submitting order... "}/>
                
             </main>
             

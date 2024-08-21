@@ -7,6 +7,8 @@ import { updateUser } from '../../api/users';
 import { addNewPayment } from '../../api/payment';
 import {toast} from "react-hot-toast"
 import { updateLocalStorage } from '../../utils/utils';
+import LoadingOverlay from '../../components/OtherComponents/LoadingOverlay';
+
 
 const Cart = () => {
 
@@ -17,6 +19,8 @@ const Cart = () => {
     const {products } = useProductsContext()
     const [cartProducts, setCartProducts] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+
+    const [submitting, setSubmitting] = useState(false);
 
     // Set the cart products with their quantities
     useEffect(() => {
@@ -84,6 +88,7 @@ const Cart = () => {
 
     const handleCheckout = async () => {
 
+        setSubmitting(true)
         const items = {items: cartProducts}
 
         const {url, ok} = await addNewPayment(user, items)
@@ -96,6 +101,7 @@ const Cart = () => {
     
         }
 
+        setSubmitting(false)
         
     }
     
@@ -138,6 +144,8 @@ const Cart = () => {
                         <button className="bg-primary1 hover:bg-primary2 text-white px-4 py-2 rounded" onClick={handleCheckout}>Checkout</button>
                     </div>
                 )}
+
+                <LoadingOverlay show={submitting} message={"Please wait..."}/>
                 
             </main>
             

@@ -10,6 +10,7 @@ import { useCategoriesContext } from '../../hooks/useCategoriesContext';
 import { addNewProduct } from '../../api/products';
 import AddCategory from "../../components/OtherComponents/AddCategory"
 import {toast} from "react-hot-toast"
+import LoadingOverlay from '../../components/OtherComponents/LoadingOverlay';
 
 
 const AddProduct = () => {
@@ -23,6 +24,7 @@ const AddProduct = () => {
     const [emptyFields,setEmptyFields] = useState([])
     const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmiting, setIsSubmiting] = useState(false)
    
     const initialProductState = {
         name: '',
@@ -83,7 +85,7 @@ const AddProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         
-       
+       setIsSubmiting(true)
         const { json, ok, emptyFields } = await addNewProduct(user, newProduct);
 
         if (!ok) {
@@ -95,6 +97,7 @@ const AddProduct = () => {
             dispatch({ type: "CREATE_PRODUCT", payload: json });
             toast.success(`${json.name} product added successfully!`)
         }
+        setIsSubmiting(false)
 
        
     };
@@ -302,6 +305,7 @@ const AddProduct = () => {
                 </form>
 
                <AddCategory isModalOpen={isModalOpen} isModalDeleteOpen={isModalDeleteOpen} setIsModalOpen={setIsModalOpen} setIsModalDeleteOpen={setIsModalDeleteOpen} />
+               <LoadingOverlay  show={isSubmiting} message={"Adding product..."}/>
 
             </main>
         </div>

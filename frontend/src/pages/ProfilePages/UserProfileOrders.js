@@ -4,6 +4,7 @@ import MenuDotsIcon from "../../img/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import OrderTable from "../../components/OtherComponents/OrderTable";
+import LoadingOverlay from "../../components/OtherComponents/LoadingOverlay";
 
 
 const UserProfileOrders = () => {
@@ -21,6 +22,8 @@ const UserProfileOrders = () => {
         }
     };
 
+
+    const [updatingState, setUpdatingState] = useState(false)
   
 
 
@@ -42,8 +45,10 @@ const UserProfileOrders = () => {
                         </figure>
                         <div className={`${showMenu ? "flex": "hidden"} lg:flex`}><ProfileMenu /></div>
                     </div>
-                    <OrderTable />
+                    <OrderTable setUpdatingState={setUpdatingState}/>
                 </div>
+
+                <LoadingOverlay show={updatingState} message={'Updating state...'} />
             </main>
             
         </div>
