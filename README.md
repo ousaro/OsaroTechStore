@@ -25,9 +25,11 @@ A robust, full-featured online store built with the **MERN stack** (MongoDB, Exp
 
 ## 🔧 DevOps & Deployment
 
-Explore the DevOps practices behind this app, including **CI/CD**, **Kubernetes**, and **Docker** configurations on GitLab. Check the blog series for more info:
+Curious how this app stays fast, secure, and always online?
+Discover the CI/CD pipelines, Kubernetes orchestration, and Docker magic powering it—all automated on GitLab.
 
-👉 [View DevOps practices on GitLab](https://gitlab.com/ousaro/osarotechstore_blogseries)
+👉 [Unlock the DevOps Secrets! Explore the Blog Series](https://gitlab.com/ousaro/osarotechstore_blogseries)
+
 
 ## 📸 Preview
 
