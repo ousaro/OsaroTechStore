@@ -13,7 +13,7 @@ A robust, full-featured online store built with the **MERN stack** (MongoDB, Exp
 
 ## 🚀 Live Demo
 
-👉 [Check out our e-commerce app here](https://osaro-tech-store.vercel.app/LogIn)  
+👉 [Check out our e-commerce app here](https://osaro-tech-store.vercel.app/)  
 *Sign up with Google to explore the platform. Admin access is restricted but showcased in the demo video.*
 
 ## 🛠️ Tech Stack
