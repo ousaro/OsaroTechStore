@@ -9,7 +9,7 @@ A robust, full-featured online store built with the **MERN stack** (MongoDB, Exp
 - **Add to Cart & Filtering**: Seamless product filtering and cart management.
 - **Secure Payments**: Integrated with **Stripe** for secure and smooth transactions.
 - **Admin Dashboard**: Manage products, users, and orders with data-driven insights and analytics.
-- **Real-Time Analytics**: Admin insights into sales data, user activity, and overall performance.
+- **Analytics**: Admin insights into sales data, user activity, and overall performance.
 
 ## 🚀 Live Demo
 
