@@ -22,15 +22,14 @@ A robust, full-featured online store built with the **MERN stack** (MongoDB, Exp
 - **Backend**: Node.js, Express
 - **Database**: MongoDB
 - **Payment Gateway**: Stripe
-- **DevOps**: Docker, Kubernetes, CI/CD pipelines
 
 ## 🔧 DevOps & Deployment
 
-Explore the DevOps practices behind this app, including **CI/CD**, **Kubernetes**, and **Docker** configurations on GitLab:
+Explore the DevOps practices behind this app, including **CI/CD**, **Kubernetes**, and **Docker** configurations on GitLab. Check the blog series for more info:
 
 👉 [View DevOps practices on GitLab](https://gitlab.com/ousaro/osarotechstore_blogseries)
 
-## 📸 Admin Dashboard Preview
+## 📸 Preview
 
 *Admin functionality is not accessible in the live demo. Watch the video below for a preview of the admin features.*
 
