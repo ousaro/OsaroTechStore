@@ -32,6 +32,7 @@ Explore the DevOps practices behind this app, including **CI/CD**, **Kubernetes*
 ## 📸 Preview
 
 *Admin functionality is not accessible in the live demo. Watch the video below for a preview of the admin features.*
+[View preview](https://www.youtube.com/watch?v=STGQrQquc94)
 
 ## 📂 Installation & Setup
 
