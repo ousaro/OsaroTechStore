@@ -86,6 +86,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Define boundary DTOs where external/module contracts should not expose internal shapes
 - [ ] Distinguish commands from queries in contracts where complexity justifies it
 - [ ] Add adapter contract tests for repository ports
+Progress: users repository contract coverage is now in place.
 - [ ] Add adapter contract tests for gateway ports
 - [ ] Add module public API contract tests
 Progress: auth and products public API contract tests are now in place.
