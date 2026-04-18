@@ -6,6 +6,8 @@ import { registerUserHandler as registerUser, loginUserHandler as loginUser } fr
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const flushAsyncHandler = () => new Promise((resolve) => setImmediate(resolve));
+
 describe('UserAuth Controller - Unit Tests', function() {
     let sandbox;
   
@@ -35,6 +37,7 @@ describe('UserAuth Controller - Unit Tests', function() {
           status: sinon.stub().returnsThis(),
           json: sinon.spy(),
         };
+        const next = sinon.spy();
   
         const mockUser = {
           _id: '123',
@@ -53,17 +56,20 @@ describe('UserAuth Controller - Unit Tests', function() {
         };
   
         sandbox.stub(User, 'findOne').resolves(null);
+        sandbox.stub(bcrypt, 'hash').resolves('hashed-password');
         sandbox.stub(User, 'create').resolves(mockUser);
         sandbox.stub(jwt, 'sign').returns('mocked_token'); // Stub JWT sign method
   
         // Call the function
-        await registerUser(req, res);
+        registerUser(req, res, next);
+        await flushAsyncHandler();
   
         // Assertions
         expect(User.findOne.calledOnce).to.be.true;
         expect(User.create.calledOnce).to.be.true;
         expect(res.status.calledWith(200)).to.be.true;
         expect(res.json.calledOnce).to.be.true;
+        expect(next.called).to.be.false;
         const responseBody = res.json.firstCall.args[0];
         expect(responseBody).to.have.property('token', 'mocked_token');
         expect(responseBody).to.have.property('_id');
@@ -87,19 +93,21 @@ describe('UserAuth Controller - Unit Tests', function() {
           status: sinon.stub().returnsThis(),
           json: sinon.spy(),
         };
+        const next = sinon.spy();
   
         sandbox.stub(User, 'findOne').rejects(new Error('Registration failed'));
         sandbox.stub(bcrypt, 'hash').resolves('hashed-password');
   
         // Call the function
-        await registerUser(req, res);
+        registerUser(req, res, next);
+        await flushAsyncHandler();
   
         // Assertions
-        expect(res.status.calledWith(400)).to.be.true;
-        expect(res.json.calledOnce).to.be.true;
-        const responseBody = res.json.firstCall.args[0];
-        expect(responseBody).to.have.property('error');
-        expect(responseBody.error).to.equal('Registration failed');
+        expect(res.status.called).to.be.false;
+        expect(res.json.called).to.be.false;
+        expect(next.calledOnce).to.be.true;
+        expect(next.firstCall.args[0]).to.be.instanceOf(Error);
+        expect(next.firstCall.args[0].message).to.equal('Registration failed');
       });
     });
   
@@ -117,6 +125,7 @@ describe('UserAuth Controller - Unit Tests', function() {
           status: sinon.stub().returnsThis(),
           json: sinon.spy(),
         };
+        const next = sinon.spy();
   
         const mockUser = {
           _id: '123',
@@ -139,13 +148,15 @@ describe('UserAuth Controller - Unit Tests', function() {
         sandbox.stub(jwt, 'sign').returns('mocked_token'); // Stub JWT sign method
   
         // Call the function
-        await loginUser(req, res);
+        loginUser(req, res, next);
+        await flushAsyncHandler();
   
         // Assertions
         expect(User.findOne.calledOnce).to.be.true;
         expect(bcrypt.compare.calledOnce).to.be.true;
         expect(res.status.calledWith(200)).to.be.true;
         expect(res.json.calledOnce).to.be.true;
+        expect(next.called).to.be.false;
         const responseBody = res.json.firstCall.args[0];
         expect(responseBody).to.have.property('token', 'mocked_token');
         expect(responseBody).to.have.property('_id');
@@ -165,19 +176,21 @@ describe('UserAuth Controller - Unit Tests', function() {
           status: sinon.stub().returnsThis(),
           json: sinon.spy(),
         };
+        const next = sinon.spy();
   
         sandbox.stub(User, 'findOne').resolves(null);
         sandbox.stub(bcrypt, 'compare').resolves(false);
   
         // Call the function
-        await loginUser(req, res);
+        loginUser(req, res, next);
+        await flushAsyncHandler();
   
         // Assertions
-        expect(res.status.calledWith(400)).to.be.true;
-        expect(res.json.calledOnce).to.be.true;
-        const responseBody = res.json.firstCall.args[0];
-        expect(responseBody).to.have.property('error');
-        expect(responseBody.error).to.equal('Email or Password are not correct');
+        expect(res.status.called).to.be.false;
+        expect(res.json.called).to.be.false;
+        expect(next.calledOnce).to.be.true;
+        expect(next.firstCall.args[0]).to.be.instanceOf(Error);
+        expect(next.firstCall.args[0].message).to.equal('Email or Password are not correct');
       });
     });
   });
