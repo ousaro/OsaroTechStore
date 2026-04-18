@@ -10,12 +10,12 @@ import YAML from "yamljs";
 import { env } from "../config/env.js";
 import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddleware.js";
 import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
-import userAuthRoutes from "../routes/userAuthRoutes.js";
-import userRoutes from "../routes/userRoutes.js";
-import productRoutes from "../routes/productRoutes.js";
-import categoryRoutes from "../routes/categoryRoutes.js";
-import orderRoutes from "../routes/orderRoutes.js";
-import paymentRoutes from "../routes/paymentRoutes.js";
+import authRoutes from "../modules/auth/infrastructure/http/authRoutes.js";
+import usersRoutes from "../modules/users/infrastructure/http/usersRoutes.js";
+import productsRoutes from "../modules/products/infrastructure/http/productsRoutes.js";
+import categoriesRoutes from "../modules/categories/infrastructure/http/categoriesRoutes.js";
+import ordersRoutes from "../modules/orders/infrastructure/http/ordersRoutes.js";
+import paymentsRoutes from "../modules/payments/infrastructure/http/paymentsRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,12 +53,12 @@ export const createApp = () => {
   app.get("/api/docs.json", (req, res) => res.status(200).json(openApiDocument));
   app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument, { explorer: true }));
 
-  app.use("/api/users/auth", userAuthRoutes);
-  app.use("/api/users", userRoutes);
-  app.use("/api/products", productRoutes);
-  app.use("/api/categories", categoryRoutes);
-  app.use("/api/orders", orderRoutes);
-  app.use("/api", paymentRoutes);
+  app.use("/api/users/auth", authRoutes);
+  app.use("/api/users", usersRoutes);
+  app.use("/api/products", productsRoutes);
+  app.use("/api/categories", categoriesRoutes);
+  app.use("/api/orders", ordersRoutes);
+  app.use("/api", paymentsRoutes);
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

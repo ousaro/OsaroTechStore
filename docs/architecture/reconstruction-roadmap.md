@@ -8,8 +8,9 @@
 5. Orders context (in progress in this commit)
 6. Payments context (in progress in this commit)
 7. Backend hardening and tests (in progress in this commit)
+8. Module-local HTTP isolation (in progress in this commit)
 
 ## Frontend-last sequence
-8. Design system + layout consistency
-9. Feature UIs aligned to bounded contexts
-10. Final documentation and contract verification
+9. Design system + layout consistency
+10. Feature UIs aligned to bounded contexts
+11. Final documentation and contract verification

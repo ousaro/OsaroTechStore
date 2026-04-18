@@ -23,5 +23,6 @@
 - Orders context reconstructed (legacy placeholder read-by-id preserved).
 - Payments context reconstructed (Stripe gateway adapter).
 - Cross-cutting hardening added (shared ApiError, validation helpers, targeted tests).
+- HTTP adapters are module-local (routers live inside each bounded context).
 - Existing legacy routes still active.
 - Context-by-context reconstruction follows in next commits.
