@@ -3,6 +3,7 @@ import { buildGetProductByIdUseCase } from "./application/use-cases/getProductBy
 import { buildAddProductUseCase } from "./application/use-cases/addProductUseCase.js";
 import { buildUpdateProductUseCase } from "./application/use-cases/updateProductUseCase.js";
 import { buildDeleteProductUseCase } from "./application/use-cases/deleteProductUseCase.js";
+import { buildRemoveProductsByCategoryUseCase } from "./application/use-cases/removeProductsByCategoryUseCase.js";
 import { buildRefreshNewProductStatusUseCase } from "./application/use-cases/refreshNewProductStatusUseCase.js";
 import { createProductsInputPort } from "./ports/input/productsInputPort.js";
 import { createMongooseProductRepository } from "./infrastructure/repositories/mongooseProductRepository.js";
@@ -21,6 +22,7 @@ const getProductByIdUseCase = buildGetProductByIdUseCase({
 const addProductUseCase = buildAddProductUseCase({ productRepository });
 const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
 const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
+const removeProductsByCategoryUseCase = buildRemoveProductsByCategoryUseCase({ productRepository });
 const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
 const productsInputPort = createProductsInputPort({
   getAllProducts: getAllProductsUseCase,
@@ -28,6 +30,7 @@ const productsInputPort = createProductsInputPort({
   addProduct: addProductUseCase,
   updateProduct: updateProductUseCase,
   deleteProduct: deleteProductUseCase,
+  removeProductsByCategory: removeProductsByCategoryUseCase,
   refreshNewProductStatus: refreshNewProductStatusUseCase,
 });
 const newProductStatusScheduler = createNewProductStatusScheduler({
@@ -47,5 +50,3 @@ export const {
 
 export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();
 export { productsInputPort };
-
-export const deleteProductsByCategoryId = (categoryId) => productRepository.deleteByCategoryId(categoryId);

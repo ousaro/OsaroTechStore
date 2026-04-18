@@ -4,6 +4,7 @@ export const createProductsInputPort = ({
   addProduct,
   updateProduct,
   deleteProduct,
+  removeProductsByCategory,
   refreshNewProductStatus,
 }) => {
   return assertProductsInputPort({
@@ -12,6 +13,7 @@ export const createProductsInputPort = ({
     addProduct,
     updateProduct,
     deleteProduct,
+    removeProductsByCategory,
     refreshNewProductStatus,
   });
 };
@@ -27,6 +29,7 @@ export const assertProductsInputPort = (productsInputPort) => {
     "addProduct",
     "updateProduct",
     "deleteProduct",
+    "removeProductsByCategory",
     "refreshNewProductStatus",
   ];
 

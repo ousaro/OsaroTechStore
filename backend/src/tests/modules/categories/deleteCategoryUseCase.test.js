@@ -1,0 +1,46 @@
+import { describe, it } from "mocha";
+import { expect } from "chai";
+import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
+
+describe("deleteCategoryUseCase", () => {
+  it("removes products through the product input contract before deleting the category", async () => {
+    const deletedCategory = { _id: "cat-1", name: "Phones" };
+    const calls = [];
+    const deleteCategoryUseCase = buildDeleteCategoryUseCase({
+      categoryRepository: {
+        findByIdAndDelete: async (id) => {
+          calls.push(["deleteCategory", id]);
+          return deletedCategory;
+        },
+      },
+      removeProductsByCategory: async ({ categoryId }) => {
+        calls.push(["removeProductsByCategory", categoryId]);
+      },
+    });
+
+    const result = await deleteCategoryUseCase({ id: "cat-1" });
+
+    expect(result).to.equal(deletedCategory);
+    expect(calls).to.deep.equal([
+      ["removeProductsByCategory", "cat-1"],
+      ["deleteCategory", "cat-1"],
+    ]);
+  });
+
+  it("throws when the category id is missing", async () => {
+    const deleteCategoryUseCase = buildDeleteCategoryUseCase({
+      categoryRepository: {
+        findByIdAndDelete: async () => null,
+      },
+      removeProductsByCategory: async () => {},
+    });
+
+    try {
+      await deleteCategoryUseCase({ id: "" });
+      throw new Error("Expected use case to throw");
+    } catch (error) {
+      expect(error.message).to.equal("Category ID is required");
+      expect(error.statusCode).to.equal(400);
+    }
+  });
+});
