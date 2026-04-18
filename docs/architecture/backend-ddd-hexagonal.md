@@ -28,9 +28,9 @@ Rule:
 ## Current Stage
 - Foundation + app bootstrap created.
 - Auth context reconstructed (JWT + OAuth adapters).
-- Users context reconstructed (legacy behavior preserved).
+- Users context reconstructed with real lookup, update, password update, and delete flows.
 - Catalog context reconstructed (products + categories, including write-side).
-- Orders context reconstructed (legacy placeholder read-by-id preserved).
+- Orders context reconstructed with real lookup, create, update, and delete flows.
 - Payments context reconstructed (Stripe gateway adapter).
 - Cross-cutting hardening added (shared ApiError, targeted tests, test env bootstrap).
 - HTTP adapters are module-local (routers live inside each bounded context).
@@ -61,22 +61,26 @@ Rule:
   - registration/login validation now lives in auth domain commands
   - auth use cases orchestrate hashing, lookup, and token creation explicitly
 - Backend unit test suite currently passes:
-  - `npm test` in `backend/` -> 16 passing
+  - `npm test` in `backend/` -> 37 passing
 - Orders now follow full clean flow:
   - domain owns creation rules (`createOrder`)
-  - use-case orchestrates only
-  - repository persists domain object (`order.toPrimitives()`)
+  - domain now also shapes update patches
+  - use-cases orchestrate lookup/create/update/delete flows
+  - repository persists domain object/patch (`toPrimitives()`)
 - Products now follow same clean flow:
   - product model moved to products module infrastructure
   - domain owns create/update rules
+  - update flow now recomputes price safely for partial pricing changes
   - repository accepts domain object/patch
 - Users now follow same clean flow:
   - user model moved into auth module infrastructure (shared by auth/users repositories)
   - domain owns update/password command rules
+  - auth/users boundary now goes through an explicit user account access contract
   - users repository accepts domain patch object
 - Categories now follow same clean flow:
   - category model moved to categories module infrastructure
   - domain owns create rules
+  - category deletion now goes through a narrowed products module contract
   - repository accepts domain object
 - Reconstructed modules now follow an emerging export convention:
   - `composition.js` owns wiring
