@@ -3,7 +3,7 @@ import { buildAddNewCategoryUseCase } from "./application/use-cases/addNewCatego
 import { buildDeleteCategoryUseCase } from "./application/use-cases/deleteCategoryUseCase.js";
 import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
 import { createMongooseCategoryRepository } from "./infrastructure/repositories/mongooseCategoryRepository.js";
-import { productsInputPort } from "../products/index.js";
+import { productsInputPort } from "../products/public-api.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
 
 const categoryRepository = createMongooseCategoryRepository();
