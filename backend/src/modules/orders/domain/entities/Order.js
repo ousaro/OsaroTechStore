@@ -4,7 +4,7 @@ import {
   assertNonEmptyArray,
   assertPositiveNumber,
   assertString,
-} from "../../../../shared/infrastructure/http/validation.js";
+} from "../validation/orderValidation.js";
 
 export const createOrder = ({
   ownerId,
@@ -24,14 +24,10 @@ export const createOrder = ({
   assertString(paymentMethod, "paymentMethod is required");
   assertString(transactionId, "transactionId is required");
 
-  try {
-    assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
-  } catch (_error) {
-    throw new ApiError("Invalid address format", 400, { responseKey: "message" });
-  }
+  assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
-    throw new ApiError("paymentDetails is required", 400);
+    throw new ApiError("paymentDetails is required", 400, { responseKey: "message" });
   }
 
   const props = {
