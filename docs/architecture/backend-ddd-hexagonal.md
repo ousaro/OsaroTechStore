@@ -17,5 +17,6 @@
 
 ## Current Stage
 - Foundation + app bootstrap created.
+- Auth context reconstructed (JWT + OAuth adapters).
 - Existing legacy routes still active.
 - Context-by-context reconstruction follows in next commits.

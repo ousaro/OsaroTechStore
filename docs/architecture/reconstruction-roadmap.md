@@ -2,8 +2,8 @@
 
 ## Backend-first sequence
 1. Foundation and cross-cutting concerns
-2. Auth context
-3. Users context
+2. Auth context (in progress in this commit)
+3. Users context (next)
 4. Catalog context
 5. Orders context
 6. Payments context
