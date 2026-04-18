@@ -13,6 +13,11 @@ export const createMongooseOrderRepository = () => {
       return docs.map(toOrderEntity);
     },
 
+    async findById(id) {
+      const doc = await OrderModel.findById(id);
+      return doc ? toOrderEntity(doc) : null;
+    },
+
     async create(order) {
       const doc = await OrderModel.create(order.toPrimitives());
       return toOrderEntity(doc);
