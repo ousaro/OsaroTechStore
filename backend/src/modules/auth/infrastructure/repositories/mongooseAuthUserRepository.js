@@ -1,12 +1,19 @@
+import bcrypt from "bcrypt";
 import UserModel from "../persistence/userModel.js";
 
 export const createMongooseAuthUserRepository = () => {
   return {
-    register({ firstName, lastName, email, password, confirmPassword, picture }) {
-      return UserModel.register(firstName, lastName, email, password, confirmPassword, picture);
+    async findByEmail(email) {
+      return UserModel.findOne({ email });
     },
-    login({ email, password }) {
-      return UserModel.login(email, password);
+    async create({ firstName, lastName, email, password, picture }) {
+      return UserModel.create({ firstName, lastName, email, password, picture });
+    },
+    hashPassword(password) {
+      return bcrypt.hash(password, 10);
+    },
+    comparePassword(plainPassword, hashedPassword) {
+      return bcrypt.compare(plainPassword, hashedPassword);
     },
     async findUserIdOnly(userId) {
       const user = await UserModel.findOne({ _id: userId }).select("_id");
