@@ -5,14 +5,12 @@ export const buildDeleteUserUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndDelete"]);
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
-      // Keep legacy message for compatibility.
-      throw new ApiError("No such Product", 404);
+      throw new ApiError("No such user", 404);
     }
 
     const deletedUser = await userRepository.findByIdAndDelete(id);
     if (!deletedUser) {
-      // Keep legacy message for compatibility.
-      throw new ApiError("Product not found", 404);
+      throw new ApiError("User not found", 404);
     }
 
     return deletedUser;
