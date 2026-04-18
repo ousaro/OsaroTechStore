@@ -1,0 +1,146 @@
+# Backend Modular DDD + Hexagonal Checklist
+
+## Purpose
+
+This checklist turns the architecture gaps into concrete implementation work.
+
+Use it as a working migration list, not as a one-shot rewrite plan.
+
+## 1. Module Boundaries
+
+- [ ] Define allowed import rules between modules
+- [ ] Enforce that cross-module imports go only through `public-api.js`
+- [ ] Stop exporting full input ports from `public-api.js` unless absolutely necessary
+- [ ] Replace broad public exports with capability-specific functions
+- [ ] Keep `composition.js` private to each module
+- [ ] Keep `index.js` local to module adapters and bootstrap only
+- [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
+- [ ] Document the ownership boundary between identity/auth data and profile/user data
+
+## 2. Composition Root
+
+- [ ] Define one clear application composition root
+- [ ] Move runtime startup concerns into explicit bootstrap wiring
+- [ ] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
+- [x] Ensure route adapters do not depend on broad module entrypoints when a narrower local import is enough
+
+## 3. Domain Purity
+
+- [ ] Remove HTTP-oriented error handling from domain objects
+- [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
+- [ ] Map domain/application errors to HTTP responses only in transport adapters
+- [ ] Remove direct framework/library validation dependencies from domain objects where possible
+- [ ] Wrap external validation rules behind policies or application-layer validation when appropriate
+
+## 4. Rich Domain Modeling
+
+- [ ] Introduce value objects where business language matters
+- [ ] Add `Email` value object
+- [ ] Add `Money` value object
+- [ ] Add `Address` value object for orders
+- [ ] Add `OrderStatus` value object or state model
+- [ ] Add `PaymentStatus` value object or state model
+- [ ] Add explicit order lifecycle transitions instead of only patch builders
+- [ ] Identify which modules need true aggregates instead of thin entities
+- [ ] Add domain services only where rules span multiple entities/value objects
+
+## 5. Payments Module
+
+- [ ] Define the actual payment domain model
+- [ ] Decide whether payments need their own persistence model/table/collection
+- [ ] Persist payment state instead of treating payments as a pure gateway pass-through
+- [ ] Model checkout session creation as a business workflow, not only a gateway call
+- [ ] Model webhook outcomes as business events or state transitions
+- [ ] Decide how payments update orders
+- [ ] Prefer event-driven collaboration between orders and payments
+- [ ] Add idempotency handling for webhook processing
+- [ ] Add tests for webhook-driven state changes
+
+## 6. Orders Module
+
+- [ ] Move order state changes toward explicit behaviors instead of generic patch updates
+- [ ] Separate create/update commands from read queries where useful
+- [ ] Define order invariants around payment state and status transitions
+- [ ] Decide which payment fields truly belong inside order versus inside payments
+- [ ] Add order-related domain events such as `OrderPlaced`
+
+## 7. Products and Categories
+
+- [ ] Replace synchronous cleanup orchestration with an explicit collaboration model
+- [ ] Decide whether category deletion should emit an event such as `CategoryDeleted`
+- [ ] Add an ACL or translation layer if product/category module language diverges
+- [ ] Replace misleading pass-through entity naming with proper mapper/read-model naming
+- [ ] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
+
+## 8. Auth and Users
+
+- [ ] Clarify whether auth owns credentials only or the whole user account record
+- [ ] Clarify whether users owns profile behavior only
+- [ ] Replace repository-shaped cross-module access with a narrower application contract
+- [ ] Introduce value objects or policies around password strength and email rules
+- [ ] Reduce auth public API exports to the minimum needed by consumers
+
+## 9. Ports and Contracts
+
+- [ ] Review every input port and output port for unnecessary breadth
+- [ ] Define boundary DTOs where external/module contracts should not expose internal shapes
+- [ ] Distinguish commands from queries in contracts where complexity justifies it
+- [ ] Add adapter contract tests for repository ports
+- [ ] Add adapter contract tests for gateway ports
+- [ ] Add module public API contract tests
+
+## 10. Mapping and Persistence Boundaries
+
+- [ ] Replace pass-through record mappers with explicit persistence mapping
+- [ ] Ensure repositories return stable internal records or domain objects, not raw Mongoose documents
+- [ ] Rename misleading mapper files that are not real entities
+- [ ] Add explicit translation for gateway payloads where needed
+- [ ] Prevent persistence schema details from leaking into application/domain code
+
+## 11. Events and Cross-Module Workflows
+
+- [ ] Define the first set of domain/application events
+- [ ] Add `OrderPlaced`
+- [ ] Add `PaymentConfirmed` or equivalent
+- [ ] Add `CategoryDeleted` if event-driven cleanup is adopted
+- [ ] Choose an in-process event bus approach for the modular monolith
+- [ ] Add event handler tests
+- [ ] Add cross-module workflow tests
+
+## 12. Application Structure
+
+- [ ] Introduce `commands/`, `queries/`, and `dto/` folders where they improve clarity
+- [ ] Do not add structure mechanically; apply it first to modules with real workflow complexity
+- [ ] Start with `orders`, `payments`, and `auth`
+
+## 13. Shared Kernel
+
+- [ ] Audit `shared/` for business logic that should belong to modules instead
+- [ ] Keep `shared/` limited to generic primitives and technical utilities
+- [ ] Avoid moving business rules into shared helpers
+- [ ] Decide which primitives truly belong in a shared kernel versus module-local value objects
+
+## 14. Testing
+
+- [ ] Keep the current unit-test baseline green
+- [ ] Add contract tests for public APIs
+- [ ] Add contract tests for ports/adapters
+- [ ] Add integration tests for order/payment workflow
+- [ ] Add integration tests for category/product workflow
+- [ ] Add negative tests for boundary violations and invalid state transitions
+- [ ] Add test coverage for event handlers once events exist
+
+## 15. Documentation
+
+- [ ] Keep the architecture overview aligned with the actual codebase
+- [ ] Update the gap analysis when major boundary changes land
+- [ ] Document the auth/users ownership decision explicitly
+- [ ] Document the event model once introduced
+- [ ] Document module public APIs and allowed consumers
+
+## Suggested Order
+
+- [ ] First: narrow public APIs, clean domain errors, strengthen mapper boundaries
+- [ ] Second: clarify auth/users ownership and deepen orders/payments modeling
+- [ ] Third: introduce events, ACLs, and richer command/query separation
+- [ ] Fourth: expand contract and workflow testing

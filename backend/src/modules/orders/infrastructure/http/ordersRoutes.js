@@ -5,7 +5,7 @@ import {
   addOrderHandler,
   updateOrderHandler,
   deleteOrderHandler,
-} from "../../index.js";
+} from "../../composition.js";
 
 export const createOrdersRoutes = ({ requireAuth }) => {
   const ordersRoutes = router();

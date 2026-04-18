@@ -3,7 +3,7 @@ import {
   getAllCategoriesHandler,
   addNewCategoryHandler,
   deleteCategoryHandler,
-} from "../../index.js";
+} from "../../composition.js";
 
 export const createCategoriesRoutes = ({ requireAuth }) => {
   const categoriesRoutes = router();

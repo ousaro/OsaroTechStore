@@ -1,93 +1,283 @@
-# Backend Architecture (DDD + Hexagonal)
+# Backend Architecture (Current State)
 
-## Layers
-- Domain: entities, value objects, domain services, domain errors.
-- Application: use-cases (orchestrate domain logic).
-- Infrastructure: adapters (HTTP, DB, Stripe, OAuth, etc).
+## Purpose
 
-## Folder Contract
-- `modules/<bounded-context>/domain/*`
-- `modules/<bounded-context>/application/*`
-- `modules/<bounded-context>/infrastructure/*`
+This document describes the backend as it exists today in `backend/src`, not the idealized end state.
 
-## Module Surface Convention
-- `composition.js`: private module wiring and object graph assembly.
-- `index.js`: stable module export surface used by local adapters and app bootstrap.
-- `public-api.js`: explicit cross-module surface for other bounded contexts.
+The backend is already organized as a **modular monolith with hexagonal intent**:
 
-Rule:
-- other modules should prefer `public-api.js`
-- app bootstrap may consume `index.js` or route adapters as needed
-- `composition.js` should stay private to the module
+- business code is split into modules under `modules/`
+- most modules have `domain`, `application`, `ports`, and `infrastructure`
+- HTTP adapters are module-local
+- module wiring is mostly centered in `composition.js`
+- cross-module access has started moving through `public-api.js`
 
-## Dependency Rule
-- Domain depends on nothing.
-- Application depends on domain ports/interfaces.
-- Infrastructure implements ports.
+It is a meaningful step away from a flat layered monolith, but it is **not yet a fully realized Modular DDD + Hexagonal architecture**.
 
-## Current Stage
-- Foundation + app bootstrap created.
-- Auth context reconstructed (JWT + OAuth adapters).
-- Users context reconstructed with real lookup, update, password update, and delete flows.
-- Catalog context reconstructed (products + categories, including write-side).
-- Orders context reconstructed with real lookup, create, update, and delete flows.
-- Payments context reconstructed (Stripe gateway adapter).
-- Cross-cutting hardening added (shared ApiError, targeted tests, test env bootstrap).
-- HTTP adapters are module-local (routers live inside each bounded context).
-- Legacy compatibility layer removed (`src/routes`, `src/controllers`, `src/middleware`, `src/APIs`).
-- Input ports now exist for:
-  - `auth`
-  - `payments`
-  - `categories`
-  - `orders`
-  - `products`
-  - `users`
-- Output ports now exist for:
-  - auth user repository
-  - token service
-  - payment gateway
-  - category repository
-  - order repository
-  - product repository
-  - user repository
-- Cross-module boundary cleanup completed for the previously identified direct infrastructure leaks:
-  - categories now delete products through the products module API
-  - users now access shared auth-backed user storage through the auth module API
-  - route modules no longer import auth HTTP middleware directly
-- Adapter cleanup completed for the previously identified issues:
-  - product status cron scheduling moved out of the HTTP route adapter into bootstrap-owned infrastructure
-  - payments webhook is no longer protected by end-user auth middleware
-- Auth business rules no longer live in Mongoose statics:
-  - registration/login validation now lives in auth domain commands
-  - auth use cases orchestrate hashing, lookup, and token creation explicitly
-- Backend unit test suite currently passes:
-  - `npm test` in `backend/` -> 37 passing
-- Orders now follow full clean flow:
-  - domain owns creation rules (`createOrder`)
-  - domain now also shapes update patches
-  - use-cases orchestrate lookup/create/update/delete flows
-  - repository persists domain object/patch (`toPrimitives()`)
-- Products now follow same clean flow:
-  - product model moved to products module infrastructure
-  - domain owns create/update rules
-  - update flow now recomputes price safely for partial pricing changes
-  - repository accepts domain object/patch
-- Users now follow same clean flow:
-  - user model moved into auth module infrastructure (shared by auth/users repositories)
-  - domain owns update/password command rules
-  - auth/users boundary now goes through an explicit user account access contract
-  - users repository accepts domain patch object
-- Categories now follow same clean flow:
-  - category model moved to categories module infrastructure
-  - domain owns create rules
-  - category deletion now goes through a narrowed products module contract
-  - repository accepts domain object
-- Reconstructed modules now follow an emerging export convention:
-  - `composition.js` owns wiring
-  - `index.js` is thin
-  - `public-api.js` is used for explicit cross-module access where needed
-- Remaining reconstruction focus:
-  - split command/query folders where useful
-  - add contract tests around input/output ports
-  - continue tightening module public APIs so cross-module access uses narrow capability exports instead of broad input ports
-  - continue reducing persistence/anemic-model leftovers where they still exist
+## Current Module Layout
+
+The backend currently has these business modules:
+
+- `auth`
+- `users`
+- `products`
+- `categories`
+- `orders`
+- `payments`
+
+Typical module shape today:
+
+```text
+modules/<module>/
+├── application/
+│   └── use-cases/
+├── domain/
+├── infrastructure/
+│   ├── http/
+│   ├── persistence/ or repositories/ or gateways/
+├── ports/
+│   ├── input/
+│   └── output/
+├── composition.js
+├── index.js
+└── public-api.js
+```
+
+## What Each File Means Today
+
+- `composition.js`
+  - private module wiring
+  - creates repositories, services, use cases, input ports, and HTTP handlers
+- `index.js`
+  - thin export surface used mostly by module-local HTTP route adapters and some bootstrap code
+- `public-api.js`
+  - intended cross-module surface
+  - currently exists, but is still broader than it should be in several modules
+
+## Layering Status
+
+### Domain
+
+What exists:
+
+- domain constructor functions
+- validation helpers
+- some domain-shaped creation/update logic
+
+What is still weak:
+
+- domain objects are mostly thin frozen objects with `toPrimitives()`
+- domain depends on `ApiError`, which carries HTTP status codes
+- auth domain still uses `validator` directly
+- aggregates, value objects, domain services, and domain events are mostly absent
+
+### Application
+
+What exists:
+
+- module-local use cases under `application/use-cases`
+- use cases coordinate repositories and gateways
+- several CRUD flows are cleaner than before
+
+What is still weak:
+
+- most use cases are still CRUD-oriented orchestration
+- commands, queries, DTOs, and event handlers are not clearly separated
+- cross-module workflows are mostly synchronous and request/response shaped
+
+### Ports
+
+What exists:
+
+- input ports for all main modules
+- output ports for repositories, token services, and payment gateway access
+
+What is still weak:
+
+- ports are mostly runtime assertion helpers
+- many public contracts are too broad
+- there are no dedicated contract tests proving adapter conformance
+
+### Infrastructure
+
+What exists:
+
+- module-local HTTP routes and controllers
+- module-local repositories and persistence models
+- Stripe gateway adapter in `payments`
+- auth JWT and OAuth adapters
+- Mongo connection and shared HTTP middleware under `shared/`
+
+What is still weak:
+
+- some repositories still return raw records through pass-through mappers
+- mapping layers are thin and do not yet form strong anti-corruption boundaries
+- bootstrap wiring is cleaner, but there is still no strict single composition root for all runtime concerns
+
+## Module-by-Module Snapshot
+
+### Auth
+
+Current strengths:
+
+- registration, login, and access-token verification are use-case driven
+- JWT handling is behind a token service port
+- OAuth adapter is separated into infrastructure
+
+Current limitations:
+
+- domain rules still rely on `ApiError`
+- `public-api.js` exports broad capabilities including `authInputPort`
+- `userAccountAccess` exposes repository-style methods rather than a narrow bounded-context contract
+
+### Users
+
+Current strengths:
+
+- use cases exist for lookup, update, password update, and delete
+- user repository is separated from HTTP concerns
+
+Current limitations:
+
+- the module depends on the auth module for data access
+- the auth/users boundary is cleaner than direct model sharing, but still persistence-shaped
+- user domain modeling is very thin
+
+### Products
+
+Current strengths:
+
+- domain creation/update logic exists
+- repository is module-local
+- scheduler startup was moved out of the HTTP route adapter
+
+Current limitations:
+
+- public API still exports the full `productsInputPort`
+- product record mapping is still pass-through
+- product modeling is still patch-oriented rather than aggregate-oriented
+
+### Categories
+
+Current strengths:
+
+- category creation rules live in the module
+- category deletion goes through a product module contract instead of touching product infrastructure directly
+
+Current limitations:
+
+- category-to-product coordination is synchronous
+- no domain event or ACL exists around category deletion
+- `CategoryEntity` is still effectively a pass-through mapper
+
+### Orders
+
+Current strengths:
+
+- create, read, update, and delete use cases exist
+- order creation and update shaping live in domain code
+- repository persists shaped objects rather than raw controller payloads
+
+Current limitations:
+
+- order domain is still a thin object factory plus patch builder
+- there are no explicit state-transition methods
+- payment-related fields live on the order model, but there is no real order/payment workflow integration
+
+### Payments
+
+Current strengths:
+
+- Stripe integration is isolated behind a gateway port
+- webhook route is correctly left outside end-user auth
+
+Current limitations:
+
+- there is effectively no payment domain yet
+- the module is mostly a Stripe adapter wrapped in a module
+- webhook verification does not update business state
+- the module does not yet collaborate with orders through events or a narrow application contract
+
+## Cross-Module Communication Today
+
+Current patterns in use:
+
+- synchronous contract calls through `public-api.js`
+- app-level composition for auth verification middleware
+
+Examples:
+
+- `categories` calls a narrowed product capability to remove products by category
+- `users` depends on auth-backed user account access
+
+What is not in place yet:
+
+- domain events
+- application events
+- async module collaboration
+- anti-corruption layers between module languages
+
+## Shared and Bootstrap
+
+Current shared code:
+
+- `shared/domain/errors/ApiError.js`
+- shared HTTP middleware and helpers
+- shared Mongo bootstrap utilities
+
+Current bootstrap shape:
+
+- `app/createApp.js` wires middleware and routes
+- `server.js` connects Mongo, starts the app, and starts the product scheduler
+
+This is workable today, but the composition root is still split between app bootstrap and module-level runtime hooks.
+
+## Testing Status
+
+Current verified baseline:
+
+- `npm test` in `backend/` passes
+- current suite: `37 passing`
+
+Current strengths:
+
+- targeted unit tests exist for several domain objects and use cases
+- app test covers Stripe webhook raw-body handling
+
+Current gaps:
+
+- no contract tests for public APIs or ports
+- limited adapter integration coverage
+- no cross-module workflow tests
+- no tests around event-driven collaboration because eventing is not implemented yet
+
+## Honest Architectural Assessment
+
+The backend today is best described as:
+
+> a modular monolith with hexagonal reconstruction in progress
+
+That means:
+
+- module boundaries exist
+- the code is cleaner than a classic controller-service-repository monolith
+- several direct infrastructure leaks were already removed
+
+But also:
+
+- domain purity is incomplete
+- public module APIs are still too broad
+- rich DDD building blocks are mostly absent
+- payments is not yet a full business module
+- cross-module workflows are still mostly synchronous and thin
+
+## Target Direction
+
+The intended next step is not a rewrite. It is a tightening of the current structure:
+
+- narrow `public-api.js` to real capabilities
+- make domains framework-agnostic
+- introduce value objects and richer aggregates where the business justifies them
+- add domain/application events for cross-module workflows
+- strengthen mapping and contract boundaries
+- increase test depth around ports, adapters, and module collaboration

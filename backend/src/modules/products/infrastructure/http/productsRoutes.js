@@ -5,7 +5,7 @@ import {
   addProductHandler,
   updateProductHandler,
   deleteProductHandler,
-} from "../../index.js";
+} from "../../composition.js";
 
 export const createProductsRoutes = ({ requireAuth }) => {
   const productsRoutes = router();

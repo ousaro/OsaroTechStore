@@ -3,7 +3,7 @@ import {
   createPaymentIntentHandler,
   stripeWebhookHandler,
   getSessionDetailsHandler,
-} from "../../index.js";
+} from "../../composition.js";
 
 export const createPaymentsRoutes = ({ requireAuth }) => {
   const paymentsRoutes = express.Router();
