@@ -95,7 +95,7 @@ Progress: auth and products public API contract tests are now in place.
 ## 10. Mapping and Persistence Boundaries
 
 - [ ] Replace pass-through record mappers with explicit persistence mapping
-Progress: users and orders record mappings are now explicit instead of pass-through.
+Progress: users, orders, and products record mappings are now explicit instead of pass-through.
 - [ ] Ensure repositories return stable internal records or domain objects, not raw Mongoose documents
 - [ ] Rename misleading mapper files that are not real entities
 - [ ] Add explicit translation for gateway payloads where needed
