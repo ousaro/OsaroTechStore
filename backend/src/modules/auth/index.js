@@ -2,6 +2,7 @@ import { env } from "../../config/env.js";
 import { buildRegisterUserUseCase } from "./application/use-cases/registerUserUseCase.js";
 import { buildLoginUserUseCase } from "./application/use-cases/loginUserUseCase.js";
 import UserModel from "./infrastructure/persistence/userModel.js";
+import { createAuthInputPort } from "./ports/input/authInputPort.js";
 import { buildVerifyAccessTokenUseCase } from "./application/use-cases/verifyAccessTokenUseCase.js";
 import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
 import { createJwtTokenService } from "./infrastructure/services/jwtTokenService.js";
@@ -25,15 +26,17 @@ const verifyAccessTokenUseCase = buildVerifyAccessTokenUseCase({
   tokenService,
   authUserRepository,
 });
+const authInputPort = createAuthInputPort({
+  registerUser: registerUserUseCase,
+  loginUser: loginUserUseCase,
+});
 
 export const {
   registerUserHandler,
   loginUserHandler,
   googleCallbackHandler,
 } = createAuthHttpController({
-  registerUserUseCase,
-  loginUserUseCase,
-  verifyAccessTokenUseCase,
+  authInputPort,
 });
 
 export const passport = setupGooglePassport({
@@ -45,3 +48,4 @@ export const passport = setupGooglePassport({
 export const authUserStore = UserModel;
 
 export const verifyAccessToken = (authorizationHeader) => verifyAccessTokenUseCase({ authorizationHeader });
+export { authInputPort };

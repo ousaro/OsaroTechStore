@@ -1,10 +1,11 @@
-export const createAuthHttpController = ({
-  registerUserUseCase,
-  loginUserUseCase,
-}) => {
+import { assertAuthInputPort } from "../../ports/input/authInputPort.js";
+
+export const createAuthHttpController = ({ authInputPort }) => {
+  assertAuthInputPort(authInputPort);
+
   const registerUserHandler = async (req, res) => {
     try {
-      const payload = await registerUserUseCase(req.body);
+      const payload = await authInputPort.registerUser(req.body);
       return res.status(200).json(payload);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -13,7 +14,7 @@ export const createAuthHttpController = ({
 
   const loginUserHandler = async (req, res) => {
     try {
-      const payload = await loginUserUseCase(req.body);
+      const payload = await authInputPort.loginUser(req.body);
       return res.status(200).json(payload);
     } catch (error) {
       return res.status(400).json({ error: error.message });
