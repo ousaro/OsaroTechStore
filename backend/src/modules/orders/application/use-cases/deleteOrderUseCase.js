@@ -1,4 +1,7 @@
+import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+
 export const buildDeleteOrderUseCase = ({ orderRepository }) => {
+  assertOrderRepositoryPort(orderRepository, ["isValidId", "findByIdAndDelete"]);
   return async ({ id }) => {
     if (!orderRepository.isValidId(id)) {
       const error = new Error("No such Order");

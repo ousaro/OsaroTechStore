@@ -1,4 +1,7 @@
+import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+
 export const buildUpdateOrderUseCase = ({ orderRepository }) => {
+  assertOrderRepositoryPort(orderRepository, ["isValidId", "findByIdAndUpdate"]);
   return async ({ id, updates }) => {
     if (!orderRepository.isValidId(id)) {
       const error = new Error("Invalid order ID");
