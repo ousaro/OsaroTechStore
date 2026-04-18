@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { toUserEntity } from "../../domain/entities/UserEntity.js";
+import { toUserRecord } from "./userRecordMapper.js";
 
 export const createMongooseUserRepository = ({ authUserAccess }) => {
   return {
@@ -10,22 +10,22 @@ export const createMongooseUserRepository = ({ authUserAccess }) => {
 
     async findAllNonAdminSorted() {
       const docs = await authUserAccess.find({ admin: false }).sort({ createdAt: -1 });
-      return docs.map(toUserEntity);
+      return docs.map(toUserRecord);
     },
 
     async findById(id) {
       const doc = await authUserAccess.findById(id);
-      return doc ? toUserEntity(doc) : null;
+      return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndUpdate(id, patch) {
       const doc = await authUserAccess.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
-      return doc ? toUserEntity(doc) : null;
+      return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndDelete(id) {
       const doc = await authUserAccess.findByIdAndDelete({ _id: id });
-      return doc ? toUserEntity(doc) : null;
+      return doc ? toUserRecord(doc) : null;
     },
 
     comparePassword(plain, hash) {
