@@ -20,12 +20,24 @@ import paymentsRoutes from "../modules/payments/infrastructure/http/paymentsRout
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const openApiDocument = YAML.load(path.join(__dirname, "../../docs/openapi.yaml"));
+const shouldSkipBodyParsing = (req) => req.path === "/api/webhook";
+
+export const createSelectiveBodyParser = (bodyParser) => {
+  return (req, res, next) => {
+    if (shouldSkipBodyParsing(req)) {
+      return next();
+    }
+    return bodyParser(req, res, next);
+  };
+};
 
 export const createApp = () => {
   const app = express();
+  const jsonBodyParser = express.json({ limit: "50mb" });
+  const urlencodedBodyParser = express.urlencoded({ limit: "50mb", extended: true });
 
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  app.use(createSelectiveBodyParser(jsonBodyParser));
+  app.use(createSelectiveBodyParser(urlencodedBodyParser));
   app.use(cookieParser());
   app.use(
     cors({
