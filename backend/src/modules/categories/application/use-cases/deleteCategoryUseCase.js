@@ -1,4 +1,7 @@
+import { assertCategoryRepositoryPort } from "../../ports/output/categoryRepositoryPort.js";
+
 export const buildDeleteCategoryUseCase = ({ categoryRepository, deleteProductsByCategoryId }) => {
+  assertCategoryRepositoryPort(categoryRepository, ["findByIdAndDelete"]);
   return async ({ id }) => {
     if (!id) {
       const error = new Error("Category ID is required");
