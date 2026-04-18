@@ -9,8 +9,9 @@
 6. Payments context (in progress in this commit)
 7. Backend hardening and tests (in progress in this commit)
 8. Module-local HTTP isolation (in progress in this commit)
+9. Remove legacy compatibility layer (in progress in this commit)
 
 ## Frontend-last sequence
-9. Design system + layout consistency
-10. Feature UIs aligned to bounded contexts
-11. Final documentation and contract verification
+10. Design system + layout consistency
+11. Feature UIs aligned to bounded contexts
+12. Final documentation and contract verification

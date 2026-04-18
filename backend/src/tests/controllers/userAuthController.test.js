@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 //import request from 'supertest';
 //import app from "../../server.js"
-import { registerUser, loginUser } from '../../controllers/userAuthController.js';
 import User from '../../models/userModel.js';
+import { registerUserHandler as registerUser, loginUserHandler as loginUser } from '../../modules/auth/index.js';
 import jwt from 'jsonwebtoken';
 
 // Setup stubs and spies
