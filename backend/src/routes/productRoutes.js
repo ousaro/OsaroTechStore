@@ -4,12 +4,16 @@ import router from "express";
 // to schedule a function to run periodically
 import cron  from "node-cron"
 
-// legacy write controllers
-import { addProduct, updateProduct, deleteProduct, updateIsNewProductStatus } from "../controllers/productController.js"
-
 // import middleware
 import requireAuth from "../middleware/requireAuth.js"
-import { getAllProductsHandler, getProductByIdHandler } from "../modules/products/index.js";
+import {
+  getAllProductsHandler,
+  getProductByIdHandler,
+  addProductHandler,
+  updateProductHandler,
+  deleteProductHandler,
+  runNewProductStatusRefreshHandler,
+} from "../modules/products/index.js";
 
 // create router
 const productRoutes = router();
@@ -28,19 +32,19 @@ productRoutes.get('/', getAllProductsHandler);
 productRoutes.get('/:id', getProductByIdHandler);
 
     // Route to add a new product.
-productRoutes.post('/', addProduct);
+productRoutes.post('/', addProductHandler);
 
     // Route to update a product by its ID.
-productRoutes.put('/:id', updateProduct);
+productRoutes.put('/:id', updateProductHandler);
 
     //Route to delete a product by its ID.
-productRoutes.delete('/:id', deleteProduct);
+productRoutes.delete('/:id', deleteProductHandler);
 
 
 // Schedule the function to run every day at midnight
 cron.schedule('0 0 * * *', () => {
     console.log('Running the updateIsNewProductStatus function');
-    updateIsNewProductStatus();
-  });
+    runNewProductStatusRefreshHandler();
+});
 
 export default productRoutes;

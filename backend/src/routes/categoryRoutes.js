@@ -2,9 +2,11 @@
 // Initialize express router
 import router from "express"
 
-// import controllers
-import {getAllCategories, addNewCategory, deleteCategory} from "../controllers/categoryController.js"
-
+import {
+  getAllCategoriesHandler,
+  addNewCategoryHandler,
+  deleteCategoryHandler,
+} from "../modules/categories/index.js";
 
 // import middleware
 import requireAuth from "../middleware/requireAuth.js"
@@ -18,17 +20,16 @@ categoryRoutes.use(requireAuth);
 
 // routes
     // get all categories
-categoryRoutes.get('/',getAllCategories)
+categoryRoutes.get('/', getAllCategoriesHandler)
 
     // add new category
-categoryRoutes.post('/', addNewCategory)
+categoryRoutes.post('/', addNewCategoryHandler)
 
     // delete category
-categoryRoutes.delete('/:id', deleteCategory)
+categoryRoutes.delete('/:id', deleteCategoryHandler)
 
 
 
 
 export default categoryRoutes;
-
 

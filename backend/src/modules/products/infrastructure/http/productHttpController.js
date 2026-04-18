@@ -1,6 +1,10 @@
 export const createProductHttpController = ({
   getAllProductsUseCase,
   getProductByIdUseCase,
+  addProductUseCase,
+  updateProductUseCase,
+  deleteProductUseCase,
+  refreshNewProductStatusUseCase,
 }) => {
   const getAllProductsHandler = async (req, res) => {
     const products = await getAllProductsUseCase();
@@ -23,8 +27,55 @@ export const createProductHttpController = ({
     }
   };
 
+  const addProductHandler = async (req, res) => {
+    try {
+      const payload = await addProductUseCase({
+        ownerId: req.user._id,
+        payload: req.body,
+      });
+      return res.status(201).json(payload);
+    } catch (error) {
+      if (error.meta?.emptyFields) {
+        return res.status(error.statusCode || 400).json({
+          error: error.message,
+          emptyFields: error.meta.emptyFields,
+        });
+      }
+      return res.status(error.statusCode || 400).json({ error: error.message });
+    }
+  };
+
+  const updateProductHandler = async (req, res) => {
+    try {
+      const payload = await updateProductUseCase({ id: req.params.id, updates: req.body });
+      return res.status(200).json(payload);
+    } catch (error) {
+      return res.status(error.statusCode || 400).json({ error: error.message });
+    }
+  };
+
+  const deleteProductHandler = async (req, res) => {
+    try {
+      const payload = await deleteProductUseCase({ id: req.params.id });
+      return res.status(200).json(payload);
+    } catch (error) {
+      const key = error.responseKey || "error";
+      return res.status(error.statusCode || 500).json({ [key]: error.message });
+    }
+  };
+
+  const runNewProductStatusRefreshHandler = async () => {
+    try {
+      await refreshNewProductStatusUseCase();
+      console.log("Product statuses updated successfully");
+    } catch (error) {
+      console.error("Error updating product statuses:", error);
+    }
+  };
+
   return {
     getAllProductsHandler,
     getProductByIdHandler,
+    addProductHandler, updateProductHandler, deleteProductHandler, runNewProductStatusRefreshHandler,
   };
 };

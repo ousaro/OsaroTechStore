@@ -19,5 +19,6 @@
 - Foundation + app bootstrap created.
 - Auth context reconstructed (JWT + OAuth adapters).
 - Users context reconstructed (legacy behavior preserved).
+- Catalog context reconstructed (products + categories, including write-side).
 - Existing legacy routes still active.
 - Context-by-context reconstruction follows in next commits.
