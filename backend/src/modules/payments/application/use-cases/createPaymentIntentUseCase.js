@@ -1,4 +1,5 @@
 import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import {
   assertNonEmptyArray,
   assertPositiveNumber,
@@ -6,6 +7,8 @@ import {
 } from "../validation/paymentInputValidation.js";
 
 export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) => {
+  assertPaymentGatewayPort(paymentGateway);
+
   return async ({ items }) => {
     assertNonEmptyArray(items, "items must be a non-empty array");
     items.forEach((item, index) => {
