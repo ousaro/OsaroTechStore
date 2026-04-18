@@ -34,6 +34,9 @@ export const createMongooseProductRepository = () => {
       const doc = await ProductModel.findByIdAndDelete({ _id: id });
       return doc ? toProductEntity(doc) : null;
     },
+    async deleteByCategoryId(categoryId) {
+      await ProductModel.deleteMany({ categoryId });
+    },
     async updateNewStatus(id, isNewProduct) {
       const doc = await ProductModel.findById(id);
       if (!doc) return null;

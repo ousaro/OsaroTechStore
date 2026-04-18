@@ -2,6 +2,7 @@ import { buildGetAllCategoriesUseCase } from "./application/use-cases/getAllCate
 import { buildAddNewCategoryUseCase } from "./application/use-cases/addNewCategoryUseCase.js";
 import { buildDeleteCategoryUseCase } from "./application/use-cases/deleteCategoryUseCase.js";
 import { createMongooseCategoryRepository } from "./infrastructure/repositories/mongooseCategoryRepository.js";
+import { deleteProductsByCategoryId } from "../products/index.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
 
 const categoryRepository = createMongooseCategoryRepository();
@@ -14,6 +15,7 @@ const addNewCategoryUseCase = buildAddNewCategoryUseCase({
 });
 const deleteCategoryUseCase = buildDeleteCategoryUseCase({
   categoryRepository,
+  deleteProductsByCategoryId,
 });
 
 export const {

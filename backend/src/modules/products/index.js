@@ -41,3 +41,5 @@ export const {
   });
 
 export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();
+
+export const deleteProductsByCategoryId = (categoryId) => productRepository.deleteByCategoryId(categoryId);

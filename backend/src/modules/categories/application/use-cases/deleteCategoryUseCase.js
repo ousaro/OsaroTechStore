@@ -1,4 +1,4 @@
-export const buildDeleteCategoryUseCase = ({ categoryRepository }) => {
+export const buildDeleteCategoryUseCase = ({ categoryRepository, deleteProductsByCategoryId }) => {
   return async ({ id }) => {
     if (!id) {
       const error = new Error("Category ID is required");
@@ -6,7 +6,7 @@ export const buildDeleteCategoryUseCase = ({ categoryRepository }) => {
       throw error;
     }
 
-    await categoryRepository.deleteProductsByCategoryId(id);
+    await deleteProductsByCategoryId(id);
     const deleted = await categoryRepository.findByIdAndDelete(id);
 
     if (!deleted) {
