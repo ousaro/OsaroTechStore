@@ -2,6 +2,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+if (process.env.NODE_ENV === "test") {
+  process.env.MONGO_URI ||= "mongodb://127.0.0.1:27017/osarotechstore-test";
+  process.env.SESSION_SECRET ||= "test-session-secret";
+  process.env.TOKEN_SECRET ||= "test-token-secret";
+  process.env.GOOGLE_CLIENT_ID ||= "test-google-client-id";
+  process.env.GOOGLE_CLIENT_SECRET ||= "test-google-client-secret";
+  process.env.CALLBACK_URL ||= "http://localhost:5000/api/users/auth/google/callback";
+  process.env.CLIENT_URL ||= "http://localhost:3000";
+}
+
 const required = ["MONGO_URI", "SESSION_SECRET", "TOKEN_SECRET"];
 const missing = required.filter((key) => !process.env[key]);
 
