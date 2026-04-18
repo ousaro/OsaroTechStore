@@ -18,8 +18,7 @@ export const createOrdersHttpController = ({ ordersInputPort }) => {
       const payload = await ordersInputPort.addOrder(req.body);
       return res.status(201).json(payload);
     } catch (error) {
-      const key = error.responseKey || "error";
-      return res.status(error.statusCode || 500).json({ [key]: error.message });
+      return res.status(error.statusCode || 500).json({ message: error.message, ...(error.meta || {}) });
     }
   };
 
@@ -40,8 +39,7 @@ export const createOrdersHttpController = ({ ordersInputPort }) => {
       const payload = await ordersInputPort.deleteOrder({ id: req.params.id });
       return res.status(200).json(payload);
     } catch (error) {
-      const key = error.responseKey || "error";
-      return res.status(error.statusCode || 500).json({ [key]: error.message });
+      return res.status(error.statusCode || 500).json({ message: error.message });
     }
   };
 

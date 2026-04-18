@@ -6,8 +6,7 @@ export const errorMiddleware = (error, req, res, next) => {
 
   const statusCode = error.statusCode || 500;
   const message = error.message || "Unexpected server error";
-  const responseKey = error.responseKey || "error";
-  const body = { [responseKey]: message };
+  const body = { error: message };
 
   if (error.meta) {
     Object.assign(body, error.meta);

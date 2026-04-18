@@ -13,7 +13,6 @@ export const buildDeleteOrderUseCase = ({ orderRepository }) => {
     if (!deletedOrder) {
       const error = new Error("Order not found");
       error.statusCode = 404;
-      error.responseKey = "message";
       throw error;
     }
 

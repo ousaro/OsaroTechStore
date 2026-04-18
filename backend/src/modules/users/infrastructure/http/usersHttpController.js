@@ -49,8 +49,7 @@ export const createUsersHttpController = ({ usersInputPort }) => {
       });
       return res.status(200).json(payload);
     } catch (error) {
-      const key = error.responseKey || "error";
-      return res.status(error.statusCode || 500).json({ [key]: error.message });
+      return res.status(error.statusCode || 500).json({ message: error.message });
     }
   };
 

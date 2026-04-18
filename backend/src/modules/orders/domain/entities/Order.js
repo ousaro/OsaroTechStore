@@ -27,7 +27,7 @@ export const createOrder = ({
   assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
-    throw new ApiError("paymentDetails is required", 400, { responseKey: "message" });
+    throw new ApiError("paymentDetails is required", 400);
   }
 
   const props = {

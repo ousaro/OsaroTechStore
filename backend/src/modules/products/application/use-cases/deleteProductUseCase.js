@@ -13,7 +13,6 @@ export const buildDeleteProductUseCase = ({ productRepository }) => {
     if (!deleted) {
       const error = new Error("Product not found");
       error.statusCode = 404;
-      error.responseKey = "message";
       throw error;
     }
 

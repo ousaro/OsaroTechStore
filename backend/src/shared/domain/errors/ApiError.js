@@ -3,7 +3,6 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
     this.statusCode = statusCode;
-    this.responseKey = options.responseKey || "error";
     this.meta = options.meta || null;
   }
 }

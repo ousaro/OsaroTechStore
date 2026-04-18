@@ -15,7 +15,6 @@ export const buildDeleteUserUseCase = ({ userRepository }) => {
       // Keep legacy message for compatibility.
       const error = new Error("Product not found");
       error.statusCode = 404;
-      error.responseKey = "message";
       throw error;
     }
 
