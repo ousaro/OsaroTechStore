@@ -29,24 +29,41 @@ describe("user repository contract", () => {
 
   it("delegates account operations through the narrowed auth contract", async () => {
     const calls = [];
-    const userRecord = { _id: "507f1f77bcf86cd799439011", email: "john@example.com" };
+    const rawUser = {
+      _id: "507f1f77bcf86cd799439011",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john@example.com",
+      password: "hashed-password",
+      admin: false,
+      picture: "profile.jpg",
+      phone: "+123456789",
+      address: "123 Main St",
+      city: "Casablanca",
+      country: "Morocco",
+      state: "CA",
+      postalCode: 20000,
+      favorites: ["prod-1"],
+      cart: [{ productId: "prod-2", quantity: 1 }],
+    };
+    const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
       userAccounts: {
         listNonAdminAccounts: async () => {
           calls.push(["listNonAdminAccounts"]);
-          return [userRecord];
+          return [rawUser];
         },
         getAccountById: async (id) => {
           calls.push(["getAccountById", id]);
-          return userRecord;
+          return rawUser;
         },
         updateAccountById: async (id, updates) => {
           calls.push(["updateAccountById", id, updates]);
-          return { ...userRecord, ...updates };
+          return { ...rawUser, ...updates };
         },
         deleteAccountById: async (id) => {
           calls.push(["deleteAccountById", id]);
-          return userRecord;
+          return rawUser;
         },
       },
     });
@@ -58,14 +75,14 @@ describe("user repository contract", () => {
     };
 
     const listResult = await repository.findAllNonAdminSorted();
-    const getResult = await repository.findById(userRecord._id);
-    const updateResult = await repository.findByIdAndUpdate(userRecord._id, patch);
-    const deleteResult = await repository.findByIdAndDelete(userRecord._id);
+    const getResult = await repository.findById(rawUser._id);
+    const updateResult = await repository.findByIdAndUpdate(rawUser._id, patch);
+    const deleteResult = await repository.findByIdAndDelete(rawUser._id);
 
-    expect(listResult).to.deep.equal([userRecord]);
-    expect(getResult).to.equal(userRecord);
-    expect(updateResult).to.deep.equal({ ...userRecord, firstName: "Jane" });
-    expect(deleteResult).to.equal(userRecord);
+    expect(listResult).to.deep.equal([expectedUserRecord]);
+    expect(getResult).to.deep.equal(expectedUserRecord);
+    expect(updateResult).to.deep.equal({ ...expectedUserRecord, firstName: "Jane" });
+    expect(deleteResult).to.deep.equal(expectedUserRecord);
     expect(calls).to.deep.equal([
       ["listNonAdminAccounts"],
       ["getAccountById", "507f1f77bcf86cd799439011"],
