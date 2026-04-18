@@ -1,3 +1,6 @@
+import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { assertRequiredFields } from "../../../../shared/infrastructure/http/validation.js";
+
 export const buildAddOrderUseCase = ({ orderRepository }) => {
   return async (payload) => {
     const {
@@ -12,10 +15,10 @@ export const buildAddOrderUseCase = ({ orderRepository }) => {
       paymentDetails,
     } = payload;
 
-    if (!address || !address.city || !address.addressLine || !address.postalCode || !address.country) {
-      const error = new Error("Invalid address format");
-      error.statusCode = 400;
-      error.responseKey = "message";
+    try {
+      assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
+    } catch (_error) {
+      const error = new ApiError("Invalid address format", 400, { responseKey: "message" });
       throw error;
     }
 

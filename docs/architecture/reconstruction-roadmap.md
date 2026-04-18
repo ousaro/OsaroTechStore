@@ -7,7 +7,7 @@
 4. Catalog context (in progress in this commit)
 5. Orders context (in progress in this commit)
 6. Payments context (in progress in this commit)
-7. Backend hardening and tests
+7. Backend hardening and tests (in progress in this commit)
 
 ## Frontend-last sequence
 8. Design system + layout consistency
