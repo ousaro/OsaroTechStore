@@ -11,7 +11,7 @@ import { env } from "../config/env.js";
 import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddleware.js";
 import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/createRequireAuthMiddleware.js";
-import { verifyAccessToken } from "../modules/auth/index.js";
+import { verifyAccessToken } from "../modules/auth/public-api.js";
 import authRoutes from "../modules/auth/infrastructure/http/authRoutes.js";
 import { createUsersRoutes } from "../modules/users/infrastructure/http/usersRoutes.js";
 import { createProductsRoutes } from "../modules/products/infrastructure/http/productsRoutes.js";

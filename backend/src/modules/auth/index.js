@@ -6,7 +6,6 @@ import { buildVerifyAccessTokenUseCase } from "./application/use-cases/verifyAcc
 import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
 import { createJwtTokenService } from "./infrastructure/services/jwtTokenService.js";
 import { createAuthHttpController } from "./infrastructure/http/authHttpController.js";
-import { setupGooglePassport } from "./infrastructure/oauth/googlePassport.js";
 
 const authUserRepository = createMongooseAuthUserRepository();
 const tokenService = createJwtTokenService();
@@ -36,12 +35,6 @@ export const {
   googleCallbackHandler,
 } = createAuthHttpController({
   authInputPort,
-});
-
-export const passport = setupGooglePassport({
-  clientId: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackUrl: process.env.CALLBACK_URL,
 });
 
 export const authUserAccess = {

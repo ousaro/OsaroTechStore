@@ -1,12 +1,17 @@
 import router from "express";
 import {
-  passport,
   registerUserHandler,
   loginUserHandler,
   googleCallbackHandler,
 } from "../../index.js";
+import { setupGooglePassport } from "../oauth/googlePassport.js";
 
 const authRoutes = router();
+const passport = setupGooglePassport({
+  clientId: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackUrl: process.env.CALLBACK_URL,
+});
 
 authRoutes.post("/register", registerUserHandler);
 authRoutes.post("/login", loginUserHandler);
