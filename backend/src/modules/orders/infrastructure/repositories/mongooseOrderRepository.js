@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Order from "../../../../models/orderModel.js";
+import OrderModel from "../persistence/orderModel.js";
 import { toOrderEntity } from "../../domain/entities/OrderEntity.js";
 
 export const createMongooseOrderRepository = () => {
@@ -7,20 +7,22 @@ export const createMongooseOrderRepository = () => {
     isValidId(id) {
       return mongoose.Types.ObjectId.isValid(id);
     },
+
     async findAllSorted() {
-      const docs = await Order.find({}).sort({ createdAt: -1 });
+      const docs = await OrderModel.find({}).sort({ createdAt: -1 });
       return docs.map(toOrderEntity);
     },
-    async create(data) {
-      const doc = await Order.create(data);
+
+    async create(order) {
+      const doc = await OrderModel.create(order.toPrimitives());
       return toOrderEntity(doc);
     },
     async findByIdAndUpdate(id, updates) {
-      const doc = await Order.findByIdAndUpdate(id, updates, { new: true });
+      const doc = await OrderModel.findByIdAndUpdate(id, updates, { new: true });
       return doc ? toOrderEntity(doc) : null;
     },
     async findByIdAndDelete(id) {
-      const doc = await Order.findByIdAndDelete({ _id: id });
+      const doc = await OrderModel.findByIdAndDelete({ _id: id });
       return doc ? toOrderEntity(doc) : null;
     },
   };

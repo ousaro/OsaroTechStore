@@ -25,4 +25,8 @@
 - Cross-cutting hardening added (shared ApiError, validation helpers, targeted tests).
 - HTTP adapters are module-local (routers live inside each bounded context).
 - Legacy compatibility layer removed (`src/routes`, `src/controllers`, `src/middleware`, `src/APIs`).
+- Orders now follow full clean flow:
+  - domain owns creation rules (`createOrder`)
+  - use-case orchestrates only
+  - repository persists domain object (`order.toPrimitives()`)
 - Context-by-context reconstruction follows in next commits.

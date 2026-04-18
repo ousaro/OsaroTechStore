@@ -10,8 +10,9 @@
 7. Backend hardening and tests (in progress in this commit)
 8. Module-local HTTP isolation (in progress in this commit)
 9. Remove legacy compatibility layer (in progress in this commit)
+10. Order domain ownership + model-in-module (in progress in this commit)
 
 ## Frontend-last sequence
-10. Design system + layout consistency
-11. Feature UIs aligned to bounded contexts
-12. Final documentation and contract verification
+11. Design system + layout consistency
+12. Feature UIs aligned to bounded contexts
+13. Final documentation and contract verification
