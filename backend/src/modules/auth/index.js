@@ -1,6 +1,6 @@
 export {
   authInputPort,
-  authUserAccess,
+  userAccountAccess,
   verifyAccessToken,
   registerUserHandler,
   loginUserHandler,

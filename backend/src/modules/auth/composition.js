@@ -36,7 +36,7 @@ export const {
   authInputPort,
 });
 
-export const authUserAccess = {
+export const userAccountAccess = {
   find(filter) {
     return authUserRepository.find(filter);
   },
