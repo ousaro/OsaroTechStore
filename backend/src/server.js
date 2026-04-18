@@ -5,6 +5,10 @@ import cookieParser from 'cookie-parser';
 import session from "express-session"
 import passport from 'passport';
 import cors from "cors"
+import path from 'path';
+import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 // import routes
 import userAuthRoutes from './routes/userAuthRoutes.js';
 import productRoutes from './routes/productRoutes.js';
@@ -21,6 +25,9 @@ dotenv.config();
 const port = process.env.PORT || 5000;
 
 const mongoURI = process.env.MONGO_URI;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const openApiDocument = YAML.load(path.join(__dirname, '../docs/openapi.yaml'));
 
 
 // create express app
@@ -60,6 +67,12 @@ app.use((req, res, next) => { // middleware to log the request path and method
     console.log(req.path, req.method)
     next()
 })
+
+app.get('/api/docs.json', (req, res) => {
+    res.status(200).json(openApiDocument);
+});
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument, { explorer: true }));
 
 
 

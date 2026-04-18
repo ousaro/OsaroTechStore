@@ -1,110 +1,134 @@
-# E-Commerce App
+# OsaroTechStore
 
-A robust, full-featured online store built with the **MERN stack** (MongoDB, Express, React, Node.js), offering a modern shopping experience with secure payment integration and advanced admin management.
+OsaroTechStore is a full-stack MERN e-commerce application with customer shopping flows, admin management, Stripe payments, and Google OAuth authentication.
 
-## 🌟 Features
+## Project Structure
 
-- **Modern UI/UX**: Designed with **Tailwind CSS** for a responsive and visually appealing interface.
-- **Home & Product Pages**: Browse and view detailed product information.
-- **Add to Cart & Filtering**: Seamless product filtering and cart management.
-- **Secure Payments**: Integrated with **Stripe** for secure and smooth transactions.
-- **Admin Dashboard**: Manage products, users, and orders with data-driven insights and analytics.
-- **Analytics**: Admin insights into sales data, user activity, and overall performance.
+- `frontend/`: React SPA (Create React App + Tailwind CSS)
+- `backend/`: Express API + MongoDB (Mongoose)
+- `docs/`: architecture and system design documentation
+- `backend/docs/`: OpenAPI (Swagger) specification for backend endpoints
 
-## 🚀 Live Demo
+## Core Features
 
-👉 [Check out our e-commerce app here](https://osaro-tech-store.vercel.app/)  
-*Sign up with Google to explore the platform. Admin access is restricted but showcased in the demo video.*
+- Product browsing and product detail pages
+- Category management
+- Cart and checkout flow
+- Stripe checkout integration
+- User registration/login (email/password + Google OAuth)
+- Admin-focused management for products, categories, users, and orders
+- Dashboard/analytics UI components
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
-- **Payment Gateway**: Stripe
+- Frontend: React, React Router, Tailwind CSS
+- Backend: Node.js, Express, Mongoose
+- Database: MongoDB
+- Authentication: JWT + Passport Google OAuth
+- Payments: Stripe Checkout
+- Testing: Mocha/Chai/Sinon (backend), React Testing Library (frontend)
 
-## 🔧 DevOps & Deployment
+## API Documentation (Swagger)
 
-Curious how this app stays fast, secure, and always online?
-Discover the CI/CD pipelines, Kubernetes orchestration, and Docker magic powering it—all automated on GitLab.
+After starting the backend:
 
-👉 [Unlock the DevOps Secrets! Explore the Blog Series](https://gitlab.com/ousaro/osarotechstore_blogseries)
+- Swagger UI: `http://localhost:5000/api/docs`
+- OpenAPI JSON: `http://localhost:5000/api/docs.json`
 
+OpenAPI source file:
+- `backend/docs/openapi.yaml`
 
-## 📸 Preview
+## System Design Documentation
 
-*Admin functionality is not accessible in the live demo. Watch the video below for a preview of the admin features.*
-[View preview](https://www.youtube.com/watch?v=STGQrQquc94)
+- [System Design Choices](docs/system-design-choices.md)
 
-## 📂 Installation & Setup
+## Local Setup
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/ecommerce-app.git
-   cd ecommerce-app
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-## 🔑 Environment Variables Setup
+### 1) Clone and install
 
-To successfully run this project, you need to set up environment variables for both the backend and frontend. These variables store sensitive information such as API keys, database connections, and other configuration settings. Follow the steps below to create the necessary environment files.
+```bash
+git clone <your-repo-url>
+cd OsaroTechStore
 
-### Backend Environment Variables
+cd backend && npm install
+cd ../frontend && npm install
+```
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create a `.env` file:
-   ```bash
-   touch .env
-   ```
-3. Open the `.env` file and add:
-   ```env
-   PORT=your_backend_port
-   CLIENT_URL=your_client_url
-   MONGO_URI=your_mongo_db_uri
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   SESSION_SECRET=your_session_secret
-   CALLBACK_URL=your_callback_url
-   TOKEN_SECRET=your_token_secret
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-   ```
+### 2) Configure environment variables
 
-### Frontend Environment Variables
+Create `backend/.env`:
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Create a `.env` file:
-   ```bash
-   touch .env
-   ```
-3. Open the `.env` file and add:
-   ```env
-   REACT_APP_API_URL=your_api_url
-   REACT_APP_GOOGLE_API_URL=your_google_api_url
-   REACT_APP_FOR_PASSWORD_RESET=your_password_reset_url
-   REACT_APP_STRIPE_PUBLIC_KEY=your_stripe_public_key
-   ```
+```env
+PORT=5000
+CLIENT_URL=http://localhost:3000
+MONGO_URI=<your_mongodb_connection_string>
+GOOGLE_CLIENT_ID=<google_client_id>
+GOOGLE_CLIENT_SECRET=<google_client_secret>
+SESSION_SECRET=<session_secret>
+CALLBACK_URL=<google_callback_url>
+TOKEN_SECRET=<jwt_secret>
+STRIPE_SECTET_KEY=<stripe_secret_key>
+STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
+```
 
-Replace all placeholder values with your actual configuration.
+Create `frontend/.env`:
 
-### Run the app:
-1. Run the development server:
-   ```bash
-   npm run dev
-   ```
-2. Run the frontend :
-    ```bash
-   npm start
-   ```
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_GOOGLE_API_URL=http://localhost:5000/api/users/auth/google
+REACT_APP_FOR_PASSWORD_RESET=<password_reset_url_if_used>
+REACT_APP_STRIPE_PUBLIC_KEY=<stripe_publishable_key>
+```
 
-## 📄 License
+Note: `STRIPE_SECTET_KEY` is intentionally spelled this way to match the current backend implementation.
 
-This project is licensed under the MIT License.
+### 3) Run the app
+
+Backend (from `backend/`):
+
+```bash
+npm run backend
+```
+
+Frontend (from `frontend/`):
+
+```bash
+npm start
+```
+
+## Scripts
+
+Backend (`backend/package.json`):
+- `npm run backend` -> starts API with nodemon
+- `npm test` -> runs backend tests
+
+Frontend (`frontend/package.json`):
+- `npm start` -> starts React dev server
+- `npm test` -> runs frontend tests
+- `npm run build` -> production build
+
+## Testing
+
+Backend:
+
+```bash
+cd backend
+npm test
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm test
+```
+
+## Deployment / Demo
+
+- Live app: https://osaro-tech-store.vercel.app/
+- Admin preview video: https://www.youtube.com/watch?v=STGQrQquc94
+- DevOps blog series: https://gitlab.com/ousaro/osarotechstore_blogseries
+
+## License
+
+MIT (see `LICENSE`).

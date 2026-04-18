@@ -30,9 +30,11 @@
     "passport-google-oauth20": "^2.0.0",
     "sinon": "^18.0.0",
     "sinon-chai": "^4.0.0",
+    "swagger-ui-express": "^5.0.1",
     "stripe": "^16.2.0",
     "supertest": "^7.0.0",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.4"

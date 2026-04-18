@@ -1,0 +1,1085 @@
+openapi: 3.0.3
+info:
+  title: OsaroTechStore API
+  version: 1.0.0
+  description: |
+    REST API documentation for OsaroTechStore backend.
+    This specification mirrors the current Express routes and controller behavior.
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Products
+  - name: Categories
+  - name: Orders
+  - name: Payments
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    EmptyFieldsError:
+      type: object
+      properties:
+        error:
+          type: string
+        emptyFields:
+          type: array
+          items:
+            type: string
+    Address:
+      type: object
+      required: [city, addressLine, postalCode, country]
+      properties:
+        city:
+          type: string
+        addressLine:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+    UserPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        picture:
+          type: string
+        admin:
+          type: boolean
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: number
+        favorites:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        cart:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserWithToken:
+      allOf:
+        - $ref: '#/components/schemas/UserPublic'
+        - type: object
+          properties:
+            token:
+              type: string
+    RegisterRequest:
+      type: object
+      required: [firstName, lastName, email, password, confirmPassword]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        confirmPassword:
+          type: string
+          format: password
+        picture:
+          type: string
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    UserUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        picture:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: number
+        favorites:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        cart:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    PasswordUpdateRequest:
+      type: object
+      required: [currentPassword, newPassword, confirmPassword]
+      properties:
+        currentPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+        confirmPassword:
+          type: string
+          format: password
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+        ownerId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        raw_price:
+          type: number
+        discount:
+          type: number
+        image:
+          type: string
+        otherImages:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+        category:
+          type: string
+        countInStock:
+          type: number
+        moreInformations:
+          type: string
+        reviews:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        rating:
+          type: string
+        isNewProduct:
+          type: boolean
+        salesCount:
+          type: number
+        lastSold:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProductCreateRequest:
+      type: object
+      required:
+        - name
+        - description
+        - raw_price
+        - discount
+        - image
+        - otherImages
+        - categoryId
+        - category
+        - countInStock
+        - moreInformations
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        raw_price:
+          type: number
+        discount:
+          type: number
+        image:
+          type: string
+        otherImages:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+        category:
+          type: string
+        countInStock:
+          type: number
+        moreInformations:
+          type: string
+    ProductUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        raw_price:
+          type: number
+        discount:
+          type: number
+        image:
+          type: string
+        otherImages:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+        category:
+          type: string
+        countInStock:
+          type: number
+        moreInformations:
+          type: string
+        reviews:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    ProductDetailsResponse:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    Category:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CategoryCreateRequest:
+      type: object
+      required: [name, description, image]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+    Order:
+      type: object
+      properties:
+        _id:
+          type: string
+        ownerId:
+          type: string
+        products:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        totalPrice:
+          type: number
+        status:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        paymentMethod:
+          type: string
+        paymentStatus:
+          type: string
+        transactionId:
+          type: string
+        paymentDetails:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    OrderCreateRequest:
+      type: object
+      required:
+        - ownerId
+        - products
+        - totalPrice
+        - status
+        - address
+        - paymentMethod
+        - paymentStatus
+        - transactionId
+        - paymentDetails
+      properties:
+        ownerId:
+          type: string
+        products:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        totalPrice:
+          type: number
+        status:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        paymentMethod:
+          type: string
+        paymentStatus:
+          type: string
+        transactionId:
+          type: string
+        paymentDetails:
+          type: object
+          additionalProperties: true
+    OrderUpdateRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        totalPrice:
+          type: number
+        status:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        paymentMethod:
+          type: string
+        paymentStatus:
+          type: string
+        transactionId:
+          type: string
+        paymentDetails:
+          type: object
+          additionalProperties: true
+    PaymentIntentItem:
+      type: object
+      required: [name, price, quantity]
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+    CreatePaymentIntentRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentIntentItem'
+    CreatePaymentIntentResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+paths:
+  /users/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Registration succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithToken'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate user with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithToken'
+        '400':
+          description: Invalid credentials or malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/auth/google:
+    get:
+      tags: [Authentication]
+      summary: Start Google OAuth flow
+      responses:
+        '302':
+          description: Redirect to Google authentication page
+  /users/auth/google/callback:
+    get:
+      tags: [Authentication]
+      summary: Google OAuth callback endpoint
+      responses:
+        '302':
+          description: Redirect to frontend success or login page
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all non-admin users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPublic'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by id (current implementation returns a message)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Users]
+      summary: Update user profile fields
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '404':
+          description: Invalid id or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Users]
+      summary: Delete user by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '404':
+          description: Invalid id or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/passUpdate/{id}:
+    put:
+      tags: [Users]
+      summary: Update user password
+      description: |
+        Requires currentPassword/newPassword/confirmPassword in request body.
+        The backend handles own-password change and admin reset paths.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdateRequest'
+      responses:
+        '200':
+          description: Updated user document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '400':
+          description: Invalid current password or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invalid id or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products:
+    get:
+      tags: [Products]
+      summary: Get all products
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      tags: [Products]
+      summary: Create a new product
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/EmptyFieldsError'
+
+  /products/{id}:
+    get:
+      tags: [Products]
+      summary: Get product and related products by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product details and related products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailsResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to fetch product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Products]
+      summary: Update a product
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateRequest'
+      responses:
+        '200':
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invalid id or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Products]
+      summary: Delete product by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Invalid id or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Get all categories
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      tags: [Categories]
+      summary: Create a category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreateRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/EmptyFieldsError'
+
+  /categories/{id}:
+    delete:
+      tags: [Categories]
+      summary: Delete category by id and cascade-delete products in that category
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Missing category id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Get all orders
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid address format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Creation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order by id (current implementation returns a message)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      tags: [Orders]
+      summary: Update order
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+      responses:
+        '200':
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invalid id or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Orders]
+      summary: Delete order by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Invalid id or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /create-payment-intent:
+    post:
+      tags: [Payments]
+      summary: Create Stripe Checkout Session and return session URL
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentIntentRequest'
+      responses:
+        '200':
+          description: Stripe checkout URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentIntentResponse'
+        '500':
+          description: Stripe session creation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /webhook:
+    post:
+      tags: [Payments]
+      summary: Stripe webhook endpoint
+      description: |
+        Current implementation still applies JWT auth middleware globally on payment routes.
+        In production, Stripe webhook integrations commonly bypass user JWT auth and rely on Stripe signature verification only.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+        '400':
+          description: Signature verification failed
+
+  /session-details/{sessionId}:
+    get:
+      tags: [Payments]
+      summary: Retrieve Stripe checkout session details
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Checkout session payload from Stripe
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '500':
+          description: Failed to retrieve session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
