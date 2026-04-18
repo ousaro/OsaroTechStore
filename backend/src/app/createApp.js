@@ -10,12 +10,14 @@ import YAML from "yamljs";
 import { env } from "../config/env.js";
 import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddleware.js";
 import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
+import { createRequireAuthMiddleware } from "../shared/infrastructure/http/createRequireAuthMiddleware.js";
+import { verifyAccessToken } from "../modules/auth/index.js";
 import authRoutes from "../modules/auth/infrastructure/http/authRoutes.js";
-import usersRoutes from "../modules/users/infrastructure/http/usersRoutes.js";
-import productsRoutes from "../modules/products/infrastructure/http/productsRoutes.js";
-import categoriesRoutes from "../modules/categories/infrastructure/http/categoriesRoutes.js";
-import ordersRoutes from "../modules/orders/infrastructure/http/ordersRoutes.js";
-import paymentsRoutes from "../modules/payments/infrastructure/http/paymentsRoutes.js";
+import { createUsersRoutes } from "../modules/users/infrastructure/http/usersRoutes.js";
+import { createProductsRoutes } from "../modules/products/infrastructure/http/productsRoutes.js";
+import { createCategoriesRoutes } from "../modules/categories/infrastructure/http/categoriesRoutes.js";
+import { createOrdersRoutes } from "../modules/orders/infrastructure/http/ordersRoutes.js";
+import { createPaymentsRoutes } from "../modules/payments/infrastructure/http/paymentsRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +37,7 @@ export const createApp = () => {
   const app = express();
   const jsonBodyParser = express.json({ limit: "50mb" });
   const urlencodedBodyParser = express.urlencoded({ limit: "50mb", extended: true });
+  const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
 
   app.use(createSelectiveBodyParser(jsonBodyParser));
   app.use(createSelectiveBodyParser(urlencodedBodyParser));
@@ -66,11 +69,11 @@ export const createApp = () => {
   app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument, { explorer: true }));
 
   app.use("/api/users/auth", authRoutes);
-  app.use("/api/users", usersRoutes);
-  app.use("/api/products", productsRoutes);
-  app.use("/api/categories", categoriesRoutes);
-  app.use("/api/orders", ordersRoutes);
-  app.use("/api", paymentsRoutes);
+  app.use("/api/users", createUsersRoutes({ requireAuth }));
+  app.use("/api/products", createProductsRoutes({ requireAuth }));
+  app.use("/api/categories", createCategoriesRoutes({ requireAuth }));
+  app.use("/api/orders", createOrdersRoutes({ requireAuth }));
+  app.use("/api", createPaymentsRoutes({ requireAuth }));
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

@@ -1,6 +1,4 @@
 import router from "express";
-import { verifyAccessToken } from "../../../auth/index.js";
-import { createRequireAuthMiddleware } from "../../../../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import {
   getAllProductsHandler,
   getProductByIdHandler,
@@ -9,14 +7,15 @@ import {
   deleteProductHandler,
 } from "../../index.js";
 
-const productsRoutes = router();
-const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+export const createProductsRoutes = ({ requireAuth }) => {
+  const productsRoutes = router();
 
-productsRoutes.use(requireAuth);
-productsRoutes.get("/", getAllProductsHandler);
-productsRoutes.get("/:id", getProductByIdHandler);
-productsRoutes.post("/", addProductHandler);
-productsRoutes.put("/:id", updateProductHandler);
-productsRoutes.delete("/:id", deleteProductHandler);
+  productsRoutes.use(requireAuth);
+  productsRoutes.get("/", getAllProductsHandler);
+  productsRoutes.get("/:id", getProductByIdHandler);
+  productsRoutes.post("/", addProductHandler);
+  productsRoutes.put("/:id", updateProductHandler);
+  productsRoutes.delete("/:id", deleteProductHandler);
 
-export default productsRoutes;
+  return productsRoutes;
+};

@@ -3,7 +3,11 @@ import { expect } from "chai";
 import express from "express";
 import { PassThrough } from "stream";
 import { createSelectiveBodyParser } from "../../app/createApp.js";
-import paymentsRoutes from "../../modules/payments/infrastructure/http/paymentsRoutes.js";
+import { createPaymentsRoutes } from "../../modules/payments/infrastructure/http/paymentsRoutes.js";
+
+const paymentsRoutes = createPaymentsRoutes({
+  requireAuth: (_req, _res, next) => next(),
+});
 
 const getWebhookRouteLayers = () => {
   const webhookRouteLayer = paymentsRoutes.stack.find((layer) => layer.route?.path === "/webhook");
