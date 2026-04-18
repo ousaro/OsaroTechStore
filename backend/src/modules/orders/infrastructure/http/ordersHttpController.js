@@ -1,23 +1,21 @@
-export const createOrdersHttpController = ({
-  getAllOrdersUseCase,
-  getOrderByIdUseCase,
-  addOrderUseCase,
-  updateOrderUseCase,
-  deleteOrderUseCase,
-}) => {
+import { assertOrdersInputPort } from "../../ports/input/ordersInputPort.js";
+
+export const createOrdersHttpController = ({ ordersInputPort }) => {
+  assertOrdersInputPort(ordersInputPort);
+
   const getAllOrdersHandler = async (req, res) => {
-    const payload = await getAllOrdersUseCase();
+    const payload = await ordersInputPort.getAllOrders();
     return res.status(200).json(payload);
   };
 
   const getOrderByIdHandler = async (req, res) => {
-    const payload = await getOrderByIdUseCase({ id: req.params.id });
+    const payload = await ordersInputPort.getOrderById({ id: req.params.id });
     return res.status(200).json(payload);
   };
 
   const addOrderHandler = async (req, res) => {
     try {
-      const payload = await addOrderUseCase(req.body);
+      const payload = await ordersInputPort.addOrder(req.body);
       return res.status(201).json(payload);
     } catch (error) {
       const key = error.responseKey || "error";
@@ -27,7 +25,7 @@ export const createOrdersHttpController = ({
 
   const updateOrderHandler = async (req, res) => {
     try {
-      const payload = await updateOrderUseCase({
+      const payload = await ordersInputPort.updateOrder({
         id: req.params.id,
         updates: req.body,
       });
@@ -39,7 +37,7 @@ export const createOrdersHttpController = ({
 
   const deleteOrderHandler = async (req, res) => {
     try {
-      const payload = await deleteOrderUseCase({ id: req.params.id });
+      const payload = await ordersInputPort.deleteOrder({ id: req.params.id });
       return res.status(200).json(payload);
     } catch (error) {
       const key = error.responseKey || "error";

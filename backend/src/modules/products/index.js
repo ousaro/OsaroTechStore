@@ -4,6 +4,7 @@ import { buildAddProductUseCase } from "./application/use-cases/addProductUseCas
 import { buildUpdateProductUseCase } from "./application/use-cases/updateProductUseCase.js";
 import { buildDeleteProductUseCase } from "./application/use-cases/deleteProductUseCase.js";
 import { buildRefreshNewProductStatusUseCase } from "./application/use-cases/refreshNewProductStatusUseCase.js";
+import { createProductsInputPort } from "./ports/input/productsInputPort.js";
 import { createMongooseProductRepository } from "./infrastructure/repositories/mongooseProductRepository.js";
 import { createProductHttpController } from "./infrastructure/http/productHttpController.js";
 import { createNewProductStatusScheduler } from "./infrastructure/schedulers/newProductStatusScheduler.js";
@@ -21,6 +22,14 @@ const addProductUseCase = buildAddProductUseCase({ productRepository });
 const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
 const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
 const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
+const productsInputPort = createProductsInputPort({
+  getAllProducts: getAllProductsUseCase,
+  getProductById: getProductByIdUseCase,
+  addProduct: addProductUseCase,
+  updateProduct: updateProductUseCase,
+  deleteProduct: deleteProductUseCase,
+  refreshNewProductStatus: refreshNewProductStatusUseCase,
+});
 const newProductStatusScheduler = createNewProductStatusScheduler({
   refreshNewProductStatusUseCase,
 });
@@ -33,13 +42,10 @@ export const {
   deleteProductHandler,
 } =
   createProductHttpController({
-    getAllProductsUseCase,
-    getProductByIdUseCase,
-    addProductUseCase,
-    updateProductUseCase,
-    deleteProductUseCase,
+    productsInputPort,
   });
 
 export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();
+export { productsInputPort };
 
 export const deleteProductsByCategoryId = (categoryId) => productRepository.deleteByCategoryId(categoryId);

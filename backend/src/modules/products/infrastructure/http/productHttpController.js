@@ -1,18 +1,16 @@
-export const createProductHttpController = ({
-  getAllProductsUseCase,
-  getProductByIdUseCase,
-  addProductUseCase,
-  updateProductUseCase,
-  deleteProductUseCase,
-}) => {
+import { assertProductsInputPort } from "../../ports/input/productsInputPort.js";
+
+export const createProductHttpController = ({ productsInputPort }) => {
+  assertProductsInputPort(productsInputPort);
+
   const getAllProductsHandler = async (req, res) => {
-    const products = await getAllProductsUseCase();
+    const products = await productsInputPort.getAllProducts();
     return res.status(200).json(products);
   };
 
   const getProductByIdHandler = async (req, res) => {
     try {
-      const payload = await getProductByIdUseCase({ productId: req.params.id });
+      const payload = await productsInputPort.getProductById({ productId: req.params.id });
       return res.status(200).json(payload);
     } catch (error) {
       if (error?.statusCode === 404) {
@@ -28,7 +26,7 @@ export const createProductHttpController = ({
 
   const addProductHandler = async (req, res) => {
     try {
-      const payload = await addProductUseCase({
+      const payload = await productsInputPort.addProduct({
         ownerId: req.user._id,
         payload: req.body,
       });
@@ -46,7 +44,7 @@ export const createProductHttpController = ({
 
   const updateProductHandler = async (req, res) => {
     try {
-      const payload = await updateProductUseCase({ id: req.params.id, updates: req.body });
+      const payload = await productsInputPort.updateProduct({ id: req.params.id, updates: req.body });
       return res.status(200).json(payload);
     } catch (error) {
       return res.status(error.statusCode || 400).json({ error: error.message });
@@ -55,7 +53,7 @@ export const createProductHttpController = ({
 
   const deleteProductHandler = async (req, res) => {
     try {
-      const payload = await deleteProductUseCase({ id: req.params.id });
+      const payload = await productsInputPort.deleteProduct({ id: req.params.id });
       return res.status(200).json(payload);
     } catch (error) {
       const key = error.responseKey || "error";
