@@ -1,109 +1,18 @@
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import session from "express-session"
-import passport from 'passport';
-import cors from "cors"
-import path from 'path';
-import { fileURLToPath } from 'url';
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
-// import routes
-import userAuthRoutes from './routes/userAuthRoutes.js';
-import productRoutes from './routes/productRoutes.js';
-import categoryRoutes from './routes/categoryRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
+import { env } from "./config/env.js";
+import { createApp } from "./app/createApp.js";
+import { connectMongo } from "./shared/infrastructure/persistence/connectMongo.js";
 
+const start = async () => {
+  await connectMongo(env.mongoUri);
+  const app = createApp();
 
-
-dotenv.config();
-
-// variables
-const port = process.env.PORT || 5000;
-
-const mongoURI = process.env.MONGO_URI;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const openApiDocument = YAML.load(path.join(__dirname, '../docs/openapi.yaml'));
-
-
-// create express app
-const app = express();
-
-const corsOptions = {
-    origin: process.env.CLIENT_URL, // Allow only your client URL
-    credentials: true, // Allows sending cookies with requests
+  app.listen(env.port, () => {
+    console.log(`API listening on port ${env.port}`);
+    console.log(`Swagger UI: http://localhost:${env.port}/api/docs`);
+  });
 };
 
-
-// MiddleWare
-app.use(express.json({ limit: '50mb' })); // allow using body in post request
-app.use(express.urlencoded({ limit: '50mb', extended: true })); // allow using body in post request
-app.use(cookieParser()); // allow using cookie in request
-app.use(cors(corsOptions)); // allow cross-origin requests
-
-
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Ensure cookies are only sent over HTTPS in production
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-    }
-}));
-
-
-// Initialize Passport and restore authentication state, if any, from the session.
-app.use(passport.initialize())
-app.use(passport.session())
-
-
-app.use((req, res, next) => { // middleware to log the request path and method
-    console.log(req.path, req.method)
-    next()
-})
-
-app.get('/api/docs.json', (req, res) => {
-    res.status(200).json(openApiDocument);
+start().catch((error) => {
+  console.error("Failed to start server", error);
+  process.exit(1);
 });
-
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument, { explorer: true }));
-
-
-
-// import routes
-app.use("/api/users/auth", userAuthRoutes);
-
-app.use("/api/users", userRoutes)
- 
-app.use("/api/products", productRoutes)
-
-app.use("/api/categories", categoryRoutes)
-
-app.use("/api/orders", orderRoutes)
-
-app.use("/api", paymentRoutes)
-
-
-
-
-
-// connect to db
-mongoose.connect(mongoURI)
-    .then(()=>{
-        // listen for requests
-        app.listen(port,()=>{
-            console.log("Connect to the database & Listening to the port", port);
-    })
-    })
-    .catch((error)=>{
-        console.log(error);
-    })
-
-
-export default app;

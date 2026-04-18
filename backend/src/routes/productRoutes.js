@@ -4,11 +4,12 @@ import router from "express";
 // to schedule a function to run periodically
 import cron  from "node-cron"
 
-// import controllers
-import {getAllProducts, getProductById, addProduct, updateProduct, deleteProduct, updateIsNewProductStatus} from "../controllers/productController.js"
+// legacy write controllers
+import { addProduct, updateProduct, deleteProduct, updateIsNewProductStatus } from "../controllers/productController.js"
 
 // import middleware
 import requireAuth from "../middleware/requireAuth.js"
+import { getAllProductsHandler, getProductByIdHandler } from "../modules/products/index.js";
 
 // create router
 const productRoutes = router();
@@ -21,10 +22,10 @@ productRoutes.use(requireAuth);
 // routes
 
     // Route to get all products.
-productRoutes.get('/', getAllProducts);
+productRoutes.get('/', getAllProductsHandler);
 
     // Route to get a product by its ID.
-productRoutes.get('/:id', getProductById);
+productRoutes.get('/:id', getProductByIdHandler);
 
     // Route to add a new product.
 productRoutes.post('/', addProduct);
