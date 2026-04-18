@@ -88,6 +88,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Add adapter contract tests for repository ports
 - [ ] Add adapter contract tests for gateway ports
 - [ ] Add module public API contract tests
+Progress: auth and products public API contract tests are now in place.
 
 ## 10. Mapping and Persistence Boundaries
 
