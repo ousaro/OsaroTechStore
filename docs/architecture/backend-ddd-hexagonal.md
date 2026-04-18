@@ -10,6 +10,16 @@
 - `modules/<bounded-context>/application/*`
 - `modules/<bounded-context>/infrastructure/*`
 
+## Module Surface Convention
+- `composition.js`: private module wiring and object graph assembly.
+- `index.js`: stable module export surface used by local adapters and app bootstrap.
+- `public-api.js`: explicit cross-module surface for other bounded contexts.
+
+Rule:
+- other modules should prefer `public-api.js`
+- app bootstrap may consume `index.js` or route adapters as needed
+- `composition.js` should stay private to the module
+
 ## Dependency Rule
 - Domain depends on nothing.
 - Application depends on domain ports/interfaces.
@@ -68,8 +78,12 @@
   - category model moved to categories module infrastructure
   - domain owns create rules
   - repository accepts domain object
+- Reconstructed modules now follow an emerging export convention:
+  - `composition.js` owns wiring
+  - `index.js` is thin
+  - `public-api.js` is used for explicit cross-module access where needed
 - Remaining reconstruction focus:
   - split command/query folders where useful
   - add contract tests around input/output ports
-  - introduce clearer module public APIs/facades instead of `index.js` serving both composition and exports
+  - continue tightening module public APIs so cross-module access uses narrow capability exports instead of broad input ports
   - continue reducing persistence/anemic-model leftovers where they still exist
