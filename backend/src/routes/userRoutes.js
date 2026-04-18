@@ -1,9 +1,13 @@
 // Initialize express router
 import router from 'express';
 
-
-// import controller
-import { getAllUsers, getUserById,updateUser, updateUserPassword,deleteUser  } from '../controllers/userController.js';
+import {
+  getAllUsersHandler,
+  getUserByIdHandler,
+  updateUserHandler,
+  updateUserPasswordHandler,
+  deleteUserHandler,
+} from "../modules/users/index.js";
 
 // import middleware
 import requireAuth from "../middleware/requireAuth.js"
@@ -17,23 +21,23 @@ userRoutes.use(requireAuth);
 
 
 // routes
-    // get All users
-userRoutes.get('/', getAllUsers);
+// get All users
+userRoutes.get('/', getAllUsersHandler);
 
-    // get user by Id
-userRoutes.get('/:id', getUserById)
+// get user by Id
+userRoutes.get('/:id', getUserByIdHandler)
 
-    // update user 
-userRoutes.put("/:id", updateUser)
+// update user
+userRoutes.put("/:id", updateUserHandler)
 
-    // update user password
-userRoutes.put("/passUpdate/:id", updateUserPassword)
-
-
-    // delete user
-userRoutes.delete("/:id", deleteUser)
+// update user password
+userRoutes.put("/passUpdate/:id", updateUserPasswordHandler)
 
 
+// delete user
+userRoutes.delete("/:id", deleteUserHandler)
 
 
-export default userRoutes; 
+
+
+export default userRoutes;

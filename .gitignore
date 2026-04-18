@@ -16,5 +16,4 @@ dist/
 client/.parcel-cache
 
 .codex
-.commits
 context.md
