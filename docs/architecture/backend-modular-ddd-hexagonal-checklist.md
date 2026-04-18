@@ -76,7 +76,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 
 - [ ] Clarify whether auth owns credentials only or the whole user account record
 - [ ] Clarify whether users owns profile behavior only
-- [ ] Replace repository-shaped cross-module access with a narrower application contract
+- [x] Replace repository-shaped cross-module access with a narrower application contract
 - [ ] Introduce value objects or policies around password strength and email rules
 - [ ] Reduce auth public API exports to the minimum needed by consumers
 

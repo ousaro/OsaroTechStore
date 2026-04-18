@@ -36,18 +36,18 @@ export const {
   authInputPort,
 });
 
-export const userAccountAccess = {
-  find(filter) {
-    return authUserRepository.find(filter);
+export const userAccounts = {
+  listNonAdminAccounts() {
+    return authUserRepository.find({ admin: false }).sort({ createdAt: -1 });
   },
-  findById(id) {
+  getAccountById(id) {
     return authUserRepository.findById(id);
   },
-  findByIdAndUpdate(id, updates, options) {
-    return authUserRepository.findByIdAndUpdate(id, updates, options);
+  updateAccountById(id, updates) {
+    return authUserRepository.findByIdAndUpdate(id, updates, { new: true });
   },
-  findByIdAndDelete(filter) {
-    return authUserRepository.findByIdAndDelete(filter);
+  deleteAccountById(id) {
+    return authUserRepository.findByIdAndDelete({ _id: id });
   },
 };
 

@@ -2,29 +2,29 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { toUserRecord } from "./userRecordMapper.js";
 
-export const createMongooseUserRepository = ({ userAccountAccess }) => {
+export const createMongooseUserRepository = ({ userAccounts }) => {
   return {
     isValidId(id) {
       return mongoose.Types.ObjectId.isValid(id);
     },
 
     async findAllNonAdminSorted() {
-      const docs = await userAccountAccess.find({ admin: false }).sort({ createdAt: -1 });
+      const docs = await userAccounts.listNonAdminAccounts();
       return docs.map(toUserRecord);
     },
 
     async findById(id) {
-      const doc = await userAccountAccess.findById(id);
+      const doc = await userAccounts.getAccountById(id);
       return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndUpdate(id, patch) {
-      const doc = await userAccountAccess.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
+      const doc = await userAccounts.updateAccountById(id, patch.toPrimitives());
       return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndDelete(id) {
-      const doc = await userAccountAccess.findByIdAndDelete({ _id: id });
+      const doc = await userAccounts.deleteAccountById(id);
       return doc ? toUserRecord(doc) : null;
     },
 
