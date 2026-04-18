@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import User from "../../../../models/userModel.js";
 import { toUserEntity } from "../../domain/entities/UserEntity.js";
+import UserModel from "../../../auth/infrastructure/persistence/userModel.js";
 
 export const createMongooseUserRepository = () => {
   return {
@@ -10,22 +10,22 @@ export const createMongooseUserRepository = () => {
     },
 
     async findAllNonAdminSorted() {
-      const docs = await User.find({ admin: false }).sort({ createdAt: -1 });
+      const docs = await UserModel.find({ admin: false }).sort({ createdAt: -1 });
       return docs.map(toUserEntity);
     },
 
     async findById(id) {
-      const doc = await User.findById(id);
+      const doc = await UserModel.findById(id);
       return doc ? toUserEntity(doc) : null;
     },
 
-    async findByIdAndUpdate(id, updates) {
-      const doc = await User.findByIdAndUpdate(id, updates, { new: true });
+    async findByIdAndUpdate(id, patch) {
+      const doc = await UserModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
       return doc ? toUserEntity(doc) : null;
     },
 
     async findByIdAndDelete(id) {
-      const doc = await User.findByIdAndDelete({ _id: id });
+      const doc = await UserModel.findByIdAndDelete({ _id: id });
       return doc ? toUserEntity(doc) : null;
     },
 

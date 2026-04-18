@@ -1,3 +1,5 @@
+import { createUserUpdatePatch } from "../../domain/entities/User.js";
+
 export const buildUpdateUserUseCase = ({ userRepository }) => {
   return async ({ id, updates }) => {
     if (!userRepository.isValidId(id)) {
@@ -6,7 +8,9 @@ export const buildUpdateUserUseCase = ({ userRepository }) => {
       throw error;
     }
 
-    const user = await userRepository.findByIdAndUpdate(id, updates);
+    const patch = createUserUpdatePatch(updates);
+
+    const user = await userRepository.findByIdAndUpdate(id, patch);
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;

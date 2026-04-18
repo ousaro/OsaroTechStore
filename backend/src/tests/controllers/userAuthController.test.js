@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 //import request from 'supertest';
 //import app from "../../server.js"
-import User from '../../models/userModel.js';
+import User from '../../modules/auth/infrastructure/persistence/userModel.js';
 import { registerUserHandler as registerUser, loginUserHandler as loginUser } from '../../modules/auth/index.js';
 import jwt from 'jsonwebtoken';
 

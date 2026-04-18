@@ -33,4 +33,8 @@
   - product model moved to products module infrastructure
   - domain owns create/update rules
   - repository accepts domain object/patch
+- Users now follow same clean flow:
+  - user model moved into auth module infrastructure (shared by auth/users repositories)
+  - domain owns update/password command rules
+  - users repository accepts domain patch object
 - Context-by-context reconstruction follows in next commits.

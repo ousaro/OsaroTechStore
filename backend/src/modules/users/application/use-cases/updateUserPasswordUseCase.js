@@ -1,3 +1,5 @@
+import { createUserPasswordUpdateCommand, createUserUpdatePatch } from "../../domain/entities/User.js";
+
 export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
   return async ({ id, requesterId, updates }) => {
     if (!userRepository.isValidId(id)) {
@@ -6,11 +8,13 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
       throw error;
     }
 
+    const command = createUserPasswordUpdateCommand(updates);
     const patch = { ...updates };
 
-    if (patch.newPassword) {
+    if (command.newPassword) {
       if (id.toString() === requesterId.toString()) {
         const currentUser = await userRepository.findById(id);
+
         if (!currentUser) {
           const error = new Error("User not found");
           error.statusCode = 404;
@@ -18,7 +22,7 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
         }
 
         const match = await userRepository.comparePassword(
-          patch.currentPassword,
+          command.currentPassword,
           currentUser.password
         );
         if (!match) {
@@ -28,19 +32,13 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
         }
       }
 
-      patch.password = await userRepository.hashPassword(patch.newPassword);
-    }
-
-    if (!patch.currentPassword || !patch.newPassword || !patch.confirmPassword) {
-      const error = new Error("All fields must be filled");
-      error.statusCode = 400;
-      throw error;
+      patch.password = await userRepository.hashPassword(command.newPassword);
     }
 
     delete patch.newPassword;
     delete patch.currentPassword;
 
-    const user = await userRepository.findByIdAndUpdate(id, patch);
+    const user = await userRepository.findByIdAndUpdate(id, createUserUpdatePatch(patch));
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
