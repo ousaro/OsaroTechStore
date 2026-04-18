@@ -1,7 +1,6 @@
 import { env } from "../../config/env.js";
 import { buildRegisterUserUseCase } from "./application/use-cases/registerUserUseCase.js";
 import { buildLoginUserUseCase } from "./application/use-cases/loginUserUseCase.js";
-import UserModel from "./infrastructure/persistence/userModel.js";
 import { createAuthInputPort } from "./ports/input/authInputPort.js";
 import { buildVerifyAccessTokenUseCase } from "./application/use-cases/verifyAccessTokenUseCase.js";
 import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
@@ -45,7 +44,20 @@ export const passport = setupGooglePassport({
   callbackUrl: process.env.CALLBACK_URL,
 });
 
-export const authUserStore = UserModel;
+export const authUserAccess = {
+  find(filter) {
+    return authUserRepository.find(filter);
+  },
+  findById(id) {
+    return authUserRepository.findById(id);
+  },
+  findByIdAndUpdate(id, updates, options) {
+    return authUserRepository.findByIdAndUpdate(id, updates, options);
+  },
+  findByIdAndDelete(filter) {
+    return authUserRepository.findByIdAndDelete(filter);
+  },
+};
 
 export const verifyAccessToken = (authorizationHeader) => verifyAccessTokenUseCase({ authorizationHeader });
 export { authInputPort };
