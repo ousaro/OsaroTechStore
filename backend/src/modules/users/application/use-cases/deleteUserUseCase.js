@@ -1,3 +1,4 @@
+import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
 
 export const buildDeleteUserUseCase = ({ userRepository }) => {
@@ -5,17 +6,13 @@ export const buildDeleteUserUseCase = ({ userRepository }) => {
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
       // Keep legacy message for compatibility.
-      const error = new Error("No such Product");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("No such Product", 404);
     }
 
     const deletedUser = await userRepository.findByIdAndDelete(id);
     if (!deletedUser) {
       // Keep legacy message for compatibility.
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("Product not found", 404);
     }
 
     return deletedUser;

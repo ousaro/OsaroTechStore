@@ -1,21 +1,18 @@
+import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { assertCategoryRepositoryPort } from "../../ports/output/categoryRepositoryPort.js";
 
 export const buildDeleteCategoryUseCase = ({ categoryRepository, deleteProductsByCategoryId }) => {
   assertCategoryRepositoryPort(categoryRepository, ["findByIdAndDelete"]);
   return async ({ id }) => {
     if (!id) {
-      const error = new Error("Category ID is required");
-      error.statusCode = 400;
-      throw error;
+      throw new ApiError("Category ID is required", 400);
     }
 
     await deleteProductsByCategoryId(id);
     const deleted = await categoryRepository.findByIdAndDelete(id);
 
     if (!deleted) {
-      const error = new Error("Category not found");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("Category not found", 404);
     }
 
     return deleted;

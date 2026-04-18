@@ -1,3 +1,4 @@
+import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { createUserPasswordUpdateCommand, createUserUpdatePatch } from "../../domain/entities/User.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
 
@@ -11,9 +12,7 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
   ]);
   return async ({ id, requesterId, updates }) => {
     if (!userRepository.isValidId(id)) {
-      const error = new Error(`No such user ${id}`);
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError(`No such user ${id}`, 404);
     }
 
     const command = createUserPasswordUpdateCommand(updates);
@@ -24,9 +23,7 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
         const currentUser = await userRepository.findById(id);
 
         if (!currentUser) {
-          const error = new Error("User not found");
-          error.statusCode = 404;
-          throw error;
+          throw new ApiError("User not found", 404);
         }
 
         const match = await userRepository.comparePassword(
@@ -34,9 +31,7 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
           currentUser.password
         );
         if (!match) {
-          const error = new Error("Current password is incorrect");
-          error.statusCode = 400;
-          throw error;
+          throw new ApiError("Current password is incorrect", 400);
         }
       }
 
@@ -48,9 +43,7 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
 
     const user = await userRepository.findByIdAndUpdate(id, createUserUpdatePatch(patch));
     if (!user) {
-      const error = new Error("User not found");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("User not found", 404);
     }
 
     return user;

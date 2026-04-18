@@ -1,19 +1,16 @@
+import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
 
 export const buildUpdateOrderUseCase = ({ orderRepository }) => {
   assertOrderRepositoryPort(orderRepository, ["isValidId", "findByIdAndUpdate"]);
   return async ({ id, updates }) => {
     if (!orderRepository.isValidId(id)) {
-      const error = new Error("Invalid order ID");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("Invalid order ID", 404);
     }
 
     const order = await orderRepository.findByIdAndUpdate(id, updates);
     if (!order) {
-      const error = new Error("Order not found");
-      error.statusCode = 404;
-      throw error;
+      throw new ApiError("Order not found", 404);
     }
 
     return order;
