@@ -20,5 +20,6 @@
 - Auth context reconstructed (JWT + OAuth adapters).
 - Users context reconstructed (legacy behavior preserved).
 - Catalog context reconstructed (products + categories, including write-side).
+- Orders context reconstructed (legacy placeholder read-by-id preserved).
 - Existing legacy routes still active.
 - Context-by-context reconstruction follows in next commits.

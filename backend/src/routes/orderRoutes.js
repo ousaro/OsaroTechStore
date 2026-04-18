@@ -3,9 +3,14 @@
 // Initialize express router
 import router from "express"
 
-// import controllers
-import {getAllOrders, getOrderById, addOrder, updateOrder, deleteOrder} from "../controllers/orderController.js"
-
+import {
+  getAllOrdersHandler,
+  getOrderByIdHandler,
+  addOrderHandler,
+  updateOrderHandler,
+  deleteOrderHandler,
+} from "../modules/orders/index.js";
+ 
 
 // import middleware
 import requireAuth from "../middleware/requireAuth.js"
@@ -19,19 +24,19 @@ ordersRoutes.use(requireAuth);
 
 // routes
     // get all orders
-    ordersRoutes.get('/',getAllOrders)
+    ordersRoutes.get('/', getAllOrdersHandler)
 
     // get order by id
-    ordersRoutes.get('/:id', getOrderById)
+    ordersRoutes.get('/:id', getOrderByIdHandler)
 
     // add new order
-    ordersRoutes.post('/', addOrder)
+    ordersRoutes.post('/', addOrderHandler)
 
     // update order
-    ordersRoutes.put('/:id', updateOrder)
+    ordersRoutes.put('/:id', updateOrderHandler)
 
     // delete order
-    ordersRoutes.delete('/:id', deleteOrder)
+    ordersRoutes.delete('/:id', deleteOrderHandler)
 
 
 

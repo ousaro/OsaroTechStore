@@ -5,7 +5,7 @@
 2. Auth context (in progress in this commit)
 3. Users context (in progress in this commit)
 4. Catalog context (in progress in this commit)
-5. Orders context
+5. Orders context (in progress in this commit)
 6. Payments context
 7. Backend hardening and tests
 
