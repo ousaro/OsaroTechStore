@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import ProductModel from "../persistence/productModel.js";
-import { toProductEntity } from "../../domain/entities/ProductEntity.js";
+import { toProductRecord } from "./productRecordMapper.js";
 
 export const createMongooseProductRepository = () => {
   return {
@@ -10,29 +10,29 @@ export const createMongooseProductRepository = () => {
 
     async findAll() {
       const docs = await ProductModel.find({}).sort({ createdAt: -1 });
-      return docs.map(toProductEntity);
+      return docs.map(toProductRecord);
     },
 
     async findById(productId) {
       const doc = await ProductModel.findById(productId);
-      return doc ? toProductEntity(doc) : null;
+      return doc ? toProductRecord(doc) : null;
     },
 
     async findRelated(productId) {
       const docs = await ProductModel.findRelated(productId);
-      return docs.map(toProductEntity);
+      return docs.map(toProductRecord);
     },
     async create(product) {
       const doc = await ProductModel.create(product.toPrimitives());
-      return toProductEntity(doc);
+      return toProductRecord(doc);
     },
     async findByIdAndUpdate(id, patch) {
       const doc = await ProductModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
-      return doc ? toProductEntity(doc) : null;
+      return doc ? toProductRecord(doc) : null;
     },
     async findByIdAndDelete(id) {
       const doc = await ProductModel.findByIdAndDelete({ _id: id });
-      return doc ? toProductEntity(doc) : null;
+      return doc ? toProductRecord(doc) : null;
     },
     async deleteByCategoryId(categoryId) {
       await ProductModel.deleteMany({ categoryId });
@@ -42,7 +42,7 @@ export const createMongooseProductRepository = () => {
       if (!doc) return null;
       doc.isNewProduct = isNewProduct;
       await doc.save();
-      return toProductEntity(doc);
+      return toProductRecord(doc);
     },
   };
 };

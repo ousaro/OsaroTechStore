@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { toCheckoutSessionEntity } from "../../domain/entities/CheckoutSessionEntity.js";
+import { toCheckoutSessionRecord } from "./checkoutSessionMapper.js";
 
 export const createStripeGateway = ({ secretKey, webhookSecret }) => {
   const stripe = new Stripe(secretKey);
@@ -23,7 +23,7 @@ export const createStripeGateway = ({ secretKey, webhookSecret }) => {
         cancel_url: cancelUrl,
       });
 
-      return toCheckoutSessionEntity(session);
+      return toCheckoutSessionRecord(session);
     },
 
     verifyWebhook(payload, signature) {
@@ -32,7 +32,7 @@ export const createStripeGateway = ({ secretKey, webhookSecret }) => {
 
     async getCheckoutSession(sessionId) {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-      return toCheckoutSessionEntity(session);
+      return toCheckoutSessionRecord(session);
     },
   };
 };
