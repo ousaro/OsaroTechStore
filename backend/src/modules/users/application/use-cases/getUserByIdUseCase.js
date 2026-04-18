@@ -1,4 +1,7 @@
+import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+
 export const buildGetUserByIdUseCase = ({ userRepository }) => {
+  assertUserRepositoryPort(userRepository, ["isValidId"]);
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
       const error = new Error("No such user");

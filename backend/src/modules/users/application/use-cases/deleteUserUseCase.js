@@ -1,4 +1,7 @@
+import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+
 export const buildDeleteUserUseCase = ({ userRepository }) => {
+  assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndDelete"]);
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
       // Keep legacy message for compatibility.

@@ -1,6 +1,8 @@
 import { createUserUpdatePatch } from "../../domain/entities/User.js";
+import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
 
 export const buildUpdateUserUseCase = ({ userRepository }) => {
+  assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndUpdate"]);
   return async ({ id, updates }) => {
     if (!userRepository.isValidId(id)) {
       const error = new Error(`No such user ${id}`);
