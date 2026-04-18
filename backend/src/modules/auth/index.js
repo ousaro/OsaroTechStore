@@ -1,6 +1,7 @@
 import { env } from "../../config/env.js";
 import { buildRegisterUserUseCase } from "./application/use-cases/registerUserUseCase.js";
 import { buildLoginUserUseCase } from "./application/use-cases/loginUserUseCase.js";
+import UserModel from "./infrastructure/persistence/userModel.js";
 import { buildVerifyAccessTokenUseCase } from "./application/use-cases/verifyAccessTokenUseCase.js";
 import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
 import { createJwtTokenService } from "./infrastructure/services/jwtTokenService.js";
@@ -41,3 +42,5 @@ export const passport = setupGooglePassport({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackUrl: process.env.CALLBACK_URL,
 });
+
+export const authUserStore = UserModel;

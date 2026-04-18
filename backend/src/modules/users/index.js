@@ -3,10 +3,13 @@ import { buildGetUserByIdUseCase } from "./application/use-cases/getUserByIdUseC
 import { buildUpdateUserUseCase } from "./application/use-cases/updateUserUseCase.js";
 import { buildUpdateUserPasswordUseCase } from "./application/use-cases/updateUserPasswordUseCase.js";
 import { buildDeleteUserUseCase } from "./application/use-cases/deleteUserUseCase.js";
+import { authUserStore } from "../auth/index.js";
 import { createMongooseUserRepository } from "./infrastructure/repositories/mongooseUserRepository.js";
 import { createUsersHttpController } from "./infrastructure/http/usersHttpController.js";
 
-const userRepository = createMongooseUserRepository();
+const userRepository = createMongooseUserRepository({
+  userStore: authUserStore,
+});
 
 const getAllUsersUseCase = buildGetAllUsersUseCase({ userRepository });
 const getUserByIdUseCase = buildGetUserByIdUseCase({ userRepository });

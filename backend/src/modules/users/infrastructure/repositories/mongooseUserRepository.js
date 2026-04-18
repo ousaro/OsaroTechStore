@@ -1,31 +1,30 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { toUserEntity } from "../../domain/entities/UserEntity.js";
-import UserModel from "../../../auth/infrastructure/persistence/userModel.js";
 
-export const createMongooseUserRepository = () => {
+export const createMongooseUserRepository = ({ userStore }) => {
   return {
     isValidId(id) {
       return mongoose.Types.ObjectId.isValid(id);
     },
 
     async findAllNonAdminSorted() {
-      const docs = await UserModel.find({ admin: false }).sort({ createdAt: -1 });
+      const docs = await userStore.find({ admin: false }).sort({ createdAt: -1 });
       return docs.map(toUserEntity);
     },
 
     async findById(id) {
-      const doc = await UserModel.findById(id);
+      const doc = await userStore.findById(id);
       return doc ? toUserEntity(doc) : null;
     },
 
     async findByIdAndUpdate(id, patch) {
-      const doc = await UserModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
+      const doc = await userStore.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
       return doc ? toUserEntity(doc) : null;
     },
 
     async findByIdAndDelete(id) {
-      const doc = await UserModel.findByIdAndDelete({ _id: id });
+      const doc = await userStore.findByIdAndDelete({ _id: id });
       return doc ? toUserEntity(doc) : null;
     },
 
