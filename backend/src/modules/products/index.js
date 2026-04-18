@@ -6,6 +6,7 @@ import { buildDeleteProductUseCase } from "./application/use-cases/deleteProduct
 import { buildRefreshNewProductStatusUseCase } from "./application/use-cases/refreshNewProductStatusUseCase.js";
 import { createMongooseProductRepository } from "./infrastructure/repositories/mongooseProductRepository.js";
 import { createProductHttpController } from "./infrastructure/http/productHttpController.js";
+import { createNewProductStatusScheduler } from "./infrastructure/schedulers/newProductStatusScheduler.js";
 
 const productRepository = createMongooseProductRepository();
 
@@ -20,6 +21,9 @@ const addProductUseCase = buildAddProductUseCase({ productRepository });
 const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
 const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
 const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
+const newProductStatusScheduler = createNewProductStatusScheduler({
+  refreshNewProductStatusUseCase,
+});
 
 export const {
   getAllProductsHandler,
@@ -27,10 +31,13 @@ export const {
   addProductHandler,
   updateProductHandler,
   deleteProductHandler,
-  runNewProductStatusRefreshHandler,
 } =
   createProductHttpController({
     getAllProductsUseCase,
     getProductByIdUseCase,
-    addProductUseCase, updateProductUseCase, deleteProductUseCase, refreshNewProductStatusUseCase,
+    addProductUseCase,
+    updateProductUseCase,
+    deleteProductUseCase,
   });
+
+export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();

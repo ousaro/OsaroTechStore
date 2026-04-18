@@ -4,7 +4,6 @@ export const createProductHttpController = ({
   addProductUseCase,
   updateProductUseCase,
   deleteProductUseCase,
-  refreshNewProductStatusUseCase,
 }) => {
   const getAllProductsHandler = async (req, res) => {
     const products = await getAllProductsUseCase();
@@ -64,18 +63,11 @@ export const createProductHttpController = ({
     }
   };
 
-  const runNewProductStatusRefreshHandler = async () => {
-    try {
-      await refreshNewProductStatusUseCase();
-      console.log("Product statuses updated successfully");
-    } catch (error) {
-      console.error("Error updating product statuses:", error);
-    }
-  };
-
   return {
     getAllProductsHandler,
     getProductByIdHandler,
-    addProductHandler, updateProductHandler, deleteProductHandler, runNewProductStatusRefreshHandler,
+    addProductHandler,
+    updateProductHandler,
+    deleteProductHandler,
   };
 };
