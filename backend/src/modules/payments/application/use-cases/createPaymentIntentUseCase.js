@@ -3,7 +3,7 @@ import {
   assertNonEmptyArray,
   assertPositiveNumber,
   assertString,
-} from "../../../../shared/infrastructure/http/validation.js";
+} from "../validation/paymentInputValidation.js";
 
 export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) => {
   return async ({ items }) => {
