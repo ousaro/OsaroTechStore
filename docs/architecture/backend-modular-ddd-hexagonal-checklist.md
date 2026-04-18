@@ -78,7 +78,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Clarify whether users owns profile behavior only
 - [x] Replace repository-shaped cross-module access with a narrower application contract
 - [ ] Introduce value objects or policies around password strength and email rules
-- [ ] Reduce auth public API exports to the minimum needed by consumers
+- [x] Reduce auth public API exports to the minimum needed by consumers
 
 ## 9. Ports and Contracts
 
