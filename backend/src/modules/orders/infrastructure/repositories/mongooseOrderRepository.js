@@ -22,8 +22,8 @@ export const createMongooseOrderRepository = () => {
       const doc = await OrderModel.create(order.toPrimitives());
       return toOrderEntity(doc);
     },
-    async findByIdAndUpdate(id, updates) {
-      const doc = await OrderModel.findByIdAndUpdate(id, updates, { new: true });
+    async findByIdAndUpdate(id, patch) {
+      const doc = await OrderModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
       return doc ? toOrderEntity(doc) : null;
     },
     async findByIdAndDelete(id) {

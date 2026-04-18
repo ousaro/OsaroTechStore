@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createOrder } from "../../../../src/modules/orders/domain/entities/Order.js";
+import { createOrder, createOrderUpdatePatch } from "../../../../src/modules/orders/domain/entities/Order.js";
 
 describe("Order Domain", () => {
   it("creates a valid order aggregate", () => {
@@ -37,6 +37,26 @@ describe("Order Domain", () => {
         paymentStatus: "pending",
         transactionId: "tx-1",
         paymentDetails: { provider: "stripe" },
+      })
+    ).to.throw("Invalid address format");
+  });
+
+  it("creates an update patch for valid partial updates", () => {
+    const patch = createOrderUpdatePatch({
+      status: "paid",
+      totalPrice: 150,
+    });
+
+    expect(patch.toPrimitives()).to.deep.equal({
+      status: "paid",
+      totalPrice: 150,
+    });
+  });
+
+  it("throws when an update patch contains an invalid address", () => {
+    expect(() =>
+      createOrderUpdatePatch({
+        address: { city: "Casablanca" },
       })
     ).to.throw("Invalid address format");
   });

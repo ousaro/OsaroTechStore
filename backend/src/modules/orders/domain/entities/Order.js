@@ -49,3 +49,45 @@ export const createOrder = ({
     },
   });
 };
+
+export const createOrderUpdatePatch = (updates) => {
+  const patch = { ...updates };
+
+  if (patch.totalPrice !== undefined) {
+    assertPositiveNumber(patch.totalPrice, "totalPrice must be a positive number");
+  }
+
+  if (patch.status !== undefined) {
+    assertString(patch.status, "status is required");
+  }
+
+  if (patch.paymentMethod !== undefined) {
+    assertString(patch.paymentMethod, "paymentMethod is required");
+  }
+
+  if (patch.transactionId !== undefined) {
+    assertString(patch.transactionId, "transactionId is required");
+  }
+
+  if (patch.address !== undefined) {
+    assertRequiredFields(
+      patch.address,
+      ["city", "addressLine", "postalCode", "country"],
+      "Invalid address format"
+    );
+  }
+
+  if (patch.products !== undefined) {
+    assertNonEmptyArray(patch.products, "products must be a non-empty array");
+  }
+
+  if (patch.paymentDetails !== undefined && (!patch.paymentDetails || typeof patch.paymentDetails !== "object")) {
+    throw new ApiError("paymentDetails is required", 400);
+  }
+
+  return Object.freeze({
+    toPrimitives() {
+      return { ...patch };
+    },
+  });
+};
