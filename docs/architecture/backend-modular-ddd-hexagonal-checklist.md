@@ -88,6 +88,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
 - [ ] Add adapter contract tests for gateway ports
+Progress: Stripe gateway contract coverage is now in place.
 - [ ] Add module public API contract tests
 Progress: auth and products public API contract tests are now in place.
 
