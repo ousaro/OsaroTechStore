@@ -21,5 +21,6 @@
 - Users context reconstructed (legacy behavior preserved).
 - Catalog context reconstructed (products + categories, including write-side).
 - Orders context reconstructed (legacy placeholder read-by-id preserved).
+- Payments context reconstructed (Stripe gateway adapter).
 - Existing legacy routes still active.
 - Context-by-context reconstruction follows in next commits.

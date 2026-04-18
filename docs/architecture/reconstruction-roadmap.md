@@ -6,7 +6,7 @@
 3. Users context (in progress in this commit)
 4. Catalog context (in progress in this commit)
 5. Orders context (in progress in this commit)
-6. Payments context
+6. Payments context (in progress in this commit)
 7. Backend hardening and tests
 
 ## Frontend-last sequence
