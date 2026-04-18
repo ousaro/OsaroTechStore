@@ -1,4 +1,7 @@
+import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
+
 export const buildRefreshNewProductStatusUseCase = ({ productRepository }) => {
+  assertProductRepositoryPort(productRepository, ["findAll", "updateNewStatus"]);
   return async () => {
     const currentDate = new Date();
     const products = await productRepository.findAll();

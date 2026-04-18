@@ -1,6 +1,8 @@
 import { createProductUpdatePatch } from "../../domain/entities/Product.js";
+import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
 
 export const buildUpdateProductUseCase = ({ productRepository }) => {
+  assertProductRepositoryPort(productRepository, ["isValidId", "findByIdAndUpdate"]);
   return async ({ id, updates }) => {
     if (!productRepository.isValidId(id)) {
       const error = new Error("Invalid Product ID");

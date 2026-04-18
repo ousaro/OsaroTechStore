@@ -1,4 +1,7 @@
+import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
+
 export const buildGetProductByIdUseCase = ({ productRepository }) => {
+  assertProductRepositoryPort(productRepository, ["findById", "findRelated"]);
   return async ({ productId }) => {
     const product = await productRepository.findById(productId);
 
