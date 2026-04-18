@@ -1,5 +1,5 @@
 import Category from "../../../../models/categoryModel.js";
-import Product from "../../../../models/productModel.js";
+import ProductModel from "../../../products/infrastructure/persistence/productModel.js";
 import { toCategoryEntity } from "../../domain/entities/CategoryEntity.js";
 
 export const createMongooseCategoryRepository = () => {
@@ -13,7 +13,7 @@ export const createMongooseCategoryRepository = () => {
       return toCategoryEntity(doc);
     },
     async deleteProductsByCategoryId(categoryId) {
-      await Product.deleteMany({ categoryId });
+      await ProductModel.deleteMany({ categoryId });
     },
     async findByIdAndDelete(id) {
       const doc = await Category.findByIdAndDelete({ _id: id });

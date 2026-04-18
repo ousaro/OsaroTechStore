@@ -29,4 +29,8 @@
   - domain owns creation rules (`createOrder`)
   - use-case orchestrates only
   - repository persists domain object (`order.toPrimitives()`)
+- Products now follow same clean flow:
+  - product model moved to products module infrastructure
+  - domain owns create/update rules
+  - repository accepts domain object/patch
 - Context-by-context reconstruction follows in next commits.

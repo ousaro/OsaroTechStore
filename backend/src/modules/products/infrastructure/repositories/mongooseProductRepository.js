@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Product from "../../../../models/productModel.js";
+import ProductModel from "../persistence/productModel.js";
 import { toProductEntity } from "../../domain/entities/ProductEntity.js";
 
 export const createMongooseProductRepository = () => {
@@ -9,33 +9,33 @@ export const createMongooseProductRepository = () => {
     },
 
     async findAll() {
-      const docs = await Product.find({}).sort({ createdAt: -1 });
+      const docs = await ProductModel.find({}).sort({ createdAt: -1 });
       return docs.map(toProductEntity);
     },
 
     async findById(productId) {
-      const doc = await Product.findById(productId);
+      const doc = await ProductModel.findById(productId);
       return doc ? toProductEntity(doc) : null;
     },
 
     async findRelated(productId) {
-      const docs = await Product.findRelated(productId);
+      const docs = await ProductModel.findRelated(productId);
       return docs.map(toProductEntity);
     },
-    async create(data) {
-      const doc = await Product.create(data);
+    async create(product) {
+      const doc = await ProductModel.create(product.toPrimitives());
       return toProductEntity(doc);
     },
-    async findByIdAndUpdate(id, updates) {
-      const doc = await Product.findByIdAndUpdate(id, updates, { new: true });
+    async findByIdAndUpdate(id, patch) {
+      const doc = await ProductModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
       return doc ? toProductEntity(doc) : null;
     },
     async findByIdAndDelete(id) {
-      const doc = await Product.findByIdAndDelete({ _id: id });
+      const doc = await ProductModel.findByIdAndDelete({ _id: id });
       return doc ? toProductEntity(doc) : null;
     },
     async updateNewStatus(id, isNewProduct) {
-      const doc = await Product.findById(id);
+      const doc = await ProductModel.findById(id);
       if (!doc) return null;
       doc.isNewProduct = isNewProduct;
       await doc.save();

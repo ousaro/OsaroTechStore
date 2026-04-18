@@ -1,3 +1,5 @@
+import { createProductUpdatePatch } from "../../domain/entities/Product.js";
+
 export const buildUpdateProductUseCase = ({ productRepository }) => {
   return async ({ id, updates }) => {
     if (!productRepository.isValidId(id)) {
@@ -6,7 +8,8 @@ export const buildUpdateProductUseCase = ({ productRepository }) => {
       throw error;
     }
 
-    const product = await productRepository.findByIdAndUpdate(id, updates);
+    const patch = createProductUpdatePatch(updates);
+    const product = await productRepository.findByIdAndUpdate(id, patch);
     if (!product) {
       const error = new Error("Product not found");
       error.statusCode = 404;
