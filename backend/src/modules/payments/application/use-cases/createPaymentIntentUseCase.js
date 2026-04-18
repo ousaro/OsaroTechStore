@@ -7,7 +7,7 @@ import {
 } from "../validation/paymentInputValidation.js";
 
 export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) => {
-  assertPaymentGatewayPort(paymentGateway);
+  assertPaymentGatewayPort(paymentGateway, ["createCheckoutSession"]);
 
   return async ({ items }) => {
     assertNonEmptyArray(items, "items must be a non-empty array");

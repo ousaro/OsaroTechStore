@@ -4,7 +4,7 @@ import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 
 describe("errorMiddleware", () => {
-  it("returns structured error using responseKey + meta", () => {
+  it("returns structured error using error + meta", () => {
     const req = {};
     const res = {
       status: sinon.stub().returnsThis(),
@@ -13,17 +13,16 @@ describe("errorMiddleware", () => {
 
     const err = new Error("Invalid input");
     err.statusCode = 400;
-    err.responseKey = "message";
     err.meta = { emptyFields: ["name"] };
 
     errorMiddleware(err, req, res, () => {});
 
     expect(res.status.calledWith(400)).to.equal(true);
     expect(res.json.calledOnce).to.equal(true);
-    expect(res.json.firstCall.args[0]).to.deep.equal({
-      message: "Invalid input",
-      emptyFields: ["name"],
-    });
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Invalid input");
+    expect(body.emptyFields).to.deep.equal(["name"]);
+    expect(body.stack).to.be.a("string");
   });
 
   it("maps malformed JSON syntax errors to 400", () => {
