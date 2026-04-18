@@ -1,1 +1,1 @@
-export { categoriesInputPort } from "./composition.js";
+// No cross-module public contract is needed from this module yet.

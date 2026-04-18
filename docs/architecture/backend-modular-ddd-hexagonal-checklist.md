@@ -10,7 +10,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 
 - [ ] Define allowed import rules between modules
 - [ ] Enforce that cross-module imports go only through `public-api.js`
-- [ ] Stop exporting full input ports from `public-api.js` unless absolutely necessary
+- [x] Stop exporting full input ports from `public-api.js` unless absolutely necessary
 - [ ] Replace broad public exports with capability-specific functions
 - [ ] Keep `composition.js` private to each module
 - [ ] Keep `index.js` local to module adapters and bootstrap only

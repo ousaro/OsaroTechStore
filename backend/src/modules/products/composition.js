@@ -47,4 +47,5 @@ export const {
   productsInputPort,
 });
 
+export const removeProductsByCategory = (payload) => removeProductsByCategoryUseCase(payload);
 export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();

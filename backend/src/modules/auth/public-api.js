@@ -1,1 +1,1 @@
-export { userAccountAccess, verifyAccessToken, authInputPort } from "./composition.js";
+export { userAccountAccess, verifyAccessToken } from "./composition.js";
