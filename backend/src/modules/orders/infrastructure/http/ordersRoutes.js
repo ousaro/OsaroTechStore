@@ -1,5 +1,6 @@
 import router from "express";
-import requireAuth from "../../../auth/infrastructure/http/requireAuthMiddleware.js";
+import { verifyAccessToken } from "../../../auth/index.js";
+import { createRequireAuthMiddleware } from "../../../../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import {
   getAllOrdersHandler,
   getOrderByIdHandler,
@@ -9,6 +10,8 @@ import {
 } from "../../index.js";
 
 const ordersRoutes = router();
+const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+
 ordersRoutes.use(requireAuth);
 ordersRoutes.get("/", getAllOrdersHandler);
 ordersRoutes.get("/:id", getOrderByIdHandler);

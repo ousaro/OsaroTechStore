@@ -1,5 +1,6 @@
 import express from "express";
-import requireAuth from "../../../auth/infrastructure/http/requireAuthMiddleware.js";
+import { verifyAccessToken } from "../../../auth/index.js";
+import { createRequireAuthMiddleware } from "../../../../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import {
   createPaymentIntentHandler,
   stripeWebhookHandler,
@@ -7,6 +8,8 @@ import {
 } from "../../index.js";
 
 const paymentsRoutes = express.Router();
+const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+
 paymentsRoutes.post("/webhook", express.raw({ type: "application/json" }), stripeWebhookHandler);
 paymentsRoutes.use(requireAuth);
 paymentsRoutes.post("/create-payment-intent", createPaymentIntentHandler);

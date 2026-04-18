@@ -1,5 +1,6 @@
 import router from "express";
-import requireAuth from "../../../auth/infrastructure/http/requireAuthMiddleware.js";
+import { verifyAccessToken } from "../../../auth/index.js";
+import { createRequireAuthMiddleware } from "../../../../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import {
   getAllProductsHandler,
   getProductByIdHandler,
@@ -9,6 +10,8 @@ import {
 } from "../../index.js";
 
 const productsRoutes = router();
+const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+
 productsRoutes.use(requireAuth);
 productsRoutes.get("/", getAllProductsHandler);
 productsRoutes.get("/:id", getProductByIdHandler);

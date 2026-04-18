@@ -1,5 +1,6 @@
 import router from "express";
-import requireAuth from "../../../auth/infrastructure/http/requireAuthMiddleware.js";
+import { verifyAccessToken } from "../../../auth/index.js";
+import { createRequireAuthMiddleware } from "../../../../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import {
   getAllCategoriesHandler,
   addNewCategoryHandler,
@@ -7,6 +8,8 @@ import {
 } from "../../index.js";
 
 const categoriesRoutes = router();
+const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+
 categoriesRoutes.use(requireAuth);
 categoriesRoutes.get("/", getAllCategoriesHandler);
 categoriesRoutes.post("/", addNewCategoryHandler);

@@ -29,7 +29,6 @@ const verifyAccessTokenUseCase = buildVerifyAccessTokenUseCase({
 export const {
   registerUserHandler,
   loginUserHandler,
-  requireAuthMiddleware,
   googleCallbackHandler,
 } = createAuthHttpController({
   registerUserUseCase,
@@ -44,3 +43,5 @@ export const passport = setupGooglePassport({
 });
 
 export const authUserStore = UserModel;
+
+export const verifyAccessToken = (authorizationHeader) => verifyAccessTokenUseCase({ authorizationHeader });

@@ -1,7 +1,6 @@
 export const createAuthHttpController = ({
   registerUserUseCase,
   loginUserUseCase,
-  verifyAccessTokenUseCase,
 }) => {
   const registerUserHandler = async (req, res) => {
     try {
@@ -21,17 +20,6 @@ export const createAuthHttpController = ({
     }
   };
 
-  const requireAuthMiddleware = async (req, res, next) => {
-    try {
-      req.user = await verifyAccessTokenUseCase({
-        authorizationHeader: req.headers.authorization,
-      });
-      return next();
-    } catch (error) {
-      return res.status(error.statusCode || 401).json({ error: error.message });
-    }
-  };
-
   const googleCallbackHandler = (req, res) => {
     if (req.isAuthenticated()) {
       return res.redirect(
@@ -46,7 +34,6 @@ export const createAuthHttpController = ({
   return {
     registerUserHandler,
     loginUserHandler,
-    requireAuthMiddleware,
     googleCallbackHandler,
   };
 };
