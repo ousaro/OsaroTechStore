@@ -37,4 +37,8 @@
   - user model moved into auth module infrastructure (shared by auth/users repositories)
   - domain owns update/password command rules
   - users repository accepts domain patch object
+- Categories now follow same clean flow:
+  - category model moved to categories module infrastructure
+  - domain owns create rules
+  - repository accepts domain object
 - Context-by-context reconstruction follows in next commits.

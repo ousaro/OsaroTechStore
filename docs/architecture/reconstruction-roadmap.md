@@ -13,8 +13,9 @@
 10. Order domain ownership + model-in-module (in progress in this commit)
 11. Product domain ownership + model-in-module (in progress in this commit)
 12. User domain ownership + model-in-module (in progress in this commit)
+13. Category domain ownership + model-in-module (in progress in this commit)
 
 ## Frontend-last sequence
-13. Design system + layout consistency
-14. Feature UIs aligned to bounded contexts
-15. Final documentation and contract verification
+14. Design system + layout consistency
+15. Feature UIs aligned to bounded contexts
+16. Final documentation and contract verification
