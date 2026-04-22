@@ -11,6 +11,8 @@ describe("verifyWebhookUseCase", () => {
       verifyWebhook: sinon.stub().returns({
         eventId: "evt_test_123",
         sessionId: "cs_test_123",
+        providerTransactionId: "pi_123",
+        occurredAt: new Date("2026-04-22T10:00:00.000Z"),
         paymentStatus: "paid",
       }),
     };
@@ -18,6 +20,7 @@ describe("verifyWebhookUseCase", () => {
       applyWebhookStateChangeOnce: sinon.stub().resolves({
         id: "cs_test_123",
         paymentReference: "pay_123",
+        providerTransactionId: "pi_123",
         paymentStatus: "paid",
       }),
     };
@@ -39,6 +42,8 @@ describe("verifyWebhookUseCase", () => {
     expect(paymentRepository.applyWebhookStateChangeOnce.calledOnceWithExactly({
       eventId: "evt_test_123",
       sessionId: "cs_test_123",
+      providerTransactionId: "pi_123",
+      occurredAt: new Date("2026-04-22T10:00:00.000Z"),
       paymentStatus: "paid",
     })).to.equal(true);
     expect(paymentEventPublisher.publish.calledOnceWithExactly({
@@ -87,6 +92,8 @@ describe("verifyWebhookUseCase", () => {
       verifyWebhook: sinon.stub().returns({
         eventId: "evt_test_repeat",
         sessionId: "cs_test_123",
+        providerTransactionId: "pi_123",
+        occurredAt: new Date("2026-04-22T11:00:00.000Z"),
         paymentStatus: "paid",
       }),
     };
@@ -111,6 +118,8 @@ describe("verifyWebhookUseCase", () => {
     expect(paymentRepository.applyWebhookStateChangeOnce.calledOnceWithExactly({
       eventId: "evt_test_repeat",
       sessionId: "cs_test_123",
+      providerTransactionId: "pi_123",
+      occurredAt: new Date("2026-04-22T11:00:00.000Z"),
       paymentStatus: "paid",
     })).to.equal(true);
     expect(paymentEventPublisher.publish.called).to.equal(false);

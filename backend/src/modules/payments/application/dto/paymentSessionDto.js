@@ -11,6 +11,9 @@ export const toPaymentSessionDto = (paymentSession) => {
       ? { paymentReference: paymentSession.paymentReference }
       : {}),
     ...(paymentSession.url ? { url: paymentSession.url } : {}),
+    ...(paymentSession.providerTransactionId
+      ? { providerTransactionId: paymentSession.providerTransactionId }
+      : {}),
     paymentStatus: paymentSession.paymentStatus,
   };
 };

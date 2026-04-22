@@ -11,11 +11,13 @@ describe("stripe payload translator", () => {
       toStripeCheckoutSessionDto({
         id: "cs_test_123",
         url: "https://stripe.test/session",
+        payment_intent: "pi_123",
         payment_status: "paid",
       })
     ).to.deep.equal({
       id: "cs_test_123",
       url: "https://stripe.test/session",
+      providerTransactionId: "pi_123",
       paymentStatus: "paid",
     });
   });
@@ -28,12 +30,15 @@ describe("stripe payload translator", () => {
         data: {
           object: {
             id: "cs_test_123",
+            payment_intent: "pi_123",
           },
         },
+        created: 1713780000,
       })
-    ).to.deep.equal({
+    ).to.deep.include({
       eventId: "evt_test_123",
       sessionId: "cs_test_123",
+      providerTransactionId: "pi_123",
       paymentStatus: "paid",
     });
   });

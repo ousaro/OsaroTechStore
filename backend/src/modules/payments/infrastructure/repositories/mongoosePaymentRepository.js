@@ -10,8 +10,12 @@ export const createMongoosePaymentRepository = () => {
         {
           sessionId: session.id,
           ...(session.url ? { url: session.url } : {}),
+          ...(session.providerTransactionId
+            ? { providerTransactionId: session.providerTransactionId }
+            : {}),
           paymentStatus: session.paymentStatus,
           provider: "stripe",
+          statusUpdatedAt: new Date(),
         },
         {
           new: true,
@@ -31,14 +35,24 @@ export const createMongoosePaymentRepository = () => {
     async updatePaymentSessionStatus(sessionId, paymentStatus) {
       const doc = await PaymentModel.findOneAndUpdate(
         { sessionId },
-        { paymentStatus },
+        { paymentStatus, statusUpdatedAt: new Date() },
         { new: true }
       );
 
       return toPaymentRecord(doc);
     },
 
-    async applyWebhookStateChangeOnce({ eventId, sessionId, paymentStatus }) {
+    async applyWebhookStateChangeOnce({
+      eventId,
+      sessionId,
+      providerTransactionId,
+      occurredAt,
+      paymentStatus,
+    }) {
+      const effectiveOccurredAt =
+        occurredAt instanceof Date && !Number.isNaN(occurredAt.valueOf())
+          ? occurredAt
+          : new Date();
       const doc = await PaymentModel.findOneAndUpdate(
         {
           sessionId,
@@ -46,6 +60,10 @@ export const createMongoosePaymentRepository = () => {
         },
         {
           paymentStatus,
+          ...(providerTransactionId ? { providerTransactionId } : {}),
+          lastWebhookEventId: eventId,
+          statusUpdatedAt: effectiveOccurredAt,
+          ...(paymentStatus === "paid" ? { paidAt: effectiveOccurredAt } : {}),
           $addToSet: { processedWebhookEventIds: eventId },
         },
         { new: true }

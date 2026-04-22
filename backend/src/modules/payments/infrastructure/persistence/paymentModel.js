@@ -12,8 +12,12 @@ const paymentSchema = new Schema(
     },
     sessionId: { type: String, required: true, unique: true },
     url: { type: String, required: false },
+    providerTransactionId: { type: String, required: false },
     paymentStatus: { type: String, required: true, default: "pending" },
     provider: { type: String, required: true, default: "stripe" },
+    lastWebhookEventId: { type: String, required: false },
+    statusUpdatedAt: { type: Date, required: false },
+    paidAt: { type: Date, required: false },
     processedWebhookEventIds: { type: [String], required: true, default: [] },
   },
   { timestamps: true }

@@ -6,6 +6,7 @@ export const createPaymentSession = ({
   id,
   url,
   paymentReference,
+  providerTransactionId,
   payment_status,
   paymentStatus,
 }) => {
@@ -25,6 +26,7 @@ export const createPaymentSession = ({
     id,
     ...(paymentReference ? { paymentReference } : {}),
     ...(url ? { url } : {}),
+    ...(providerTransactionId ? { providerTransactionId } : {}),
     paymentStatus: normalizedPaymentStatus,
   };
 

@@ -14,6 +14,7 @@ describe("getSessionDetailsUseCase", () => {
         .resolves({
           id: "cs_test_123",
           paymentReference: "pay_123",
+          providerTransactionId: "pi_123",
           paymentStatus: "paid",
         }),
       savePaymentSession: sinon.stub(),
@@ -28,6 +29,7 @@ describe("getSessionDetailsUseCase", () => {
     expect(result).to.deep.equal({
       id: "cs_test_123",
       paymentReference: "pay_123",
+      providerTransactionId: "pi_123",
       paymentStatus: "paid",
     });
     expect(paymentGateway.getCheckoutSession.called).to.equal(false);

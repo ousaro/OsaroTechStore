@@ -12,6 +12,9 @@ export const toStripeCheckoutSessionDto = (rawSession) => {
   return {
     id: rawSession.id,
     ...(rawSession.url ? { url: rawSession.url } : {}),
+    ...(rawSession.payment_intent
+      ? { providerTransactionId: rawSession.payment_intent }
+      : {}),
     ...(
       rawSession.payment_status !== undefined || rawSession.paymentStatus !== undefined
         ? {
@@ -27,6 +30,11 @@ export const toStripeWebhookStateChange = (event) => {
   const paymentStatus = WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE[event?.type];
   const eventId = event?.id;
   const sessionId = event?.data?.object?.id;
+  const providerTransactionId = event?.data?.object?.payment_intent;
+  const occurredAt =
+    typeof event?.created === "number"
+      ? new Date(event.created * 1000)
+      : new Date();
 
   if (
     !paymentStatus ||
@@ -41,6 +49,8 @@ export const toStripeWebhookStateChange = (event) => {
   return {
     eventId,
     sessionId,
+    ...(providerTransactionId ? { providerTransactionId } : {}),
+    occurredAt,
     paymentStatus,
   };
 };
