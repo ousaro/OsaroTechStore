@@ -32,6 +32,7 @@ describe("Order Domain", () => {
       },
       paymentMethod: "card",
       paymentStatus: "pending",
+      paymentReference: "pay_123",
       transactionId: "tx-1",
       paymentDetails: { provider: "stripe" },
     });
@@ -40,6 +41,8 @@ describe("Order Domain", () => {
     expect(order.toPrimitives().totalPrice).to.equal(100);
     expect(order.toPrimitives().status).to.equal("pending");
     expect(order.toPrimitives().paymentStatus).to.equal("pending");
+    expect(order.toPrimitives().paymentReference).to.equal("pay_123");
+    expect(order.toPrimitives().transactionId).to.equal("pay_123");
     expect(order.totalPrice.toPrimitives()).to.equal(100);
     expect(order.status.toPrimitives()).to.equal("pending");
     expect(order.paymentStatus.toPrimitives()).to.equal("pending");
@@ -61,6 +64,7 @@ describe("Order Domain", () => {
         address: { city: "Casablanca" },
         paymentMethod: "card",
         paymentStatus: "pending",
+        paymentReference: "pay_123",
         transactionId: "tx-1",
         paymentDetails: { provider: "stripe" },
       });
@@ -78,12 +82,15 @@ describe("Order Domain", () => {
     const patch = createOrderUpdatePatch({
       status: "paid",
       totalPrice: 150,
+      paymentReference: "pay_123",
       paymentStatus: "paid",
     });
 
     expect(patch.toPrimitives()).to.deep.equal({
       status: "paid",
       totalPrice: 150,
+      paymentReference: "pay_123",
+      transactionId: "pay_123",
       paymentStatus: "paid",
     });
   });

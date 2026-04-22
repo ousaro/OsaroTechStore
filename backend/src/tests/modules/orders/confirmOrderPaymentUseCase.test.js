@@ -13,9 +13,9 @@ describe("confirmOrderPaymentUseCase", () => {
     });
     const useCase = buildConfirmOrderPaymentUseCase({
       orderRepository: {
-        findByTransactionId: sinon.stub().resolves({
+        findByPaymentReference: sinon.stub().resolves({
           _id: "o1",
-          transactionId: "cs_test_123",
+          paymentReference: "pay_123",
         }),
       },
       updateOrder,
@@ -23,7 +23,7 @@ describe("confirmOrderPaymentUseCase", () => {
     });
 
     const result = await useCase({
-      paymentReference: "cs_test_123",
+      paymentReference: "pay_123",
       eventId: "evt_test_123",
     });
 
@@ -46,7 +46,7 @@ describe("confirmOrderPaymentUseCase", () => {
     const updateOrder = sinon.stub().resolves();
     const useCase = buildConfirmOrderPaymentUseCase({
       orderRepository: {
-        findByTransactionId: sinon.stub().resolves(null),
+        findByPaymentReference: sinon.stub().resolves(null),
       },
       updateOrder,
       logger,
@@ -65,7 +65,7 @@ describe("confirmOrderPaymentUseCase", () => {
   it("requires a payment reference", async () => {
     const useCase = buildConfirmOrderPaymentUseCase({
       orderRepository: {
-        findByTransactionId: sinon.stub().resolves(null),
+        findByPaymentReference: sinon.stub().resolves(null),
       },
       updateOrder: sinon.stub().resolves(),
       logger: { warn: sinon.stub() },

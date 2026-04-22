@@ -7,7 +7,7 @@ export const buildConfirmOrderPaymentUseCase = ({
   updateOrder = null,
   logger = console,
 }) => {
-  assertOrderRepositoryPort(orderRepository, ["findByTransactionId"]);
+  assertOrderRepositoryPort(orderRepository, ["findByPaymentReference"]);
 
   if (!logger || typeof logger.warn !== "function") {
     throw new Error("logger.warn is required");
@@ -24,7 +24,7 @@ export const buildConfirmOrderPaymentUseCase = ({
       throw new DomainValidationError("paymentReference is required");
     }
 
-    const order = await orderRepository.findByTransactionId(paymentReference);
+    const order = await orderRepository.findByPaymentReference(paymentReference);
 
     if (!order) {
       logger.warn(

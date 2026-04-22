@@ -16,13 +16,15 @@ export const createOrder = ({
   address,
   paymentMethod,
   paymentStatus,
+  paymentReference,
   transactionId,
   paymentDetails,
 }) => {
   assertString(ownerId, "ownerId is required");
   assertNonEmptyArray(products, "products must be a non-empty array");
   assertString(paymentMethod, "paymentMethod is required");
-  assertString(transactionId, "transactionId is required");
+  const stablePaymentReference = paymentReference ?? transactionId;
+  assertString(stablePaymentReference, "paymentReference is required");
   const orderAddress = createAddress(address);
   const orderTotalPrice = createMoney(totalPrice);
   const orderStatus = createOrderStatus(status);
@@ -40,7 +42,8 @@ export const createOrder = ({
     address: orderAddress,
     paymentMethod,
     paymentStatus: orderPaymentStatus,
-    transactionId,
+    paymentReference: stablePaymentReference,
+    transactionId: stablePaymentReference,
     paymentDetails,
   };
 
@@ -116,8 +119,20 @@ export const createOrderUpdatePatch = (updates) => {
     assertString(patch.paymentMethod, "paymentMethod is required");
   }
 
+  if (patch.paymentReference !== undefined) {
+    assertString(patch.paymentReference, "paymentReference is required");
+  }
+
   if (patch.transactionId !== undefined) {
     assertString(patch.transactionId, "transactionId is required");
+  }
+
+  if (patch.paymentReference !== undefined && patch.transactionId === undefined) {
+    patch.transactionId = patch.paymentReference;
+  }
+
+  if (patch.transactionId !== undefined && patch.paymentReference === undefined) {
+    patch.paymentReference = patch.transactionId;
   }
 
   if (patch.paymentStatus !== undefined) {

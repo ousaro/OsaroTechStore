@@ -123,5 +123,6 @@ describe("addOrderUseCase", () => {
     });
 
     expect(createdOrder.transactionId).to.equal("pay_123");
+    expect(createdOrder.paymentReference).to.equal("pay_123");
   });
 });

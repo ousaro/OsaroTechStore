@@ -18,6 +18,7 @@ describe("order record mapper", () => {
       },
       paymentMethod: "card",
       paymentStatus: "pending",
+      paymentReference: "pay_123",
       transactionId: "tx-123",
       paymentDetails: { provider: "stripe", sessionId: "cs_test_123" },
       createdAt: "ignore-me",
@@ -39,7 +40,8 @@ describe("order record mapper", () => {
       },
       paymentMethod: "card",
       paymentStatus: "pending",
-      transactionId: "tx-123",
+      paymentReference: "pay_123",
+      transactionId: "pay_123",
       paymentDetails: { provider: "stripe", sessionId: "cs_test_123" },
     });
   });

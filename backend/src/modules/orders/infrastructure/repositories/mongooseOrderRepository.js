@@ -18,8 +18,17 @@ export const createMongooseOrderRepository = () => {
       return doc ? toOrderRecord(doc) : null;
     },
 
+    async findByPaymentReference(paymentReference) {
+      const doc = await OrderModel.findOne({
+        $or: [{ paymentReference }, { transactionId: paymentReference }],
+      });
+      return doc ? toOrderRecord(doc) : null;
+    },
+
     async findByTransactionId(transactionId) {
-      const doc = await OrderModel.findOne({ transactionId });
+      const doc = await OrderModel.findOne({
+        $or: [{ paymentReference: transactionId }, { transactionId }],
+      });
       return doc ? toOrderRecord(doc) : null;
     },
 

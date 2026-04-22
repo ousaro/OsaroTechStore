@@ -12,7 +12,8 @@ export const toOrderRecord = (rawOrder) => {
     address: rawOrder.address,
     paymentMethod: rawOrder.paymentMethod,
     paymentStatus: rawOrder.paymentStatus,
-    transactionId: rawOrder.transactionId,
+    paymentReference: rawOrder.paymentReference ?? rawOrder.transactionId,
+    transactionId: rawOrder.paymentReference ?? rawOrder.transactionId,
     paymentDetails: rawOrder.paymentDetails,
   };
 };
