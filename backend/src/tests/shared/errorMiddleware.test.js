@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
+import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 
 describe("errorMiddleware", () => {
   it("returns structured error using error + meta", () => {
@@ -42,5 +43,21 @@ describe("errorMiddleware", () => {
     expect(res.json.firstCall.args[0]).to.deep.equal({
       error: "Malformed JSON request body",
     });
+  });
+
+  it("maps application error codes to transport status codes", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new AuthUnauthorizedError("Authorization token required"), req, res, () => {});
+
+    expect(res.status.calledWith(401)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Authorization token required");
+    expect(body.stack).to.be.a("string");
   });
 });

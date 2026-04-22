@@ -1,6 +1,7 @@
 import { toAuthPrincipal } from "../../domain/entities/AuthPrincipal.js";
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { createRegistrationCommand } from "../../domain/entities/AuthCredentials.js";
+import { AuthConflictError } from "../errors/AuthApplicationError.js";
+import { assertValidRegistrationData } from "../policies/authCredentialsPolicy.js";
 import { assertAuthUserRepositoryPort } from "../../ports/output/authUserRepositoryPort.js";
 import { assertTokenServicePort } from "../../ports/output/tokenServicePort.js";
 
@@ -9,6 +10,14 @@ export const buildRegisterUserUseCase = ({ authUserRepository, tokenService }) =
   assertTokenServicePort(tokenService, ["signUserId"]);
 
   return async ({ firstName, lastName, email, password, confirmPassword, picture }) => {
+    assertValidRegistrationData({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    });
+
     const command = createRegistrationCommand({
       firstName,
       lastName,
@@ -19,7 +28,7 @@ export const buildRegisterUserUseCase = ({ authUserRepository, tokenService }) =
     });
 
     const existingUser = await authUserRepository.findByEmail(command.email);
-    if (existingUser) throw new ApiError("Email already exist!", 400);
+    if (existingUser) throw new AuthConflictError("Email already exist!");
 
     const hashedPassword = await authUserRepository.hashPassword(command.password);
     const user = await authUserRepository.create({
