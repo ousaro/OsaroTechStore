@@ -3,6 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { buildVerifyWebhookUseCase } from "../../../../src/modules/payments/application/commands/verifyWebhookUseCase.js";
 import { createPaymentConfirmedEvent } from "../../../../src/modules/payments/domain/events/PaymentConfirmed.js";
+import { createPaymentExpiredEvent } from "../../../../src/modules/payments/domain/events/PaymentExpired.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("verifyWebhookUseCase", () => {
@@ -125,6 +126,49 @@ describe("verifyWebhookUseCase", () => {
     expect(paymentEventPublisher.publish.called).to.equal(false);
   });
 
+  it("publishes PaymentExpired when checkout expires without payment", async () => {
+    const paymentGateway = {
+      verifyWebhook: sinon.stub().returns({
+        eventId: "evt_test_expired",
+        sessionId: "cs_test_124",
+        occurredAt: new Date("2026-04-22T12:00:00.000Z"),
+        paymentStatus: "failed",
+        paymentOutcome: "expired",
+      }),
+    };
+    const paymentRepository = {
+      applyWebhookStateChangeOnce: sinon.stub().resolves({
+        id: "cs_test_124",
+        paymentReference: "pay_124",
+        paymentStatus: "failed",
+      }),
+    };
+    const paymentEventPublisher = {
+      publish: sinon.stub().resolves(),
+    };
+    const useCase = buildVerifyWebhookUseCase({
+      paymentGateway,
+      paymentRepository,
+      paymentEventPublisher,
+    });
+
+    const result = await useCase({
+      payload: Buffer.from("{}"),
+      signature: "sig_test",
+    });
+
+    expect(result).to.deep.equal({ received: true });
+    expect(paymentEventPublisher.publish.calledOnceWithExactly({
+      type: "PaymentExpired",
+      payload: {
+        paymentReference: "pay_124",
+        sessionId: "cs_test_124",
+        paymentStatus: "failed",
+        eventId: "evt_test_expired",
+      },
+    })).to.equal(true);
+  });
+
   it("creates a PaymentConfirmed event with stable payload", () => {
     const event = createPaymentConfirmedEvent({
       eventId: "evt_test_123",
@@ -140,6 +184,26 @@ describe("verifyWebhookUseCase", () => {
         sessionId: "cs_test_123",
         paymentStatus: "paid",
         eventId: "evt_test_123",
+      },
+    });
+  });
+
+  it("creates a PaymentExpired event with stable payload", () => {
+    const event = createPaymentExpiredEvent({
+      eventId: "evt_test_expired",
+      paymentReference: "pay_124",
+      sessionId: "cs_test_124",
+      paymentStatus: "failed",
+      paymentOutcome: "expired",
+    });
+
+    expect(event).to.deep.equal({
+      type: "PaymentExpired",
+      payload: {
+        paymentReference: "pay_124",
+        sessionId: "cs_test_124",
+        paymentStatus: "failed",
+        eventId: "evt_test_expired",
       },
     });
   });

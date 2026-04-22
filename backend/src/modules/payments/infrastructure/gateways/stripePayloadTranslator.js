@@ -1,7 +1,10 @@
-const WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE = {
-  "checkout.session.completed": "paid",
-  "checkout.session.async_payment_failed": "failed",
-  "checkout.session.expired": "failed",
+const WEBHOOK_STATE_CHANGE_BY_EVENT_TYPE = {
+  "checkout.session.completed": { paymentStatus: "paid" },
+  "checkout.session.async_payment_failed": { paymentStatus: "failed" },
+  "checkout.session.expired": {
+    paymentStatus: "failed",
+    paymentOutcome: "expired",
+  },
 };
 
 export const toStripeCheckoutSessionDto = (rawSession) => {
@@ -27,7 +30,7 @@ export const toStripeCheckoutSessionDto = (rawSession) => {
 };
 
 export const toStripeWebhookStateChange = (event) => {
-  const paymentStatus = WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE[event?.type];
+  const stateChange = WEBHOOK_STATE_CHANGE_BY_EVENT_TYPE[event?.type];
   const eventId = event?.id;
   const sessionId = event?.data?.object?.id;
   const providerTransactionId = event?.data?.object?.payment_intent;
@@ -37,7 +40,7 @@ export const toStripeWebhookStateChange = (event) => {
       : new Date();
 
   if (
-    !paymentStatus ||
+    !stateChange?.paymentStatus ||
     typeof eventId !== "string" ||
     eventId.trim() === "" ||
     typeof sessionId !== "string" ||
@@ -51,6 +54,9 @@ export const toStripeWebhookStateChange = (event) => {
     sessionId,
     ...(providerTransactionId ? { providerTransactionId } : {}),
     occurredAt,
-    paymentStatus,
+    paymentStatus: stateChange.paymentStatus,
+    ...(stateChange.paymentOutcome
+      ? { paymentOutcome: stateChange.paymentOutcome }
+      : {}),
   };
 };

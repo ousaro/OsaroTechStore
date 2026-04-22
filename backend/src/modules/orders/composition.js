@@ -4,6 +4,9 @@ import { buildAddOrderUseCase } from "./application/commands/addOrderUseCase.js"
 import { buildConfirmOrderPaymentUseCase } from "./application/commands/confirmOrderPaymentUseCase.js";
 import { buildUpdateOrderUseCase } from "./application/commands/updateOrderUseCase.js";
 import { buildDeleteOrderUseCase } from "./application/commands/deleteOrderUseCase.js";
+import { buildHandlePaymentExpirationUseCase } from "./application/commands/handlePaymentExpirationUseCase.js";
+import { buildHandlePaymentFailureUseCase } from "./application/commands/handlePaymentFailureUseCase.js";
+import { buildHandlePaymentRefundUseCase } from "./application/commands/handlePaymentRefundUseCase.js";
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
 import { createMongooseOrderRepository } from "./infrastructure/repositories/mongooseOrderRepository.js";
@@ -20,6 +23,15 @@ const addOrderUseCase = buildAddOrderUseCase({
   orderEventPublisher,
 });
 export const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
+  orderRepository,
+});
+export const handlePaymentFailure = buildHandlePaymentFailureUseCase({
+  orderRepository,
+});
+export const handlePaymentExpiration = buildHandlePaymentExpirationUseCase({
+  orderRepository,
+});
+export const handlePaymentRefund = buildHandlePaymentRefundUseCase({
   orderRepository,
 });
 const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });

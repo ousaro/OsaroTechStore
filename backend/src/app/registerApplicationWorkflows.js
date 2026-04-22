@@ -1,8 +1,16 @@
 import { applicationEventBus } from "./applicationEventBus.js";
 import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/infrastructure/collaboration/categoryDeletedProductCleanupTranslator.js";
 import { createPaymentConfirmedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentConfirmedOrderSyncTranslator.js";
+import { createPaymentExpiredOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentExpiredOrderSyncTranslator.js";
+import { createPaymentFailedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentFailedOrderSyncTranslator.js";
+import { createPaymentRefundedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentRefundedOrderSyncTranslator.js";
 import { createOrderPlacedPaymentLinkTranslator } from "../modules/payments/infrastructure/collaboration/orderPlacedPaymentLinkTranslator.js";
-import { confirmOrderPayment } from "../modules/orders/public-api.js";
+import {
+  confirmOrderPayment,
+  handlePaymentExpiration,
+  handlePaymentFailure,
+  handlePaymentRefund,
+} from "../modules/orders/public-api.js";
 import { linkPaymentToOrder } from "../modules/payments/public-api.js";
 import { removeProductsByCategory } from "../modules/products/public-api.js";
 
@@ -10,9 +18,15 @@ export const registerApplicationWorkflows = ({
   eventBus = applicationEventBus,
   createCategoryDeletedTranslator = createCategoryDeletedProductCleanupTranslator,
   createPaymentConfirmedTranslator = createPaymentConfirmedOrderSyncTranslator,
+  createPaymentFailedTranslator = createPaymentFailedOrderSyncTranslator,
+  createPaymentExpiredTranslator = createPaymentExpiredOrderSyncTranslator,
+  createPaymentRefundedTranslator = createPaymentRefundedOrderSyncTranslator,
   createOrderPlacedTranslator = createOrderPlacedPaymentLinkTranslator,
   removeProductsByCategoryHandler = removeProductsByCategory,
   confirmOrderPaymentHandler = confirmOrderPayment,
+  handlePaymentFailureHandler = handlePaymentFailure,
+  handlePaymentExpirationHandler = handlePaymentExpiration,
+  handlePaymentRefundHandler = handlePaymentRefund,
   linkPaymentToOrderHandler = linkPaymentToOrder,
 } = {}) => {
   const categoryDeletedProductCleanupTranslator = createCategoryDeletedTranslator({
@@ -20,6 +34,15 @@ export const registerApplicationWorkflows = ({
   });
   const paymentConfirmedOrderSyncTranslator = createPaymentConfirmedTranslator({
     confirmOrderPayment: confirmOrderPaymentHandler,
+  });
+  const paymentFailedOrderSyncTranslator = createPaymentFailedTranslator({
+    handlePaymentFailure: handlePaymentFailureHandler,
+  });
+  const paymentExpiredOrderSyncTranslator = createPaymentExpiredTranslator({
+    handlePaymentExpiration: handlePaymentExpirationHandler,
+  });
+  const paymentRefundedOrderSyncTranslator = createPaymentRefundedTranslator({
+    handlePaymentRefund: handlePaymentRefundHandler,
   });
   const orderPlacedPaymentLinkTranslator = createOrderPlacedTranslator({
     linkPaymentToOrder: linkPaymentToOrderHandler,
@@ -34,6 +57,15 @@ export const registerApplicationWorkflows = ({
     ),
     eventBus.subscribe("PaymentConfirmed", (event) =>
       paymentConfirmedOrderSyncTranslator.publish(event)
+    ),
+    eventBus.subscribe("PaymentFailed", (event) =>
+      paymentFailedOrderSyncTranslator.publish(event)
+    ),
+    eventBus.subscribe("PaymentExpired", (event) =>
+      paymentExpiredOrderSyncTranslator.publish(event)
+    ),
+    eventBus.subscribe("PaymentRefunded", (event) =>
+      paymentRefundedOrderSyncTranslator.publish(event)
     ),
   ];
 };

@@ -43,6 +43,26 @@ describe("stripe payload translator", () => {
     });
   });
 
+  it("distinguishes expired checkout sessions from generic payment failures", () => {
+    expect(
+      toStripeWebhookStateChange({
+        id: "evt_test_expired",
+        type: "checkout.session.expired",
+        data: {
+          object: {
+            id: "cs_test_124",
+          },
+        },
+        created: 1713780001,
+      })
+    ).to.deep.include({
+      eventId: "evt_test_expired",
+      sessionId: "cs_test_124",
+      paymentStatus: "failed",
+      paymentOutcome: "expired",
+    });
+  });
+
   it("returns null for unsupported or incomplete webhook payloads", () => {
     expect(
       toStripeWebhookStateChange({

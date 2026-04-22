@@ -30,9 +30,9 @@ Completed items and historical progress notes have been removed on purpose.
 - [x] Add an order-side subscriber for `PaymentConfirmed`
 - [x] Make the order-side subscriber update order state through order application/domain logic, not direct persistence writes from payments
 - [x] Define what should happen when a payment is confirmed but the correlated order cannot be found
-- [ ] Decide how failed, expired, and refunded payment events should affect order state
-- [ ] Add provider-neutral application events for the other payment outcomes the business cares about
-- [ ] Decide whether `OrderPlaced` should start payment initialization or other downstream workflows
+- [x] Decide how failed, expired, and refunded payment events should affect order state
+- [x] Add provider-neutral application events for the other payment outcomes the business cares about
+- [x] Decide whether `OrderPlaced` should start payment initialization or other downstream workflows
 - [x] Add at least one real runtime consumer for `OrderPlaced`, or remove/defer the event until the workflow exists
 
 ## 4. Order Modeling

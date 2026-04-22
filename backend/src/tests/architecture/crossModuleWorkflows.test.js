@@ -35,7 +35,7 @@ describe("cross-module workflows", () => {
       _id: "cat-1",
       name: "Phones",
     });
-    expect(unsubscribes).to.have.lengthOf(3);
+    expect(unsubscribes).to.have.lengthOf(6);
     expect(createCategoryDeletedTranslator.calledOnce).to.equal(true);
     expect(removeProductsByCategory.calledOnceWithExactly({
       categoryId: "cat-1",
@@ -61,6 +61,33 @@ describe("cross-module workflows", () => {
           }),
       }),
       linkPaymentToOrderHandler: linkPaymentToOrder,
+      createPaymentFailedTranslator: ({ handlePaymentFailure }) => ({
+        publish: (event) =>
+          handlePaymentFailure({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentFailureHandler: sinon.stub().resolves(),
+      createPaymentExpiredTranslator: ({ handlePaymentExpiration }) => ({
+        publish: (event) =>
+          handlePaymentExpiration({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentExpirationHandler: sinon.stub().resolves(),
+      createPaymentRefundedTranslator: ({ handlePaymentRefund }) => ({
+        publish: (event) =>
+          handlePaymentRefund({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentRefundHandler: sinon.stub().resolves(),
       createPaymentConfirmedTranslator: ({ confirmOrderPayment }) => ({
         publish: (event) =>
           confirmOrderPayment({
@@ -89,6 +116,9 @@ describe("cross-module workflows", () => {
   it("routes PaymentConfirmed from the application workflow registry into the order payment handler", async () => {
     const eventBus = createInProcessEventBus();
     const confirmOrderPayment = sinon.stub().resolves();
+    const handlePaymentFailure = sinon.stub().resolves();
+    const handlePaymentExpiration = sinon.stub().resolves();
+    const handlePaymentRefund = sinon.stub().resolves();
 
     registerApplicationWorkflows({
       eventBus,
@@ -114,6 +144,33 @@ describe("cross-module workflows", () => {
           }),
       }),
       confirmOrderPaymentHandler: confirmOrderPayment,
+      createPaymentFailedTranslator: ({ handlePaymentFailure }) => ({
+        publish: (event) =>
+          handlePaymentFailure({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentFailureHandler: handlePaymentFailure,
+      createPaymentExpiredTranslator: ({ handlePaymentExpiration }) => ({
+        publish: (event) =>
+          handlePaymentExpiration({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentExpirationHandler: handlePaymentExpiration,
+      createPaymentRefundedTranslator: ({ handlePaymentRefund }) => ({
+        publish: (event) =>
+          handlePaymentRefund({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentRefundHandler: handlePaymentRefund,
     });
 
     await eventBus.publish({
@@ -129,6 +186,82 @@ describe("cross-module workflows", () => {
     expect(confirmOrderPayment.calledOnceWithExactly({
       paymentReference: "pay_123",
       eventId: "evt_test_123",
+    })).to.equal(true);
+    expect(handlePaymentFailure.called).to.equal(false);
+    expect(handlePaymentExpiration.called).to.equal(false);
+    expect(handlePaymentRefund.called).to.equal(false);
+  });
+
+  it("routes PaymentExpired from the application workflow registry into the order payment-expiration handler", async () => {
+    const eventBus = createInProcessEventBus();
+    const handlePaymentExpiration = sinon.stub().resolves();
+
+    registerApplicationWorkflows({
+      eventBus,
+      createCategoryDeletedTranslator: ({ removeProductsByCategory }) => ({
+        publish: (event) =>
+          removeProductsByCategory({ categoryId: event.payload.categoryId }),
+      }),
+      removeProductsByCategoryHandler: sinon.stub().resolves(),
+      createOrderPlacedTranslator: ({ linkPaymentToOrder }) => ({
+        publish: (event) =>
+          linkPaymentToOrder({
+            paymentReference: event.payload.paymentReference,
+            orderId: event.payload.orderId,
+          }),
+      }),
+      linkPaymentToOrderHandler: sinon.stub().resolves(),
+      createPaymentConfirmedTranslator: ({ confirmOrderPayment }) => ({
+        publish: (event) =>
+          confirmOrderPayment({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      confirmOrderPaymentHandler: sinon.stub().resolves(),
+      createPaymentFailedTranslator: ({ handlePaymentFailure }) => ({
+        publish: (event) =>
+          handlePaymentFailure({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentFailureHandler: sinon.stub().resolves(),
+      createPaymentExpiredTranslator: ({ handlePaymentExpiration }) => ({
+        publish: (event) =>
+          handlePaymentExpiration({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentExpirationHandler: handlePaymentExpiration,
+      createPaymentRefundedTranslator: ({ handlePaymentRefund }) => ({
+        publish: (event) =>
+          handlePaymentRefund({
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      handlePaymentRefundHandler: sinon.stub().resolves(),
+    });
+
+    await eventBus.publish({
+      type: "PaymentExpired",
+      payload: {
+        paymentReference: "pay_123",
+        sessionId: "cs_test_123",
+        eventId: "evt_test_124",
+        paymentStatus: "failed",
+      },
+    });
+
+    expect(handlePaymentExpiration.calledOnceWithExactly({
+      paymentReference: "pay_123",
+      eventId: "evt_test_124",
     })).to.equal(true);
   });
 });
