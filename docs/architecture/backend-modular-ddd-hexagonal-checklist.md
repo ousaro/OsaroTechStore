@@ -67,11 +67,12 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - Progress: orders now use an `Address` value object while still exposing stable persistence primitives through `toPrimitives()`.
 - Progress: auth now uses an `Email` value object to validate and normalize email addresses before commands and repository lookups.
 - Progress: orders now use a `Money` value object for `totalPrice` while still exposing numeric primitives through `toPrimitives()`.
+- Progress: orders now use `OrderStatus` and `PaymentStatus` value objects while still exposing stable string primitives through `toPrimitives()`.
 - [x] Add `Email` value object
 - [x] Add `Money` value object
 - [x] Add `Address` value object for orders
-- [ ] Add `OrderStatus` value object or state model
-- [ ] Add `PaymentStatus` value object or state model
+- [x] Add `OrderStatus` value object or state model
+- [x] Add `PaymentStatus` value object or state model
 - [ ] Add explicit order lifecycle transitions instead of only patch builders
 - [ ] Identify which modules need true aggregates instead of thin entities
 - [ ] Add domain services only where rules span multiple entities/value objects

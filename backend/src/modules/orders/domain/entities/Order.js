@@ -1,6 +1,8 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createAddress } from "../value-objects/Address.js";
 import { createMoney } from "../value-objects/Money.js";
+import { createOrderStatus } from "../value-objects/OrderStatus.js";
+import { createPaymentStatus } from "../value-objects/PaymentStatus.js";
 import {
   assertNonEmptyArray,
   assertString,
@@ -19,11 +21,12 @@ export const createOrder = ({
 }) => {
   assertString(ownerId, "ownerId is required");
   assertNonEmptyArray(products, "products must be a non-empty array");
-  assertString(status, "status is required");
   assertString(paymentMethod, "paymentMethod is required");
   assertString(transactionId, "transactionId is required");
   const orderAddress = createAddress(address);
   const orderTotalPrice = createMoney(totalPrice);
+  const orderStatus = createOrderStatus(status);
+  const orderPaymentStatus = createPaymentStatus(paymentStatus);
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
     throw new DomainValidationError("paymentDetails is required");
@@ -33,10 +36,10 @@ export const createOrder = ({
     ownerId,
     products,
     totalPrice: orderTotalPrice,
-    status,
+    status: orderStatus,
     address: orderAddress,
     paymentMethod,
-    paymentStatus: paymentStatus || "pending",
+    paymentStatus: orderPaymentStatus,
     transactionId,
     paymentDetails,
   };
@@ -47,7 +50,9 @@ export const createOrder = ({
       return {
         ...props,
         totalPrice: props.totalPrice.toPrimitives(),
+        status: props.status.toPrimitives(),
         address: props.address.toPrimitives(),
+        paymentStatus: props.paymentStatus.toPrimitives(),
       };
     },
   });
@@ -61,7 +66,7 @@ export const createOrderUpdatePatch = (updates) => {
   }
 
   if (patch.status !== undefined) {
-    assertString(patch.status, "status is required");
+    patch.status = createOrderStatus(patch.status);
   }
 
   if (patch.paymentMethod !== undefined) {
@@ -70,6 +75,10 @@ export const createOrderUpdatePatch = (updates) => {
 
   if (patch.transactionId !== undefined) {
     assertString(patch.transactionId, "transactionId is required");
+  }
+
+  if (patch.paymentStatus !== undefined) {
+    patch.paymentStatus = createPaymentStatus(patch.paymentStatus);
   }
 
   if (patch.address !== undefined) {
@@ -89,7 +98,9 @@ export const createOrderUpdatePatch = (updates) => {
       return {
         ...patch,
         ...(patch.totalPrice ? { totalPrice: patch.totalPrice.toPrimitives() } : {}),
+        ...(patch.status ? { status: patch.status.toPrimitives() } : {}),
         ...(patch.address ? { address: patch.address.toPrimitives() } : {}),
+        ...(patch.paymentStatus ? { paymentStatus: patch.paymentStatus.toPrimitives() } : {}),
       };
     },
   });

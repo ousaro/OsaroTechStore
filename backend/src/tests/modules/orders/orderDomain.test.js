@@ -3,6 +3,8 @@ import { expect } from "chai";
 import { createOrder, createOrderUpdatePatch } from "../../../../src/modules/orders/domain/entities/Order.js";
 import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { createMoney } from "../../../../src/modules/orders/domain/value-objects/Money.js";
+import { createOrderStatus } from "../../../../src/modules/orders/domain/value-objects/OrderStatus.js";
+import { createPaymentStatus } from "../../../../src/modules/orders/domain/value-objects/PaymentStatus.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Order Domain", () => {
@@ -26,7 +28,11 @@ describe("Order Domain", () => {
 
     expect(order.toPrimitives().ownerId).to.equal("u1");
     expect(order.toPrimitives().totalPrice).to.equal(100);
+    expect(order.toPrimitives().status).to.equal("pending");
+    expect(order.toPrimitives().paymentStatus).to.equal("pending");
     expect(order.totalPrice.toPrimitives()).to.equal(100);
+    expect(order.status.toPrimitives()).to.equal("pending");
+    expect(order.paymentStatus.toPrimitives()).to.equal("pending");
     expect(order.address.toPrimitives()).to.deep.equal({
       city: "Casablanca",
       addressLine: "Street 1",
@@ -62,11 +68,13 @@ describe("Order Domain", () => {
     const patch = createOrderUpdatePatch({
       status: "paid",
       totalPrice: 150,
+      paymentStatus: "paid",
     });
 
     expect(patch.toPrimitives()).to.deep.equal({
       status: "paid",
       totalPrice: 150,
+      paymentStatus: "paid",
     });
   });
 
@@ -105,5 +113,21 @@ describe("Order Domain", () => {
     const money = createMoney(150);
 
     expect(money.toPrimitives()).to.equal(150);
+  });
+
+  it("creates order and payment status value objects with stable primitives", () => {
+    const orderStatus = createOrderStatus("Processing");
+    const paymentStatus = createPaymentStatus("Paid");
+
+    expect(orderStatus.toPrimitives()).to.equal("processing");
+    expect(paymentStatus.toPrimitives()).to.equal("paid");
+  });
+
+  it("throws for invalid order or payment status values", () => {
+    expect(() => createOrderStatus("unknown")).to.throw(DomainValidationError, "Invalid order status");
+    expect(() => createPaymentStatus("unknown")).to.throw(
+      DomainValidationError,
+      "Invalid payment status"
+    );
   });
 });
