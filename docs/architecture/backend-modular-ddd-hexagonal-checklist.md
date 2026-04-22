@@ -172,6 +172,7 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
 - Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP and transport-validation error mapping.
+- Progress: category deletion now has a focused negative test that enforces the required `productCategoryCleanup` port contract.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation

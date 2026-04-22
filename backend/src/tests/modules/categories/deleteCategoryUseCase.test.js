@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
+import { assertProductCategoryCleanupPort } from "../../../modules/categories/ports/output/productCategoryCleanupPort.js";
 import {
   CategoryNotFoundError,
   CategoryValidationError,
@@ -51,6 +52,26 @@ describe("deleteCategoryUseCase", () => {
       expect(error.message).to.equal("Category ID is required");
       expect(error.code).to.equal("CATEGORY_VALIDATION");
     }
+  });
+
+  it("requires the product category cleanup port dependency", () => {
+    expect(() =>
+      buildDeleteCategoryUseCase({
+        categoryRepository: {
+          findByIdAndDelete: async () => null,
+        },
+        productCategoryCleanup: {},
+      })
+    ).to.throw("productCategoryCleanup port must implement removeProductsByCategory");
+
+    expect(() =>
+      assertProductCategoryCleanupPort(
+        {
+          removeProductsByCategory: async () => {},
+        },
+        ["removeProductsByCategory"]
+      )
+    ).to.not.throw();
   });
 
   it("throws when the category cannot be found", async () => {
