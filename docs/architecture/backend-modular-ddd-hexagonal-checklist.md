@@ -33,7 +33,7 @@ Completed items and historical progress notes have been removed on purpose.
 - [ ] Decide how failed, expired, and refunded payment events should affect order state
 - [ ] Add provider-neutral application events for the other payment outcomes the business cares about
 - [ ] Decide whether `OrderPlaced` should start payment initialization or other downstream workflows
-- [ ] Add at least one real runtime consumer for `OrderPlaced`, or remove/defer the event until the workflow exists
+- [x] Add at least one real runtime consumer for `OrderPlaced`, or remove/defer the event until the workflow exists
 
 ## 4. Order Modeling
 
