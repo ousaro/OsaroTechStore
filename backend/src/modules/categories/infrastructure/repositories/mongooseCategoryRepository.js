@@ -1,19 +1,19 @@
 import CategoryModel from "../persistence/categoryModel.js";
-import { toCategoryEntity } from "../../domain/entities/CategoryEntity.js";
+import { toCategoryRecord } from "./categoryRecordMapper.js";
 
 export const createMongooseCategoryRepository = () => {
   return {
     async findAllSorted() {
       const docs = await CategoryModel.find({}).sort({ createdAt: -1 });
-      return docs.map(toCategoryEntity);
+      return docs.map(toCategoryRecord);
     },
     async create(category) {
       const doc = await CategoryModel.create(category.toPrimitives());
-      return toCategoryEntity(doc);
+      return toCategoryRecord(doc);
     },
     async findByIdAndDelete(id) {
       const doc = await CategoryModel.findByIdAndDelete({ _id: id });
-      return doc ? toCategoryEntity(doc) : null;
+      return doc ? toCategoryRecord(doc) : null;
     },
   };
 };

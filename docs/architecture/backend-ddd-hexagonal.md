@@ -167,7 +167,7 @@ Current limitations:
 
 - category-to-product coordination is synchronous
 - no domain event or ACL exists around category deletion
-- `CategoryEntity` is still effectively a pass-through mapper
+- category mapping is still pass-through even though the misleading `CategoryEntity` name has been removed
 
 ### Orders
 

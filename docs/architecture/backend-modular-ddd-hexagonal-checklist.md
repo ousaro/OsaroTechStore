@@ -108,6 +108,7 @@ Progress: order use cases now use an order-specific application error, and order
 - [ ] Decide whether category deletion should emit an event such as `CategoryDeleted`
 - [ ] Add an ACL or translation layer if product/category module language diverges
 - [ ] Replace misleading pass-through entity naming with proper mapper/read-model naming
+- Progress: categories no longer use the misleading `CategoryEntity` pass-through name; the repository now maps through `categoryRecordMapper.js`.
 - [ ] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
 Progress: product use cases now use a product-specific application error instead of `ApiError`, while product domain validation remains on `DomainValidationError`.
 Progress: category deletion now uses category-specific application errors instead of `ApiError`.
