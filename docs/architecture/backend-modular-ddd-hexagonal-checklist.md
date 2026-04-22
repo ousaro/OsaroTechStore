@@ -8,10 +8,10 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 1. Composition and Wiring
 
-- [ ] Introduce one application-level workflow/composition registry for cross-module subscriptions and translators
-- [ ] Move `CategoryDeleted` subscription wiring out of `modules/categories/composition.js` and into that central workflow registry
+- [x] Introduce one application-level workflow/composition registry for cross-module subscriptions and translators
+- [x] Move `CategoryDeleted` subscription wiring out of `modules/categories/composition.js` and into that central workflow registry
 - [ ] Register all future `OrderPlaced` and `PaymentConfirmed` subscribers from the same central place
-- [ ] Keep module `composition.js` files focused on module-local wiring only
+- [x] Keep module `composition.js` files focused on module-local wiring only
 - [ ] Remove empty structural folders that no longer represent real design decisions
 
 ## 2. Orders and Payments Boundary

@@ -26,6 +26,9 @@ describe("startApplication", () => {
         calls.push(["createHttpApp"]);
         return app;
       },
+      registerWorkflows: () => {
+        calls.push(["registerWorkflows"]);
+      },
       startRuntimeHooks: () => {
         calls.push(["startRuntimeHooks"]);
       },
@@ -35,6 +38,7 @@ describe("startApplication", () => {
     expect(server).to.equal(fakeServer);
     expect(calls).to.deep.equal([
       ["connectDatabase", "mongodb://localhost:27017/osaro-test"],
+      ["registerWorkflows"],
       ["createHttpApp"],
       ["startRuntimeHooks"],
       ["listen", 5000],
