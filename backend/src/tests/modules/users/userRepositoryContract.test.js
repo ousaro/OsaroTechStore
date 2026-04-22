@@ -1,15 +1,18 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createMongooseUserRepository } from "../../../modules/users/infrastructure/repositories/mongooseUserRepository.js";
+import { assertAuthAccountAccessPort } from "../../../modules/users/ports/output/authAccountAccessPort.js";
 import { assertUserRepositoryPort } from "../../../modules/users/ports/output/userRepositoryPort.js";
 
 describe("user repository contract", () => {
   it("implements the expected user repository port", () => {
     const repository = createMongooseUserRepository({
-      listNonAdminUserAccounts: async () => [],
-      getUserAccountById: async () => null,
-      updateUserAccountById: async () => null,
-      deleteUserAccountById: async () => null,
+      authAccountAccess: {
+        listNonAdminUserAccounts: async () => [],
+        getUserAccountById: async () => null,
+        updateUserAccountById: async () => null,
+        deleteUserAccountById: async () => null,
+      },
     });
 
     expect(() =>
@@ -22,6 +25,29 @@ describe("user repository contract", () => {
         "comparePassword",
         "hashPassword",
       ])
+    ).to.not.throw();
+  });
+
+  it("requires the auth account access port dependency", () => {
+    expect(() => createMongooseUserRepository({ authAccountAccess: {} })).to.throw(
+      "authAccountAccess port must implement listNonAdminUserAccounts"
+    );
+
+    expect(() =>
+      assertAuthAccountAccessPort(
+        {
+          listNonAdminUserAccounts: async () => [],
+          getUserAccountById: async () => null,
+          updateUserAccountById: async () => null,
+          deleteUserAccountById: async () => null,
+        },
+        [
+          "listNonAdminUserAccounts",
+          "getUserAccountById",
+          "updateUserAccountById",
+          "deleteUserAccountById",
+        ]
+      )
     ).to.not.throw();
   });
 
@@ -46,21 +72,23 @@ describe("user repository contract", () => {
     };
     const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
-      listNonAdminUserAccounts: async () => {
-        calls.push(["listNonAdminUserAccounts"]);
-        return [rawUser];
-      },
-      getUserAccountById: async (id) => {
-        calls.push(["getUserAccountById", id]);
-        return rawUser;
-      },
-      updateUserAccountById: async (id, updates) => {
-        calls.push(["updateUserAccountById", id, updates]);
-        return { ...rawUser, ...updates };
-      },
-      deleteUserAccountById: async (id) => {
-        calls.push(["deleteUserAccountById", id]);
-        return rawUser;
+      authAccountAccess: {
+        listNonAdminUserAccounts: async () => {
+          calls.push(["listNonAdminUserAccounts"]);
+          return [rawUser];
+        },
+        getUserAccountById: async (id) => {
+          calls.push(["getUserAccountById", id]);
+          return rawUser;
+        },
+        updateUserAccountById: async (id, updates) => {
+          calls.push(["updateUserAccountById", id, updates]);
+          return { ...rawUser, ...updates };
+        },
+        deleteUserAccountById: async (id) => {
+          calls.push(["deleteUserAccountById", id]);
+          return rawUser;
+        },
       },
     });
 

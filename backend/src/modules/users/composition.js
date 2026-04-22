@@ -13,11 +13,15 @@ import {
 import { createMongooseUserRepository } from "./infrastructure/repositories/mongooseUserRepository.js";
 import { createUsersHttpController } from "./infrastructure/http/usersHttpController.js";
 
-const userRepository = createMongooseUserRepository({
+const authAccountAccess = {
   deleteUserAccountById,
   getUserAccountById,
   listNonAdminUserAccounts,
   updateUserAccountById,
+};
+
+const userRepository = createMongooseUserRepository({
+  authAccountAccess,
 });
 
 const getAllUsersUseCase = buildGetAllUsersUseCase({ userRepository });

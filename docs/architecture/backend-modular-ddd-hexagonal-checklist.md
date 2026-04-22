@@ -108,6 +108,7 @@ Progress: category deletion now uses category-specific application errors instea
 - [ ] Clarify whether users owns profile behavior only
 - [ ] Replace repository-shaped cross-module access with a narrower application contract
 - Progress: auth no longer exposes a broad `userAccounts` object and now provides named account-oriented capabilities such as `getUserAccountById` and `updateUserAccountById`, though the remaining contract is still somewhat persistence-shaped.
+- Progress: users now treats the auth dependency as an explicit `authAccountAccess` output port instead of four loose imported functions.
 - [ ] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
@@ -121,6 +122,7 @@ Progress: auth password/email rules now live in an application policy, though de
 - [ ] Distinguish commands from queries in contracts where complexity justifies it
 - [ ] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
+- Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.
 - [ ] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
 - [ ] Add module public API contract tests
