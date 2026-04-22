@@ -67,8 +67,7 @@ What exists:
 What is still weak:
 
 - domain objects are mostly thin frozen objects with `toPrimitives()`
-- domain depends on `ApiError`, which carries HTTP status codes
-- auth domain still uses `validator` directly
+- rich DDD building blocks are still mostly absent
 - aggregates, value objects, domain services, and domain events are mostly absent
 
 ### Application
@@ -126,9 +125,9 @@ Current strengths:
 
 Current limitations:
 
-- domain rules still rely on `ApiError`
-- `public-api.js` exports broad capabilities including `authInputPort`
-- `userAccountAccess` exposes repository-style methods rather than a narrow bounded-context contract
+- the auth/users boundary still needs a clearer ownership decision
+- auth still exposes repository-style account access methods across the boundary
+- dedicated value objects for email and password policy are still missing
 
 ### Users
 
@@ -153,9 +152,9 @@ Current strengths:
 
 Current limitations:
 
-- public API still exports the full `productsInputPort`
 - product record mapping is still pass-through
 - product modeling is still patch-oriented rather than aggregate-oriented
+- no richer stock/catalog aggregate behavior exists yet
 
 ### Categories
 
@@ -222,6 +221,7 @@ What is not in place yet:
 Current shared code:
 
 - `shared/domain/errors/ApiError.js`
+- `shared/infrastructure/http/HttpValidationError.js`
 - shared HTTP middleware and helpers
 - shared Mongo bootstrap utilities
 
@@ -237,7 +237,7 @@ This is workable today, but the composition root is still split between app boot
 Current verified baseline:
 
 - `npm test` in `backend/` passes
-- current suite: `37 passing`
+- current suite: `79 passing`
 
 Current strengths:
 
@@ -246,7 +246,8 @@ Current strengths:
 
 Current gaps:
 
-- no contract tests for public APIs or ports
+- module public API tests exist for `auth` and `products`
+- contract coverage exists for the Stripe gateway and the users repository
 - limited adapter integration coverage
 - no cross-module workflow tests
 - no tests around event-driven collaboration because eventing is not implemented yet

@@ -3,6 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { CategoryNotFoundError, CategoryValidationError } from "../../modules/categories/application/errors/CategoryApplicationError.js";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
+import { HttpValidationError } from "../../shared/infrastructure/http/HttpValidationError.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
 import {
@@ -203,6 +204,30 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Webhook signature verification failed");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps shared HTTP validation errors to 400 while preserving meta", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(
+      new HttpValidationError("Missing required fields", {
+        meta: { emptyFields: ["email"] },
+      }),
+      req,
+      res,
+      () => {}
+    );
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Missing required fields");
+    expect(body.emptyFields).to.deep.equal(["email"]);
     expect(body.stack).to.be.a("string");
   });
 });

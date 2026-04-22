@@ -31,7 +31,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
 - Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, `CategoryValidationError`, `CategoryNotFoundError`, `OrderNotFoundError`, `PaymentValidationError`, `PaymentWebhookError`, `ProductNotFoundError`, `UserNotFoundError`, `UserValidationError`, and `DomainValidationError` are now in use across the auth, categories, orders, payments, users, products, and shared validation flows.
 - [ ] Map domain/application errors to HTTP responses only in transport adapters
-- Progress: shared HTTP error resolution now maps auth, category, order, payment, product, user, and domain-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
+- Progress: shared HTTP error resolution now maps auth, category, order, payment, product, user, domain-validation, and transport-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
 - [ ] Remove direct framework/library validation dependencies from domain objects where possible
 - Progress: auth email/password validation no longer depends on `validator` inside the domain layer.
 - [ ] Wrap external validation rules behind policies or application-layer validation when appropriate
@@ -135,6 +135,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Keep `shared/` limited to generic primitives and technical utilities
 - [ ] Avoid moving business rules into shared helpers
 - [ ] Decide which primitives truly belong in a shared kernel versus module-local value objects
+Progress: shared HTTP validation now uses a transport-specific `HttpValidationError` instead of `ApiError`.
 
 ## 14. Testing
 
@@ -144,7 +145,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Add integration tests for order/payment workflow
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
-- Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP error mapping.
+- Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP and transport-validation error mapping.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation
