@@ -15,6 +15,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
 - [ ] Keep `composition.js` private to each module
 - [ ] Keep `index.js` local to module adapters and bootstrap only
+Progress: product scheduler bootstrap now uses a dedicated module bootstrap export instead of the product module `index.js`.
 - [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
 - [ ] Document the ownership boundary between identity/auth data and profile/user data
 
@@ -22,6 +23,7 @@ Progress: auth public API now exposes named account capabilities instead of one 
 
 - [ ] Define one clear application composition root
 - [ ] Move runtime startup concerns into explicit bootstrap wiring
+- Progress: product scheduler startup is now imported through a dedicated module bootstrap file instead of the broader module index surface.
 - [ ] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
 - [x] Ensure route adapters do not depend on broad module entrypoints when a narrower local import is enough
 

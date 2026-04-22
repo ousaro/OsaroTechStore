@@ -1,6 +1,6 @@
 import { env } from "./config/env.js";
 import { createApp } from "./app/createApp.js";
-import { startNewProductStatusScheduler } from "./modules/products/index.js";
+import { startNewProductStatusScheduler } from "./modules/products/bootstrap.js";
 import { connectMongo } from "./shared/infrastructure/persistence/connectMongo.js";
 
 const start = async () => {

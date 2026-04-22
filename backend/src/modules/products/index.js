@@ -5,5 +5,4 @@ export {
   addProductHandler,
   updateProductHandler,
   deleteProductHandler,
-  startNewProductStatusScheduler,
 } from "./composition.js";
