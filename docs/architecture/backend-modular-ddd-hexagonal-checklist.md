@@ -38,10 +38,12 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 
 ## 2. Composition Root
 
-- [ ] Define one clear application composition root
+- [x] Define one clear application composition root
+- Progress: `app/startApplication.js` is now the explicit runtime bootstrap that connects infrastructure, creates the app, starts runtime hooks, and begins listening.
 - [x] Move runtime startup concerns into explicit bootstrap wiring
 - Progress: product scheduler startup is now imported through a dedicated module bootstrap file instead of the broader module index surface.
-- [ ] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
+- [x] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
+- Progress: scheduler startup now runs from the application bootstrap path, making it an explicit app-level runtime concern instead of an ad hoc server detail.
 - [x] Ensure route adapters do not depend on broad module entrypoints when a narrower local import is enough
 - Progress: all module HTTP routes now import handlers through module-local `infrastructure/http/httpHandlers.js` files instead of reaching directly into `composition.js`.
 
