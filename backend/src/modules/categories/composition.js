@@ -6,11 +6,16 @@ import { createMongooseCategoryRepository } from "./infrastructure/repositories/
 import { createCategoryDeletedProductCleanupTranslator } from "./infrastructure/collaboration/categoryDeletedProductCleanupTranslator.js";
 import { removeProductsByCategory } from "../products/public-api.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
+import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const categoryRepository = createMongooseCategoryRepository();
-const categoryEventPublisher = createCategoryDeletedProductCleanupTranslator({
+const categoryDeletedProductCleanupTranslator = createCategoryDeletedProductCleanupTranslator({
   removeProductsByCategory,
 });
+applicationEventBus.subscribe("CategoryDeleted", (event) =>
+  categoryDeletedProductCleanupTranslator.publish(event)
+);
+const categoryEventPublisher = applicationEventBus;
 
 const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
   categoryRepository,

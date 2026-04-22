@@ -182,8 +182,9 @@ Progress: users, orders, products, categories, and payments record mappings are 
 - [x] Add `PaymentConfirmed` or equivalent
 - Progress: the first concrete event set is now in place around `OrderPlaced`, `PaymentConfirmed`, and `CategoryDeleted`, with order/payment use cases able to publish those events through explicit publisher ports without coupling to a concrete event bus yet.
 - [x] Add `CategoryDeleted` if event-driven cleanup is adopted
-- [ ] Choose an in-process event bus approach for the modular monolith
-- [ ] Add event handler tests
+- [x] Choose an in-process event bus approach for the modular monolith
+- [x] Add event handler tests
+- Progress: the modular monolith now uses a shared in-process application event bus, and `CategoryDeleted` product-cleanup handling is exercised through an event-handler integration test instead of only direct translator tests.
 - [ ] Add cross-module workflow tests
 
 ## 12. Application Structure

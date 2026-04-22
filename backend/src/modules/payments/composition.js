@@ -7,15 +7,14 @@ import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
 import { createStripeGateway } from "./infrastructure/gateways/stripeGateway.js";
 import { createMongoosePaymentRepository } from "./infrastructure/repositories/mongoosePaymentRepository.js";
 import { createPaymentsHttpController } from "./infrastructure/http/paymentsHttpController.js";
+import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const paymentGateway = createStripeGateway({
   secretKey: env.stripeSecretKey,
   webhookSecret: env.stripeWebhookSecret,
 });
 const paymentRepository = createMongoosePaymentRepository();
-const paymentEventPublisher = {
-  async publish() {},
-};
+const paymentEventPublisher = applicationEventBus;
 
 const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
   paymentGateway,
