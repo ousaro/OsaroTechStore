@@ -12,7 +12,7 @@ Completed items and historical progress notes have been removed on purpose.
 - [x] Move `CategoryDeleted` subscription wiring out of `modules/categories/composition.js` and into that central workflow registry
 - [ ] Register all future `OrderPlaced` and `PaymentConfirmed` subscribers from the same central place
 - [x] Keep module `composition.js` files focused on module-local wiring only
-- [ ] Remove empty structural folders that no longer represent real design decisions
+- [x] Remove empty structural folders that no longer represent real design decisions
 
 ## 2. Orders and Payments Boundary
 
@@ -83,7 +83,7 @@ Completed items and historical progress notes have been removed on purpose.
 - [ ] Remove `domain/ports` in `orders` if it is not part of an active design direction
 - [ ] Keep folder conventions aligned with actual module complexity instead of preserving placeholders
 
-## 10. structure 
+## 10. structure
 
 - [ ] the config should be under the global /infrastructure
 - [ ] the infrastructre folder in each module should be named adapters because it is and implementation
