@@ -1,5 +1,4 @@
 export {
-  ordersInputPort,
   getAllOrdersHandler,
   getOrderByIdHandler,
   addOrderHandler,

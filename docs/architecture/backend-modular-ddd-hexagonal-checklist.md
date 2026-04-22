@@ -21,6 +21,7 @@ Progress: products module `index.js` is now narrowed to HTTP handler exports ins
 Progress: users module `index.js` is now narrowed to HTTP handler exports instead of re-exporting the users input port.
 Progress: payments module `index.js` is now narrowed to HTTP handler exports instead of re-exporting the payments input port.
 Progress: categories module `index.js` is now narrowed to HTTP handler exports instead of re-exporting the categories input port.
+Progress: orders module `index.js` is now narrowed to HTTP handler exports instead of re-exporting the orders input port.
 - [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
 - [ ] Document the ownership boundary between identity/auth data and profile/user data
 
