@@ -80,7 +80,7 @@ describe("stripe gateway contract", () => {
     expect(createResult).to.deep.equal({ id: "cs_test_123", url: "https://stripe.test/session" });
 
     expect(checkoutRetrieveStub.calledOnceWithExactly("cs_test_123")).to.equal(true);
-    expect(retrieveResult).to.deep.equal({ id: "cs_test_123", payment_status: "paid" });
+    expect(retrieveResult).to.deep.equal({ id: "cs_test_123", paymentStatus: "paid" });
 
     expect(webhookResult.type).to.equal("checkout.session.completed");
     expect(webhookResult.id).to.equal("evt_test_123");

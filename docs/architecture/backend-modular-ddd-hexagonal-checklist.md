@@ -63,7 +63,7 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 
 ## 4. Rich Domain Modeling
 
-- [ ] Introduce value objects where business language matters
+- [x] Introduce value objects where business language matters
 - Progress: orders now use an `Address` value object while still exposing stable persistence primitives through `toPrimitives()`.
 - Progress: auth now uses an `Email` value object to validate and normalize email addresses before commands and repository lookups.
 - Progress: orders now use a `Money` value object for `totalPrice` while still exposing numeric primitives through `toPrimitives()`.
@@ -107,7 +107,7 @@ Progress: order use cases now use an order-specific application error, and order
 - Progress: category deletion now depends on an explicit `productCategoryCleanup` port instead of a loose cross-module cleanup function, though the workflow is still synchronous.
 - [ ] Decide whether category deletion should emit an event such as `CategoryDeleted`
 - [ ] Add an ACL or translation layer if product/category module language diverges
-- [ ] Replace misleading pass-through entity naming with proper mapper/read-model naming
+- [x] Replace misleading pass-through entity naming with proper mapper/read-model naming
 - Progress: categories no longer use the misleading `CategoryEntity` pass-through name; the repository now maps through `categoryRecordMapper.js`.
 - [ ] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
 Progress: product use cases now use a product-specific application error instead of `ApiError`, while product domain validation remains on `DomainValidationError`.
@@ -120,7 +120,7 @@ Progress: category deletion now uses category-specific application errors instea
 - [ ] Replace repository-shaped cross-module access with a narrower application contract
 - Progress: auth no longer exposes a broad `userAccounts` object and now provides named account-oriented capabilities such as `getUserAccountById` and `updateUserAccountById`, though the remaining contract is still somewhat persistence-shaped.
 - Progress: users now treats the auth dependency as an explicit `authAccountAccess` output port instead of four loose imported functions.
-- [ ] Introduce value objects or policies around password strength and email rules
+- [x] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
 - Progress: auth token verification infrastructure now uses `AuthUnauthorizedError` instead of `ApiError`.
@@ -130,7 +130,8 @@ Progress: auth password/email rules now live in an application policy, though de
 
 - [ ] Review every input port and output port for unnecessary breadth
 - Progress: `productsInputPort` now only contains the HTTP-facing product use cases; category cleanup and scheduler refresh stay on narrower public/bootstrap paths instead of inflating the controller port.
-- [ ] Define boundary DTOs where external/module contracts should not expose internal shapes
+- [x] Define boundary DTOs where external/module contracts should not expose internal shapes
+- Progress: the Stripe checkout-session gateway contract now returns a normalized `paymentStatus` field instead of leaking Stripe's raw `payment_status` shape.
 - [ ] Distinguish commands from queries in contracts where complexity justifies it
 - [x] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
