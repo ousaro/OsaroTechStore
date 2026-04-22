@@ -1,26 +1,33 @@
 import bcrypt from "bcrypt";
 import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
 import UserModel from "../persistence/userModel.js";
+import { toAuthUserRecord } from "./authUserRecordMapper.js";
 
 export const createMongooseAuthUserRepository = () => {
   return {
-    find(filter) {
-      return UserModel.find(filter);
+    async findManagedAccountsSorted() {
+      const docs = await UserModel.find({ admin: false }).sort({ createdAt: -1 });
+      return docs.map(toAuthUserRecord);
     },
     async findByEmail(email) {
-      return UserModel.findOne({ email });
+      const doc = await UserModel.findOne({ email });
+      return toAuthUserRecord(doc);
     },
-    findById(id) {
-      return UserModel.findById(id);
+    async findById(id) {
+      const doc = await UserModel.findById(id);
+      return toAuthUserRecord(doc);
     },
     async create({ firstName, lastName, email, password, picture }) {
-      return UserModel.create({ firstName, lastName, email, password, picture });
+      const doc = await UserModel.create({ firstName, lastName, email, password, picture });
+      return toAuthUserRecord(doc);
     },
-    findByIdAndUpdate(id, updates, options = {}) {
-      return UserModel.findByIdAndUpdate(id, updates, options);
+    async findByIdAndUpdate(id, updates, options = {}) {
+      const doc = await UserModel.findByIdAndUpdate(id, updates, options);
+      return toAuthUserRecord(doc);
     },
-    findByIdAndDelete(filter) {
-      return UserModel.findByIdAndDelete(filter);
+    async findByIdAndDelete(filter) {
+      const doc = await UserModel.findByIdAndDelete(filter);
+      return toAuthUserRecord(doc);
     },
     hashPassword(password) {
       return bcrypt.hash(password, 10);
@@ -33,7 +40,7 @@ export const createMongooseAuthUserRepository = () => {
       if (!user) {
         throw new AuthUnauthorizedError("Request is not authorized");
       }
-      return user;
+      return { _id: user._id };
     },
   };
 };

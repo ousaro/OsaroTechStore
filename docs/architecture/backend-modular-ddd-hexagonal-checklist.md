@@ -167,7 +167,8 @@ Progress: auth and products public API contract tests are now in place, includin
 
 - [x] Replace pass-through record mappers with explicit persistence mapping
 Progress: users, orders, products, categories, and payments record mappings are now explicit instead of pass-through.
-- [ ] Ensure repositories return stable internal records or domain objects, not raw Mongoose documents
+- [x] Ensure repositories return stable internal records or domain objects, not raw Mongoose documents
+- Progress: the auth repository now maps Mongoose results into stable auth-user records too, so the main repositories no longer expose raw Mongoose documents across module/application boundaries.
 - [ ] Rename misleading mapper files that are not real entities
 - [ ] Add explicit translation for gateway payloads where needed
 - [ ] Prevent persistence schema details from leaking into application/domain code

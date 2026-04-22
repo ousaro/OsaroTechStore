@@ -9,8 +9,12 @@ describe("auth user repository contract", () => {
 
     expect(() =>
       assertAuthUserRepositoryPort(repository, [
+        "findManagedAccountsSorted",
         "findByEmail",
+        "findById",
         "create",
+        "findByIdAndUpdate",
+        "findByIdAndDelete",
         "hashPassword",
         "comparePassword",
         "findUserIdOnly",

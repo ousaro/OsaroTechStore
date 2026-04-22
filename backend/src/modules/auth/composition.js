@@ -36,8 +36,7 @@ export const {
   authInputPort,
 });
 
-export const listManagedUserAccounts = () =>
-  authUserRepository.find({ admin: false }).sort({ createdAt: -1 });
+export const listManagedUserAccounts = () => authUserRepository.findManagedAccountsSorted();
 
 export const getManagedUserAccount = (id) => authUserRepository.findById(id);
 
