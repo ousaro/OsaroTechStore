@@ -1,17 +1,34 @@
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
+import { createPaymentConfirmedEvent } from "../../domain/events/PaymentConfirmed.js";
+import { assertPaymentEventPublisherPort } from "../../ports/output/paymentEventPublisherPort.js";
 import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
 
 export const buildVerifyWebhookUseCase = ({
   paymentGateway,
   paymentRepository,
+  paymentEventPublisher = null,
 }) => {
   assertPaymentGatewayPort(paymentGateway, ["verifyWebhook"]);
   assertPaymentRepositoryPort(paymentRepository, ["applyWebhookStateChangeOnce"]);
+  if (paymentEventPublisher) {
+    assertPaymentEventPublisherPort(paymentEventPublisher, ["publish"]);
+  }
+
   return async ({ payload, signature }) => {
     const stateChange = paymentGateway.verifyWebhook(payload, signature);
 
     if (stateChange) {
-      await paymentRepository.applyWebhookStateChangeOnce(stateChange);
+      const applied = await paymentRepository.applyWebhookStateChangeOnce(stateChange);
+
+      if (
+        applied &&
+        paymentEventPublisher &&
+        stateChange.paymentStatus === "paid"
+      ) {
+        await paymentEventPublisher.publish(
+          createPaymentConfirmedEvent(stateChange)
+        );
+      }
     }
 
     return { received: true };

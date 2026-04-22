@@ -125,7 +125,8 @@ Progress: order use cases now use an order-specific application error, and order
 - Progress: category/product collaboration now goes through an explicit translator that maps `CategoryDeleted` events onto the products module cleanup capability, instead of keeping that mapping inline in the composition root.
 - [x] Replace misleading pass-through entity naming with proper mapper/read-model naming
 - Progress: categories no longer use the misleading `CategoryEntity` pass-through name; the repository now maps through `categoryRecordMapper.js`.
-- [ ] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
+- [x] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
+- Progress: the architecture docs now make the decision explicit: products does not need a richer aggregate root yet because its current rules are still limited to validation, stock non-negativity, and price/discount recalculation.
 Progress: product use cases now use a product-specific application error instead of `ApiError`, while product domain validation remains on `DomainValidationError`.
 Progress: category deletion now uses category-specific application errors instead of `ApiError`.
 
@@ -173,9 +174,10 @@ Progress: users, orders, and products record mappings are now explicit instead o
 
 ## 11. Events and Cross-Module Workflows
 
-- [ ] Define the first set of domain/application events
-- [ ] Add `OrderPlaced`
-- [ ] Add `PaymentConfirmed` or equivalent
+- [x] Define the first set of domain/application events
+- [x] Add `OrderPlaced`
+- [x] Add `PaymentConfirmed` or equivalent
+- Progress: the first concrete event set is now in place around `OrderPlaced`, `PaymentConfirmed`, and `CategoryDeleted`, with order/payment use cases able to publish those events through explicit publisher ports without coupling to a concrete event bus yet.
 - [x] Add `CategoryDeleted` if event-driven cleanup is adopted
 - [ ] Choose an in-process event bus approach for the modular monolith
 - [ ] Add event handler tests

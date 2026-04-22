@@ -13,6 +13,9 @@ const paymentGateway = createStripeGateway({
   webhookSecret: env.stripeWebhookSecret,
 });
 const paymentRepository = createMongoosePaymentRepository();
+const paymentEventPublisher = {
+  async publish() {},
+};
 
 const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
   paymentGateway,
@@ -22,6 +25,7 @@ const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
 const verifyWebhookUseCase = buildVerifyWebhookUseCase({
   paymentGateway,
   paymentRepository,
+  paymentEventPublisher,
 });
 const getSessionDetailsUseCase = buildGetSessionDetailsUseCase({
   paymentGateway,

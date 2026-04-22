@@ -190,7 +190,7 @@ Current limitations:
 
 - product record mapping is still pass-through
 - product modeling is still patch-oriented rather than aggregate-oriented
-- no richer stock/catalog aggregate behavior exists yet
+- current stock/catalog rules are still too light to justify a heavier aggregate root today
 
 ### Categories
 
@@ -316,6 +316,25 @@ Why:
 - `products` currently has pricing and stock-related rules, but not yet enough coupled invariants to justify a heavier aggregate root
 - `payments` is still mostly an external-session workflow around Stripe, so a true aggregate would be premature until payment state is owned internally
 - `auth`, `users`, and `categories` are currently dominated by CRUD and boundary orchestration rather than rich multi-entity consistency rules
+
+## Product Aggregate Decision
+
+The current architectural decision is:
+
+- `products` does not need a richer aggregate root yet
+
+Why:
+
+- the current product rules are still limited to field validation, stock non-negativity, and discount/price recalculation
+- there are no stronger inventory reservation rules, bundle rules, catalog publication workflows, or cross-entity stock invariants yet
+- a heavier aggregate would add structure before the domain actually needs it
+
+What would change this decision later:
+
+- inventory reservation or oversell prevention
+- richer stock lifecycle transitions
+- multi-variant product rules
+- catalog publication/review workflows
 
 ## Cross-Module Communication Today
 
