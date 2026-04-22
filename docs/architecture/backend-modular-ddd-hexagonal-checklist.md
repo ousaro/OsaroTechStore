@@ -128,6 +128,7 @@ Progress: auth password/email rules now live in an application policy, though de
 ## 9. Ports and Contracts
 
 - [ ] Review every input port and output port for unnecessary breadth
+- Progress: `productsInputPort` now only contains the HTTP-facing product use cases; category cleanup and scheduler refresh stay on narrower public/bootstrap paths instead of inflating the controller port.
 - [ ] Define boundary DTOs where external/module contracts should not expose internal shapes
 - [ ] Distinguish commands from queries in contracts where complexity justifies it
 - [x] Add adapter contract tests for repository ports

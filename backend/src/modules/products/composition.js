@@ -30,8 +30,6 @@ const productsInputPort = createProductsInputPort({
   addProduct: addProductUseCase,
   updateProduct: updateProductUseCase,
   deleteProduct: deleteProductUseCase,
-  removeProductsByCategory: removeProductsByCategoryUseCase,
-  refreshNewProductStatus: refreshNewProductStatusUseCase,
 });
 const newProductStatusScheduler = createNewProductStatusScheduler({
   refreshNewProductStatusUseCase,
