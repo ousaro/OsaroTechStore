@@ -1,5 +1,4 @@
 export {
-  paymentsInputPort,
   createPaymentIntentHandler,
   stripeWebhookHandler,
   getSessionDetailsHandler,

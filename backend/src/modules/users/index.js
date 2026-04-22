@@ -1,5 +1,4 @@
 export {
-  usersInputPort,
   getAllUsersHandler,
   getUserByIdHandler,
   updateUserHandler,
