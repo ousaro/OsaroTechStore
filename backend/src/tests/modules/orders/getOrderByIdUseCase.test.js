@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildGetOrderByIdUseCase } from "../../../modules/orders/application/use-cases/getOrderByIdUseCase.js";
+import { OrderNotFoundError } from "../../../modules/orders/application/errors/OrderApplicationError.js";
 
 describe("getOrderByIdUseCase", () => {
   it("returns the order when the repository finds it", async () => {
@@ -29,8 +30,9 @@ describe("getOrderByIdUseCase", () => {
       await getOrderByIdUseCase({ id: "bad-id" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(OrderNotFoundError);
       expect(error.message).to.equal("Invalid order ID");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("ORDER_NOT_FOUND");
     }
   });
 
@@ -46,8 +48,9 @@ describe("getOrderByIdUseCase", () => {
       await getOrderByIdUseCase({ id: "507f1f77bcf86cd799439012" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(OrderNotFoundError);
       expect(error.message).to.equal("Order not found");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("ORDER_NOT_FOUND");
     }
   });
 });

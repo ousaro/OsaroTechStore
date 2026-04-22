@@ -3,6 +3,7 @@ const STATUS_BY_ERROR_CODE = Object.freeze({
   AUTH_UNAUTHORIZED: 401,
   AUTH_VALIDATION: 400,
   DOMAIN_VALIDATION: 400,
+  ORDER_NOT_FOUND: 404,
 });
 
 export const resolveHttpError = (error) => {

@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildUpdateOrderUseCase } from "../../../modules/orders/application/use-cases/updateOrderUseCase.js";
+import { OrderNotFoundError } from "../../../modules/orders/application/errors/OrderApplicationError.js";
 
 describe("updateOrderUseCase", () => {
   it("persists a shaped order patch instead of raw updates", async () => {
@@ -46,8 +47,9 @@ describe("updateOrderUseCase", () => {
       await updateOrderUseCase({ id: "bad-id", updates: { status: "paid" } });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(OrderNotFoundError);
       expect(error.message).to.equal("Invalid order ID");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("ORDER_NOT_FOUND");
     }
   });
 });

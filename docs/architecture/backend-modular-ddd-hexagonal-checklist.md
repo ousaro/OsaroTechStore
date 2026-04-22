@@ -27,10 +27,15 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 ## 3. Domain Purity
 
 - [ ] Remove HTTP-oriented error handling from domain objects
+- Progress: auth, products, and categories no longer throw HTTP-shaped `ApiError` from their domain factories/entities.
 - [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
+- Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, and `DomainValidationError` are now in use for the auth, product, and category flows.
 - [ ] Map domain/application errors to HTTP responses only in transport adapters
+- Progress: shared HTTP error resolution now maps auth/application and domain-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
 - [ ] Remove direct framework/library validation dependencies from domain objects where possible
+- Progress: auth email/password validation no longer depends on `validator` inside the domain layer.
 - [ ] Wrap external validation rules behind policies or application-layer validation when appropriate
+- Progress: auth credential validation now runs through an application policy instead of the domain command object.
 
 ## 4. Rich Domain Modeling
 
@@ -78,6 +83,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Clarify whether users owns profile behavior only
 - [x] Replace repository-shaped cross-module access with a narrower application contract
 - [ ] Introduce value objects or policies around password strength and email rules
+Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
 
 ## 9. Ports and Contracts
@@ -132,6 +138,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Add integration tests for order/payment workflow
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
+- Progress: auth application error flows and product/category domain validation error behavior are now covered with focused unit tests, including HTTP error mapping.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation

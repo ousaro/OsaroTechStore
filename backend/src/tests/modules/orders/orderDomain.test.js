@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createOrder, createOrderUpdatePatch } from "../../../../src/modules/orders/domain/entities/Order.js";
+import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Order Domain", () => {
   it("creates a valid order aggregate", () => {
@@ -26,7 +27,7 @@ describe("Order Domain", () => {
   });
 
   it("throws for invalid address", () => {
-    expect(() =>
+    try {
       createOrder({
         ownerId: "u1",
         products: [{ productId: "p1", qty: 1 }],
@@ -37,8 +38,15 @@ describe("Order Domain", () => {
         paymentStatus: "pending",
         transactionId: "tx-1",
         paymentDetails: { provider: "stripe" },
-      })
-    ).to.throw("Invalid address format");
+      });
+      expect.fail("Expected createOrder to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Invalid address format");
+      expect(error.meta).to.deep.equal({
+        emptyFields: ["addressLine", "postalCode", "country"],
+      });
+    }
   });
 
   it("creates an update patch for valid partial updates", () => {
@@ -54,10 +62,17 @@ describe("Order Domain", () => {
   });
 
   it("throws when an update patch contains an invalid address", () => {
-    expect(() =>
+    try {
       createOrderUpdatePatch({
         address: { city: "Casablanca" },
-      })
-    ).to.throw("Invalid address format");
+      });
+      expect.fail("Expected createOrderUpdatePatch to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Invalid address format");
+      expect(error.meta).to.deep.equal({
+        emptyFields: ["addressLine", "postalCode", "country"],
+      });
+    }
   });
 });

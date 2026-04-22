@@ -1,4 +1,4 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import {
   assertRequiredFields,
   assertNonEmptyArray,
@@ -27,7 +27,7 @@ export const createOrder = ({
   assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
-    throw new ApiError("paymentDetails is required", 400);
+    throw new DomainValidationError("paymentDetails is required");
   }
 
   const props = {
@@ -82,7 +82,7 @@ export const createOrderUpdatePatch = (updates) => {
   }
 
   if (patch.paymentDetails !== undefined && (!patch.paymentDetails || typeof patch.paymentDetails !== "object")) {
-    throw new ApiError("paymentDetails is required", 400);
+    throw new DomainValidationError("paymentDetails is required");
   }
 
   return Object.freeze({

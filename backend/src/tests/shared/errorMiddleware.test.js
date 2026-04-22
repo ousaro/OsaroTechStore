@@ -3,6 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
+import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
 import { DomainValidationError } from "../../shared/domain/errors/DomainValidationError.js";
 
 describe("errorMiddleware", () => {
@@ -83,6 +84,22 @@ describe("errorMiddleware", () => {
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Please fill in all the fields");
     expect(body.emptyFields).to.deep.equal(["name"]);
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps order application errors to 404", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new OrderNotFoundError("Order not found"), req, res, () => {});
+
+    expect(res.status.calledWith(404)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Order not found");
     expect(body.stack).to.be.a("string");
   });
 });
