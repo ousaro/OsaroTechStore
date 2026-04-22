@@ -1,6 +1,7 @@
 import { buildGetAllOrdersUseCase } from "./application/queries/getAllOrdersUseCase.js";
 import { buildGetOrderByIdUseCase } from "./application/queries/getOrderByIdUseCase.js";
 import { buildAddOrderUseCase } from "./application/commands/addOrderUseCase.js";
+import { buildConfirmOrderPaymentUseCase } from "./application/commands/confirmOrderPaymentUseCase.js";
 import { buildUpdateOrderUseCase } from "./application/commands/updateOrderUseCase.js";
 import { buildDeleteOrderUseCase } from "./application/commands/deleteOrderUseCase.js";
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
@@ -17,6 +18,9 @@ const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
 const addOrderUseCase = buildAddOrderUseCase({
   orderRepository,
   orderEventPublisher,
+});
+export const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
+  orderRepository,
 });
 const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
 const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });

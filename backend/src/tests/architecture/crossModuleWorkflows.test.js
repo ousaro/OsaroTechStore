@@ -35,10 +35,46 @@ describe("cross-module workflows", () => {
       _id: "cat-1",
       name: "Phones",
     });
-    expect(unsubscribes).to.have.lengthOf(1);
+    expect(unsubscribes).to.have.lengthOf(2);
     expect(createCategoryDeletedTranslator.calledOnce).to.equal(true);
     expect(removeProductsByCategory.calledOnceWithExactly({
       categoryId: "cat-1",
+    })).to.equal(true);
+  });
+
+  it("routes PaymentConfirmed from the application workflow registry into the order payment handler", async () => {
+    const eventBus = createInProcessEventBus();
+    const confirmOrderPayment = sinon.stub().resolves();
+
+    registerApplicationWorkflows({
+      eventBus,
+      createCategoryDeletedTranslator: ({ removeProductsByCategory }) => ({
+        publish: (event) =>
+          removeProductsByCategory({ categoryId: event.payload.categoryId }),
+      }),
+      removeProductsByCategoryHandler: sinon.stub().resolves(),
+      createPaymentConfirmedTranslator: ({ confirmOrderPayment }) => ({
+        publish: (event) =>
+          confirmOrderPayment({
+            paymentReference: event.payload.sessionId,
+            eventId: event.payload.eventId,
+          }),
+      }),
+      confirmOrderPaymentHandler: confirmOrderPayment,
+    });
+
+    await eventBus.publish({
+      type: "PaymentConfirmed",
+      payload: {
+        sessionId: "cs_test_123",
+        eventId: "evt_test_123",
+        paymentStatus: "paid",
+      },
+    });
+
+    expect(confirmOrderPayment.calledOnceWithExactly({
+      paymentReference: "cs_test_123",
+      eventId: "evt_test_123",
     })).to.equal(true);
   });
 });

@@ -12,6 +12,7 @@ describe("order repository contract", () => {
         "isValidId",
         "findAllSorted",
         "findById",
+        "findByTransactionId",
         "create",
         "findByIdAndUpdate",
         "findByIdAndDelete",

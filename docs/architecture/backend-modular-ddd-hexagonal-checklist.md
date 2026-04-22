@@ -27,9 +27,9 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 3. Payment Workflow Completion
 
-- [ ] Add an order-side subscriber for `PaymentConfirmed`
-- [ ] Make the order-side subscriber update order state through order application/domain logic, not direct persistence writes from payments
-- [ ] Define what should happen when a payment is confirmed but the correlated order cannot be found
+- [x] Add an order-side subscriber for `PaymentConfirmed`
+- [x] Make the order-side subscriber update order state through order application/domain logic, not direct persistence writes from payments
+- [x] Define what should happen when a payment is confirmed but the correlated order cannot be found
 - [ ] Decide how failed, expired, and refunded payment events should affect order state
 - [ ] Add provider-neutral application events for the other payment outcomes the business cares about
 - [ ] Decide whether `OrderPlaced` should start payment initialization or other downstream workflows
@@ -84,5 +84,6 @@ Completed items and historical progress notes have been removed on purpose.
 - [ ] Keep folder conventions aligned with actual module complexity instead of preserving placeholders
 
 ## 10. structure 
+
 - [ ] the config should be under the global /infrastructure
-- [ ] the infrastructre folder in each module should be named adapters because it is and implementation 
+- [ ] the infrastructre folder in each module should be named adapters because it is and implementation
