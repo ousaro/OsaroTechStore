@@ -106,7 +106,8 @@ Progress: payment input validation and webhook transport failure now use payment
 
 - [x] Move order state changes toward explicit behaviors instead of generic patch updates
 - Progress: order lifecycle changes now route through named domain behaviors such as `markOrderAsPaid`, `startOrderProcessing`, `shipOrder`, `deliverOrder`, and `cancelOrder` instead of relying only on generic target-status patching.
-- [ ] Separate create/update commands from read queries where useful
+- [x] Separate create/update commands from read queries where useful
+- Progress: orders now separates read handlers (`getAllOrders`, `getOrderById`) from write handlers (`addOrder`, `updateOrder`, `deleteOrder`) through distinct query and command input ports.
 - [x] Define order invariants around payment state and status transitions
 - Progress: the order lifecycle service now enforces that paid and fulfillment statuses require an effective `paymentStatus` of `paid`, instead of allowing status and payment state to drift independently.
 - [ ] Decide which payment fields truly belong inside order versus inside payments
