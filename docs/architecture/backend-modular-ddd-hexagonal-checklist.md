@@ -118,9 +118,9 @@ Progress: order use cases now use an order-specific application error, and order
 
 ## 7. Products and Categories
 
-- [ ] Replace synchronous cleanup orchestration with an explicit collaboration model
-- Progress: category deletion now depends on an explicit `productCategoryCleanup` port instead of a loose cross-module cleanup function, though the workflow is still synchronous.
-- [ ] Decide whether category deletion should emit an event such as `CategoryDeleted`
+- [x] Replace synchronous cleanup orchestration with an explicit collaboration model
+- [x] Decide whether category deletion should emit an event such as `CategoryDeleted`
+- Progress: category deletion now publishes an explicit `CategoryDeleted` domain event through a category event publisher port, and the current composition root wires that event to product cleanup without making the category use case call product cleanup directly.
 - [ ] Add an ACL or translation layer if product/category module language diverges
 - [x] Replace misleading pass-through entity naming with proper mapper/read-model naming
 - Progress: categories no longer use the misleading `CategoryEntity` pass-through name; the repository now maps through `categoryRecordMapper.js`.
@@ -154,7 +154,7 @@ Progress: auth password/email rules now live in an application policy, though de
 - [x] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
 - Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.
-- Progress: category deletion now validates its product-cleanup dependency through an explicit `productCategoryCleanup` port contract.
+- Progress: category deletion now validates its event-publisher dependency through an explicit `categoryEventPublisher` port contract.
 - Progress: auth, categories, orders, and products now also have focused repository adapter contract tests.
 - [x] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
@@ -175,7 +175,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Define the first set of domain/application events
 - [ ] Add `OrderPlaced`
 - [ ] Add `PaymentConfirmed` or equivalent
-- [ ] Add `CategoryDeleted` if event-driven cleanup is adopted
+- [x] Add `CategoryDeleted` if event-driven cleanup is adopted
 - [ ] Choose an in-process event bus approach for the modular monolith
 - [ ] Add event handler tests
 - [ ] Add cross-module workflow tests
@@ -203,7 +203,7 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
 - Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP and transport-validation error mapping.
-- Progress: category deletion now has a focused negative test that enforces the required `productCategoryCleanup` port contract.
+- Progress: category deletion now has focused event-boundary tests, including a negative contract check for the required `categoryEventPublisher` port plus `CategoryDeleted` event payload validation.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation

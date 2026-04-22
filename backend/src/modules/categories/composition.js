@@ -7,8 +7,12 @@ import { removeProductsByCategory } from "../products/public-api.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
 
 const categoryRepository = createMongooseCategoryRepository();
-const productCategoryCleanup = {
-  removeProductsByCategory,
+const categoryEventPublisher = {
+  async publish(event) {
+    if (event?.type === "CategoryDeleted") {
+      await removeProductsByCategory({ categoryId: event.payload.categoryId });
+    }
+  },
 };
 
 const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
@@ -19,7 +23,7 @@ const addNewCategoryUseCase = buildAddNewCategoryUseCase({
 });
 const deleteCategoryUseCase = buildDeleteCategoryUseCase({
   categoryRepository,
-  productCategoryCleanup,
+  categoryEventPublisher,
 });
 const categoriesInputPort = createCategoriesInputPort({
   getAllCategories: getAllCategoriesUseCase,

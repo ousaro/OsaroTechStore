@@ -1,14 +1,16 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
-import { assertProductCategoryCleanupPort } from "../../../modules/categories/ports/output/productCategoryCleanupPort.js";
+import { createCategoryDeletedEvent } from "../../../modules/categories/domain/events/CategoryDeleted.js";
+import { assertCategoryEventPublisherPort } from "../../../modules/categories/ports/output/categoryEventPublisherPort.js";
 import {
   CategoryNotFoundError,
   CategoryValidationError,
 } from "../../../modules/categories/application/errors/CategoryApplicationError.js";
+import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 
 describe("deleteCategoryUseCase", () => {
-  it("removes products through the product input contract before deleting the category", async () => {
+  it("publishes CategoryDeleted after deleting the category", async () => {
     const deletedCategory = { _id: "cat-1", name: "Phones" };
     const calls = [];
     const deleteCategoryUseCase = buildDeleteCategoryUseCase({
@@ -18,9 +20,9 @@ describe("deleteCategoryUseCase", () => {
           return deletedCategory;
         },
       },
-      productCategoryCleanup: {
-        removeProductsByCategory: async ({ categoryId }) => {
-          calls.push(["removeProductsByCategory", categoryId]);
+      categoryEventPublisher: {
+        publish: async (event) => {
+          calls.push(["publish", event]);
         },
       },
     });
@@ -29,8 +31,17 @@ describe("deleteCategoryUseCase", () => {
 
     expect(result).to.equal(deletedCategory);
     expect(calls).to.deep.equal([
-      ["removeProductsByCategory", "cat-1"],
       ["deleteCategory", "cat-1"],
+      [
+        "publish",
+        {
+          type: "CategoryDeleted",
+          payload: {
+            categoryId: "cat-1",
+            name: "Phones",
+          },
+        },
+      ],
     ]);
   });
 
@@ -39,8 +50,8 @@ describe("deleteCategoryUseCase", () => {
       categoryRepository: {
         findByIdAndDelete: async () => null,
       },
-      productCategoryCleanup: {
-        removeProductsByCategory: async () => {},
+      categoryEventPublisher: {
+        publish: async () => {},
       },
     });
 
@@ -54,22 +65,22 @@ describe("deleteCategoryUseCase", () => {
     }
   });
 
-  it("requires the product category cleanup port dependency", () => {
+  it("requires the category event publisher dependency", () => {
     expect(() =>
       buildDeleteCategoryUseCase({
         categoryRepository: {
           findByIdAndDelete: async () => null,
         },
-        productCategoryCleanup: {},
+        categoryEventPublisher: {},
       })
-    ).to.throw("productCategoryCleanup port must implement removeProductsByCategory");
+    ).to.throw("categoryEventPublisher port must implement publish");
 
     expect(() =>
-      assertProductCategoryCleanupPort(
+      assertCategoryEventPublisherPort(
         {
-          removeProductsByCategory: async () => {},
+          publish: async () => {},
         },
-        ["removeProductsByCategory"]
+        ["publish"]
       )
     ).to.not.throw();
   });
@@ -79,8 +90,8 @@ describe("deleteCategoryUseCase", () => {
       categoryRepository: {
         findByIdAndDelete: async () => null,
       },
-      productCategoryCleanup: {
-        removeProductsByCategory: async () => {},
+      categoryEventPublisher: {
+        publish: async () => {},
       },
     });
 
@@ -92,5 +103,24 @@ describe("deleteCategoryUseCase", () => {
       expect(error.message).to.equal("Category not found");
       expect(error.code).to.equal("CATEGORY_NOT_FOUND");
     }
+  });
+
+  it("creates a CategoryDeleted domain event with stable payload", () => {
+    const event = createCategoryDeletedEvent({ _id: "cat-1", name: "Phones" });
+
+    expect(event).to.deep.equal({
+      type: "CategoryDeleted",
+      payload: {
+        categoryId: "cat-1",
+        name: "Phones",
+      },
+    });
+  });
+
+  it("requires a category id when creating CategoryDeleted", () => {
+    expect(() => createCategoryDeletedEvent({ name: "Phones" })).to.throw(
+      DomainValidationError,
+      "category id is required to create CategoryDeleted"
+    );
   });
 });
