@@ -5,9 +5,13 @@ import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPor
 
 export const buildAddOrderUseCase = ({
   orderRepository,
+  linkPaymentToOrder = null,
   orderEventPublisher = null,
 }) => {
   assertOrderRepositoryPort(orderRepository, ["create"]);
+  if (linkPaymentToOrder && typeof linkPaymentToOrder !== "function") {
+    throw new Error("linkPaymentToOrder must be a function");
+  }
   if (orderEventPublisher) {
     assertOrderEventPublisherPort(orderEventPublisher, ["publish"]);
   }
@@ -27,6 +31,13 @@ export const buildAddOrderUseCase = ({
     const order = createOrder(normalizedPayload);
     // Thin orchestration: validate/build in domain, persistence in repository.
     const createdOrder = await orderRepository.create(order);
+
+    if (linkPaymentToOrder && createdOrder.paymentReference) {
+      await linkPaymentToOrder({
+        paymentReference: createdOrder.paymentReference,
+        orderId: createdOrder._id ?? createdOrder.id,
+      });
+    }
 
     if (orderEventPublisher) {
       await orderEventPublisher.publish(createOrderPlacedEvent(createdOrder));

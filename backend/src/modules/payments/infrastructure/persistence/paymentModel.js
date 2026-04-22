@@ -11,6 +11,7 @@ const paymentSchema = new Schema(
       default: () => `pay_${new mongoose.Types.ObjectId().toString()}`,
     },
     sessionId: { type: String, required: true, unique: true },
+    orderId: { type: String, required: false, index: true },
     url: { type: String, required: false },
     providerTransactionId: { type: String, required: false },
     paymentStatus: { type: String, required: true, default: "pending" },

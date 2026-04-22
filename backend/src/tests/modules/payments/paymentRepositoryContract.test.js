@@ -11,6 +11,7 @@ describe("payment repository contract", () => {
       assertPaymentRepositoryPort(repository, [
         "savePaymentSession",
         "findPaymentSessionById",
+        "linkPaymentToOrder",
         "updatePaymentSessionStatus",
         "applyWebhookStateChangeOnce",
       ])

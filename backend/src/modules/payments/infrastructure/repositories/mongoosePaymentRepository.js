@@ -32,6 +32,16 @@ export const createMongoosePaymentRepository = () => {
       return toPaymentRecord(doc);
     },
 
+    async linkPaymentToOrder({ paymentReference, orderId }) {
+      const doc = await PaymentModel.findOneAndUpdate(
+        { paymentReference },
+        { orderId },
+        { new: true }
+      );
+
+      return toPaymentRecord(doc);
+    },
+
     async updatePaymentSessionStatus(sessionId, paymentStatus) {
       const doc = await PaymentModel.findOneAndUpdate(
         { sessionId },
@@ -76,6 +86,7 @@ export const createMongoosePaymentRepository = () => {
   assertPaymentRepositoryPort(repository, [
     "savePaymentSession",
     "findPaymentSessionById",
+    "linkPaymentToOrder",
     "updatePaymentSessionStatus",
     "applyWebhookStateChangeOnce",
   ]);

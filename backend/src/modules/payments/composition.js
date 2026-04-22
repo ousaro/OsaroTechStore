@@ -1,5 +1,6 @@
 import { env } from "../../config/env.js";
 import { buildCreatePaymentIntentUseCase } from "./application/commands/createPaymentIntentUseCase.js";
+import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPaymentToOrderUseCase.js";
 import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookUseCase.js";
 import { buildGetSessionDetailsUseCase } from "./application/queries/getSessionDetailsUseCase.js";
 import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
@@ -20,6 +21,9 @@ const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
   paymentGateway,
   paymentRepository,
   clientUrl: env.clientUrl,
+});
+export const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
+  paymentRepository,
 });
 const verifyWebhookUseCase = buildVerifyWebhookUseCase({
   paymentGateway,
