@@ -1,5 +1,4 @@
 export {
-  productsInputPort,
   getAllProductsHandler,
   getProductByIdHandler,
   addProductHandler,
