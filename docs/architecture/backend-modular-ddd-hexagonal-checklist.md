@@ -26,6 +26,7 @@ Progress: `users/index.js` has now been removed entirely because it had no remai
 Progress: `products/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `payments/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `categories/index.js` has now been removed entirely because it had no remaining consumers.
+Progress: `orders/index.js` has now been removed entirely because it had no remaining consumers.
 - [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
 - [ ] Document the ownership boundary between identity/auth data and profile/user data
 
