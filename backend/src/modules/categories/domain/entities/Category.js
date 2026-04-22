@@ -1,4 +1,4 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 
 export const createCategory = ({ name, description, image }) => {
   const emptyFields = [];
@@ -7,7 +7,7 @@ export const createCategory = ({ name, description, image }) => {
   if (!image) emptyFields.push("image");
 
   if (emptyFields.length > 0) {
-    throw new ApiError("Please fill in all the fields", 400, {
+    throw new DomainValidationError("Please fill in all the fields", {
       meta: { emptyFields },
     });
   }

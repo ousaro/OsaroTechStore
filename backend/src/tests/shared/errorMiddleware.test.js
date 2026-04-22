@@ -3,6 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
+import { DomainValidationError } from "../../shared/domain/errors/DomainValidationError.js";
 
 describe("errorMiddleware", () => {
   it("returns structured error using error + meta", () => {
@@ -58,6 +59,30 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Authorization token required");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps domain validation errors to 400 while preserving meta", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(
+      new DomainValidationError("Please fill in all the fields", {
+        meta: { emptyFields: ["name"] },
+      }),
+      req,
+      res,
+      () => {}
+    );
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Please fill in all the fields");
+    expect(body.emptyFields).to.deep.equal(["name"]);
     expect(body.stack).to.be.a("string");
   });
 });

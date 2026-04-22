@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createCategory } from "../../../../src/modules/categories/domain/entities/Category.js";
+import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Category Domain", () => {
   it("creates a valid category aggregate", () => {
@@ -16,12 +17,19 @@ describe("Category Domain", () => {
   });
 
   it("throws when required fields are missing", () => {
-    expect(() =>
+    try {
       createCategory({
         name: "",
         description: "desc",
         image: "",
-      })
-    ).to.throw("Please fill in all the fields");
+      });
+      expect.fail("Expected createCategory to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Please fill in all the fields");
+      expect(error.meta).to.deep.equal({
+        emptyFields: ["name", "image"],
+      });
+    }
   });
 });

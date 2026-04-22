@@ -1,4 +1,4 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 
 const isMissingValue = (value) => value === undefined || value === null || value === "";
 const calculateDiscountedPrice = ({ rawPrice, discount }) => rawPrice - (rawPrice * discount) / 100;
@@ -30,11 +30,11 @@ export const createProduct = ({ ownerId, payload }) => {
   if (isMissingValue(moreInformations)) emptyFields.push("moreInformations");
 
   if (emptyFields.length > 0) {
-    throw new ApiError("Please fill in all the fields", 400, { meta: { emptyFields } });
+    throw new DomainValidationError("Please fill in all the fields", { meta: { emptyFields } });
   }
 
   if (raw_price < 0 || countInStock < 0) {
-    throw new ApiError("Price and countInStock cannot be negative", 400);
+    throw new DomainValidationError("Price and countInStock cannot be negative");
   }
 
   const props = {
@@ -65,10 +65,10 @@ export const createProductUpdatePatch = (updates, currentProduct = {}) => {
   const patch = { ...updates };
 
   if (patch.raw_price !== undefined && patch.raw_price < 0) {
-    throw new ApiError("Price and countInStock cannot be negative", 400);
+    throw new DomainValidationError("Price and countInStock cannot be negative");
   }
   if (patch.countInStock !== undefined && patch.countInStock < 0) {
-    throw new ApiError("Price and countInStock cannot be negative", 400);
+    throw new DomainValidationError("Price and countInStock cannot be negative");
   }
 
   if (patch.raw_price !== undefined || patch.discount !== undefined) {

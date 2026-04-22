@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createProduct, createProductUpdatePatch } from "../../../../src/modules/products/domain/entities/Product.js";
+import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Product Domain", () => {
   it("creates a valid product aggregate", () => {
@@ -26,16 +27,33 @@ describe("Product Domain", () => {
   });
 
   it("throws when required fields are missing", () => {
-    expect(() =>
+    try {
       createProduct({
         ownerId: "u1",
         payload: { name: "", raw_price: 10 },
-      })
-    ).to.throw("Please fill in all the fields");
+      });
+      expect.fail("Expected createProduct to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Please fill in all the fields");
+      expect(error.meta).to.deep.equal({
+        emptyFields: [
+          "name",
+          "description",
+          "discount",
+          "image",
+          "otherImages",
+          "categoryId",
+          "category",
+          "countInStock",
+          "moreInformations",
+        ],
+      });
+    }
   });
 
   it("throws when negative numeric values are provided", () => {
-    expect(() =>
+    try {
       createProduct({
         ownerId: "u1",
         payload: {
@@ -50,8 +68,12 @@ describe("Product Domain", () => {
           countInStock: 1,
           moreInformations: "info",
         },
-      })
-    ).to.throw("Price and countInStock cannot be negative");
+      });
+      expect.fail("Expected createProduct to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Price and countInStock cannot be negative");
+    }
   });
 
   it("accepts zero discount and zero stock as valid values", () => {
