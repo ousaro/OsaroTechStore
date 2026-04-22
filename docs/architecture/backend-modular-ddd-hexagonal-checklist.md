@@ -134,9 +134,9 @@ Progress: users repository contract coverage is now in place.
 - Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.
 - Progress: category deletion now validates its product-cleanup dependency through an explicit `productCategoryCleanup` port contract.
 - Progress: auth, categories, orders, and products now also have focused repository adapter contract tests.
-- [ ] Add adapter contract tests for gateway ports
+- [x] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
-- [ ] Add module public API contract tests
+- [x] Add module public API contract tests
 Progress: auth and products public API contract tests are now in place, including named-capability coverage for the auth public surface.
 
 ## 10. Mapping and Persistence Boundaries
@@ -175,8 +175,8 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 ## 14. Testing
 
 - [x] Keep the current unit-test baseline green
-- [ ] Add contract tests for public APIs
-- [ ] Add contract tests for ports/adapters
+- [x] Add contract tests for public APIs
+- [x] Add contract tests for ports/adapters
 - [ ] Add integration tests for order/payment workflow
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
