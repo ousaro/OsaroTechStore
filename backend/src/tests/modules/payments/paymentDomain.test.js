@@ -6,10 +6,7 @@ import {
   createCheckoutItems,
 } from "../../../../src/modules/payments/domain/value-objects/CheckoutItem.js";
 import { createPaymentSession } from "../../../../src/modules/payments/domain/entities/PaymentSession.js";
-import {
-  createCheckoutSessionWorkflow,
-  resolvePaymentWebhookStateChange,
-} from "../../../../src/modules/payments/domain/services/paymentSessionWorkflowService.js";
+import { createCheckoutSessionWorkflow } from "../../../../src/modules/payments/domain/services/paymentSessionWorkflowService.js";
 
 describe("Payment Domain", () => {
   it("creates checkout items and a payment session with stable primitives", () => {
@@ -55,24 +52,6 @@ describe("Payment Domain", () => {
       id: "cs_test_123",
       url: "https://stripe.test/session",
       paymentStatus: "pending",
-    });
-  });
-
-  it("models webhook outcomes as payment state changes", () => {
-    const stateChange = resolvePaymentWebhookStateChange({
-      id: "evt_test_123",
-      type: "checkout.session.completed",
-      data: {
-        object: {
-          id: "cs_test_123",
-        },
-      },
-    });
-
-    expect(stateChange).to.deep.equal({
-      eventId: "evt_test_123",
-      sessionId: "cs_test_123",
-      paymentStatus: "paid",
     });
   });
 });

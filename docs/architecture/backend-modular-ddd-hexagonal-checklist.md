@@ -99,7 +99,8 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - [x] Add tests for webhook-driven state changes
 - Progress: payment-domain and payment-use-case tests now cover checkout-session workflow creation plus webhook-driven paid/no-op state changes.
 Progress: payment input validation and webhook transport failure now use payment-specific application errors instead of `ApiError`.
-- [ ] if we change the payment method the payment logic should work fine
+- [x] if we change the payment method the payment logic should work fine
+- Progress: provider-specific webhook event translation now lives inside the Stripe gateway adapter, so the payments application layer only sees provider-neutral payment state changes instead of Stripe event semantics.
 
 ## 6. Orders Module
 

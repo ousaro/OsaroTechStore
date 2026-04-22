@@ -1,6 +1,34 @@
 import Stripe from "stripe";
 import { toCheckoutSessionRecord } from "./checkoutSessionMapper.js";
 
+const WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE = {
+  "checkout.session.completed": "paid",
+  "checkout.session.async_payment_failed": "failed",
+  "checkout.session.expired": "failed",
+};
+
+const toStripeWebhookStateChange = (event) => {
+  const paymentStatus = WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE[event?.type];
+  const eventId = event?.id;
+  const sessionId = event?.data?.object?.id;
+
+  if (
+    !paymentStatus ||
+    typeof eventId !== "string" ||
+    eventId.trim() === "" ||
+    typeof sessionId !== "string" ||
+    sessionId.trim() === ""
+  ) {
+    return null;
+  }
+
+  return {
+    eventId,
+    sessionId,
+    paymentStatus,
+  };
+};
+
 export const createStripeGateway = ({ secretKey, webhookSecret }) => {
   const stripe = new Stripe(secretKey);
 
@@ -27,7 +55,8 @@ export const createStripeGateway = ({ secretKey, webhookSecret }) => {
     },
 
     verifyWebhook(payload, signature) {
-      return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      return toStripeWebhookStateChange(event);
     },
 
     async getCheckoutSession(sessionId) {

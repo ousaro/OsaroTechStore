@@ -25,7 +25,7 @@ describe("stripe gateway contract", () => {
     ).to.not.throw();
   });
 
-  it("delegates checkout session creation, retrieval, and webhook verification to Stripe", async () => {
+  it("delegates checkout session creation/retrieval and translates Stripe webhook events into provider-neutral state changes", async () => {
     const stripe = new Stripe("sk_test_123");
     const sessionsProto = Object.getPrototypeOf(stripe.checkout.sessions);
     const checkoutCreateStub = sinon
@@ -51,6 +51,11 @@ describe("stripe gateway contract", () => {
       id: "evt_test_123",
       object: "event",
       type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_123",
+        },
+      },
     });
     const webhookSignature = stripe.webhooks.generateTestHeaderString({
       payload: webhookPayload,
@@ -82,7 +87,10 @@ describe("stripe gateway contract", () => {
     expect(checkoutRetrieveStub.calledOnceWithExactly("cs_test_123")).to.equal(true);
     expect(retrieveResult).to.deep.equal({ id: "cs_test_123", paymentStatus: "paid" });
 
-    expect(webhookResult.type).to.equal("checkout.session.completed");
-    expect(webhookResult.id).to.equal("evt_test_123");
+    expect(webhookResult).to.deep.equal({
+      eventId: "evt_test_123",
+      sessionId: "cs_test_123",
+      paymentStatus: "paid",
+    });
   });
 });

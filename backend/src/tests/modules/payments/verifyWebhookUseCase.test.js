@@ -7,9 +7,9 @@ describe("verifyWebhookUseCase", () => {
   it("persists paid state for checkout completion events", async () => {
     const paymentGateway = {
       verifyWebhook: sinon.stub().returns({
-        id: "evt_test_123",
-        type: "checkout.session.completed",
-        data: { object: { id: "cs_test_123" } },
+        eventId: "evt_test_123",
+        sessionId: "cs_test_123",
+        paymentStatus: "paid",
       }),
     };
     const paymentRepository = {
@@ -35,10 +35,7 @@ describe("verifyWebhookUseCase", () => {
 
   it("ignores webhook events that do not map to a payment state change", async () => {
     const paymentGateway = {
-      verifyWebhook: sinon.stub().returns({
-        type: "payment_intent.created",
-        data: { object: { id: "pi_test_123" } },
-      }),
+      verifyWebhook: sinon.stub().returns(null),
     };
     const paymentRepository = {
       applyWebhookStateChangeOnce: sinon.stub().resolves(true),
@@ -60,9 +57,9 @@ describe("verifyWebhookUseCase", () => {
   it("uses Stripe event ids as an idempotency key for repeated webhook deliveries", async () => {
     const paymentGateway = {
       verifyWebhook: sinon.stub().returns({
-        id: "evt_test_repeat",
-        type: "checkout.session.completed",
-        data: { object: { id: "cs_test_123" } },
+        eventId: "evt_test_repeat",
+        sessionId: "cs_test_123",
+        paymentStatus: "paid",
       }),
     };
     const paymentRepository = {
