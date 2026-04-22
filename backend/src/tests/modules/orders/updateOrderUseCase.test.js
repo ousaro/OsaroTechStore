@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildUpdateOrderUseCase } from "../../../modules/orders/application/use-cases/updateOrderUseCase.js";
 import { OrderNotFoundError } from "../../../modules/orders/application/errors/OrderApplicationError.js";
+import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 
 describe("updateOrderUseCase", () => {
   it("persists a shaped order patch instead of raw updates", async () => {
@@ -9,6 +10,7 @@ describe("updateOrderUseCase", () => {
     const updateOrderUseCase = buildUpdateOrderUseCase({
       orderRepository: {
         isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "pending" }),
         findByIdAndUpdate: async (_id, patch) => {
           persistedPatch = patch.toPrimitives();
           return { _id: "o1", ...persistedPatch };
@@ -35,10 +37,31 @@ describe("updateOrderUseCase", () => {
     });
   });
 
+  it("rejects invalid lifecycle transitions instead of patching status blindly", async () => {
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "pending" }),
+        findByIdAndUpdate: async () => {
+          throw new Error("should not update");
+        },
+      },
+    });
+
+    try {
+      await updateOrderUseCase({ id: "o1", updates: { status: "delivered" } });
+      throw new Error("Expected updateOrderUseCase to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Invalid order status transition from pending to delivered");
+    }
+  });
+
   it("throws when the order id is invalid", async () => {
     const updateOrderUseCase = buildUpdateOrderUseCase({
       orderRepository: {
         isValidId: () => false,
+        findById: async () => null,
         findByIdAndUpdate: async () => null,
       },
     });
@@ -49,6 +72,25 @@ describe("updateOrderUseCase", () => {
     } catch (error) {
       expect(error).to.be.instanceOf(OrderNotFoundError);
       expect(error.message).to.equal("Invalid order ID");
+      expect(error.code).to.equal("ORDER_NOT_FOUND");
+    }
+  });
+
+  it("throws when the current order cannot be found before a status transition", async () => {
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => null,
+        findByIdAndUpdate: async () => null,
+      },
+    });
+
+    try {
+      await updateOrderUseCase({ id: "o1", updates: { status: "paid" } });
+      throw new Error("Expected updateOrderUseCase to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(OrderNotFoundError);
+      expect(error.message).to.equal("Order not found");
       expect(error.code).to.equal("ORDER_NOT_FOUND");
     }
   });

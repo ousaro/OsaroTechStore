@@ -58,6 +58,34 @@ export const createOrder = ({
   });
 };
 
+const ALLOWED_ORDER_STATUS_TRANSITIONS = {
+  pending: new Set(["paid", "cancelled"]),
+  paid: new Set(["processing", "cancelled"]),
+  processing: new Set(["shipped", "cancelled"]),
+  shipped: new Set(["delivered"]),
+  delivered: new Set([]),
+  cancelled: new Set([]),
+};
+
+export const transitionOrderStatus = (currentOrder, nextStatus) => {
+  const currentStatus = createOrderStatus(currentOrder.status).toPrimitives();
+  const targetStatus = createOrderStatus(nextStatus).toPrimitives();
+
+  if (currentStatus === targetStatus) {
+    return createOrderStatus(targetStatus);
+  }
+
+  const allowedNextStatuses = ALLOWED_ORDER_STATUS_TRANSITIONS[currentStatus] ?? new Set();
+
+  if (!allowedNextStatuses.has(targetStatus)) {
+    throw new DomainValidationError(
+      `Invalid order status transition from ${currentStatus} to ${targetStatus}`
+    );
+  }
+
+  return createOrderStatus(targetStatus);
+};
+
 export const createOrderUpdatePatch = (updates) => {
   const patch = { ...updates };
 

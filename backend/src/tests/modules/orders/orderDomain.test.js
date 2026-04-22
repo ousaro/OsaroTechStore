@@ -1,6 +1,10 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createOrder, createOrderUpdatePatch } from "../../../../src/modules/orders/domain/entities/Order.js";
+import {
+  createOrder,
+  createOrderUpdatePatch,
+  transitionOrderStatus,
+} from "../../../../src/modules/orders/domain/entities/Order.js";
 import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { createMoney } from "../../../../src/modules/orders/domain/value-objects/Money.js";
 import { createOrderStatus } from "../../../../src/modules/orders/domain/value-objects/OrderStatus.js";
@@ -128,6 +132,19 @@ describe("Order Domain", () => {
     expect(() => createPaymentStatus("unknown")).to.throw(
       DomainValidationError,
       "Invalid payment status"
+    );
+  });
+
+  it("transitions order status through explicit lifecycle rules", () => {
+    const nextStatus = transitionOrderStatus({ status: "pending" }, "paid");
+
+    expect(nextStatus.toPrimitives()).to.equal("paid");
+  });
+
+  it("throws for invalid order status transitions", () => {
+    expect(() => transitionOrderStatus({ status: "pending" }, "delivered")).to.throw(
+      DomainValidationError,
+      "Invalid order status transition from pending to delivered"
     );
   });
 });

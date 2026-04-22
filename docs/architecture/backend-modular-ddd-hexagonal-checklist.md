@@ -73,7 +73,8 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - [x] Add `Address` value object for orders
 - [x] Add `OrderStatus` value object or state model
 - [x] Add `PaymentStatus` value object or state model
-- [ ] Add explicit order lifecycle transitions instead of only patch builders
+- [x] Add explicit order lifecycle transitions instead of only patch builders
+- Progress: order status changes now flow through explicit lifecycle transition rules in the domain instead of being patched blindly.
 - [ ] Identify which modules need true aggregates instead of thin entities
 - [ ] Add domain services only where rules span multiple entities/value objects
 
