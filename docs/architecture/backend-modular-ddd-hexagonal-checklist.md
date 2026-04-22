@@ -29,9 +29,9 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Remove HTTP-oriented error handling from domain objects
 - Progress: auth, products, categories, orders, and users no longer throw HTTP-shaped `ApiError` from their domain factories/entities.
 - [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
-- Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, `CategoryValidationError`, `CategoryNotFoundError`, `OrderNotFoundError`, `ProductNotFoundError`, `UserNotFoundError`, `UserValidationError`, and `DomainValidationError` are now in use across the auth, categories, orders, users, products, and shared validation flows.
+- Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, `CategoryValidationError`, `CategoryNotFoundError`, `OrderNotFoundError`, `PaymentValidationError`, `PaymentWebhookError`, `ProductNotFoundError`, `UserNotFoundError`, `UserValidationError`, and `DomainValidationError` are now in use across the auth, categories, orders, payments, users, products, and shared validation flows.
 - [ ] Map domain/application errors to HTTP responses only in transport adapters
-- Progress: shared HTTP error resolution now maps auth, category, order, product, user, and domain-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
+- Progress: shared HTTP error resolution now maps auth, category, order, payment, product, user, and domain-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
 - [ ] Remove direct framework/library validation dependencies from domain objects where possible
 - Progress: auth email/password validation no longer depends on `validator` inside the domain layer.
 - [ ] Wrap external validation rules behind policies or application-layer validation when appropriate
@@ -60,6 +60,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Prefer event-driven collaboration between orders and payments
 - [ ] Add idempotency handling for webhook processing
 - [ ] Add tests for webhook-driven state changes
+Progress: payment input validation and webhook transport failure now use payment-specific application errors instead of `ApiError`.
 
 ## 6. Orders Module
 
@@ -142,7 +143,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Add integration tests for order/payment workflow
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
-- Progress: auth, categories, orders, users, and products application error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP error mapping.
+- Progress: auth, categories, orders, payments, users, and products application error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP error mapping.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation

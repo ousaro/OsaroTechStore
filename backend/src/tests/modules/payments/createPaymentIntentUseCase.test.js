@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { buildCreatePaymentIntentUseCase } from "../../../../src/modules/payments/application/use-cases/createPaymentIntentUseCase.js";
+import { PaymentValidationError } from "../../../../src/modules/payments/application/errors/PaymentApplicationError.js";
 
 describe("createPaymentIntentUseCase", () => {
   it("throws 400 when items is empty", async () => {
@@ -15,7 +16,8 @@ describe("createPaymentIntentUseCase", () => {
       await useCase({ items: [] });
       throw new Error("expected to throw");
     } catch (error) {
-      expect(error.statusCode).to.equal(400);
+      expect(error).to.be.instanceOf(PaymentValidationError);
+      expect(error.code).to.equal("PAYMENT_VALIDATION");
       expect(error.message).to.include("items must be a non-empty array");
     }
   });
@@ -31,7 +33,8 @@ describe("createPaymentIntentUseCase", () => {
       await useCase({ items: [{ name: "", price: -1, quantity: 0 }] });
       throw new Error("expected to throw");
     } catch (error) {
-      expect(error.statusCode).to.equal(400);
+      expect(error).to.be.instanceOf(PaymentValidationError);
+      expect(error.code).to.equal("PAYMENT_VALIDATION");
       expect(error.message).to.include("Invalid item at index 0");
     }
   });

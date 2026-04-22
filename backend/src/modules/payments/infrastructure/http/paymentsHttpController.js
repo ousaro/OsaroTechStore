@@ -1,5 +1,5 @@
 import { asyncHandler } from "../../../../shared/infrastructure/http/asyncHandler.js";
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { PaymentWebhookError } from "../../application/errors/PaymentApplicationError.js";
 import { assertPaymentsInputPort } from "../../ports/input/paymentsInputPort.js";
 
 export const createPaymentsHttpController = ({ paymentsInputPort }) => {
@@ -16,7 +16,7 @@ export const createPaymentsHttpController = ({ paymentsInputPort }) => {
       const payload = await paymentsInputPort.verifyWebhook({ payload: req.body, signature });
       return res.status(200).json(payload);
     } catch (_error) {
-      throw new ApiError("Webhook signature verification failed", 400);
+      throw new PaymentWebhookError("Webhook signature verification failed");
     }
   });
 

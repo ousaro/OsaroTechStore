@@ -5,6 +5,10 @@ import { CategoryNotFoundError, CategoryValidationError } from "../../modules/ca
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
+import {
+  PaymentValidationError,
+  PaymentWebhookError,
+} from "../../modules/payments/application/errors/PaymentApplicationError.js";
 import { ProductNotFoundError } from "../../modules/products/application/errors/ProductApplicationError.js";
 import { UserValidationError } from "../../modules/users/application/errors/UserApplicationError.js";
 import { DomainValidationError } from "../../shared/domain/errors/DomainValidationError.js";
@@ -167,6 +171,38 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Category not found");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps payment validation errors to 400", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new PaymentValidationError("items must be a non-empty array"), req, res, () => {});
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("items must be a non-empty array");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps payment webhook errors to 400", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new PaymentWebhookError("Webhook signature verification failed"), req, res, () => {});
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Webhook signature verification failed");
     expect(body.stack).to.be.a("string");
   });
 });

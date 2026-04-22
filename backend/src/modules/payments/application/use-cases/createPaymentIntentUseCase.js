@@ -1,5 +1,5 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
+import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
 import {
   assertNonEmptyArray,
   assertPositiveNumber,
@@ -17,7 +17,7 @@ export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) =
         assertPositiveNumber(item?.price, "item.price must be a positive number");
         assertPositiveNumber(item?.quantity, "item.quantity must be a positive number");
       } catch (error) {
-        throw new ApiError(`Invalid item at index ${index}: ${error.message}`, 400);
+        throw new PaymentValidationError(`Invalid item at index ${index}: ${error.message}`);
       }
     });
 
