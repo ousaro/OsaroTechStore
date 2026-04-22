@@ -11,13 +11,14 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Define allowed import rules between modules
 - [ ] Enforce that cross-module imports go only through `public-api.js`
 - [x] Stop exporting full input ports from `public-api.js` unless absolutely necessary
-- [ ] Replace broad public exports with capability-specific functions
+- [x] Replace broad public exports with capability-specific functions
 Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
 Progress: empty `public-api.js` placeholders with no consumers have now been removed from users, payments, orders, and categories so only modules with actual cross-module capabilities keep that surface.
-- [ ] Keep `composition.js` private to each module
+- [x] Keep `composition.js` private to each module
 - Progress: auth composition no longer exports its input port because that wiring is now kept internal to the module.
 - Progress: users, products, categories, orders, and payments compositions also now keep their input ports private because that wiring is only used internally by module HTTP adapters.
-- [ ] Keep `index.js` local to module adapters and bootstrap only
+- Progress: controller tests now use adapter-local HTTP handler surfaces, so `composition.js` is only imported by module-local `public-api.js`, `bootstrap.js`, and `infrastructure/http/httpHandlers.js` files.
+- [x] Keep `index.js` local to module adapters and bootstrap only
 Progress: product scheduler bootstrap now uses a dedicated module bootstrap export instead of the product module `index.js`.
 Progress: auth module `index.js` is now narrowed to HTTP handler exports instead of re-exporting public-api style capabilities.
 Progress: products module `index.js` is now narrowed to HTTP handler exports instead of re-exporting the products input port.
@@ -37,7 +38,7 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 ## 2. Composition Root
 
 - [ ] Define one clear application composition root
-- [ ] Move runtime startup concerns into explicit bootstrap wiring
+- [x] Move runtime startup concerns into explicit bootstrap wiring
 - Progress: product scheduler startup is now imported through a dedicated module bootstrap file instead of the broader module index surface.
 - [ ] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
 - [x] Ensure route adapters do not depend on broad module entrypoints when a narrower local import is enough
@@ -45,16 +46,16 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 
 ## 3. Domain Purity
 
-- [ ] Remove HTTP-oriented error handling from domain objects
+- [x] Remove HTTP-oriented error handling from domain objects
 - Progress: auth, products, categories, orders, and users no longer throw HTTP-shaped `ApiError` from their domain factories/entities.
-- [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
+- [x] Replace `ApiError` usage in domain code with domain/application-specific errors
 - Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, `CategoryValidationError`, `CategoryNotFoundError`, `OrderNotFoundError`, `PaymentValidationError`, `PaymentWebhookError`, `ProductNotFoundError`, `UserNotFoundError`, `UserValidationError`, and `DomainValidationError` are now in use across the auth, categories, orders, payments, users, products, and shared validation flows.
 - Progress: the legacy shared `ApiError` class has now been removed because no runtime code depends on it anymore.
-- [ ] Map domain/application errors to HTTP responses only in transport adapters
+- [x] Map domain/application errors to HTTP responses only in transport adapters
 - Progress: shared HTTP error resolution now maps auth, category, order, payment, product, user, domain-validation, and transport-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
-- [ ] Remove direct framework/library validation dependencies from domain objects where possible
+- [x] Remove direct framework/library validation dependencies from domain objects where possible
 - Progress: auth email/password validation no longer depends on `validator` inside the domain layer.
-- [ ] Wrap external validation rules behind policies or application-layer validation when appropriate
+- [x] Wrap external validation rules behind policies or application-layer validation when appropriate
 - Progress: auth credential validation now runs through an application policy instead of the domain command object.
 
 ## 4. Rich Domain Modeling
@@ -105,7 +106,8 @@ Progress: category deletion now uses category-specific application errors instea
 
 - [ ] Clarify whether auth owns credentials only or the whole user account record
 - [ ] Clarify whether users owns profile behavior only
-- [x] Replace repository-shaped cross-module access with a narrower application contract
+- [ ] Replace repository-shaped cross-module access with a narrower application contract
+- Progress: auth no longer exposes a broad `userAccounts` object and now provides named capabilities, but the remaining account-access contract is still somewhat persistence-shaped.
 - [ ] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
@@ -159,7 +161,7 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 
 ## 14. Testing
 
-- [ ] Keep the current unit-test baseline green
+- [x] Keep the current unit-test baseline green
 - [ ] Add contract tests for public APIs
 - [ ] Add contract tests for ports/adapters
 - [ ] Add integration tests for order/payment workflow
@@ -170,9 +172,9 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 
 ## 15. Documentation
 
-- [ ] Keep the architecture overview aligned with the actual codebase
+- [x] Keep the architecture overview aligned with the actual codebase
 - Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `80 passing` test baseline.
-- [ ] Update the gap analysis when major boundary changes land
+- [x] Update the gap analysis when major boundary changes land
 - Progress: `backend-modular-ddd-hexagonal-gap-analysis.md` now reflects the current post-cleanup state for module surfaces, retired `ApiError` usage, existing contract tests, and the remaining composition/auth-users gaps.
 - [ ] Document the auth/users ownership decision explicitly
 - [ ] Document the event model once introduced

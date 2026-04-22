@@ -5,7 +5,7 @@ import User from '../../modules/auth/infrastructure/persistence/userModel.js';
 import {
   registerUserHandler as registerUser,
   loginUserHandler as loginUser,
-} from '../../modules/auth/composition.js';
+} from '../../modules/auth/infrastructure/http/httpHandlers.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
