@@ -1,1 +1,7 @@
-export { userAccounts, verifyAccessToken } from "./composition.js";
+export {
+  deleteAccountById,
+  getAccountById,
+  listNonAdminAccounts,
+  updateAccountById,
+  verifyAccessToken,
+} from "./composition.js";

@@ -6,12 +6,10 @@ import { assertUserRepositoryPort } from "../../../modules/users/ports/output/us
 describe("user repository contract", () => {
   it("implements the expected user repository port", () => {
     const repository = createMongooseUserRepository({
-      userAccounts: {
-        listNonAdminAccounts: async () => [],
-        getAccountById: async () => null,
-        updateAccountById: async () => null,
-        deleteAccountById: async () => null,
-      },
+      listNonAdminAccounts: async () => [],
+      getAccountById: async () => null,
+      updateAccountById: async () => null,
+      deleteAccountById: async () => null,
     });
 
     expect(() =>
@@ -48,23 +46,21 @@ describe("user repository contract", () => {
     };
     const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
-      userAccounts: {
-        listNonAdminAccounts: async () => {
-          calls.push(["listNonAdminAccounts"]);
-          return [rawUser];
-        },
-        getAccountById: async (id) => {
-          calls.push(["getAccountById", id]);
-          return rawUser;
-        },
-        updateAccountById: async (id, updates) => {
-          calls.push(["updateAccountById", id, updates]);
-          return { ...rawUser, ...updates };
-        },
-        deleteAccountById: async (id) => {
-          calls.push(["deleteAccountById", id]);
-          return rawUser;
-        },
+      listNonAdminAccounts: async () => {
+        calls.push(["listNonAdminAccounts"]);
+        return [rawUser];
+      },
+      getAccountById: async (id) => {
+        calls.push(["getAccountById", id]);
+        return rawUser;
+      },
+      updateAccountById: async (id, updates) => {
+        calls.push(["updateAccountById", id, updates]);
+        return { ...rawUser, ...updates };
+      },
+      deleteAccountById: async (id) => {
+        calls.push(["deleteAccountById", id]);
+        return rawUser;
       },
     });
 

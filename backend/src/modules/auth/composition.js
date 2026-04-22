@@ -36,19 +36,14 @@ export const {
   authInputPort,
 });
 
-export const userAccounts = {
-  listNonAdminAccounts() {
-    return authUserRepository.find({ admin: false }).sort({ createdAt: -1 });
-  },
-  getAccountById(id) {
-    return authUserRepository.findById(id);
-  },
-  updateAccountById(id, updates) {
-    return authUserRepository.findByIdAndUpdate(id, updates, { new: true });
-  },
-  deleteAccountById(id) {
-    return authUserRepository.findByIdAndDelete({ _id: id });
-  },
-};
+export const listNonAdminAccounts = () =>
+  authUserRepository.find({ admin: false }).sort({ createdAt: -1 });
+
+export const getAccountById = (id) => authUserRepository.findById(id);
+
+export const updateAccountById = (id, updates) =>
+  authUserRepository.findByIdAndUpdate(id, updates, { new: true });
+
+export const deleteAccountById = (id) => authUserRepository.findByIdAndDelete({ _id: id });
 
 export const verifyAccessToken = (authorizationHeader) => verifyAccessTokenUseCase({ authorizationHeader });

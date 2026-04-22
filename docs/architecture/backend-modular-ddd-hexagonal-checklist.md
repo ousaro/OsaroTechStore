@@ -12,6 +12,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Enforce that cross-module imports go only through `public-api.js`
 - [x] Stop exporting full input ports from `public-api.js` unless absolutely necessary
 - [ ] Replace broad public exports with capability-specific functions
+Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
 - [ ] Keep `composition.js` private to each module
 - [ ] Keep `index.js` local to module adapters and bootstrap only
 - [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
@@ -102,7 +103,7 @@ Progress: users repository contract coverage is now in place.
 - [ ] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
 - [ ] Add module public API contract tests
-Progress: auth and products public API contract tests are now in place.
+Progress: auth and products public API contract tests are now in place, including named-capability coverage for the auth public surface.
 
 ## 10. Mapping and Persistence Boundaries
 

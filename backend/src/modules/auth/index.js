@@ -1,6 +1,9 @@
 export {
   authInputPort,
-  userAccounts,
+  deleteAccountById,
+  getAccountById,
+  listNonAdminAccounts,
+  updateAccountById,
   verifyAccessToken,
   registerUserHandler,
   loginUserHandler,
