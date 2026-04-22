@@ -9,10 +9,16 @@ import { createMongooseOrderRepository } from "./infrastructure/repositories/mon
 import { createOrdersHttpController } from "./infrastructure/http/ordersHttpController.js";
 
 const orderRepository = createMongooseOrderRepository();
+const orderEventPublisher = {
+  async publish() {},
+};
 
 const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
 const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
-const addOrderUseCase = buildAddOrderUseCase({ orderRepository });
+const addOrderUseCase = buildAddOrderUseCase({
+  orderRepository,
+  orderEventPublisher,
+});
 const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
 const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });
 const ordersCommandPort = createOrdersCommandPort({

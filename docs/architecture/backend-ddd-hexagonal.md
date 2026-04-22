@@ -218,7 +218,8 @@ Current strengths:
 Current limitations:
 
 - order domain is still thinner than a full aggregate root
-- payment-related fields live on the order model, but there is no real order/payment workflow integration
+- the order model still carries more payment detail than it should long-term
+- there is no real order/payment workflow integration
 
 ### Payments
 
@@ -274,6 +275,31 @@ What is still missing:
 - an in-process event bus
 - the first real event types and handlers
 - a stable correlation key between payment records and orders across the checkout flow
+
+## Order vs Payment Data Ownership
+
+The current target boundary is:
+
+- `orders` should keep only payment information that matters to order fulfillment decisions
+- `payments` should own provider-specific and payment-lifecycle-specific details
+
+`orders` should keep:
+
+- order-facing payment status needed for order lifecycle rules
+- the selected payment method as part of checkout intent
+- a stable payment reference/correlation id that lets the order relate to a payment record
+
+`payments` should own:
+
+- provider session ids and provider transaction ids
+- webhook delivery history and idempotency keys
+- provider payload details and gateway-specific metadata
+- the broader payment lifecycle record
+
+That means the current order fields are too broad as they stand today:
+
+- `transactionId` should move toward a payment-reference role instead of storing provider-specific transaction identity directly
+- `paymentDetails` should move out of the order model and into the payments module once the event-driven seam is implemented
 
 ## Aggregate Candidates
 

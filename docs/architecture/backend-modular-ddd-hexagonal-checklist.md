@@ -110,8 +110,10 @@ Progress: payment input validation and webhook transport failure now use payment
 - Progress: orders now separates read handlers (`getAllOrders`, `getOrderById`) from write handlers (`addOrder`, `updateOrder`, `deleteOrder`) through distinct query and command input ports.
 - [x] Define order invariants around payment state and status transitions
 - Progress: the order lifecycle service now enforces that paid and fulfillment statuses require an effective `paymentStatus` of `paid`, instead of allowing status and payment state to drift independently.
-- [ ] Decide which payment fields truly belong inside order versus inside payments
-- [ ] Add order-related domain events such as `OrderPlaced`
+- [x] Decide which payment fields truly belong inside order versus inside payments
+- Progress: the architecture docs now make the target split explicit: orders should keep fulfillment-relevant payment status, payment method, and a stable payment reference, while payments should own provider transaction ids, webhook/idempotency data, and provider-specific payment details.
+- [x] Add order-related domain events such as `OrderPlaced`
+- Progress: orders now defines an explicit `OrderPlaced` domain event, and the order-creation use case can publish it through an `orderEventPublisher` port without hard-wiring a concrete event bus yet.
 Progress: order use cases now use an order-specific application error, and order domain validation has been moved off `ApiError`.
 
 ## 7. Products and Categories
