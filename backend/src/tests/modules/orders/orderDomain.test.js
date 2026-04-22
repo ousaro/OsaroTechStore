@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createOrder, createOrderUpdatePatch } from "../../../../src/modules/orders/domain/entities/Order.js";
+import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Order Domain", () => {
@@ -24,6 +25,12 @@ describe("Order Domain", () => {
 
     expect(order.toPrimitives().ownerId).to.equal("u1");
     expect(order.toPrimitives().totalPrice).to.equal(100);
+    expect(order.address.toPrimitives()).to.deep.equal({
+      city: "Casablanca",
+      addressLine: "Street 1",
+      postalCode: "20000",
+      country: "MA",
+    });
   });
 
   it("throws for invalid address", () => {
@@ -74,5 +81,21 @@ describe("Order Domain", () => {
         emptyFields: ["addressLine", "postalCode", "country"],
       });
     }
+  });
+
+  it("creates an address value object with stable primitives", () => {
+    const address = createAddress({
+      city: "Casablanca",
+      addressLine: "Street 1",
+      postalCode: "20000",
+      country: "MA",
+    });
+
+    expect(address.toPrimitives()).to.deep.equal({
+      city: "Casablanca",
+      addressLine: "Street 1",
+      postalCode: "20000",
+      country: "MA",
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+import { createAddress } from "../value-objects/Address.js";
 import {
-  assertRequiredFields,
   assertNonEmptyArray,
   assertPositiveNumber,
   assertString,
@@ -23,8 +23,7 @@ export const createOrder = ({
   assertString(status, "status is required");
   assertString(paymentMethod, "paymentMethod is required");
   assertString(transactionId, "transactionId is required");
-
-  assertRequiredFields(address, ["city", "addressLine", "postalCode", "country"], "Invalid address format");
+  const orderAddress = createAddress(address);
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
     throw new DomainValidationError("paymentDetails is required");
@@ -35,7 +34,7 @@ export const createOrder = ({
     products,
     totalPrice,
     status,
-    address,
+    address: orderAddress,
     paymentMethod,
     paymentStatus: paymentStatus || "pending",
     transactionId,
@@ -45,7 +44,10 @@ export const createOrder = ({
   return Object.freeze({
     ...props,
     toPrimitives() {
-      return { ...props };
+      return {
+        ...props,
+        address: props.address.toPrimitives(),
+      };
     },
   });
 };
@@ -70,11 +72,7 @@ export const createOrderUpdatePatch = (updates) => {
   }
 
   if (patch.address !== undefined) {
-    assertRequiredFields(
-      patch.address,
-      ["city", "addressLine", "postalCode", "country"],
-      "Invalid address format"
-    );
+    patch.address = createAddress(patch.address);
   }
 
   if (patch.products !== undefined) {
@@ -87,7 +85,10 @@ export const createOrderUpdatePatch = (updates) => {
 
   return Object.freeze({
     toPrimitives() {
-      return { ...patch };
+      return {
+        ...patch,
+        ...(patch.address ? { address: patch.address.toPrimitives() } : {}),
+      };
     },
   });
 };

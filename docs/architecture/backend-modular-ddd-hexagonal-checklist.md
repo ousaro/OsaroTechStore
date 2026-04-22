@@ -64,9 +64,10 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 ## 4. Rich Domain Modeling
 
 - [ ] Introduce value objects where business language matters
+- Progress: orders now use an `Address` value object while still exposing stable persistence primitives through `toPrimitives()`.
 - [ ] Add `Email` value object
 - [ ] Add `Money` value object
-- [ ] Add `Address` value object for orders
+- [x] Add `Address` value object for orders
 - [ ] Add `OrderStatus` value object or state model
 - [ ] Add `PaymentStatus` value object or state model
 - [ ] Add explicit order lifecycle transitions instead of only patch builders
