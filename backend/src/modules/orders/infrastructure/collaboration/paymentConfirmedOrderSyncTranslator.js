@@ -12,7 +12,7 @@ export const createPaymentConfirmedOrderSyncTranslator = ({
       }
 
       await confirmOrderPayment({
-        paymentReference: event.payload.sessionId,
+        paymentReference: event.payload.paymentReference ?? event.payload.sessionId,
         eventId: event.payload.eventId,
       });
     },

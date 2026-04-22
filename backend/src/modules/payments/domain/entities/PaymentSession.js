@@ -2,7 +2,13 @@ import { DomainValidationError } from "../../../../shared/domain/errors/DomainVa
 
 const ALLOWED_PAYMENT_STATUSES = new Set(["pending", "paid", "failed", "refunded"]);
 
-export const createPaymentSession = ({ id, url, payment_status, paymentStatus }) => {
+export const createPaymentSession = ({
+  id,
+  url,
+  paymentReference,
+  payment_status,
+  paymentStatus,
+}) => {
   if (typeof id !== "string" || id.trim() === "") {
     throw new DomainValidationError("payment session id is required");
   }
@@ -17,6 +23,7 @@ export const createPaymentSession = ({ id, url, payment_status, paymentStatus })
 
   const props = {
     id,
+    ...(paymentReference ? { paymentReference } : {}),
     ...(url ? { url } : {}),
     paymentStatus: normalizedPaymentStatus,
   };

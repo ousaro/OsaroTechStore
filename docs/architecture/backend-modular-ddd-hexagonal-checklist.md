@@ -16,7 +16,7 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 2. Orders and Payments Boundary
 
-- [ ] Add a stable order-to-payment correlation model that both modules can use without sharing provider-specific identifiers
+- [x] Add a stable order-to-payment correlation model that both modules can use without sharing provider-specific identifiers
 - [ ] Introduce a payments-owned reference that orders can store instead of treating `transactionId` as a provider identity field
 - [ ] Make `payments` persist enough business state to drive order collaboration
 - [ ] Extend payment persistence with order linkage, provider reference(s), lifecycle timestamps, and any provider transaction identifiers that belong to payments

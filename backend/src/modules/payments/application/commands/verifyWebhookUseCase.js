@@ -18,15 +18,20 @@ export const buildVerifyWebhookUseCase = ({
     const stateChange = paymentGateway.verifyWebhook(payload, signature);
 
     if (stateChange) {
-      const applied = await paymentRepository.applyWebhookStateChangeOnce(stateChange);
+      const appliedPayment = await paymentRepository.applyWebhookStateChangeOnce(
+        stateChange
+      );
 
       if (
-        applied &&
+        appliedPayment &&
         paymentEventPublisher &&
         stateChange.paymentStatus === "paid"
       ) {
         await paymentEventPublisher.publish(
-          createPaymentConfirmedEvent(stateChange)
+          createPaymentConfirmedEvent({
+            ...stateChange,
+            paymentReference: appliedPayment.paymentReference,
+          })
         );
       }
     }

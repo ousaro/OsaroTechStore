@@ -11,7 +11,11 @@ describe("getSessionDetailsUseCase", () => {
     const paymentRepository = {
       findPaymentSessionById: sinon
         .stub()
-        .resolves({ id: "cs_test_123", paymentStatus: "paid" }),
+        .resolves({
+          id: "cs_test_123",
+          paymentReference: "pay_123",
+          paymentStatus: "paid",
+        }),
       savePaymentSession: sinon.stub(),
     };
     const useCase = buildGetSessionDetailsUseCase({
@@ -23,6 +27,7 @@ describe("getSessionDetailsUseCase", () => {
 
     expect(result).to.deep.equal({
       id: "cs_test_123",
+      paymentReference: "pay_123",
       paymentStatus: "paid",
     });
     expect(paymentGateway.getCheckoutSession.called).to.equal(false);

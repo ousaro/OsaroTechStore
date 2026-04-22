@@ -17,6 +17,7 @@ describe("Payment Domain", () => {
     });
     const session = createPaymentSession({
       id: "cs_test_123",
+      paymentReference: "pay_123",
       url: "https://stripe.test/session",
       paymentStatus: "paid",
     });
@@ -28,6 +29,7 @@ describe("Payment Domain", () => {
     });
     expect(session.toPrimitives()).to.deep.equal({
       id: "cs_test_123",
+      paymentReference: "pay_123",
       url: "https://stripe.test/session",
       paymentStatus: "paid",
     });

@@ -90,4 +90,38 @@ describe("addOrderUseCase", () => {
       })
     ).to.throw(DomainValidationError, "order id is required to create OrderPlaced");
   });
+
+  it("prefers the payments-owned reference when paymentDetails provides one", async () => {
+    let createdOrder = null;
+    const addOrderUseCase = buildAddOrderUseCase({
+      orderRepository: {
+        create: async (order) => {
+          createdOrder = order.toPrimitives();
+          return { _id: "o1", ...createdOrder };
+        },
+      },
+    });
+
+    await addOrderUseCase({
+      ownerId: "u1",
+      products: [{ productId: "p1", qty: 1 }],
+      totalPrice: 100,
+      status: "pending",
+      address: {
+        city: "Casablanca",
+        addressLine: "Street 1",
+        postalCode: "20000",
+        country: "MA",
+      },
+      paymentMethod: "card",
+      paymentStatus: "pending",
+      transactionId: "pi_provider_123",
+      paymentDetails: {
+        provider: "stripe",
+        paymentReference: "pay_123",
+      },
+    });
+
+    expect(createdOrder.transactionId).to.equal("pay_123");
+  });
 });

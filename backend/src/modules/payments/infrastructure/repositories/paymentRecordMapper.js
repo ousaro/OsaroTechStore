@@ -5,6 +5,7 @@ export const toPaymentRecord = (rawPayment) => {
 
   return {
     id: rawPayment.sessionId,
+    paymentReference: rawPayment.paymentReference,
     ...(rawPayment.url ? { url: rawPayment.url } : {}),
     paymentStatus: rawPayment.paymentStatus,
   };

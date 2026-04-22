@@ -51,7 +51,7 @@ export const createMongoosePaymentRepository = () => {
         { new: true }
       );
 
-      return Boolean(doc);
+      return toPaymentRecord(doc);
     },
   };
 

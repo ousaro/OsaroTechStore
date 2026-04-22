@@ -6,6 +6,7 @@ export const createPaymentConfirmedEvent = (paymentStateChange) => {
   }
 
   const sessionId = paymentStateChange.sessionId ?? paymentStateChange.id;
+  const paymentReference = paymentStateChange.paymentReference ?? sessionId;
 
   if (typeof sessionId !== "string" || sessionId.trim() === "") {
     throw new DomainValidationError("session id is required to create PaymentConfirmed");
@@ -14,6 +15,7 @@ export const createPaymentConfirmedEvent = (paymentStateChange) => {
   return Object.freeze({
     type: "PaymentConfirmed",
     payload: {
+      paymentReference,
       sessionId,
       paymentStatus: paymentStateChange.paymentStatus,
       eventId: paymentStateChange.eventId,

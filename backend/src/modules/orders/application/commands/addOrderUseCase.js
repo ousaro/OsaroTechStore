@@ -13,7 +13,15 @@ export const buildAddOrderUseCase = ({
   }
 
   return async (payload) => {
-    const order = createOrder(payload);
+    const normalizedPayload = {
+      ...payload,
+      transactionId:
+        payload.paymentDetails?.paymentReference ??
+        payload.transactionId ??
+        payload.paymentDetails?.payment_intent ??
+        payload.paymentDetails?.id,
+    };
+    const order = createOrder(normalizedPayload);
     // Thin orchestration: validate/build in domain, persistence in repository.
     const createdOrder = await orderRepository.create(order);
 

@@ -15,7 +15,11 @@ describe("verifyWebhookUseCase", () => {
       }),
     };
     const paymentRepository = {
-      applyWebhookStateChangeOnce: sinon.stub().resolves(true),
+      applyWebhookStateChangeOnce: sinon.stub().resolves({
+        id: "cs_test_123",
+        paymentReference: "pay_123",
+        paymentStatus: "paid",
+      }),
     };
     const paymentEventPublisher = {
       publish: sinon.stub().resolves(),
@@ -40,6 +44,7 @@ describe("verifyWebhookUseCase", () => {
     expect(paymentEventPublisher.publish.calledOnceWithExactly({
       type: "PaymentConfirmed",
       payload: {
+        paymentReference: "pay_123",
         sessionId: "cs_test_123",
         paymentStatus: "paid",
         eventId: "evt_test_123",
@@ -52,7 +57,11 @@ describe("verifyWebhookUseCase", () => {
       verifyWebhook: sinon.stub().returns(null),
     };
     const paymentRepository = {
-      applyWebhookStateChangeOnce: sinon.stub().resolves(true),
+      applyWebhookStateChangeOnce: sinon.stub().resolves({
+        id: "cs_test_123",
+        paymentReference: "pay_123",
+        paymentStatus: "paid",
+      }),
     };
     const paymentEventPublisher = {
       publish: sinon.stub().resolves(),
@@ -82,7 +91,7 @@ describe("verifyWebhookUseCase", () => {
       }),
     };
     const paymentRepository = {
-      applyWebhookStateChangeOnce: sinon.stub().resolves(false),
+      applyWebhookStateChangeOnce: sinon.stub().resolves(null),
     };
     const paymentEventPublisher = {
       publish: sinon.stub().resolves(),
@@ -110,6 +119,7 @@ describe("verifyWebhookUseCase", () => {
   it("creates a PaymentConfirmed event with stable payload", () => {
     const event = createPaymentConfirmedEvent({
       eventId: "evt_test_123",
+      paymentReference: "pay_123",
       sessionId: "cs_test_123",
       paymentStatus: "paid",
     });
@@ -117,6 +127,7 @@ describe("verifyWebhookUseCase", () => {
     expect(event).to.deep.equal({
       type: "PaymentConfirmed",
       payload: {
+        paymentReference: "pay_123",
         sessionId: "cs_test_123",
         paymentStatus: "paid",
         eventId: "evt_test_123",

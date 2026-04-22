@@ -56,7 +56,8 @@ describe("cross-module workflows", () => {
       createPaymentConfirmedTranslator: ({ confirmOrderPayment }) => ({
         publish: (event) =>
           confirmOrderPayment({
-            paymentReference: event.payload.sessionId,
+            paymentReference:
+              event.payload.paymentReference ?? event.payload.sessionId,
             eventId: event.payload.eventId,
           }),
       }),
@@ -66,6 +67,7 @@ describe("cross-module workflows", () => {
     await eventBus.publish({
       type: "PaymentConfirmed",
       payload: {
+        paymentReference: "pay_123",
         sessionId: "cs_test_123",
         eventId: "evt_test_123",
         paymentStatus: "paid",
@@ -73,7 +75,7 @@ describe("cross-module workflows", () => {
     });
 
     expect(confirmOrderPayment.calledOnceWithExactly({
-      paymentReference: "cs_test_123",
+      paymentReference: "pay_123",
       eventId: "evt_test_123",
     })).to.equal(true);
   });

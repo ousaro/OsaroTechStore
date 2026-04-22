@@ -4,6 +4,12 @@ const Schema = mongoose.Schema;
 
 const paymentSchema = new Schema(
   {
+    paymentReference: {
+      type: String,
+      required: true,
+      unique: true,
+      default: () => `pay_${new mongoose.Types.ObjectId().toString()}`,
+    },
     sessionId: { type: String, required: true, unique: true },
     url: { type: String, required: false },
     paymentStatus: { type: String, required: true, default: "pending" },
