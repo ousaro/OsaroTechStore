@@ -1,4 +1,4 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { ProductNotFoundError } from "../errors/ProductApplicationError.js";
 import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
 
 export const buildGetProductByIdUseCase = ({ productRepository }) => {
@@ -7,7 +7,7 @@ export const buildGetProductByIdUseCase = ({ productRepository }) => {
     const product = await productRepository.findById(productId);
 
     if (!product) {
-      throw new ApiError("Product not found", 404);
+      throw new ProductNotFoundError("Product not found");
     }
 
     const relatedProducts = await productRepository.findRelated(productId);

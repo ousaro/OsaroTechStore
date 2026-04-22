@@ -4,6 +4,7 @@ import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
+import { ProductNotFoundError } from "../../modules/products/application/errors/ProductApplicationError.js";
 import { UserValidationError } from "../../modules/users/application/errors/UserApplicationError.js";
 import { DomainValidationError } from "../../shared/domain/errors/DomainValidationError.js";
 
@@ -117,6 +118,22 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Current password is incorrect");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps product application errors to 404", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new ProductNotFoundError("Product not found"), req, res, () => {});
+
+    expect(res.status.calledWith(404)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Product not found");
     expect(body.stack).to.be.a("string");
   });
 });
