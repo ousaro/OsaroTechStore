@@ -39,8 +39,8 @@ modules/<module>/
 │   ├── input/
 │   └── output/
 ├── composition.js
-├── index.js
-└── public-api.js
+├── public-api.js (only when cross-module capabilities are needed)
+└── bootstrap.js (only when a module has runtime startup concerns)
 ```
 
 ## What Each File Means Today
@@ -48,11 +48,11 @@ modules/<module>/
 - `composition.js`
   - private module wiring
   - creates repositories, services, use cases, input ports, and HTTP handlers
-- `index.js`
-  - thin export surface used mostly by module-local HTTP route adapters and some bootstrap code
 - `public-api.js`
   - intended cross-module surface
-  - currently exists, but is still broader than it should be in several modules
+  - now exists only in modules with real cross-module capabilities
+- `bootstrap.js`
+  - optional runtime startup surface for module-level concerns such as schedulers
 
 ## Layering Status
 
@@ -94,8 +94,8 @@ What exists:
 What is still weak:
 
 - ports are mostly runtime assertion helpers
-- many public contracts are too broad
-- there are no dedicated contract tests proving adapter conformance
+- some cross-module contracts are still persistence-shaped
+- contract coverage exists for several important adapters, but it is not yet comprehensive
 
 ### Infrastructure
 
@@ -126,7 +126,7 @@ Current strengths:
 Current limitations:
 
 - the auth/users boundary still needs a clearer ownership decision
-- auth still exposes repository-style account access methods across the boundary
+- auth still exposes account-access methods that feel repository-shaped across the boundary
 - dedicated value objects for email and password policy are still missing
 
 ### Users
@@ -220,7 +220,6 @@ What is not in place yet:
 
 Current shared code:
 
-- `shared/domain/errors/ApiError.js`
 - `shared/infrastructure/http/HttpValidationError.js`
 - shared HTTP middleware and helpers
 - shared Mongo bootstrap utilities
@@ -228,7 +227,7 @@ Current shared code:
 Current bootstrap shape:
 
 - `app/createApp.js` wires middleware and routes
-- `server.js` connects Mongo, starts the app, and starts the product scheduler
+- `server.js` connects Mongo, starts the app, and starts the product scheduler through `products/bootstrap.js`
 
 This is workable today, but the composition root is still split between app bootstrap and module-level runtime hooks.
 
@@ -237,7 +236,7 @@ This is workable today, but the composition root is still split between app boot
 Current verified baseline:
 
 - `npm test` in `backend/` passes
-- current suite: `79 passing`
+- current suite: `80 passing`
 
 Current strengths:
 
@@ -267,7 +266,7 @@ That means:
 But also:
 
 - domain purity is incomplete
-- public module APIs are still too broad
+- some cross-module contracts are still too persistence-shaped
 - rich DDD building blocks are mostly absent
 - payments is not yet a full business module
 - cross-module workflows are still mostly synchronous and thin
@@ -277,6 +276,7 @@ But also:
 The intended next step is not a rewrite. It is a tightening of the current structure:
 
 - narrow `public-api.js` to real capabilities
+- keep `public-api.js` only where a real cross-module capability exists
 - make domains framework-agnostic
 - introduce value objects and richer aggregates where the business justifies them
 - add domain/application events for cross-module workflows

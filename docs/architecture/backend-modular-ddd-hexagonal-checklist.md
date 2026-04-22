@@ -170,6 +170,7 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 ## 15. Documentation
 
 - [ ] Keep the architecture overview aligned with the actual codebase
+- Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `80 passing` test baseline.
 - [ ] Update the gap analysis when major boundary changes land
 - [ ] Document the auth/users ownership decision explicitly
 - [ ] Document the event model once introduced
