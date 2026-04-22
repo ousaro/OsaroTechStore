@@ -107,7 +107,7 @@ Progress: category deletion now uses category-specific application errors instea
 - [ ] Clarify whether auth owns credentials only or the whole user account record
 - [ ] Clarify whether users owns profile behavior only
 - [ ] Replace repository-shaped cross-module access with a narrower application contract
-- Progress: auth no longer exposes a broad `userAccounts` object and now provides named capabilities, but the remaining account-access contract is still somewhat persistence-shaped.
+- Progress: auth no longer exposes a broad `userAccounts` object and now provides named account-oriented capabilities such as `getUserAccountById` and `updateUserAccountById`, though the remaining contract is still somewhat persistence-shaped.
 - [ ] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers

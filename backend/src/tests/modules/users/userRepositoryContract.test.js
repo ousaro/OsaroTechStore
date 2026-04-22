@@ -6,10 +6,10 @@ import { assertUserRepositoryPort } from "../../../modules/users/ports/output/us
 describe("user repository contract", () => {
   it("implements the expected user repository port", () => {
     const repository = createMongooseUserRepository({
-      listNonAdminAccounts: async () => [],
-      getAccountById: async () => null,
-      updateAccountById: async () => null,
-      deleteAccountById: async () => null,
+      listNonAdminUserAccounts: async () => [],
+      getUserAccountById: async () => null,
+      updateUserAccountById: async () => null,
+      deleteUserAccountById: async () => null,
     });
 
     expect(() =>
@@ -46,20 +46,20 @@ describe("user repository contract", () => {
     };
     const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
-      listNonAdminAccounts: async () => {
-        calls.push(["listNonAdminAccounts"]);
+      listNonAdminUserAccounts: async () => {
+        calls.push(["listNonAdminUserAccounts"]);
         return [rawUser];
       },
-      getAccountById: async (id) => {
-        calls.push(["getAccountById", id]);
+      getUserAccountById: async (id) => {
+        calls.push(["getUserAccountById", id]);
         return rawUser;
       },
-      updateAccountById: async (id, updates) => {
-        calls.push(["updateAccountById", id, updates]);
+      updateUserAccountById: async (id, updates) => {
+        calls.push(["updateUserAccountById", id, updates]);
         return { ...rawUser, ...updates };
       },
-      deleteAccountById: async (id) => {
-        calls.push(["deleteAccountById", id]);
+      deleteUserAccountById: async (id) => {
+        calls.push(["deleteUserAccountById", id]);
         return rawUser;
       },
     });
@@ -80,10 +80,10 @@ describe("user repository contract", () => {
     expect(updateResult).to.deep.equal({ ...expectedUserRecord, firstName: "Jane" });
     expect(deleteResult).to.deep.equal(expectedUserRecord);
     expect(calls).to.deep.equal([
-      ["listNonAdminAccounts"],
-      ["getAccountById", "507f1f77bcf86cd799439011"],
-      ["updateAccountById", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
-      ["deleteAccountById", "507f1f77bcf86cd799439011"],
+      ["listNonAdminUserAccounts"],
+      ["getUserAccountById", "507f1f77bcf86cd799439011"],
+      ["updateUserAccountById", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
+      ["deleteUserAccountById", "507f1f77bcf86cd799439011"],
     ]);
   });
 });
