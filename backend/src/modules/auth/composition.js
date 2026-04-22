@@ -1,7 +1,7 @@
-import { buildRegisterUserUseCase } from "./application/use-cases/registerUserUseCase.js";
-import { buildLoginUserUseCase } from "./application/use-cases/loginUserUseCase.js";
+import { buildRegisterUserUseCase } from "./application/commands/registerUserUseCase.js";
+import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.js";
 import { createAuthInputPort } from "./ports/input/authInputPort.js";
-import { buildVerifyAccessTokenUseCase } from "./application/use-cases/verifyAccessTokenUseCase.js";
+import { buildVerifyAccessTokenUseCase } from "./application/queries/verifyAccessTokenUseCase.js";
 import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
 import { createJwtTokenService } from "./infrastructure/services/jwtTokenService.js";
 import { createAuthHttpController } from "./infrastructure/http/authHttpController.js";

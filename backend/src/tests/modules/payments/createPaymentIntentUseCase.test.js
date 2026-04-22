@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { buildCreatePaymentIntentUseCase } from "../../../../src/modules/payments/application/use-cases/createPaymentIntentUseCase.js";
+import { buildCreatePaymentIntentUseCase } from "../../../../src/modules/payments/application/commands/createPaymentIntentUseCase.js";
 import { PaymentValidationError } from "../../../../src/modules/payments/application/errors/PaymentApplicationError.js";
 
 describe("createPaymentIntentUseCase", () => {

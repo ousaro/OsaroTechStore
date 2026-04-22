@@ -190,9 +190,10 @@ Progress: users, orders, products, categories, and payments record mappings are 
 
 ## 12. Application Structure
 
-- [ ] Introduce `commands/`, `queries/`, and `dto/` folders where they improve clarity
-- [ ] Do not add structure mechanically; apply it first to modules with real workflow complexity
-- [ ] Start with `orders`, `payments`, and `auth`
+- [x] Introduce `commands/`, `queries/`, and `dto/` folders where they improve clarity
+- [x] Do not add structure mechanically; apply it first to modules with real workflow complexity
+- [x] Start with `orders`, `payments`, and `auth`
+- Progress: `orders`, `payments`, and `auth` now use command/query folder splits, while `payments` also has an explicit application DTO seam for payment-session responses; simpler modules were left alone to avoid mechanical structure churn.
 
 ## 13. Shared Kernel
 

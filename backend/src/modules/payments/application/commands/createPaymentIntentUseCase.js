@@ -4,6 +4,7 @@ import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.
 import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
 import { createCheckoutSessionWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
 import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
+import { toPaymentCheckoutRedirectDto } from "../dto/paymentSessionDto.js";
 
 export const buildCreatePaymentIntentUseCase = ({
   paymentGateway,
@@ -37,6 +38,6 @@ export const buildCreatePaymentIntentUseCase = ({
     });
     await paymentRepository.savePaymentSession(paymentSession.toPrimitives());
 
-    return { url: paymentSession.url };
+    return toPaymentCheckoutRedirectDto(paymentSession.toPrimitives());
   };
 };

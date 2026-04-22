@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { buildAddOrderUseCase } from "../../../modules/orders/application/use-cases/addOrderUseCase.js";
+import { buildAddOrderUseCase } from "../../../modules/orders/application/commands/addOrderUseCase.js";
 import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 import { createOrderPlacedEvent } from "../../../../src/modules/orders/domain/events/OrderPlaced.js";
 

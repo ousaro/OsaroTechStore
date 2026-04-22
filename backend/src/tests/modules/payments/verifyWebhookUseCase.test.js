@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { buildVerifyWebhookUseCase } from "../../../../src/modules/payments/application/use-cases/verifyWebhookUseCase.js";
+import { buildVerifyWebhookUseCase } from "../../../../src/modules/payments/application/commands/verifyWebhookUseCase.js";
 import { createPaymentConfirmedEvent } from "../../../../src/modules/payments/domain/events/PaymentConfirmed.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 

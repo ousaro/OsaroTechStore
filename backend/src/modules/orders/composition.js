@@ -1,8 +1,8 @@
-import { buildGetAllOrdersUseCase } from "./application/use-cases/getAllOrdersUseCase.js";
-import { buildGetOrderByIdUseCase } from "./application/use-cases/getOrderByIdUseCase.js";
-import { buildAddOrderUseCase } from "./application/use-cases/addOrderUseCase.js";
-import { buildUpdateOrderUseCase } from "./application/use-cases/updateOrderUseCase.js";
-import { buildDeleteOrderUseCase } from "./application/use-cases/deleteOrderUseCase.js";
+import { buildGetAllOrdersUseCase } from "./application/queries/getAllOrdersUseCase.js";
+import { buildGetOrderByIdUseCase } from "./application/queries/getOrderByIdUseCase.js";
+import { buildAddOrderUseCase } from "./application/commands/addOrderUseCase.js";
+import { buildUpdateOrderUseCase } from "./application/commands/updateOrderUseCase.js";
+import { buildDeleteOrderUseCase } from "./application/commands/deleteOrderUseCase.js";
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
 import { createMongooseOrderRepository } from "./infrastructure/repositories/mongooseOrderRepository.js";

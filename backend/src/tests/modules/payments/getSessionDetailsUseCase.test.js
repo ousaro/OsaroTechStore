@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { buildGetSessionDetailsUseCase } from "../../../../src/modules/payments/application/use-cases/getSessionDetailsUseCase.js";
+import { buildGetSessionDetailsUseCase } from "../../../../src/modules/payments/application/queries/getSessionDetailsUseCase.js";
 
 describe("getSessionDetailsUseCase", () => {
   it("returns persisted payment session state before falling back to Stripe", async () => {

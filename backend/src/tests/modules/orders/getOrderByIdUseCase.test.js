@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildGetOrderByIdUseCase } from "../../../modules/orders/application/use-cases/getOrderByIdUseCase.js";
+import { buildGetOrderByIdUseCase } from "../../../modules/orders/application/queries/getOrderByIdUseCase.js";
 import { OrderNotFoundError } from "../../../modules/orders/application/errors/OrderApplicationError.js";
 
 describe("getOrderByIdUseCase", () => {

@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildUpdateOrderUseCase } from "../../../modules/orders/application/use-cases/updateOrderUseCase.js";
+import { buildUpdateOrderUseCase } from "../../../modules/orders/application/commands/updateOrderUseCase.js";
 import { OrderNotFoundError } from "../../../modules/orders/application/errors/OrderApplicationError.js";
 import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 

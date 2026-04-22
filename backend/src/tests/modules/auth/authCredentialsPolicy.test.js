@@ -10,9 +10,9 @@ import {
   AuthUnauthorizedError,
   AuthValidationError,
 } from "../../../modules/auth/application/errors/AuthApplicationError.js";
-import { buildRegisterUserUseCase } from "../../../modules/auth/application/use-cases/registerUserUseCase.js";
-import { buildLoginUserUseCase } from "../../../modules/auth/application/use-cases/loginUserUseCase.js";
-import { buildVerifyAccessTokenUseCase } from "../../../modules/auth/application/use-cases/verifyAccessTokenUseCase.js";
+import { buildRegisterUserUseCase } from "../../../modules/auth/application/commands/registerUserUseCase.js";
+import { buildLoginUserUseCase } from "../../../modules/auth/application/commands/loginUserUseCase.js";
+import { buildVerifyAccessTokenUseCase } from "../../../modules/auth/application/queries/verifyAccessTokenUseCase.js";
 
 describe("auth credentials policy", () => {
   it("rejects invalid registration payloads with auth validation errors", () => {

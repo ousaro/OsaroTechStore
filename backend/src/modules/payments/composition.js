@@ -1,7 +1,7 @@
 import { env } from "../../config/env.js";
-import { buildCreatePaymentIntentUseCase } from "./application/use-cases/createPaymentIntentUseCase.js";
-import { buildVerifyWebhookUseCase } from "./application/use-cases/verifyWebhookUseCase.js";
-import { buildGetSessionDetailsUseCase } from "./application/use-cases/getSessionDetailsUseCase.js";
+import { buildCreatePaymentIntentUseCase } from "./application/commands/createPaymentIntentUseCase.js";
+import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookUseCase.js";
+import { buildGetSessionDetailsUseCase } from "./application/queries/getSessionDetailsUseCase.js";
 import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
 import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
 import { createStripeGateway } from "./infrastructure/gateways/stripeGateway.js";
