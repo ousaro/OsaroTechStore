@@ -5,19 +5,19 @@ import { buildUpdateUserPasswordUseCase } from "./application/use-cases/updateUs
 import { buildDeleteUserUseCase } from "./application/use-cases/deleteUserUseCase.js";
 import { createUsersInputPort } from "./ports/input/usersInputPort.js";
 import {
-  deleteUserAccountById,
-  getUserAccountById,
-  listNonAdminUserAccounts,
-  updateUserAccountById,
+  getManagedUserAccount,
+  listManagedUserAccounts,
+  removeManagedUserAccount,
+  updateManagedUserAccountProfile,
 } from "../auth/public-api.js";
 import { createMongooseUserRepository } from "./infrastructure/repositories/mongooseUserRepository.js";
 import { createUsersHttpController } from "./infrastructure/http/usersHttpController.js";
 
 const authAccountAccess = {
-  deleteUserAccountById,
-  getUserAccountById,
-  listNonAdminUserAccounts,
-  updateUserAccountById,
+  getManagedUserAccount,
+  listManagedUserAccounts,
+  removeManagedUserAccount,
+  updateManagedUserAccountProfile,
 };
 
 const userRepository = createMongooseUserRepository({

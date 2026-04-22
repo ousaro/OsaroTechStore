@@ -5,10 +5,10 @@ import { assertAuthAccountAccessPort } from "../../ports/output/authAccountAcces
 
 export const createMongooseUserRepository = ({ authAccountAccess }) => {
   assertAuthAccountAccessPort(authAccountAccess, [
-    "listNonAdminUserAccounts",
-    "getUserAccountById",
-    "updateUserAccountById",
-    "deleteUserAccountById",
+    "listManagedUserAccounts",
+    "getManagedUserAccount",
+    "updateManagedUserAccountProfile",
+    "removeManagedUserAccount",
   ]);
 
   return {
@@ -17,22 +17,25 @@ export const createMongooseUserRepository = ({ authAccountAccess }) => {
     },
 
     async findAllNonAdminSorted() {
-      const docs = await authAccountAccess.listNonAdminUserAccounts();
+      const docs = await authAccountAccess.listManagedUserAccounts();
       return docs.map(toUserRecord);
     },
 
     async findById(id) {
-      const doc = await authAccountAccess.getUserAccountById(id);
+      const doc = await authAccountAccess.getManagedUserAccount(id);
       return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndUpdate(id, patch) {
-      const doc = await authAccountAccess.updateUserAccountById(id, patch.toPrimitives());
+      const doc = await authAccountAccess.updateManagedUserAccountProfile(
+        id,
+        patch.toPrimitives()
+      );
       return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndDelete(id) {
-      const doc = await authAccountAccess.deleteUserAccountById(id);
+      const doc = await authAccountAccess.removeManagedUserAccount(id);
       return doc ? toUserRecord(doc) : null;
     },
 

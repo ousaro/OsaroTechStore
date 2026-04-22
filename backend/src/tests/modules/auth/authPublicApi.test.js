@@ -5,19 +5,19 @@ import * as authPublicApi from "../../../modules/auth/public-api.js";
 describe("auth public api", () => {
   it("exposes only the auth capabilities used across module boundaries", () => {
     expect(Object.keys(authPublicApi).sort()).to.deep.equal([
-      "deleteUserAccountById",
-      "getUserAccountById",
-      "listNonAdminUserAccounts",
-      "updateUserAccountById",
+      "getManagedUserAccount",
+      "listManagedUserAccounts",
+      "removeManagedUserAccount",
+      "updateManagedUserAccountProfile",
       "verifyAccessToken",
     ]);
   });
 
-  it("exposes account capabilities as named functions instead of a broad object", () => {
-    expect(authPublicApi.listNonAdminUserAccounts).to.be.a("function");
-    expect(authPublicApi.getUserAccountById).to.be.a("function");
-    expect(authPublicApi.updateUserAccountById).to.be.a("function");
-    expect(authPublicApi.deleteUserAccountById).to.be.a("function");
+  it("exposes account-management capabilities as named functions instead of repository verbs", () => {
+    expect(authPublicApi.listManagedUserAccounts).to.be.a("function");
+    expect(authPublicApi.getManagedUserAccount).to.be.a("function");
+    expect(authPublicApi.updateManagedUserAccountProfile).to.be.a("function");
+    expect(authPublicApi.removeManagedUserAccount).to.be.a("function");
   });
 
   it("exposes access-token verification as a callable capability", () => {

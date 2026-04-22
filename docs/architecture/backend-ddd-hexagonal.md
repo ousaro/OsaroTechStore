@@ -125,9 +125,8 @@ Current strengths:
 
 Current limitations:
 
-- the auth/users boundary still needs a clearer ownership decision
 - auth still exposes account-access methods that feel repository-shaped across the boundary
-- dedicated value objects for email and password policy are still missing
+- password policy is still application-policy driven rather than modeled through richer auth-specific value objects
 
 ### Users
 
@@ -141,6 +140,43 @@ Current limitations:
 - the module depends on the auth module for data access
 - the auth/users boundary is cleaner than direct model sharing, but still persistence-shaped
 - user domain modeling is very thin
+
+## Auth and Users Boundary Decision
+
+The current codebase now makes one architectural decision explicit:
+
+- `auth` and `users` remain separate bounded contexts
+- `auth` owns account identity and credential data
+- `users` owns profile-facing and admin-facing application behavior over those accounts
+
+In concrete terms, `auth` is the source of truth for:
+
+- account lookup by id
+- credential-bearing account records
+- login and registration rules
+- token verification
+- account persistence operations currently exposed through `auth/public-api.js`
+
+`users` is responsible for:
+
+- user-facing and admin-facing account management use cases
+- profile-style reads and updates
+- password-update orchestration from the consumer side
+- shaping stable user records for the rest of the module
+
+This means `users` is currently a behavioral facade over auth-owned account data, not a separate persistence owner.
+
+That split is acceptable for the current codebase because:
+
+- auth already owns the credential-bearing record
+- users adds a different application-facing surface without reaching into auth infrastructure directly
+- the public boundary is explicit, tested, and narrower than earlier direct model sharing
+
+What still needs improvement:
+
+- the auth-to-users contract is still too repository-shaped
+- `users` does not yet own a truly separate profile model
+- if the seam stays thin, the project should either introduce a real profile model or eventually merge the modules conceptually
 
 ### Products
 
@@ -207,7 +243,7 @@ Current patterns in use:
 Examples:
 
 - `categories` calls a narrowed product capability to remove products by category
-- `users` depends on auth-backed user account access
+- `users` depends on auth-backed account access because auth owns the credential-bearing account record
 
 What is not in place yet:
 
@@ -236,7 +272,7 @@ This is workable today, but the composition root is still split between app boot
 Current verified baseline:
 
 - `npm test` in `backend/` passes
-- current suite: `80 passing`
+- current suite: `102 passing`
 
 Current strengths:
 

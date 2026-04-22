@@ -1,7 +1,7 @@
 export {
-  deleteUserAccountById,
-  getUserAccountById,
-  listNonAdminUserAccounts,
-  updateUserAccountById,
+  getManagedUserAccount,
+  listManagedUserAccounts,
+  removeManagedUserAccount,
+  updateManagedUserAccountProfile,
   verifyAccessToken,
 } from "./composition.js";

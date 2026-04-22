@@ -33,8 +33,9 @@ Progress: `payments/index.js` has now been removed entirely because it had no re
 Progress: `categories/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `orders/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `auth/index.js` has now been removed entirely because it had no remaining runtime consumers; the remaining test now imports the adapter-facing composition export directly.
-- [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
-- [ ] Document the ownership boundary between identity/auth data and profile/user data
+- [x] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
+- [x] Document the ownership boundary between identity/auth data and profile/user data
+- Progress: the architecture docs now make the current decision explicit: `auth` remains the owner of credential-bearing account identity data, while `users` remains a separate module that owns profile-facing and admin-facing behavior over those accounts.
 
 ## 2. Composition Root
 
@@ -115,11 +116,12 @@ Progress: category deletion now uses category-specific application errors instea
 
 ## 8. Auth and Users
 
-- [ ] Clarify whether auth owns credentials only or the whole user account record
-- [ ] Clarify whether users owns profile behavior only
-- [ ] Replace repository-shaped cross-module access with a narrower application contract
-- Progress: auth no longer exposes a broad `userAccounts` object and now provides named account-oriented capabilities such as `getUserAccountById` and `updateUserAccountById`, though the remaining contract is still somewhat persistence-shaped.
+- [x] Clarify whether auth owns credentials only or the whole user account record
+- [x] Clarify whether users owns profile behavior only
+- [x] Replace repository-shaped cross-module access with a narrower application contract
+- Progress: the auth/users seam now uses account-management capabilities such as `listManagedUserAccounts`, `getManagedUserAccount`, `updateManagedUserAccountProfile`, and `removeManagedUserAccount` instead of repository-shaped `find/get/update/delete by id` naming.
 - Progress: users now treats the auth dependency as an explicit `authAccountAccess` output port instead of four loose imported functions.
+- Progress: the documented ownership split is now explicit: auth owns the account record and credentials, while users currently owns profile/admin behavior over that auth-owned record rather than separate persistence.
 - [x] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
@@ -193,10 +195,11 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 ## 15. Documentation
 
 - [x] Keep the architecture overview aligned with the actual codebase
-- Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `80 passing` test baseline.
+- Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `102 passing` test baseline.
 - [x] Update the gap analysis when major boundary changes land
 - Progress: `backend-modular-ddd-hexagonal-gap-analysis.md` now reflects the current post-cleanup state for module surfaces, retired `ApiError` usage, existing contract tests, and the remaining composition/auth-users gaps.
-- [ ] Document the auth/users ownership decision explicitly
+- [x] Document the auth/users ownership decision explicitly
+- Progress: `backend-ddd-hexagonal.md` and the gap analysis now describe the current auth/users split and call out that the remaining issue is contract shape, not undecided ownership.
 - [ ] Document the event model once introduced
 - [ ] Document module public APIs and allowed consumers
 

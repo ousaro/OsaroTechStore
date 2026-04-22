@@ -8,10 +8,10 @@ describe("user repository contract", () => {
   it("implements the expected user repository port", () => {
     const repository = createMongooseUserRepository({
       authAccountAccess: {
-        listNonAdminUserAccounts: async () => [],
-        getUserAccountById: async () => null,
-        updateUserAccountById: async () => null,
-        deleteUserAccountById: async () => null,
+        listManagedUserAccounts: async () => [],
+        getManagedUserAccount: async () => null,
+        updateManagedUserAccountProfile: async () => null,
+        removeManagedUserAccount: async () => null,
       },
     });
 
@@ -30,22 +30,22 @@ describe("user repository contract", () => {
 
   it("requires the auth account access port dependency", () => {
     expect(() => createMongooseUserRepository({ authAccountAccess: {} })).to.throw(
-      "authAccountAccess port must implement listNonAdminUserAccounts"
+      "authAccountAccess port must implement listManagedUserAccounts"
     );
 
     expect(() =>
       assertAuthAccountAccessPort(
         {
-          listNonAdminUserAccounts: async () => [],
-          getUserAccountById: async () => null,
-          updateUserAccountById: async () => null,
-          deleteUserAccountById: async () => null,
+          listManagedUserAccounts: async () => [],
+          getManagedUserAccount: async () => null,
+          updateManagedUserAccountProfile: async () => null,
+          removeManagedUserAccount: async () => null,
         },
         [
-          "listNonAdminUserAccounts",
-          "getUserAccountById",
-          "updateUserAccountById",
-          "deleteUserAccountById",
+          "listManagedUserAccounts",
+          "getManagedUserAccount",
+          "updateManagedUserAccountProfile",
+          "removeManagedUserAccount",
         ]
       )
     ).to.not.throw();
@@ -73,20 +73,20 @@ describe("user repository contract", () => {
     const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
       authAccountAccess: {
-        listNonAdminUserAccounts: async () => {
-          calls.push(["listNonAdminUserAccounts"]);
+        listManagedUserAccounts: async () => {
+          calls.push(["listManagedUserAccounts"]);
           return [rawUser];
         },
-        getUserAccountById: async (id) => {
-          calls.push(["getUserAccountById", id]);
+        getManagedUserAccount: async (id) => {
+          calls.push(["getManagedUserAccount", id]);
           return rawUser;
         },
-        updateUserAccountById: async (id, updates) => {
-          calls.push(["updateUserAccountById", id, updates]);
+        updateManagedUserAccountProfile: async (id, updates) => {
+          calls.push(["updateManagedUserAccountProfile", id, updates]);
           return { ...rawUser, ...updates };
         },
-        deleteUserAccountById: async (id) => {
-          calls.push(["deleteUserAccountById", id]);
+        removeManagedUserAccount: async (id) => {
+          calls.push(["removeManagedUserAccount", id]);
           return rawUser;
         },
       },
@@ -108,10 +108,10 @@ describe("user repository contract", () => {
     expect(updateResult).to.deep.equal({ ...expectedUserRecord, firstName: "Jane" });
     expect(deleteResult).to.deep.equal(expectedUserRecord);
     expect(calls).to.deep.equal([
-      ["listNonAdminUserAccounts"],
-      ["getUserAccountById", "507f1f77bcf86cd799439011"],
-      ["updateUserAccountById", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
-      ["deleteUserAccountById", "507f1f77bcf86cd799439011"],
+      ["listManagedUserAccounts"],
+      ["getManagedUserAccount", "507f1f77bcf86cd799439011"],
+      ["updateManagedUserAccountProfile", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
+      ["removeManagedUserAccount", "507f1f77bcf86cd799439011"],
     ]);
   });
 });
