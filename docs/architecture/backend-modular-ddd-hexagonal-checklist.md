@@ -89,6 +89,7 @@ Progress: category deletion now uses category-specific application errors instea
 - [ ] Introduce value objects or policies around password strength and email rules
 Progress: auth password/email rules now live in an application policy, though dedicated value objects are still pending.
 - [x] Reduce auth public API exports to the minimum needed by consumers
+- Progress: auth token verification infrastructure now uses `AuthUnauthorizedError` instead of `ApiError`.
 - Progress: users password-update validation and lookup failures now use user/domain-specific errors instead of `ApiError`.
 
 ## 9. Ports and Contracts
@@ -143,7 +144,7 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Add integration tests for order/payment workflow
 - [ ] Add integration tests for category/product workflow
 - [ ] Add negative tests for boundary violations and invalid state transitions
-- Progress: auth, categories, orders, payments, users, and products application error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP error mapping.
+- Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP error mapping.
 - [ ] Add test coverage for event handlers once events exist
 
 ## 15. Documentation

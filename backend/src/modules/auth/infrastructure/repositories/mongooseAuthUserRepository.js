@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
 import UserModel from "../persistence/userModel.js";
 
 export const createMongooseAuthUserRepository = () => {
@@ -31,7 +31,7 @@ export const createMongooseAuthUserRepository = () => {
     async findUserIdOnly(userId) {
       const user = await UserModel.findOne({ _id: userId }).select("_id");
       if (!user) {
-        throw new ApiError("Request is not authorized", 401);
+        throw new AuthUnauthorizedError("Request is not authorized");
       }
       return user;
     },

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
 import { env } from "../../../../config/env.js";
 
 export const createJwtTokenService = () => {
@@ -12,14 +12,14 @@ export const createJwtTokenService = () => {
       const [scheme, token] = authorizationHeader.split(" ");
 
       if (scheme !== "Bearer" || !token) {
-        throw new ApiError("Request is not authorized", 401);
+        throw new AuthUnauthorizedError("Request is not authorized");
       }
 
       try {
         const { _id } = jwt.verify(token, env.tokenSecret);
         return _id;
       } catch (_error) {
-        throw new ApiError("Request is not authorized", 401);
+        throw new AuthUnauthorizedError("Request is not authorized");
       }
     },
   };
