@@ -14,6 +14,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [ ] Replace broad public exports with capability-specific functions
 Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
 - [ ] Keep `composition.js` private to each module
+- Progress: auth composition no longer exports its input port because that wiring is now kept internal to the module.
 - [ ] Keep `index.js` local to module adapters and bootstrap only
 Progress: product scheduler bootstrap now uses a dedicated module bootstrap export instead of the product module `index.js`.
 Progress: auth module `index.js` is now narrowed to HTTP handler exports instead of re-exporting public-api style capabilities.

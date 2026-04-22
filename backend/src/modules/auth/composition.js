@@ -23,7 +23,7 @@ const verifyAccessTokenUseCase = buildVerifyAccessTokenUseCase({
   tokenService,
   authUserRepository,
 });
-export const authInputPort = createAuthInputPort({
+const authInputPort = createAuthInputPort({
   registerUser: registerUserUseCase,
   loginUser: loginUserUseCase,
 });
