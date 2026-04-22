@@ -8,15 +8,16 @@ import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
 import { createMongooseOrderRepository } from "./infrastructure/repositories/mongooseOrderRepository.js";
 import { createOrdersHttpController } from "./infrastructure/http/ordersHttpController.js";
-import { linkPaymentToOrder } from "../payments/public-api.js";
+import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const orderRepository = createMongooseOrderRepository();
+const orderEventPublisher = applicationEventBus;
 
 const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
 const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
 const addOrderUseCase = buildAddOrderUseCase({
   orderRepository,
-  linkPaymentToOrder,
+  orderEventPublisher,
 });
 export const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
   orderRepository,

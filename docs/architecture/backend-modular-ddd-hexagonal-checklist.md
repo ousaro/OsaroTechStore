@@ -10,7 +10,7 @@ Completed items and historical progress notes have been removed on purpose.
 
 - [x] Introduce one application-level workflow/composition registry for cross-module subscriptions and translators
 - [x] Move `CategoryDeleted` subscription wiring out of `modules/categories/composition.js` and into that central workflow registry
-- [ ] Register all future `OrderPlaced` and `PaymentConfirmed` subscribers from the same central place
+- [x] Register all future `OrderPlaced` and `PaymentConfirmed` subscribers from the same central place
 - [x] Keep module `composition.js` files focused on module-local wiring only
 - [x] Remove empty structural folders that no longer represent real design decisions
 

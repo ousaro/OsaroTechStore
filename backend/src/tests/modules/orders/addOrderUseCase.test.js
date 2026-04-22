@@ -8,7 +8,6 @@ import { createOrderPlacedEvent } from "../../../../src/modules/orders/domain/ev
 describe("addOrderUseCase", () => {
   it("creates an order and publishes OrderPlaced", async () => {
     const publish = sinon.stub().resolves();
-    const linkPaymentToOrder = sinon.stub().resolves();
     const addOrderUseCase = buildAddOrderUseCase({
       orderRepository: {
         create: async () => ({
@@ -20,7 +19,6 @@ describe("addOrderUseCase", () => {
           totalPrice: 100,
         }),
       },
-      linkPaymentToOrder,
       orderEventPublisher: {
         publish,
       },
@@ -51,10 +49,6 @@ describe("addOrderUseCase", () => {
       paymentReference: "tx-1",
       totalPrice: 100,
     });
-    expect(linkPaymentToOrder.calledOnceWithExactly({
-      paymentReference: "tx-1",
-      orderId: "o1",
-    })).to.equal(true);
     expect(publish.calledOnceWithExactly({
       type: "OrderPlaced",
       payload: {
@@ -62,6 +56,7 @@ describe("addOrderUseCase", () => {
         ownerId: "u1",
         status: "pending",
         paymentStatus: "pending",
+        paymentReference: "tx-1",
         totalPrice: 100,
       },
     })).to.equal(true);
@@ -73,6 +68,7 @@ describe("addOrderUseCase", () => {
       ownerId: "u1",
       status: "pending",
       paymentStatus: "pending",
+      paymentReference: "pay_123",
       totalPrice: 100,
     });
 
@@ -83,6 +79,7 @@ describe("addOrderUseCase", () => {
         ownerId: "u1",
         status: "pending",
         paymentStatus: "pending",
+        paymentReference: "pay_123",
         totalPrice: 100,
       },
     });
@@ -101,7 +98,6 @@ describe("addOrderUseCase", () => {
 
   it("prefers the payments-owned reference when paymentDetails provides one", async () => {
     let createdOrder = null;
-    const linkPaymentToOrder = sinon.stub().resolves();
     const addOrderUseCase = buildAddOrderUseCase({
       orderRepository: {
         create: async (order) => {
@@ -109,7 +105,6 @@ describe("addOrderUseCase", () => {
           return { _id: "o1", ...createdOrder };
         },
       },
-      linkPaymentToOrder,
     });
 
     await addOrderUseCase({
@@ -137,9 +132,5 @@ describe("addOrderUseCase", () => {
     expect(createdOrder.paymentDetails).to.deep.equal({
       paymentReference: "pay_123",
     });
-    expect(linkPaymentToOrder.calledOnceWithExactly({
-      paymentReference: "pay_123",
-      orderId: "o1",
-    })).to.equal(true);
   });
 });

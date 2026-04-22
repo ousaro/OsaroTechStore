@@ -18,6 +18,7 @@ export const createOrderPlacedEvent = (order) => {
       ownerId: order.ownerId,
       status: order.status,
       paymentStatus: order.paymentStatus,
+      paymentReference: order.paymentReference,
       totalPrice: order.totalPrice,
     },
   });
