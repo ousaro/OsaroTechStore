@@ -197,8 +197,10 @@ Progress: users, orders, products, categories, and payments record mappings are 
 
 ## 13. Shared Kernel
 
-- [ ] Audit `shared/` for business logic that should belong to modules instead
-- [ ] Keep `shared/` limited to generic primitives and technical utilities
-- [ ] Avoid moving business rules into shared helpers
-- [ ] Decide which primitives truly belong in a shared kernel versus module-local value objects
-Progress: shared HTTP validation now uses a transport-specific `HttpValidationError` instead of `ApiError`.
+- [x] Audit `shared/` for business logic that should belong to modules instead
+- [x] Keep `shared/` limited to generic primitives and technical utilities
+- [x] Avoid moving business rules into shared helpers
+- [x] Decide which primitives truly belong in a shared kernel versus module-local value objects
+- Progress: the shared-kernel audit found `shared/` now limited to generic error primitives, HTTP transport helpers, Mongo bootstrap wiring, and the in-process event bus rather than business workflows.
+- Progress: the current rule is now explicit in the docs: business validation, value objects, lifecycle rules, workflow services, and module collaboration translators stay module-local unless a concept is truly generic across bounded contexts.
+- Progress: shared HTTP validation now uses a transport-specific `HttpValidationError` instead of `ApiError`.

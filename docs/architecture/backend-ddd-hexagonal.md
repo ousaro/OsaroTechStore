@@ -30,7 +30,9 @@ Typical module shape today:
 ```text
 modules/<module>/
 ├── application/
-│   └── use-cases/
+│   ├── commands/ or queries/ (where workflow complexity justifies it)
+│   ├── dto/ (only when the application boundary needs explicit response shapes)
+│   └── errors/ / policies/ / validation/
 ├── domain/
 ├── infrastructure/
 │   ├── http/
@@ -74,14 +76,14 @@ What is still weak:
 
 What exists:
 
-- module-local use cases under `application/use-cases`
+- module-local application flows, with `orders`, `payments`, and `auth` now split into command/query folders
 - use cases coordinate repositories and gateways
 - several CRUD flows are cleaner than before
 
 What is still weak:
 
 - most use cases are still CRUD-oriented orchestration
-- commands, queries, DTOs, and event handlers are not clearly separated
+- command/query/dto separation is now present in the highest-workflow modules, but is not needed everywhere yet
 - cross-module workflows are mostly synchronous and request/response shaped
 
 ### Ports
@@ -105,12 +107,12 @@ What exists:
 - module-local repositories and persistence models
 - Stripe gateway adapter in `payments`
 - auth JWT and OAuth adapters
-- Mongo connection and shared HTTP middleware under `shared/`
+- Mongo connection, shared HTTP middleware, shared error primitives, and a shared in-process event bus under `shared/`
 
 What is still weak:
 
-- some repositories still return raw records through pass-through mappers
-- mapping layers are thin and do not yet form strong anti-corruption boundaries
+- some mapping layers are still thin even though the worst raw-record leaks were removed
+- anti-corruption boundaries are clearer for Stripe and category/product collaboration, but are still not comprehensive
 - bootstrap wiring is cleaner, but there is still no strict single composition root for all runtime concerns
 
 ## Module-by-Module Snapshot
@@ -342,31 +344,41 @@ Current patterns in use:
 
 - synchronous contract calls through `public-api.js`
 - app-level composition for auth verification middleware
+- in-process domain/application events through a shared application event bus
 
 Examples:
 
-- `categories` calls a narrowed product capability to remove products by category
+- `categories` publishes `CategoryDeleted`, and the current event handler translates that into product cleanup
 - `users` depends on auth-backed account access because auth owns the credential-bearing account record
 
 What is not in place yet:
 
-- domain events
-- application events
-- async module collaboration
-- anti-corruption layers between module languages
+- broader event coverage across more module seams
+- payment-to-order event handling with stable correlation data
+- anti-corruption layers between every diverging module language
 
 ## Shared and Bootstrap
 
 Current shared code:
 
+- `shared/application/errors/ApplicationError.js`
+- `shared/domain/errors/DomainValidationError.js`
 - `shared/infrastructure/http/HttpValidationError.js`
 - shared HTTP middleware and helpers
 - shared Mongo bootstrap utilities
+- `shared/infrastructure/events/createInProcessEventBus.js`
+
+Current shared-kernel decision:
+
+- `shared/` should stay limited to generic primitives and technical infrastructure
+- business validation, value objects, lifecycle rules, workflow services, and collaboration translators should stay module-local
+- new shared primitives should be introduced only when a concept is truly generic across bounded contexts
 
 Current bootstrap shape:
 
 - `app/createApp.js` wires middleware and routes
-- `server.js` connects Mongo, starts the app, and starts the product scheduler through `products/bootstrap.js`
+- `app/startApplication.js` is the runtime bootstrap that connects Mongo, creates the app, starts runtime hooks, and listens
+- `server.js` is now a thin entrypoint over that bootstrap
 
 This is workable today, but the composition root is still split between app bootstrap and module-level runtime hooks.
 
@@ -375,7 +387,7 @@ This is workable today, but the composition root is still split between app boot
 Current verified baseline:
 
 - `npm test` in `backend/` passes
-- current suite: `102 passing`
+- current suite: `139 passing`
 
 Current strengths:
 
@@ -385,10 +397,10 @@ Current strengths:
 Current gaps:
 
 - module public API tests exist for `auth` and `products`
-- contract coverage exists for the Stripe gateway and the users repository
+- contract coverage exists for repositories and the Stripe gateway
 - limited adapter integration coverage
-- no cross-module workflow tests
-- no tests around event-driven collaboration because eventing is not implemented yet
+- only the first cross-module workflow test exists so far
+- event-driven collaboration now has initial event-bus and handler coverage, but not broad workflow coverage yet
 
 ## Honest Architectural Assessment
 
