@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildDeleteUserUseCase } from "../../../modules/users/application/use-cases/deleteUserUseCase.js";
+import { UserNotFoundError } from "../../../modules/users/application/errors/UserApplicationError.js";
 
 describe("deleteUserUseCase", () => {
   it("returns the deleted user when the repository deletes it", async () => {
@@ -29,8 +30,9 @@ describe("deleteUserUseCase", () => {
       await deleteUserUseCase({ id: "bad-id" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(UserNotFoundError);
       expect(error.message).to.equal("No such user");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("USER_NOT_FOUND");
     }
   });
 
@@ -46,8 +48,9 @@ describe("deleteUserUseCase", () => {
       await deleteUserUseCase({ id: "507f1f77bcf86cd799439011" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(UserNotFoundError);
       expect(error.message).to.equal("User not found");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("USER_NOT_FOUND");
     }
   });
 });

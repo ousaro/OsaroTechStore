@@ -4,6 +4,7 @@ import sinon from "sinon";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
+import { UserValidationError } from "../../modules/users/application/errors/UserApplicationError.js";
 import { DomainValidationError } from "../../shared/domain/errors/DomainValidationError.js";
 
 describe("errorMiddleware", () => {
@@ -100,6 +101,22 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Order not found");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps user validation errors to 400", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new UserValidationError("Current password is incorrect"), req, res, () => {});
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Current password is incorrect");
     expect(body.stack).to.be.a("string");
   });
 });

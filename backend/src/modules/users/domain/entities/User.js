@@ -1,4 +1,4 @@
-import { ApiError } from "../../../../shared/domain/errors/ApiError.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 
 export const createUserUpdatePatch = (updates) => {
   const patch = { ...updates };
@@ -13,11 +13,11 @@ export const createUserPasswordUpdateCommand = (updates) => {
   const { currentPassword, newPassword, confirmPassword } = updates || {};
 
   if (!currentPassword || !newPassword || !confirmPassword) {
-    throw new ApiError("All fields must be filled", 400);
+    throw new DomainValidationError("All fields must be filled");
   }
 
   if (newPassword !== confirmPassword) {
-    throw new ApiError("Password do not match", 400);
+    throw new DomainValidationError("Password do not match");
   }
 
   return Object.freeze({

@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildGetUserByIdUseCase } from "../../../modules/users/application/use-cases/getUserByIdUseCase.js";
+import { UserNotFoundError } from "../../../modules/users/application/errors/UserApplicationError.js";
 
 describe("getUserByIdUseCase", () => {
   it("returns the user when the repository finds it", async () => {
@@ -29,8 +30,9 @@ describe("getUserByIdUseCase", () => {
       await getUserByIdUseCase({ id: "bad-id" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(UserNotFoundError);
       expect(error.message).to.equal("No such user");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("USER_NOT_FOUND");
     }
   });
 
@@ -46,8 +48,9 @@ describe("getUserByIdUseCase", () => {
       await getUserByIdUseCase({ id: "507f1f77bcf86cd799439011" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(UserNotFoundError);
       expect(error.message).to.equal("User not found");
-      expect(error.statusCode).to.equal(404);
+      expect(error.code).to.equal("USER_NOT_FOUND");
     }
   });
 });
