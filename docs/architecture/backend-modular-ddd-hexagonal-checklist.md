@@ -95,6 +95,7 @@ Progress: order use cases now use an order-specific application error, and order
 ## 7. Products and Categories
 
 - [ ] Replace synchronous cleanup orchestration with an explicit collaboration model
+- Progress: category deletion now depends on an explicit `productCategoryCleanup` port instead of a loose cross-module cleanup function, though the workflow is still synchronous.
 - [ ] Decide whether category deletion should emit an event such as `CategoryDeleted`
 - [ ] Add an ACL or translation layer if product/category module language diverges
 - [ ] Replace misleading pass-through entity naming with proper mapper/read-model naming
@@ -123,6 +124,7 @@ Progress: auth password/email rules now live in an application policy, though de
 - [ ] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
 - Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.
+- Progress: category deletion now validates its product-cleanup dependency through an explicit `productCategoryCleanup` port contract.
 - [ ] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
 - [ ] Add module public API contract tests

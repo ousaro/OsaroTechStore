@@ -7,6 +7,9 @@ import { removeProductsByCategory } from "../products/public-api.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
 
 const categoryRepository = createMongooseCategoryRepository();
+const productCategoryCleanup = {
+  removeProductsByCategory,
+};
 
 const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
   categoryRepository,
@@ -16,7 +19,7 @@ const addNewCategoryUseCase = buildAddNewCategoryUseCase({
 });
 const deleteCategoryUseCase = buildDeleteCategoryUseCase({
   categoryRepository,
-  removeProductsByCategory,
+  productCategoryCleanup,
 });
 const categoriesInputPort = createCategoriesInputPort({
   getAllCategories: getAllCategoriesUseCase,

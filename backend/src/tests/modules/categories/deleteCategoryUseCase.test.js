@@ -17,8 +17,10 @@ describe("deleteCategoryUseCase", () => {
           return deletedCategory;
         },
       },
-      removeProductsByCategory: async ({ categoryId }) => {
-        calls.push(["removeProductsByCategory", categoryId]);
+      productCategoryCleanup: {
+        removeProductsByCategory: async ({ categoryId }) => {
+          calls.push(["removeProductsByCategory", categoryId]);
+        },
       },
     });
 
@@ -36,7 +38,9 @@ describe("deleteCategoryUseCase", () => {
       categoryRepository: {
         findByIdAndDelete: async () => null,
       },
-      removeProductsByCategory: async () => {},
+      productCategoryCleanup: {
+        removeProductsByCategory: async () => {},
+      },
     });
 
     try {
@@ -54,7 +58,9 @@ describe("deleteCategoryUseCase", () => {
       categoryRepository: {
         findByIdAndDelete: async () => null,
       },
-      removeProductsByCategory: async () => {},
+      productCategoryCleanup: {
+        removeProductsByCategory: async () => {},
+      },
     });
 
     try {
