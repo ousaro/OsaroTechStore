@@ -25,7 +25,7 @@ const getUserByIdUseCase = buildGetUserByIdUseCase({ userRepository });
 const updateUserUseCase = buildUpdateUserUseCase({ userRepository });
 const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({ userRepository });
 const deleteUserUseCase = buildDeleteUserUseCase({ userRepository });
-export const usersInputPort = createUsersInputPort({
+const usersInputPort = createUsersInputPort({
   getAllUsers: getAllUsersUseCase,
   getUserById: getUserByIdUseCase,
   updateUser: updateUserUseCase,

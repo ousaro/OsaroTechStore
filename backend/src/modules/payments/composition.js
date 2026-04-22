@@ -17,7 +17,7 @@ const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
 });
 const verifyWebhookUseCase = buildVerifyWebhookUseCase({ paymentGateway });
 const getSessionDetailsUseCase = buildGetSessionDetailsUseCase({ paymentGateway });
-export const paymentsInputPort = createPaymentsInputPort({
+const paymentsInputPort = createPaymentsInputPort({
   createPaymentIntent: createPaymentIntentUseCase,
   verifyWebhook: verifyWebhookUseCase,
   getSessionDetails: getSessionDetailsUseCase,

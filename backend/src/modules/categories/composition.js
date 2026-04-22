@@ -18,7 +18,7 @@ const deleteCategoryUseCase = buildDeleteCategoryUseCase({
   categoryRepository,
   removeProductsByCategory,
 });
-export const categoriesInputPort = createCategoriesInputPort({
+const categoriesInputPort = createCategoriesInputPort({
   getAllCategories: getAllCategoriesUseCase,
   addNewCategory: addNewCategoryUseCase,
   deleteCategory: deleteCategoryUseCase,

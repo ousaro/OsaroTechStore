@@ -24,7 +24,7 @@ const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
 const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
 const removeProductsByCategoryUseCase = buildRemoveProductsByCategoryUseCase({ productRepository });
 const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
-export const productsInputPort = createProductsInputPort({
+const productsInputPort = createProductsInputPort({
   getAllProducts: getAllProductsUseCase,
   getProductById: getProductByIdUseCase,
   addProduct: addProductUseCase,

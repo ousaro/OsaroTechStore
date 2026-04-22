@@ -14,7 +14,7 @@ const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
 const addOrderUseCase = buildAddOrderUseCase({ orderRepository });
 const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
 const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });
-export const ordersInputPort = createOrdersInputPort({
+const ordersInputPort = createOrdersInputPort({
   getAllOrders: getAllOrdersUseCase,
   getOrderById: getOrderByIdUseCase,
   addOrder: addOrderUseCase,
