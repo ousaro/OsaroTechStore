@@ -2,7 +2,8 @@ import { env } from "../../config/env.js";
 import { buildCreatePaymentIntentUseCase } from "./application/use-cases/createPaymentIntentUseCase.js";
 import { buildVerifyWebhookUseCase } from "./application/use-cases/verifyWebhookUseCase.js";
 import { buildGetSessionDetailsUseCase } from "./application/use-cases/getSessionDetailsUseCase.js";
-import { createPaymentsInputPort } from "./ports/input/paymentsInputPort.js";
+import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
+import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
 import { createStripeGateway } from "./infrastructure/gateways/stripeGateway.js";
 import { createPaymentsHttpController } from "./infrastructure/http/paymentsHttpController.js";
 
@@ -17,9 +18,11 @@ const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
 });
 const verifyWebhookUseCase = buildVerifyWebhookUseCase({ paymentGateway });
 const getSessionDetailsUseCase = buildGetSessionDetailsUseCase({ paymentGateway });
-const paymentsInputPort = createPaymentsInputPort({
+const paymentsCommandPort = createPaymentsCommandPort({
   createPaymentIntent: createPaymentIntentUseCase,
   verifyWebhook: verifyWebhookUseCase,
+});
+const paymentsQueryPort = createPaymentsQueryPort({
   getSessionDetails: getSessionDetailsUseCase,
 });
 
@@ -28,5 +31,6 @@ export const {
   stripeWebhookHandler,
   getSessionDetailsHandler,
 } = createPaymentsHttpController({
-  paymentsInputPort,
+  paymentsCommandPort,
+  paymentsQueryPort,
 });

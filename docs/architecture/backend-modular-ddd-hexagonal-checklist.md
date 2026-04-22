@@ -128,11 +128,13 @@ Progress: auth password/email rules now live in an application policy, though de
 
 ## 9. Ports and Contracts
 
-- [ ] Review every input port and output port for unnecessary breadth
+- [x] Review every input port and output port for unnecessary breadth
 - Progress: `productsInputPort` now only contains the HTTP-facing product use cases; category cleanup and scheduler refresh stay on narrower public/bootstrap paths instead of inflating the controller port.
+- Progress: after a full port sweep, the remaining input and output ports are now aligned with their current adapter responsibilities rather than carrying obviously unrelated capabilities.
 - [x] Define boundary DTOs where external/module contracts should not expose internal shapes
 - Progress: the Stripe checkout-session gateway contract now returns a normalized `paymentStatus` field instead of leaking Stripe's raw `payment_status` shape.
-- [ ] Distinguish commands from queries in contracts where complexity justifies it
+- [x] Distinguish commands from queries in contracts where complexity justifies it
+- Progress: payments now separates command work (`createPaymentIntent`, `verifyWebhook`) from query work (`getSessionDetails`) through distinct input port contracts.
 - [x] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
 - Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.

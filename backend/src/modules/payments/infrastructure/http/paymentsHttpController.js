@@ -1,19 +1,27 @@
 import { asyncHandler } from "../../../../shared/infrastructure/http/asyncHandler.js";
 import { PaymentWebhookError } from "../../application/errors/PaymentApplicationError.js";
-import { assertPaymentsInputPort } from "../../ports/input/paymentsInputPort.js";
+import { assertPaymentsCommandPort } from "../../ports/input/paymentsCommandPort.js";
+import { assertPaymentsQueryPort } from "../../ports/input/paymentsQueryPort.js";
 
-export const createPaymentsHttpController = ({ paymentsInputPort }) => {
-  assertPaymentsInputPort(paymentsInputPort);
+export const createPaymentsHttpController = ({
+  paymentsCommandPort,
+  paymentsQueryPort,
+}) => {
+  assertPaymentsCommandPort(paymentsCommandPort);
+  assertPaymentsQueryPort(paymentsQueryPort);
 
   const createPaymentIntentHandler = asyncHandler(async (req, res) => {
-    const payload = await paymentsInputPort.createPaymentIntent({ items: req.body.items });
+    const payload = await paymentsCommandPort.createPaymentIntent({ items: req.body.items });
     return res.status(200).json(payload);
   });
 
   const stripeWebhookHandler = asyncHandler(async (req, res) => {
     const signature = req.headers["stripe-signature"];
     try {
-      const payload = await paymentsInputPort.verifyWebhook({ payload: req.body, signature });
+      const payload = await paymentsCommandPort.verifyWebhook({
+        payload: req.body,
+        signature,
+      });
       return res.status(200).json(payload);
     } catch (_error) {
       throw new PaymentWebhookError("Webhook signature verification failed");
@@ -21,7 +29,9 @@ export const createPaymentsHttpController = ({ paymentsInputPort }) => {
   });
 
   const getSessionDetailsHandler = asyncHandler(async (req, res) => {
-    const payload = await paymentsInputPort.getSessionDetails({ sessionId: req.params.sessionId });
+    const payload = await paymentsQueryPort.getSessionDetails({
+      sessionId: req.params.sessionId,
+    });
     return res.status(200).json(payload);
   });
 
