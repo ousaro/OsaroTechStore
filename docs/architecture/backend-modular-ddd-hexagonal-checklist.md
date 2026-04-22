@@ -13,6 +13,7 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 - [x] Stop exporting full input ports from `public-api.js` unless absolutely necessary
 - [ ] Replace broad public exports with capability-specific functions
 Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
+Progress: empty `public-api.js` placeholders with no consumers have now been removed from users, payments, orders, and categories so only modules with actual cross-module capabilities keep that surface.
 - [ ] Keep `composition.js` private to each module
 - Progress: auth composition no longer exports its input port because that wiring is now kept internal to the module.
 - Progress: users, products, categories, orders, and payments compositions also now keep their input ports private because that wiring is only used internally by module HTTP adapters.
