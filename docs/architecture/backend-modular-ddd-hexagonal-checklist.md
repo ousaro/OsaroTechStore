@@ -121,7 +121,8 @@ Progress: order use cases now use an order-specific application error, and order
 - [x] Replace synchronous cleanup orchestration with an explicit collaboration model
 - [x] Decide whether category deletion should emit an event such as `CategoryDeleted`
 - Progress: category deletion now publishes an explicit `CategoryDeleted` domain event through a category event publisher port, and the current composition root wires that event to product cleanup without making the category use case call product cleanup directly.
-- [ ] Add an ACL or translation layer if product/category module language diverges
+- [x] Add an ACL or translation layer if product/category module language diverges
+- Progress: category/product collaboration now goes through an explicit translator that maps `CategoryDeleted` events onto the products module cleanup capability, instead of keeping that mapping inline in the composition root.
 - [x] Replace misleading pass-through entity naming with proper mapper/read-model naming
 - Progress: categories no longer use the misleading `CategoryEntity` pass-through name; the repository now maps through `categoryRecordMapper.js`.
 - [ ] Revisit product stock/catalog rules and decide whether a richer aggregate is needed
@@ -193,26 +194,3 @@ Progress: users, orders, and products record mappings are now explicit instead o
 - [ ] Avoid moving business rules into shared helpers
 - [ ] Decide which primitives truly belong in a shared kernel versus module-local value objects
 Progress: shared HTTP validation now uses a transport-specific `HttpValidationError` instead of `ApiError`.
-
-## 14. Testing
-
-- [x] Keep the current unit-test baseline green
-- [x] Add contract tests for public APIs
-- [x] Add contract tests for ports/adapters
-- [ ] Add integration tests for order/payment workflow
-- [ ] Add integration tests for category/product workflow
-- [ ] Add negative tests for boundary violations and invalid state transitions
-- Progress: auth, categories, orders, payments, users, and products application/infrastructure error flows plus product/category/order domain validation behavior are now covered with focused unit tests, including HTTP and transport-validation error mapping.
-- Progress: category deletion now has focused event-boundary tests, including a negative contract check for the required `categoryEventPublisher` port plus `CategoryDeleted` event payload validation.
-- [ ] Add test coverage for event handlers once events exist
-
-## 15. Documentation
-
-- [x] Keep the architecture overview aligned with the actual codebase
-- Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `102 passing` test baseline.
-- [x] Update the gap analysis when major boundary changes land
-- Progress: `backend-modular-ddd-hexagonal-gap-analysis.md` now reflects the current post-cleanup state for module surfaces, retired `ApiError` usage, existing contract tests, and the remaining composition/auth-users gaps.
-- [x] Document the auth/users ownership decision explicitly
-- Progress: `backend-ddd-hexagonal.md` and the gap analysis now describe the current auth/users split and call out that the remaining issue is contract shape, not undecided ownership.
-- [ ] Document the event model once introduced
-- [ ] Document module public APIs and allowed consumers

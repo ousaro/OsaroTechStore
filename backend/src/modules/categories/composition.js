@@ -3,17 +3,14 @@ import { buildAddNewCategoryUseCase } from "./application/use-cases/addNewCatego
 import { buildDeleteCategoryUseCase } from "./application/use-cases/deleteCategoryUseCase.js";
 import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
 import { createMongooseCategoryRepository } from "./infrastructure/repositories/mongooseCategoryRepository.js";
+import { createCategoryDeletedProductCleanupTranslator } from "./infrastructure/collaboration/categoryDeletedProductCleanupTranslator.js";
 import { removeProductsByCategory } from "../products/public-api.js";
 import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
 
 const categoryRepository = createMongooseCategoryRepository();
-const categoryEventPublisher = {
-  async publish(event) {
-    if (event?.type === "CategoryDeleted") {
-      await removeProductsByCategory({ categoryId: event.payload.categoryId });
-    }
-  },
-};
+const categoryEventPublisher = createCategoryDeletedProductCleanupTranslator({
+  removeProductsByCategory,
+});
 
 const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
   categoryRepository,
