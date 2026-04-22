@@ -86,6 +86,21 @@ export const transitionOrderStatus = (currentOrder, nextStatus) => {
   return createOrderStatus(targetStatus);
 };
 
+export const markOrderAsPaid = (currentOrder) =>
+  transitionOrderStatus(currentOrder, "paid");
+
+export const startOrderProcessing = (currentOrder) =>
+  transitionOrderStatus(currentOrder, "processing");
+
+export const shipOrder = (currentOrder) =>
+  transitionOrderStatus(currentOrder, "shipped");
+
+export const deliverOrder = (currentOrder) =>
+  transitionOrderStatus(currentOrder, "delivered");
+
+export const cancelOrder = (currentOrder) =>
+  transitionOrderStatus(currentOrder, "cancelled");
+
 export const createOrderUpdatePatch = (updates) => {
   const patch = { ...updates };
 

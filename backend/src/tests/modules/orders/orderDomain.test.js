@@ -1,8 +1,13 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import {
+  cancelOrder,
   createOrder,
   createOrderUpdatePatch,
+  deliverOrder,
+  markOrderAsPaid,
+  shipOrder,
+  startOrderProcessing,
   transitionOrderStatus,
 } from "../../../../src/modules/orders/domain/entities/Order.js";
 import { prepareOrderLifecyclePatch } from "../../../../src/modules/orders/domain/services/orderLifecycleService.js";
@@ -147,6 +152,16 @@ describe("Order Domain", () => {
       DomainValidationError,
       "Invalid order status transition from pending to delivered"
     );
+  });
+
+  it("exposes explicit behaviors for the main order lifecycle steps", () => {
+    expect(markOrderAsPaid({ status: "pending" }).toPrimitives()).to.equal("paid");
+    expect(startOrderProcessing({ status: "paid" }).toPrimitives()).to.equal(
+      "processing"
+    );
+    expect(shipOrder({ status: "processing" }).toPrimitives()).to.equal("shipped");
+    expect(deliverOrder({ status: "shipped" }).toPrimitives()).to.equal("delivered");
+    expect(cancelOrder({ status: "pending" }).toPrimitives()).to.equal("cancelled");
   });
 
   it("prepares lifecycle updates through a dedicated domain service", () => {

@@ -104,7 +104,8 @@ Progress: payment input validation and webhook transport failure now use payment
 
 ## 6. Orders Module
 
-- [ ] Move order state changes toward explicit behaviors instead of generic patch updates
+- [x] Move order state changes toward explicit behaviors instead of generic patch updates
+- Progress: order lifecycle changes now route through named domain behaviors such as `markOrderAsPaid`, `startOrderProcessing`, `shipOrder`, `deliverOrder`, and `cancelOrder` instead of relying only on generic target-status patching.
 - [ ] Separate create/update commands from read queries where useful
 - [x] Define order invariants around payment state and status transitions
 - Progress: the order lifecycle service now enforces that paid and fulfillment statuses require an effective `paymentStatus` of `paid`, instead of allowing status and payment state to drift independently.

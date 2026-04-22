@@ -149,4 +149,33 @@ describe("updateOrderUseCase", () => {
       paymentStatus: "paid",
     });
   });
+
+  it("uses explicit lifecycle behaviors for fulfillment transitions", async () => {
+    let persistedPatch = null;
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "paid", paymentStatus: "paid" }),
+        findByIdAndUpdate: async (_id, patch) => {
+          persistedPatch = patch.toPrimitives();
+          return { _id: "o1", ...persistedPatch };
+        },
+      },
+    });
+
+    const result = await updateOrderUseCase({
+      id: "o1",
+      updates: {
+        status: "processing",
+      },
+    });
+
+    expect(persistedPatch).to.deep.equal({
+      status: "processing",
+    });
+    expect(result).to.deep.equal({
+      _id: "o1",
+      status: "processing",
+    });
+  });
 });

@@ -1,5 +1,12 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
-import { transitionOrderStatus } from "../entities/Order.js";
+import {
+  cancelOrder,
+  deliverOrder,
+  markOrderAsPaid,
+  shipOrder,
+  startOrderProcessing,
+  transitionOrderStatus,
+} from "../entities/Order.js";
 import { createPaymentStatus } from "../value-objects/PaymentStatus.js";
 
 const ORDER_STATUSES_REQUIRING_PAID_PAYMENT = new Set([
@@ -8,6 +15,14 @@ const ORDER_STATUSES_REQUIRING_PAID_PAYMENT = new Set([
   "shipped",
   "delivered",
 ]);
+
+const ORDER_STATUS_BEHAVIORS = {
+  paid: markOrderAsPaid,
+  processing: startOrderProcessing,
+  shipped: shipOrder,
+  delivered: deliverOrder,
+  cancelled: cancelOrder,
+};
 
 export const prepareOrderLifecyclePatch = ({ currentOrder, updates }) => {
   if (!currentOrder || typeof currentOrder !== "object") {
@@ -25,10 +40,15 @@ export const prepareOrderLifecyclePatch = ({ currentOrder, updates }) => {
       : createPaymentStatus(currentOrder.paymentStatus ?? "pending").toPrimitives();
 
   if (patchUpdates.status !== undefined) {
-    patchUpdates.status = transitionOrderStatus(
+    const requestedStatus = transitionOrderStatus(
       currentOrder,
       patchUpdates.status
     ).toPrimitives();
+    const applyStatusBehavior =
+      ORDER_STATUS_BEHAVIORS[requestedStatus] ??
+      ((order) => transitionOrderStatus(order, requestedStatus));
+
+    patchUpdates.status = applyStatusBehavior(currentOrder).toPrimitives();
   }
 
   const effectiveOrderStatus = patchUpdates.status ?? currentOrder.status;
