@@ -43,6 +43,9 @@ describe("Order Domain", () => {
     expect(order.toPrimitives().paymentStatus).to.equal("pending");
     expect(order.toPrimitives().paymentReference).to.equal("pay_123");
     expect(order.toPrimitives().transactionId).to.equal("pay_123");
+    expect(order.toPrimitives().paymentDetails).to.deep.equal({
+      paymentReference: "pay_123",
+    });
     expect(order.totalPrice.toPrimitives()).to.equal(100);
     expect(order.status.toPrimitives()).to.equal("pending");
     expect(order.paymentStatus.toPrimitives()).to.equal("pending");
@@ -92,6 +95,33 @@ describe("Order Domain", () => {
       paymentReference: "pay_123",
       transactionId: "pay_123",
       paymentStatus: "paid",
+    });
+  });
+
+  it("strips provider-specific payment details out of the order aggregate", () => {
+    const order = createOrder({
+      ownerId: "u1",
+      products: [{ productId: "p1", qty: 1 }],
+      totalPrice: 100,
+      status: "pending",
+      address: {
+        city: "Casablanca",
+        addressLine: "Street 1",
+        postalCode: "20000",
+        country: "MA",
+      },
+      paymentMethod: "card",
+      paymentStatus: "pending",
+      paymentReference: "pay_123",
+      paymentDetails: {
+        provider: "stripe",
+        sessionId: "cs_test_123",
+        payment_intent: "pi_123",
+      },
+    });
+
+    expect(order.toPrimitives().paymentDetails).to.deep.equal({
+      paymentReference: "pay_123",
     });
   });
 

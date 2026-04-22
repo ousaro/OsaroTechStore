@@ -134,6 +134,9 @@ describe("addOrderUseCase", () => {
 
     expect(createdOrder.transactionId).to.equal("pay_123");
     expect(createdOrder.paymentReference).to.equal("pay_123");
+    expect(createdOrder.paymentDetails).to.deep.equal({
+      paymentReference: "pay_123",
+    });
     expect(linkPaymentToOrder.calledOnceWithExactly({
       paymentReference: "pay_123",
       orderId: "o1",

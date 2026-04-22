@@ -8,6 +8,16 @@ import {
   assertString,
 } from "../validation/orderValidation.js";
 
+const createOrderPaymentDetails = (paymentDetails, paymentReference) => {
+  if (!paymentDetails || typeof paymentDetails !== "object") {
+    throw new DomainValidationError("paymentDetails is required");
+  }
+
+  return Object.freeze({
+    paymentReference,
+  });
+};
+
 export const createOrder = ({
   ownerId,
   products,
@@ -29,10 +39,10 @@ export const createOrder = ({
   const orderTotalPrice = createMoney(totalPrice);
   const orderStatus = createOrderStatus(status);
   const orderPaymentStatus = createPaymentStatus(paymentStatus);
-
-  if (!paymentDetails || typeof paymentDetails !== "object") {
-    throw new DomainValidationError("paymentDetails is required");
-  }
+  const orderPaymentDetails = createOrderPaymentDetails(
+    paymentDetails,
+    stablePaymentReference
+  );
 
   const props = {
     ownerId,
@@ -44,7 +54,7 @@ export const createOrder = ({
     paymentStatus: orderPaymentStatus,
     paymentReference: stablePaymentReference,
     transactionId: stablePaymentReference,
-    paymentDetails,
+    paymentDetails: orderPaymentDetails,
   };
 
   return Object.freeze({
@@ -147,8 +157,14 @@ export const createOrderUpdatePatch = (updates) => {
     assertNonEmptyArray(patch.products, "products must be a non-empty array");
   }
 
-  if (patch.paymentDetails !== undefined && (!patch.paymentDetails || typeof patch.paymentDetails !== "object")) {
-    throw new DomainValidationError("paymentDetails is required");
+  if (patch.paymentDetails !== undefined) {
+    const stablePaymentReference =
+      patch.paymentReference ?? patch.transactionId;
+    assertString(stablePaymentReference, "paymentReference is required");
+    patch.paymentDetails = createOrderPaymentDetails(
+      patch.paymentDetails,
+      stablePaymentReference
+    );
   }
 
   return Object.freeze({

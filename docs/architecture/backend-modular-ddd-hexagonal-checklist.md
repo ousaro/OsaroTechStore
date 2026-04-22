@@ -20,7 +20,7 @@ Completed items and historical progress notes have been removed on purpose.
 - [x] Introduce a payments-owned reference that orders can store instead of treating `transactionId` as a provider identity field
 - [x] Make `payments` persist enough business state to drive order collaboration
 - [x] Extend payment persistence with order linkage, provider reference(s), lifecycle timestamps, and any provider transaction identifiers that belong to payments
-- [ ] Move provider-specific payment detail ownership out of `orders`
+- [x] Move provider-specific payment detail ownership out of `orders`
 - [ ] Remove or shrink `paymentDetails` from the order model
 - [ ] Reduce `transactionId` in orders to a stable order-facing payment reference, or replace it entirely with a clearer field
 - [ ] Define exactly which payment fields remain inside orders because fulfillment logic truly depends on them

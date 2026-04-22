@@ -20,7 +20,7 @@ describe("order record mapper", () => {
       paymentStatus: "pending",
       paymentReference: "pay_123",
       transactionId: "tx-123",
-      paymentDetails: { provider: "stripe", sessionId: "cs_test_123" },
+      paymentDetails: { paymentReference: "pay_123" },
       createdAt: "ignore-me",
       updatedAt: "ignore-me-too",
       save: () => {},
@@ -42,7 +42,7 @@ describe("order record mapper", () => {
       paymentStatus: "pending",
       paymentReference: "pay_123",
       transactionId: "pay_123",
-      paymentDetails: { provider: "stripe", sessionId: "cs_test_123" },
+      paymentDetails: { paymentReference: "pay_123" },
     });
   });
 
