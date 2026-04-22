@@ -7,8 +7,8 @@ export const buildRefreshNewProductStatusUseCase = ({ productRepository }) => {
     const products = await productRepository.findAll();
 
     for (const product of products) {
-      const creationDate = new Date(product.createdAt);
-      const daysSinceCreation = (currentDate - creationDate) / (1000 * 60 * 60 * 24);
+      const listingDate = new Date(product.listedAt);
+      const daysSinceCreation = (currentDate - listingDate) / (1000 * 60 * 60 * 24);
       const isNewProduct = daysSinceCreation <= 30;
 
       if (product.isNewProduct !== isNewProduct) {

@@ -22,5 +22,6 @@ export const toProductRecord = (rawProduct) => {
     isNewProduct: rawProduct.isNewProduct,
     salesCount: rawProduct.salesCount,
     lastSold: rawProduct.lastSold,
+    listedAt: rawProduct.listedAt ?? rawProduct.createdAt,
   };
 };

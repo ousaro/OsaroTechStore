@@ -172,7 +172,8 @@ Progress: users, orders, products, categories, and payments record mappings are 
 - [x] Rename misleading mapper files that are not real entities
 - [x] Add explicit translation for gateway payloads where needed
 - Progress: payments no longer uses the generic `checkoutSessionMapper.js` name for Stripe payload translation; `stripePayloadTranslator.js` now makes the gateway-specific DTO and webhook state-change translation explicit.
-- [ ] Prevent persistence schema details from leaking into application/domain code
+- [x] Prevent persistence schema details from leaking into application/domain code
+- Progress: product application logic no longer reads the persistence-specific `createdAt` field directly; the repository now exposes a business-shaped `listedAt` field for new-product status decisions instead.
 
 ## 11. Events and Cross-Module Workflows
 

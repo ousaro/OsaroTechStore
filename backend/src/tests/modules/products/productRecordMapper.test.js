@@ -47,6 +47,7 @@ describe("product record mapper", () => {
       isNewProduct: true,
       salesCount: 12,
       lastSold: new Date("2026-04-01T00:00:00.000Z"),
+      listedAt: "ignore-me",
     });
   });
 
