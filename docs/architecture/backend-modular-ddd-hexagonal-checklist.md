@@ -8,8 +8,9 @@ Use it as a working migration list, not as a one-shot rewrite plan.
 
 ## 1. Module Boundaries
 
-- [ ] Define allowed import rules between modules
-- [ ] Enforce that cross-module imports go only through `public-api.js`
+- [x] Define allowed import rules between modules
+- [x] Enforce that cross-module imports go only through `public-api.js`
+- Progress: architecture test coverage now enforces that module files may only cross into another module through that module's `public-api.js`.
 - [x] Stop exporting full input ports from `public-api.js` unless absolutely necessary
 - [x] Replace broad public exports with capability-specific functions
 Progress: auth public API now exposes named account capabilities instead of one broad `userAccounts` object.
