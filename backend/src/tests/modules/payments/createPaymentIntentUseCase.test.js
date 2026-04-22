@@ -41,7 +41,9 @@ describe("createPaymentIntentUseCase", () => {
 
   it("returns checkout url for valid items", async () => {
     const paymentGateway = {
-      createCheckoutSession: sinon.stub().resolves({ url: "https://stripe.test/session" }),
+      createCheckoutSession: sinon
+        .stub()
+        .resolves({ id: "cs_test_123", url: "https://stripe.test/session" }),
     };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,

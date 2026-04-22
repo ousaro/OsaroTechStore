@@ -80,7 +80,8 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 
 ## 5. Payments Module
 
-- [ ] Define the actual payment domain model
+- [x] Define the actual payment domain model
+- Progress: payments now has explicit checkout-item and payment-session domain objects instead of only inline validation plus gateway pass-through.
 - [ ] Decide whether payments need their own persistence model/table/collection
 - [ ] Persist payment state instead of treating payments as a pure gateway pass-through
 - [ ] Model checkout session creation as a business workflow, not only a gateway call

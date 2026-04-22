@@ -1,0 +1,41 @@
+import { describe, it } from "mocha";
+import { expect } from "chai";
+import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
+import {
+  createCheckoutItem,
+  createCheckoutItems,
+} from "../../../../src/modules/payments/domain/value-objects/CheckoutItem.js";
+import { createPaymentSession } from "../../../../src/modules/payments/domain/entities/PaymentSession.js";
+
+describe("Payment Domain", () => {
+  it("creates checkout items and a payment session with stable primitives", () => {
+    const item = createCheckoutItem({
+      name: "Phone",
+      price: 100,
+      quantity: 2,
+    });
+    const session = createPaymentSession({
+      id: "cs_test_123",
+      url: "https://stripe.test/session",
+      payment_status: "paid",
+    });
+
+    expect(item.toPrimitives()).to.deep.equal({
+      name: "Phone",
+      price: 100,
+      quantity: 2,
+    });
+    expect(session.toPrimitives()).to.deep.equal({
+      id: "cs_test_123",
+      url: "https://stripe.test/session",
+      paymentStatus: "paid",
+    });
+  });
+
+  it("throws when checkout items are invalid", () => {
+    expect(() => createCheckoutItems([{ name: "", price: -1, quantity: 0 }])).to.throw(
+      DomainValidationError,
+      "Invalid item at index 0: item.name is required"
+    );
+  });
+});
