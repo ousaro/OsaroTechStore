@@ -41,6 +41,7 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - Progress: product scheduler startup is now imported through a dedicated module bootstrap file instead of the broader module index surface.
 - [ ] Review scheduler startup ownership and decide whether it belongs in app bootstrap or infrastructure bootstrap
 - [x] Ensure route adapters do not depend on broad module entrypoints when a narrower local import is enough
+- Progress: all module HTTP routes now import handlers through module-local `infrastructure/http/httpHandlers.js` files instead of reaching directly into `composition.js`.
 
 ## 3. Domain Purity
 
@@ -172,6 +173,7 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 - [ ] Keep the architecture overview aligned with the actual codebase
 - Progress: `backend-ddd-hexagonal.md` now reflects the removal of module `index.js` surfaces, the optional nature of `public-api.js` and `bootstrap.js`, the retired shared `ApiError`, and the current `80 passing` test baseline.
 - [ ] Update the gap analysis when major boundary changes land
+- Progress: `backend-modular-ddd-hexagonal-gap-analysis.md` now reflects the current post-cleanup state for module surfaces, retired `ApiError` usage, existing contract tests, and the remaining composition/auth-users gaps.
 - [ ] Document the auth/users ownership decision explicitly
 - [ ] Document the event model once introduced
 - [ ] Document module public APIs and allowed consumers

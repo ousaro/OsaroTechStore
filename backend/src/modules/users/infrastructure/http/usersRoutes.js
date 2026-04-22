@@ -5,7 +5,7 @@ import {
   updateUserHandler,
   updateUserPasswordHandler,
   deleteUserHandler,
-} from "../../composition.js";
+} from "./httpHandlers.js";
 
 export const createUsersRoutes = ({ requireAuth }) => {
   const usersRoutes = router();

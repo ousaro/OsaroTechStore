@@ -3,7 +3,7 @@ import {
   registerUserHandler,
   loginUserHandler,
   googleCallbackHandler,
-} from "../../composition.js";
+} from "./httpHandlers.js";
 import { setupGooglePassport } from "../oauth/googlePassport.js";
 
 const authRoutes = router();
