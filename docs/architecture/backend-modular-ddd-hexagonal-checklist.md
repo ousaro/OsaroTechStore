@@ -66,8 +66,9 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - [ ] Introduce value objects where business language matters
 - Progress: orders now use an `Address` value object while still exposing stable persistence primitives through `toPrimitives()`.
 - Progress: auth now uses an `Email` value object to validate and normalize email addresses before commands and repository lookups.
+- Progress: orders now use a `Money` value object for `totalPrice` while still exposing numeric primitives through `toPrimitives()`.
 - [x] Add `Email` value object
-- [ ] Add `Money` value object
+- [x] Add `Money` value object
 - [x] Add `Address` value object for orders
 - [ ] Add `OrderStatus` value object or state model
 - [ ] Add `PaymentStatus` value object or state model

@@ -1,8 +1,8 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createAddress } from "../value-objects/Address.js";
+import { createMoney } from "../value-objects/Money.js";
 import {
   assertNonEmptyArray,
-  assertPositiveNumber,
   assertString,
 } from "../validation/orderValidation.js";
 
@@ -19,11 +19,11 @@ export const createOrder = ({
 }) => {
   assertString(ownerId, "ownerId is required");
   assertNonEmptyArray(products, "products must be a non-empty array");
-  assertPositiveNumber(totalPrice, "totalPrice must be a positive number");
   assertString(status, "status is required");
   assertString(paymentMethod, "paymentMethod is required");
   assertString(transactionId, "transactionId is required");
   const orderAddress = createAddress(address);
+  const orderTotalPrice = createMoney(totalPrice);
 
   if (!paymentDetails || typeof paymentDetails !== "object") {
     throw new DomainValidationError("paymentDetails is required");
@@ -32,7 +32,7 @@ export const createOrder = ({
   const props = {
     ownerId,
     products,
-    totalPrice,
+    totalPrice: orderTotalPrice,
     status,
     address: orderAddress,
     paymentMethod,
@@ -46,6 +46,7 @@ export const createOrder = ({
     toPrimitives() {
       return {
         ...props,
+        totalPrice: props.totalPrice.toPrimitives(),
         address: props.address.toPrimitives(),
       };
     },
@@ -56,7 +57,7 @@ export const createOrderUpdatePatch = (updates) => {
   const patch = { ...updates };
 
   if (patch.totalPrice !== undefined) {
-    assertPositiveNumber(patch.totalPrice, "totalPrice must be a positive number");
+    patch.totalPrice = createMoney(patch.totalPrice);
   }
 
   if (patch.status !== undefined) {
@@ -87,6 +88,7 @@ export const createOrderUpdatePatch = (updates) => {
     toPrimitives() {
       return {
         ...patch,
+        ...(patch.totalPrice ? { totalPrice: patch.totalPrice.toPrimitives() } : {}),
         ...(patch.address ? { address: patch.address.toPrimitives() } : {}),
       };
     },
