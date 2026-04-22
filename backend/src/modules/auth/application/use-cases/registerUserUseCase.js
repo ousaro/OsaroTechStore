@@ -10,7 +10,7 @@ export const buildRegisterUserUseCase = ({ authUserRepository, tokenService }) =
   assertTokenServicePort(tokenService, ["signUserId"]);
 
   return async ({ firstName, lastName, email, password, confirmPassword, picture }) => {
-    assertValidRegistrationData({
+    const normalizedEmail = assertValidRegistrationData({
       firstName,
       lastName,
       email,
@@ -21,7 +21,7 @@ export const buildRegisterUserUseCase = ({ authUserRepository, tokenService }) =
     const command = createRegistrationCommand({
       firstName,
       lastName,
-      email,
+      email: normalizedEmail,
       password,
       confirmPassword,
       picture,

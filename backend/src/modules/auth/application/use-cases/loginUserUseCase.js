@@ -12,9 +12,9 @@ export const buildLoginUserUseCase = ({ authUserRepository, tokenService }) => {
   assertTokenServicePort(tokenService, ["signUserId"]);
 
   return async ({ email, password }) => {
-    assertValidLoginData({ email, password });
+    const normalizedEmail = assertValidLoginData({ email, password });
 
-    const command = createLoginCommand({ email, password });
+    const command = createLoginCommand({ email: normalizedEmail, password });
     const user = await authUserRepository.findByEmail(command.email);
     const passwordMatches =
       user && (await authUserRepository.comparePassword(command.password, user.password));

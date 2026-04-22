@@ -4,6 +4,7 @@ import {
   assertValidLoginData,
   assertValidRegistrationData,
 } from "../../../modules/auth/application/policies/authCredentialsPolicy.js";
+import { createEmail } from "../../../modules/auth/domain/value-objects/Email.js";
 import {
   AuthConflictError,
   AuthUnauthorizedError,
@@ -32,13 +33,31 @@ describe("auth credentials policy", () => {
       "All field must be filled"
     );
   });
+
+  it("normalizes valid emails through the email value object", () => {
+    expect(
+      assertValidRegistrationData({
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "  JANE@Example.COM  ",
+        password: "Password123!",
+        confirmPassword: "Password123!",
+      })
+    ).to.equal("jane@example.com");
+
+    expect(createEmail("  JANE@Example.COM  ").toPrimitives()).to.equal("jane@example.com");
+  });
 });
 
 describe("auth use case errors", () => {
   it("maps duplicate email registration to an auth conflict error", async () => {
+    const lookedUpEmails = [];
     const registerUser = buildRegisterUserUseCase({
       authUserRepository: {
-        findByEmail: async () => ({ _id: "existing-user" }),
+        findByEmail: async (email) => {
+          lookedUpEmails.push(email);
+          return { _id: "existing-user" };
+        },
         hashPassword: async () => "hashed-password",
         create: async () => {
           throw new Error("should not create");
@@ -53,7 +72,7 @@ describe("auth use case errors", () => {
       await registerUser({
         firstName: "Jane",
         lastName: "Doe",
-        email: "jane@example.com",
+        email: "  JANE@Example.COM  ",
         password: "Password123!",
         confirmPassword: "Password123!",
       });
@@ -61,6 +80,7 @@ describe("auth use case errors", () => {
     } catch (error) {
       expect(error).to.be.instanceOf(AuthConflictError);
       expect(error.message).to.equal("Email already exist!");
+      expect(lookedUpEmails).to.deep.equal(["jane@example.com"]);
     }
   });
 
