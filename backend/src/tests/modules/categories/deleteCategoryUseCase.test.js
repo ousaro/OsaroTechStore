@@ -1,6 +1,10 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
+import {
+  CategoryNotFoundError,
+  CategoryValidationError,
+} from "../../../modules/categories/application/errors/CategoryApplicationError.js";
 
 describe("deleteCategoryUseCase", () => {
   it("removes products through the product input contract before deleting the category", async () => {
@@ -39,8 +43,27 @@ describe("deleteCategoryUseCase", () => {
       await deleteCategoryUseCase({ id: "" });
       throw new Error("Expected use case to throw");
     } catch (error) {
+      expect(error).to.be.instanceOf(CategoryValidationError);
       expect(error.message).to.equal("Category ID is required");
-      expect(error.statusCode).to.equal(400);
+      expect(error.code).to.equal("CATEGORY_VALIDATION");
+    }
+  });
+
+  it("throws when the category cannot be found", async () => {
+    const deleteCategoryUseCase = buildDeleteCategoryUseCase({
+      categoryRepository: {
+        findByIdAndDelete: async () => null,
+      },
+      removeProductsByCategory: async () => {},
+    });
+
+    try {
+      await deleteCategoryUseCase({ id: "cat-1" });
+      throw new Error("Expected use case to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(CategoryNotFoundError);
+      expect(error.message).to.equal("Category not found");
+      expect(error.code).to.equal("CATEGORY_NOT_FOUND");
     }
   });
 });

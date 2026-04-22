@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
+import { CategoryNotFoundError, CategoryValidationError } from "../../modules/categories/application/errors/CategoryApplicationError.js";
 import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
@@ -121,6 +122,22 @@ describe("errorMiddleware", () => {
     expect(body.stack).to.be.a("string");
   });
 
+  it("maps category validation errors to 400", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new CategoryValidationError("Category ID is required"), req, res, () => {});
+
+    expect(res.status.calledWith(400)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Category ID is required");
+    expect(body.stack).to.be.a("string");
+  });
+
   it("maps product application errors to 404", () => {
     const req = {};
     const res = {
@@ -134,6 +151,22 @@ describe("errorMiddleware", () => {
     expect(res.json.calledOnce).to.equal(true);
     const body = res.json.firstCall.args[0];
     expect(body.error).to.equal("Product not found");
+    expect(body.stack).to.be.a("string");
+  });
+
+  it("maps category application errors to 404", () => {
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    errorMiddleware(new CategoryNotFoundError("Category not found"), req, res, () => {});
+
+    expect(res.status.calledWith(404)).to.equal(true);
+    expect(res.json.calledOnce).to.equal(true);
+    const body = res.json.firstCall.args[0];
+    expect(body.error).to.equal("Category not found");
     expect(body.stack).to.be.a("string");
   });
 });
