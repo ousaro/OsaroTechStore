@@ -7,8 +7,10 @@ import { PaymentValidationError } from "../../../../src/modules/payments/applica
 describe("createPaymentIntentUseCase", () => {
   it("throws 400 when items is empty", async () => {
     const paymentGateway = { createCheckoutSession: sinon.stub() };
+    const paymentRepository = { savePaymentSession: sinon.stub() };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
+      paymentRepository,
       clientUrl: "http://localhost:3000",
     });
 
@@ -24,8 +26,10 @@ describe("createPaymentIntentUseCase", () => {
 
   it("throws 400 when item payload is invalid", async () => {
     const paymentGateway = { createCheckoutSession: sinon.stub() };
+    const paymentRepository = { savePaymentSession: sinon.stub() };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
+      paymentRepository,
       clientUrl: "http://localhost:3000",
     });
 
@@ -45,8 +49,12 @@ describe("createPaymentIntentUseCase", () => {
         .stub()
         .resolves({ id: "cs_test_123", url: "https://stripe.test/session" }),
     };
+    const paymentRepository = {
+      savePaymentSession: sinon.stub().resolves(),
+    };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
+      paymentRepository,
       clientUrl: "http://localhost:3000",
     });
 
@@ -56,5 +64,10 @@ describe("createPaymentIntentUseCase", () => {
 
     expect(result).to.deep.equal({ url: "https://stripe.test/session" });
     expect(paymentGateway.createCheckoutSession.calledOnce).to.equal(true);
+    expect(paymentRepository.savePaymentSession.calledOnceWithExactly({
+      id: "cs_test_123",
+      url: "https://stripe.test/session",
+      paymentStatus: "pending",
+    })).to.equal(true);
   });
 });

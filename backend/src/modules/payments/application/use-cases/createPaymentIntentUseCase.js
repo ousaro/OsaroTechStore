@@ -1,11 +1,17 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
-import { createPaymentSession } from "../../domain/entities/PaymentSession.js";
 import { createCheckoutItems } from "../../domain/value-objects/CheckoutItem.js";
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
+import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
+import { createCheckoutSessionWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
 import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
 
-export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) => {
+export const buildCreatePaymentIntentUseCase = ({
+  paymentGateway,
+  paymentRepository,
+  clientUrl,
+}) => {
   assertPaymentGatewayPort(paymentGateway, ["createCheckoutSession"]);
+  assertPaymentRepositoryPort(paymentRepository, ["savePaymentSession"]);
 
   return async ({ items }) => {
     let checkoutItems;
@@ -26,7 +32,11 @@ export const buildCreatePaymentIntentUseCase = ({ paymentGateway, clientUrl }) =
       cancelUrl: `${clientUrl}/Cart`,
     });
 
-    const paymentSession = createPaymentSession(session);
+    const paymentSession = createCheckoutSessionWorkflow({
+      gatewaySession: session,
+    });
+    await paymentRepository.savePaymentSession(paymentSession.toPrimitives());
+
     return { url: paymentSession.url };
   };
 };

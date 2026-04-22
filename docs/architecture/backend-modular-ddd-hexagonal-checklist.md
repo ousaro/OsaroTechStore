@@ -85,15 +85,19 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 
 - [x] Define the actual payment domain model
 - Progress: payments now has explicit checkout-item and payment-session domain objects instead of only inline validation plus gateway pass-through.
-- [ ] Decide whether payments need their own persistence model/table/collection
-- [ ] Persist payment state instead of treating payments as a pure gateway pass-through
-- [ ] Model checkout session creation as a business workflow, not only a gateway call
-- [ ] Model webhook outcomes as business events or state transitions
+ [x] Decide whether payments need their own persistence model/table/collection
+- Progress: the architecture docs now make the direction explicit: `payments` should own its own persistence model once webhook state, idempotency, and order collaboration are implemented, even though the current code still behaves as a Stripe-backed pass-through.
+- [x] Persist payment state instead of treating payments as a pure gateway pass-through
+- [x] Model checkout session creation as a business workflow, not only a gateway call
+- [x] Model webhook outcomes as business events or state transitions
+- Progress: payments now persists checkout-session state through a payment repository, creates sessions through a workflow service instead of returning raw gateway output directly, and maps relevant Stripe webhook events into persisted payment-status transitions.
 - [ ] Decide how payments update orders
 - [ ] Prefer event-driven collaboration between orders and payments
 - [ ] Add idempotency handling for webhook processing
-- [ ] Add tests for webhook-driven state changes
+- [x] Add tests for webhook-driven state changes
+- Progress: payment-domain and payment-use-case tests now cover checkout-session workflow creation plus webhook-driven paid/no-op state changes.
 Progress: payment input validation and webhook transport failure now use payment-specific application errors instead of `ApiError`.
+- [ ] if we change the payment method the payment logic should work fine
 
 ## 6. Orders Module
 

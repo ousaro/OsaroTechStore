@@ -234,6 +234,24 @@ Current limitations:
 - webhook verification does not update business state
 - the module does not yet collaborate with orders through events or a narrow application contract
 
+## Payments Persistence Decision
+
+The current architectural decision is:
+
+- `payments` should eventually own its own persistence model/collection
+
+Why:
+
+- webhook processing will need idempotency
+- payment lifecycle state should not depend on a fresh Stripe read every time
+- order/payment collaboration will need a stable internal payment record instead of a pure gateway pass-through
+
+What this does not mean yet:
+
+- the current codebase does not persist payment state today
+- Stripe is still the runtime source for checkout-session lookups
+- the persistence work remains a follow-up implementation step, not a completed migration
+
 ## Aggregate Candidates
 
 The current codebase now has an explicit view of where true aggregates are actually justified:

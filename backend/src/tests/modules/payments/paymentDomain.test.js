@@ -6,6 +6,10 @@ import {
   createCheckoutItems,
 } from "../../../../src/modules/payments/domain/value-objects/CheckoutItem.js";
 import { createPaymentSession } from "../../../../src/modules/payments/domain/entities/PaymentSession.js";
+import {
+  createCheckoutSessionWorkflow,
+  resolvePaymentWebhookStateChange,
+} from "../../../../src/modules/payments/domain/services/paymentSessionWorkflowService.js";
 
 describe("Payment Domain", () => {
   it("creates checkout items and a payment session with stable primitives", () => {
@@ -37,5 +41,36 @@ describe("Payment Domain", () => {
       DomainValidationError,
       "Invalid item at index 0: item.name is required"
     );
+  });
+
+  it("models checkout session creation as a payment workflow", () => {
+    const session = createCheckoutSessionWorkflow({
+      gatewaySession: {
+        id: "cs_test_123",
+        url: "https://stripe.test/session",
+      },
+    });
+
+    expect(session.toPrimitives()).to.deep.equal({
+      id: "cs_test_123",
+      url: "https://stripe.test/session",
+      paymentStatus: "pending",
+    });
+  });
+
+  it("models webhook outcomes as payment state changes", () => {
+    const stateChange = resolvePaymentWebhookStateChange({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_123",
+        },
+      },
+    });
+
+    expect(stateChange.toPrimitives()).to.deep.equal({
+      id: "cs_test_123",
+      paymentStatus: "paid",
+    });
   });
 });
