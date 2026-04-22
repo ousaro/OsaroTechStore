@@ -67,8 +67,8 @@ What exists:
 What is still weak:
 
 - domain objects are mostly thin frozen objects with `toPrimitives()`
-- rich DDD building blocks are still mostly absent
-- aggregates, value objects, domain services, and domain events are mostly absent
+- rich DDD building blocks are still uneven across modules
+- aggregates, domain services, and domain events are still mostly absent
 
 ### Application
 
@@ -212,11 +212,12 @@ Current strengths:
 - create, read, update, and delete use cases exist
 - order creation and update shaping live in domain code
 - repository persists shaped objects rather than raw controller payloads
+- order status transitions now go through explicit lifecycle rules
+- address, money, order-status, and payment-status value objects exist
 
 Current limitations:
 
-- order domain is still a thin object factory plus patch builder
-- there are no explicit state-transition methods
+- order domain is still thinner than a full aggregate root
 - payment-related fields live on the order model, but there is no real order/payment workflow integration
 
 ### Payments
@@ -225,13 +226,29 @@ Current strengths:
 
 - Stripe integration is isolated behind a gateway port
 - webhook route is correctly left outside end-user auth
+- payment session and checkout item domain objects now exist
 
 Current limitations:
 
-- there is effectively no payment domain yet
-- the module is mostly a Stripe adapter wrapped in a module
+- the module is still closer to a gateway-backed workflow than a durable aggregate
 - webhook verification does not update business state
 - the module does not yet collaborate with orders through events or a narrow application contract
+
+## Aggregate Candidates
+
+The current codebase now has an explicit view of where true aggregates are actually justified:
+
+- `orders` should be treated as the clearest aggregate candidate
+- `products` is the next likely aggregate candidate if stock/catalog invariants become richer
+- `payments` may become an aggregate only if payment state becomes persisted and lifecycle-driven
+- `auth`, `users`, and `categories` do not currently need deeper aggregate modeling beyond their present scope
+
+Why:
+
+- `orders` already coordinates status transitions, payment-related fields, address, money, and product lines inside one consistency boundary
+- `products` currently has pricing and stock-related rules, but not yet enough coupled invariants to justify a heavier aggregate root
+- `payments` is still mostly an external-session workflow around Stripe, so a true aggregate would be premature until payment state is owned internally
+- `auth`, `users`, and `categories` are currently dominated by CRUD and boundary orchestration rather than rich multi-entity consistency rules
 
 ## Cross-Module Communication Today
 

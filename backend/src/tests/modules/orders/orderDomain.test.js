@@ -5,6 +5,7 @@ import {
   createOrderUpdatePatch,
   transitionOrderStatus,
 } from "../../../../src/modules/orders/domain/entities/Order.js";
+import { prepareOrderLifecyclePatch } from "../../../../src/modules/orders/domain/services/orderLifecycleService.js";
 import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { createMoney } from "../../../../src/modules/orders/domain/value-objects/Money.js";
 import { createOrderStatus } from "../../../../src/modules/orders/domain/value-objects/OrderStatus.js";
@@ -145,6 +146,41 @@ describe("Order Domain", () => {
     expect(() => transitionOrderStatus({ status: "pending" }, "delivered")).to.throw(
       DomainValidationError,
       "Invalid order status transition from pending to delivered"
+    );
+  });
+
+  it("prepares lifecycle updates through a dedicated domain service", () => {
+    const patch = prepareOrderLifecyclePatch({
+      currentOrder: {
+        status: "pending",
+        paymentStatus: "pending",
+      },
+      updates: {
+        status: "paid",
+        paymentStatus: "paid",
+      },
+    });
+
+    expect(patch).to.deep.equal({
+      status: "paid",
+      paymentStatus: "paid",
+    });
+  });
+
+  it("enforces that paid or fulfillment statuses require a paid payment state", () => {
+    expect(() =>
+      prepareOrderLifecyclePatch({
+        currentOrder: {
+          status: "pending",
+          paymentStatus: "pending",
+        },
+        updates: {
+          status: "paid",
+        },
+      })
+    ).to.throw(
+      DomainValidationError,
+      "Order status paid requires paymentStatus paid"
     );
   });
 });

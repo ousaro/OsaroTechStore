@@ -76,8 +76,10 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - [x] Add `PaymentStatus` value object or state model
 - [x] Add explicit order lifecycle transitions instead of only patch builders
 - Progress: order status changes now flow through explicit lifecycle transition rules in the domain instead of being patched blindly.
-- [ ] Identify which modules need true aggregates instead of thin entities
-- [ ] Add domain services only where rules span multiple entities/value objects
+- [x] Identify which modules need true aggregates instead of thin entities
+- Progress: the architecture docs now make the current aggregate candidates explicit: `orders` is the clearest aggregate candidate, `products` is the next likely one if stock/catalog rules deepen, and `payments` should only become an aggregate if payment state becomes persisted and lifecycle-driven.
+- [x] Add domain services only where rules span multiple entities/value objects
+- Progress: orders now uses a dedicated lifecycle domain service to coordinate current-order state, order-status transitions, and payment-status invariants before building an update patch.
 
 ## 5. Payments Module
 
@@ -97,7 +99,8 @@ Progress: payment input validation and webhook transport failure now use payment
 
 - [ ] Move order state changes toward explicit behaviors instead of generic patch updates
 - [ ] Separate create/update commands from read queries where useful
-- [ ] Define order invariants around payment state and status transitions
+- [x] Define order invariants around payment state and status transitions
+- Progress: the order lifecycle service now enforces that paid and fulfillment statuses require an effective `paymentStatus` of `paid`, instead of allowing status and payment state to drift independently.
 - [ ] Decide which payment fields truly belong inside order versus inside payments
 - [ ] Add order-related domain events such as `OrderPlaced`
 Progress: order use cases now use an order-specific application error, and order domain validation has been moved off `ApiError`.
@@ -202,10 +205,3 @@ Progress: shared HTTP validation now uses a transport-specific `HttpValidationEr
 - Progress: `backend-ddd-hexagonal.md` and the gap analysis now describe the current auth/users split and call out that the remaining issue is contract shape, not undecided ownership.
 - [ ] Document the event model once introduced
 - [ ] Document module public APIs and allowed consumers
-
-## Suggested Order
-
-- [ ] First: narrow public APIs, clean domain errors, strengthen mapper boundaries
-- [ ] Second: clarify auth/users ownership and deepen orders/payments modeling
-- [ ] Third: introduce events, ACLs, and richer command/query separation
-- [ ] Fourth: expand contract and workflow testing

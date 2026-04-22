@@ -10,7 +10,7 @@ describe("updateOrderUseCase", () => {
     const updateOrderUseCase = buildUpdateOrderUseCase({
       orderRepository: {
         isValidId: () => true,
-        findById: async () => ({ _id: "o1", status: "pending" }),
+        findById: async () => ({ _id: "o1", status: "pending", paymentStatus: "pending" }),
         findByIdAndUpdate: async (_id, patch) => {
           persistedPatch = patch.toPrimitives();
           return { _id: "o1", ...persistedPatch };
@@ -22,17 +22,20 @@ describe("updateOrderUseCase", () => {
       id: "o1",
       updates: {
         status: "paid",
+        paymentStatus: "paid",
         totalPrice: 150,
       },
     });
 
     expect(persistedPatch).to.deep.equal({
       status: "paid",
+      paymentStatus: "paid",
       totalPrice: 150,
     });
     expect(result).to.deep.equal({
       _id: "o1",
       status: "paid",
+      paymentStatus: "paid",
       totalPrice: 150,
     });
   });
@@ -41,7 +44,7 @@ describe("updateOrderUseCase", () => {
     const updateOrderUseCase = buildUpdateOrderUseCase({
       orderRepository: {
         isValidId: () => true,
-        findById: async () => ({ _id: "o1", status: "pending" }),
+        findById: async () => ({ _id: "o1", status: "pending", paymentStatus: "pending" }),
         findByIdAndUpdate: async () => {
           throw new Error("should not update");
         },
@@ -54,6 +57,26 @@ describe("updateOrderUseCase", () => {
     } catch (error) {
       expect(error).to.be.instanceOf(DomainValidationError);
       expect(error.message).to.equal("Invalid order status transition from pending to delivered");
+    }
+  });
+
+  it("rejects lifecycle updates when payment state does not satisfy the target status", async () => {
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "pending", paymentStatus: "pending" }),
+        findByIdAndUpdate: async () => {
+          throw new Error("should not update");
+        },
+      },
+    });
+
+    try {
+      await updateOrderUseCase({ id: "o1", updates: { status: "paid" } });
+      throw new Error("Expected updateOrderUseCase to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("Order status paid requires paymentStatus paid");
     }
   });
 
@@ -93,5 +116,37 @@ describe("updateOrderUseCase", () => {
       expect(error.message).to.equal("Order not found");
       expect(error.code).to.equal("ORDER_NOT_FOUND");
     }
+  });
+
+  it("allows a status change when the lifecycle patch includes a paid payment status", async () => {
+    let persistedPatch = null;
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "pending", paymentStatus: "pending" }),
+        findByIdAndUpdate: async (_id, patch) => {
+          persistedPatch = patch.toPrimitives();
+          return { _id: "o1", ...persistedPatch };
+        },
+      },
+    });
+
+    const result = await updateOrderUseCase({
+      id: "o1",
+      updates: {
+        status: "paid",
+        paymentStatus: "paid",
+      },
+    });
+
+    expect(persistedPatch).to.deep.equal({
+      status: "paid",
+      paymentStatus: "paid",
+    });
+    expect(result).to.deep.equal({
+      _id: "o1",
+      status: "paid",
+      paymentStatus: "paid",
+    });
   });
 });
