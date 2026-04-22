@@ -169,8 +169,9 @@ Progress: auth and products public API contract tests are now in place, includin
 Progress: users, orders, products, categories, and payments record mappings are now explicit instead of pass-through.
 - [x] Ensure repositories return stable internal records or domain objects, not raw Mongoose documents
 - Progress: the auth repository now maps Mongoose results into stable auth-user records too, so the main repositories no longer expose raw Mongoose documents across module/application boundaries.
-- [ ] Rename misleading mapper files that are not real entities
-- [ ] Add explicit translation for gateway payloads where needed
+- [x] Rename misleading mapper files that are not real entities
+- [x] Add explicit translation for gateway payloads where needed
+- Progress: payments no longer uses the generic `checkoutSessionMapper.js` name for Stripe payload translation; `stripePayloadTranslator.js` now makes the gateway-specific DTO and webhook state-change translation explicit.
 - [ ] Prevent persistence schema details from leaking into application/domain code
 
 ## 11. Events and Cross-Module Workflows
