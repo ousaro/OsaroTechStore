@@ -185,7 +185,8 @@ Progress: users, orders, products, categories, and payments record mappings are 
 - [x] Choose an in-process event bus approach for the modular monolith
 - [x] Add event handler tests
 - Progress: the modular monolith now uses a shared in-process application event bus, and `CategoryDeleted` product-cleanup handling is exercised through an event-handler integration test instead of only direct translator tests.
-- [ ] Add cross-module workflow tests
+- [x] Add cross-module workflow tests
+- Progress: category deletion now has a cross-module workflow test that exercises the real path from the categories use case through the shared event bus into product cleanup translation.
 
 ## 12. Application Structure
 
