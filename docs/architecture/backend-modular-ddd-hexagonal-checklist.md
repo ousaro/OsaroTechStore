@@ -27,6 +27,7 @@ Progress: `products/index.js` has now been removed entirely because it had no re
 Progress: `payments/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `categories/index.js` has now been removed entirely because it had no remaining consumers.
 Progress: `orders/index.js` has now been removed entirely because it had no remaining consumers.
+Progress: `auth/index.js` has now been removed entirely because it had no remaining runtime consumers; the remaining test now imports the adapter-facing composition export directly.
 - [ ] Decide whether `auth` and `users` remain separate bounded contexts or merge conceptually into one
 - [ ] Document the ownership boundary between identity/auth data and profile/user data
 
