@@ -129,10 +129,11 @@ Progress: auth password/email rules now live in an application policy, though de
 - [ ] Review every input port and output port for unnecessary breadth
 - [ ] Define boundary DTOs where external/module contracts should not expose internal shapes
 - [ ] Distinguish commands from queries in contracts where complexity justifies it
-- [ ] Add adapter contract tests for repository ports
+- [x] Add adapter contract tests for repository ports
 Progress: users repository contract coverage is now in place.
 - Progress: the users repository adapter now validates its auth dependency through an explicit `authAccountAccess` port contract.
 - Progress: category deletion now validates its product-cleanup dependency through an explicit `productCategoryCleanup` port contract.
+- Progress: auth, categories, orders, and products now also have focused repository adapter contract tests.
 - [ ] Add adapter contract tests for gateway ports
 Progress: Stripe gateway contract coverage is now in place.
 - [ ] Add module public API contract tests
