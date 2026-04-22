@@ -8,6 +8,7 @@ const paymentSchema = new Schema(
     url: { type: String, required: false },
     paymentStatus: { type: String, required: true, default: "pending" },
     provider: { type: String, required: true, default: "stripe" },
+    processedWebhookEventIds: { type: [String], required: true, default: [] },
   },
   { timestamps: true }
 );

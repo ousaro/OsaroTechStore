@@ -60,6 +60,7 @@ describe("Payment Domain", () => {
 
   it("models webhook outcomes as payment state changes", () => {
     const stateChange = resolvePaymentWebhookStateChange({
+      id: "evt_test_123",
       type: "checkout.session.completed",
       data: {
         object: {
@@ -68,8 +69,9 @@ describe("Payment Domain", () => {
       },
     });
 
-    expect(stateChange.toPrimitives()).to.deep.equal({
-      id: "cs_test_123",
+    expect(stateChange).to.deep.equal({
+      eventId: "evt_test_123",
+      sessionId: "cs_test_123",
       paymentStatus: "paid",
     });
   });

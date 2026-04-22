@@ -7,16 +7,13 @@ export const buildVerifyWebhookUseCase = ({
   paymentRepository,
 }) => {
   assertPaymentGatewayPort(paymentGateway, ["verifyWebhook"]);
-  assertPaymentRepositoryPort(paymentRepository, ["updatePaymentSessionStatus"]);
+  assertPaymentRepositoryPort(paymentRepository, ["applyWebhookStateChangeOnce"]);
   return async ({ payload, signature }) => {
     const event = paymentGateway.verifyWebhook(payload, signature);
     const stateChange = resolvePaymentWebhookStateChange(event);
 
     if (stateChange) {
-      await paymentRepository.updatePaymentSessionStatus(
-        stateChange.id,
-        stateChange.paymentStatus
-      );
+      await paymentRepository.applyWebhookStateChangeOnce(stateChange);
     }
 
     return { received: true };

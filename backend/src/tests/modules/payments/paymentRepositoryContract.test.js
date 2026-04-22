@@ -12,6 +12,7 @@ describe("payment repository contract", () => {
         "savePaymentSession",
         "findPaymentSessionById",
         "updatePaymentSessionStatus",
+        "applyWebhookStateChangeOnce",
       ])
     ).to.not.throw();
   });

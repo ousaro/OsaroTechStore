@@ -252,6 +252,29 @@ What this does not mean yet:
 - Stripe is still the runtime source for checkout-session lookups
 - the persistence work remains a follow-up implementation step, not a completed migration
 
+## Payments-to-Orders Collaboration Decision
+
+The current architectural decision is:
+
+- `payments` should update `orders` through event-driven collaboration, not by writing into order persistence directly
+
+Why:
+
+- payment confirmation is a workflow outcome, not a CRUD dependency
+- direct payments-to-orders repository access would tighten module coupling again
+- the order module should remain the owner of order status transitions and order-side payment invariants
+
+Concretely, the intended flow is:
+
+- `payments` emits a payment outcome event such as `PaymentConfirmed`
+- `orders` consumes that event and performs its own state transition logic
+
+What is still missing:
+
+- an in-process event bus
+- the first real event types and handlers
+- a stable correlation key between payment records and orders across the checkout flow
+
 ## Aggregate Candidates
 
 The current codebase now has an explicit view of where true aggregates are actually justified:

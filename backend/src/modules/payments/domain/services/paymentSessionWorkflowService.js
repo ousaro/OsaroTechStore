@@ -15,14 +15,27 @@ export const createCheckoutSessionWorkflow = ({ gatewaySession }) => {
 
 export const resolvePaymentWebhookStateChange = (event) => {
   const nextPaymentStatus = WEBHOOK_PAYMENT_STATUS_BY_EVENT_TYPE[event?.type];
+  const eventId = event?.id;
   const sessionId = event?.data?.object?.id;
 
-  if (!nextPaymentStatus || typeof sessionId !== "string" || sessionId.trim() === "") {
+  if (
+    !nextPaymentStatus ||
+    typeof eventId !== "string" ||
+    eventId.trim() === "" ||
+    typeof sessionId !== "string" ||
+    sessionId.trim() === ""
+  ) {
     return null;
   }
 
-  return createPaymentSession({
+  const paymentSession = createPaymentSession({
     id: sessionId,
     paymentStatus: nextPaymentStatus,
   });
+
+  return {
+    eventId,
+    sessionId: paymentSession.id,
+    paymentStatus: paymentSession.paymentStatus,
+  };
 };

@@ -37,12 +37,29 @@ export const createMongoosePaymentRepository = () => {
 
       return toPaymentRecord(doc);
     },
+
+    async applyWebhookStateChangeOnce({ eventId, sessionId, paymentStatus }) {
+      const doc = await PaymentModel.findOneAndUpdate(
+        {
+          sessionId,
+          processedWebhookEventIds: { $ne: eventId },
+        },
+        {
+          paymentStatus,
+          $addToSet: { processedWebhookEventIds: eventId },
+        },
+        { new: true }
+      );
+
+      return Boolean(doc);
+    },
   };
 
   assertPaymentRepositoryPort(repository, [
     "savePaymentSession",
     "findPaymentSessionById",
     "updatePaymentSessionStatus",
+    "applyWebhookStateChangeOnce",
   ]);
 
   return repository;

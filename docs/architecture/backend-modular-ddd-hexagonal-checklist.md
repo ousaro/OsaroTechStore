@@ -91,9 +91,11 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - [x] Model checkout session creation as a business workflow, not only a gateway call
 - [x] Model webhook outcomes as business events or state transitions
 - Progress: payments now persists checkout-session state through a payment repository, creates sessions through a workflow service instead of returning raw gateway output directly, and maps relevant Stripe webhook events into persisted payment-status transitions.
-- [ ] Decide how payments update orders
-- [ ] Prefer event-driven collaboration between orders and payments
-- [ ] Add idempotency handling for webhook processing
+- [x] Decide how payments update orders
+- [x] Prefer event-driven collaboration between orders and payments
+- Progress: the architecture docs now make the direction explicit: payments should publish payment outcome events and orders should react inside the orders module, rather than letting payments write directly into order persistence.
+- [x] Add idempotency handling for webhook processing
+- Progress: webhook state changes now use Stripe event ids as idempotency keys, and the payment repository only applies a given webhook event to persisted payment state once.
 - [x] Add tests for webhook-driven state changes
 - Progress: payment-domain and payment-use-case tests now cover checkout-session workflow creation plus webhook-driven paid/no-op state changes.
 Progress: payment input validation and webhook transport failure now use payment-specific application errors instead of `ApiError`.
