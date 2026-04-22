@@ -127,10 +127,8 @@ describe("addOrderUseCase", () => {
       },
     });
 
-    expect(createdOrder.transactionId).to.equal("pay_123");
+    expect(createdOrder.transactionId).to.equal(undefined);
     expect(createdOrder.paymentReference).to.equal("pay_123");
-    expect(createdOrder.paymentDetails).to.deep.equal({
-      paymentReference: "pay_123",
-    });
+    expect(createdOrder.paymentDetails).to.equal(undefined);
   });
 });

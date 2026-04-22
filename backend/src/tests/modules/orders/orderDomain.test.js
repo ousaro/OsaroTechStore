@@ -34,7 +34,6 @@ describe("Order Domain", () => {
       paymentStatus: "pending",
       paymentReference: "pay_123",
       transactionId: "tx-1",
-      paymentDetails: { provider: "stripe" },
     });
 
     expect(order.toPrimitives().ownerId).to.equal("u1");
@@ -42,10 +41,8 @@ describe("Order Domain", () => {
     expect(order.toPrimitives().status).to.equal("pending");
     expect(order.toPrimitives().paymentStatus).to.equal("pending");
     expect(order.toPrimitives().paymentReference).to.equal("pay_123");
-    expect(order.toPrimitives().transactionId).to.equal("pay_123");
-    expect(order.toPrimitives().paymentDetails).to.deep.equal({
-      paymentReference: "pay_123",
-    });
+    expect(order.toPrimitives().transactionId).to.equal(undefined);
+    expect(order.toPrimitives().paymentDetails).to.equal(undefined);
     expect(order.totalPrice.toPrimitives()).to.equal(100);
     expect(order.status.toPrimitives()).to.equal("pending");
     expect(order.paymentStatus.toPrimitives()).to.equal("pending");
@@ -69,7 +66,6 @@ describe("Order Domain", () => {
         paymentStatus: "pending",
         paymentReference: "pay_123",
         transactionId: "tx-1",
-        paymentDetails: { provider: "stripe" },
       });
       expect.fail("Expected createOrder to throw");
     } catch (error) {
@@ -93,12 +89,11 @@ describe("Order Domain", () => {
       status: "paid",
       totalPrice: 150,
       paymentReference: "pay_123",
-      transactionId: "pay_123",
       paymentStatus: "paid",
     });
   });
 
-  it("strips provider-specific payment details out of the order aggregate", () => {
+  it("keeps only fulfillment-relevant payment fields inside the order aggregate", () => {
     const order = createOrder({
       ownerId: "u1",
       products: [{ productId: "p1", qty: 1 }],
@@ -113,16 +108,15 @@ describe("Order Domain", () => {
       paymentMethod: "card",
       paymentStatus: "pending",
       paymentReference: "pay_123",
-      paymentDetails: {
-        provider: "stripe",
-        sessionId: "cs_test_123",
-        payment_intent: "pi_123",
-      },
     });
 
-    expect(order.toPrimitives().paymentDetails).to.deep.equal({
+    expect(order.toPrimitives()).to.include({
+      paymentMethod: "card",
+      paymentStatus: "pending",
       paymentReference: "pay_123",
     });
+    expect(order.toPrimitives().paymentDetails).to.equal(undefined);
+    expect(order.toPrimitives().transactionId).to.equal(undefined);
   });
 
   it("throws when an update patch contains an invalid address", () => {

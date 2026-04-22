@@ -22,8 +22,6 @@ const orderSchema = new Schema(
     paymentMethod: { type: String, required: true },
     paymentStatus: { type: String, required: true, default: "pending" },
     paymentReference: { type: String, required: true },
-    transactionId: { type: String, required: true },
-    paymentDetails: { type: Schema.Types.Mixed, required: true },
   },
   { timestamps: true }
 );

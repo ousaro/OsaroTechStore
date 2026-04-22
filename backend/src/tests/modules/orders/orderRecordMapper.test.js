@@ -41,8 +41,6 @@ describe("order record mapper", () => {
       paymentMethod: "card",
       paymentStatus: "pending",
       paymentReference: "pay_123",
-      transactionId: "pay_123",
-      paymentDetails: { paymentReference: "pay_123" },
     });
   });
 

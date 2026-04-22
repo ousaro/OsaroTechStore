@@ -21,9 +21,9 @@ Completed items and historical progress notes have been removed on purpose.
 - [x] Make `payments` persist enough business state to drive order collaboration
 - [x] Extend payment persistence with order linkage, provider reference(s), lifecycle timestamps, and any provider transaction identifiers that belong to payments
 - [x] Move provider-specific payment detail ownership out of `orders`
-- [ ] Remove or shrink `paymentDetails` from the order model
-- [ ] Reduce `transactionId` in orders to a stable order-facing payment reference, or replace it entirely with a clearer field
-- [ ] Define exactly which payment fields remain inside orders because fulfillment logic truly depends on them
+- [x] Remove or shrink `paymentDetails` from the order model
+- [x] Reduce `transactionId` in orders to a stable order-facing payment reference, or replace it entirely with a clearer field
+- [x] Define exactly which payment fields remain inside orders because fulfillment logic truly depends on them
 
 ## 3. Payment Workflow Completion
 
