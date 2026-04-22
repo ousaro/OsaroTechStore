@@ -45,6 +45,7 @@ Progress: `auth/index.js` has now been removed entirely because it had no remain
 - Progress: auth, products, categories, orders, and users no longer throw HTTP-shaped `ApiError` from their domain factories/entities.
 - [ ] Replace `ApiError` usage in domain code with domain/application-specific errors
 - Progress: `AuthValidationError`, `AuthConflictError`, `AuthUnauthorizedError`, `CategoryValidationError`, `CategoryNotFoundError`, `OrderNotFoundError`, `PaymentValidationError`, `PaymentWebhookError`, `ProductNotFoundError`, `UserNotFoundError`, `UserValidationError`, and `DomainValidationError` are now in use across the auth, categories, orders, payments, users, products, and shared validation flows.
+- Progress: the legacy shared `ApiError` class has now been removed because no runtime code depends on it anymore.
 - [ ] Map domain/application errors to HTTP responses only in transport adapters
 - Progress: shared HTTP error resolution now maps auth, category, order, payment, product, user, domain-validation, and transport-validation errors in `errorMiddleware` and `createRequireAuthMiddleware`.
 - [ ] Remove direct framework/library validation dependencies from domain objects where possible
