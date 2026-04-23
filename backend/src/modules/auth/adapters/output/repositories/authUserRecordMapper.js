@@ -3,8 +3,13 @@ export const toAuthUserRecord = (rawUser) => {
     return null;
   }
 
+  const id =
+    typeof rawUser._id === "string"
+      ? rawUser._id
+      : rawUser._id?.toString?.() ?? rawUser._id;
+
   return {
-    _id: rawUser._id,
+    _id: id,
     firstName: rawUser.firstName,
     lastName: rawUser.lastName,
     email: rawUser.email,

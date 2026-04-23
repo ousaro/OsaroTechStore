@@ -45,4 +45,22 @@ describe("auth user record mapper", () => {
   it("returns null when no raw auth user is provided", () => {
     expect(toAuthUserRecord(null)).to.equal(null);
   });
+
+  it("normalizes ObjectId-like identifiers into strings", () => {
+    const rawUser = {
+      _id: {
+        toString() {
+          return "507f1f77bcf86cd799439011";
+        },
+      },
+      email: "john@example.com",
+      admin: false,
+    };
+
+    expect(toAuthUserRecord(rawUser)).to.include({
+      _id: "507f1f77bcf86cd799439011",
+      email: "john@example.com",
+      admin: false,
+    });
+  });
 });
