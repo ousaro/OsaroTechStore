@@ -7,6 +7,7 @@ import { expect } from "chai";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const modulesRoot = path.resolve(__dirname, "../../modules");
+const appRoot = path.resolve(__dirname, "../../app");
 
 const importSpecifierPattern =
   /\b(?:import|export)\b[\s\S]*?\bfrom\s+["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)/g;
@@ -80,6 +81,39 @@ describe("module boundary imports", () => {
         if (path.basename(resolvedImportPath) !== "public-api.js") {
           violations.push({
             source: path.relative(modulesRoot, sourceFilePath),
+            specifier,
+            target: path.relative(modulesRoot, resolvedImportPath),
+          });
+        }
+      }
+    }
+
+    expect(violations).to.deep.equal([]);
+  });
+
+  it("only allows app-shell imports from modules through public-api.js", () => {
+    const violations = [];
+    const appFiles = listJavaScriptFiles(appRoot);
+
+    for (const sourceFilePath of appFiles) {
+      const sourceFileContents = fs.readFileSync(sourceFilePath, "utf8");
+
+      for (const match of sourceFileContents.matchAll(importSpecifierPattern)) {
+        const specifier = match[1] || match[2];
+
+        if (!specifier?.startsWith(".")) {
+          continue;
+        }
+
+        const resolvedImportPath = resolveImportPath(sourceFilePath, specifier);
+
+        if (!resolvedImportPath || !resolvedImportPath.startsWith(modulesRoot)) {
+          continue;
+        }
+
+        if (path.basename(resolvedImportPath) !== "public-api.js") {
+          violations.push({
+            source: path.relative(appRoot, sourceFilePath),
             specifier,
             target: path.relative(modulesRoot, resolvedImportPath),
           });

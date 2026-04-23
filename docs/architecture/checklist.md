@@ -20,13 +20,11 @@ The backend already applies the core shape of modular DDD + hexagonal architectu
 
 ## Remaining Checklist
 
-- [ ] Invert the remaining app-shell dependency inside module composition roots.
-  `backend/src/modules/categories/composition.js`, `backend/src/modules/orders/composition.js`, and `backend/src/modules/payments/composition.js` still import `../../app/applicationEventBus.js` directly.
-  For stricter hexagonal boundaries, the app layer should inject the event publisher into module composition instead of module composition reaching up into the app shell.
+- [x] Invert the remaining app-shell dependency inside module composition roots.
+  The app layer now injects the event publisher into `categories`, `orders`, and `payments` composition through module public APIs instead of those modules importing `../../app/applicationEventBus.js` directly.
 
-- [ ] Add an architecture guardrail for app-shell imports.
-  `backend/src/tests/architecture/moduleBoundaryImports.test.js` protects imports between modules, but there is no companion test that prevents `backend/src/app` from importing private module internals in the future.
-  Add a test that allows the app shell to consume only each module's `public-api.js` exports.
+- [x] Add an architecture guardrail for app-shell imports.
+  `backend/src/tests/architecture/moduleBoundaryImports.test.js` now protects both module-to-module imports and app-shell imports, allowing `backend/src/app` to consume modules only through each module's `public-api.js`.
 
 - [ ] Make architecture tests load without unrelated runtime configuration.
   The architecture test run currently fails unless environment variables are supplied because `backend/src/infrastructure/config/env.js` throws during module loading outside `NODE_ENV=test`.
