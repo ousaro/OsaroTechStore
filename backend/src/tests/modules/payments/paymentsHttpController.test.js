@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createPaymentsHttpController } from "../../../modules/payments/adapters/http/paymentsHttpController.js";
+import { createPaymentsHttpController } from "../../../modules/payments/adapters/input/http/paymentsHttpController.js";
 
 describe("payments http controller", () => {
   it("returns provider-neutral payment payloads", async () => {

@@ -1,1 +1,1 @@
-export { createUsersRoutes } from "./adapters/http/usersRoutes.js";
+export { createUsersRoutes } from "./adapters/input/http/usersRoutes.js";

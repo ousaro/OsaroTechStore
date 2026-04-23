@@ -5,9 +5,9 @@ import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookU
 import { buildGetSessionDetailsUseCase } from "./application/queries/getSessionDetailsUseCase.js";
 import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
 import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
-import { createStripeGateway } from "./adapters/gateways/stripeGateway.js";
-import { createMongoosePaymentRepository } from "./adapters/repositories/mongoosePaymentRepository.js";
-import { createPaymentsHttpController } from "./adapters/http/paymentsHttpController.js";
+import { createStripeGateway } from "./adapters/output/gateways/stripeGateway.js";
+import { createMongoosePaymentRepository } from "./adapters/output/repositories/mongoosePaymentRepository.js";
+import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
 import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const paymentGateway = createStripeGateway({

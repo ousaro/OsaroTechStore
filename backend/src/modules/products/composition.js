@@ -6,9 +6,9 @@ import { buildDeleteProductUseCase } from "./application/commands/deleteProductU
 import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
 import { buildRefreshNewProductStatusUseCase } from "./application/commands/refreshNewProductStatusUseCase.js";
 import { createProductsInputPort } from "./ports/input/productsInputPort.js";
-import { createMongooseProductRepository } from "./adapters/repositories/mongooseProductRepository.js";
-import { createProductHttpController } from "./adapters/http/productHttpController.js";
-import { createNewProductStatusScheduler } from "./adapters/schedulers/newProductStatusScheduler.js";
+import { createMongooseProductRepository } from "./adapters/output/repositories/mongooseProductRepository.js";
+import { createProductHttpController } from "./adapters/input/http/productHttpController.js";
+import { createNewProductStatusScheduler } from "./adapters/input/schedulers/newProductStatusScheduler.js";
 
 const productRepository = createMongooseProductRepository();
 

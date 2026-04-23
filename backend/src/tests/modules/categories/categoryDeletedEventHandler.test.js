@@ -2,7 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { createInProcessEventBus } from "../../../shared/infrastructure/events/createInProcessEventBus.js";
-import { createCategoryDeletedProductCleanupTranslator } from "../../../modules/categories/adapters/collaboration/categoryDeletedProductCleanupTranslator.js";
+import { createCategoryDeletedProductCleanupTranslator } from "../../../modules/categories/adapters/input/collaboration/categoryDeletedProductCleanupTranslator.js";
 
 describe("CategoryDeleted event handler", () => {
   it("routes CategoryDeleted through the in-process event bus to product cleanup", async () => {

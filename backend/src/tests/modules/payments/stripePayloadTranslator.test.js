@@ -3,7 +3,7 @@ import { expect } from "chai";
 import {
   toStripeCheckoutSessionDto,
   toStripeWebhookStateChange,
-} from "../../../modules/payments/adapters/gateways/stripePayloadTranslator.js";
+} from "../../../modules/payments/adapters/output/gateways/stripePayloadTranslator.js";
 
 describe("stripe payload translator", () => {
   it("translates checkout session payloads into provider-agnostic payment workflows", () => {

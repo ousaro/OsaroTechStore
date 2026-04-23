@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createOrderPlacedPaymentLinkTranslator } from "../../../modules/payments/adapters/collaboration/orderPlacedPaymentLinkTranslator.js";
+import { createOrderPlacedPaymentLinkTranslator } from "../../../modules/payments/adapters/input/collaboration/orderPlacedPaymentLinkTranslator.js";
 
 describe("orderPlacedPaymentLinkTranslator", () => {
   it("translates OrderPlaced into payment-to-order linking", async () => {

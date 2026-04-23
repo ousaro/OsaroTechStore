@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createUsersHttpController } from "../../../modules/users/adapters/http/usersHttpController.js";
+import { createUsersHttpController } from "../../../modules/users/adapters/input/http/usersHttpController.js";
 
 describe("users http controller", () => {
   it("returns user payloads without password fields", async () => {

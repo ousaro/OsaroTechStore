@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createMongooseUserRepository } from "../../../modules/users/adapters/repositories/mongooseUserRepository.js";
+import { createMongooseUserRepository } from "../../../modules/users/adapters/output/repositories/mongooseUserRepository.js";
 import { assertAuthAccountAccessPort } from "../../../modules/users/ports/output/authAccountAccessPort.js";
 import { assertUserRepositoryPort } from "../../../modules/users/ports/output/userRepositoryPort.js";
 

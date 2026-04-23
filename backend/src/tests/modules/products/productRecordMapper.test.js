@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toProductRecord } from "../../../modules/products/adapters/repositories/productRecordMapper.js";
+import { toProductRecord } from "../../../modules/products/adapters/output/repositories/productRecordMapper.js";
 
 describe("product record mapper", () => {
   it("maps a raw product into a stable repository record shape", () => {

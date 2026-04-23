@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toUserRecord } from "../../../modules/users/adapters/repositories/userRecordMapper.js";
+import { toUserRecord } from "../../../modules/users/adapters/output/repositories/userRecordMapper.js";
 
 describe("user record mapper", () => {
   it("maps a raw user into a stable repository record shape", () => {

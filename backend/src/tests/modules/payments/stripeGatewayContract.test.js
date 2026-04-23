@@ -2,7 +2,7 @@ import { describe, it, afterEach } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import Stripe from "stripe";
-import { createStripeGateway } from "../../../modules/payments/adapters/gateways/stripeGateway.js";
+import { createStripeGateway } from "../../../modules/payments/adapters/output/gateways/stripeGateway.js";
 import { assertRedirectPaymentGatewayPort } from "../../../modules/payments/ports/output/paymentGatewayPort.js";
 
 describe("stripe gateway contract", () => {

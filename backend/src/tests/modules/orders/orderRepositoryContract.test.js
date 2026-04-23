@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createMongooseOrderRepository } from "../../../modules/orders/adapters/repositories/mongooseOrderRepository.js";
+import { createMongooseOrderRepository } from "../../../modules/orders/adapters/output/repositories/mongooseOrderRepository.js";
 import { assertOrderRepositoryPort } from "../../../modules/orders/ports/output/orderRepositoryPort.js";
 
 describe("order repository contract", () => {

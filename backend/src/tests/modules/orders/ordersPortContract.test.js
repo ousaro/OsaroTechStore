@@ -3,7 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { createOrdersCommandPort } from "../../../../src/modules/orders/ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "../../../../src/modules/orders/ports/input/ordersQueryPort.js";
-import { createOrdersHttpController } from "../../../../src/modules/orders/adapters/http/ordersHttpController.js";
+import { createOrdersHttpController } from "../../../../src/modules/orders/adapters/input/http/ordersHttpController.js";
 
 const flushAsyncHandler = () => new Promise((resolve) => setImmediate(resolve));
 

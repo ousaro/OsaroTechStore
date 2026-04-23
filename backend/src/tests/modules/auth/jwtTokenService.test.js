@@ -2,7 +2,7 @@ import { describe, it, afterEach } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import jwt from "jsonwebtoken";
-import { createJwtTokenService } from "../../../modules/auth/adapters/services/jwtTokenService.js";
+import { createJwtTokenService } from "../../../modules/auth/adapters/output/services/jwtTokenService.js";
 import { AuthUnauthorizedError } from "../../../modules/auth/application/errors/AuthApplicationError.js";
 
 describe("jwtTokenService", () => {

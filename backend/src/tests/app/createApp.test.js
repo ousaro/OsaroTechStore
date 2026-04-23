@@ -3,7 +3,7 @@ import { expect } from "chai";
 import express from "express";
 import { PassThrough } from "stream";
 import { createSelectiveBodyParser } from "../../app/createApp.js";
-import { createPaymentsRoutes } from "../../modules/payments/adapters/http/paymentsRoutes.js";
+import { createPaymentsRoutes } from "../../modules/payments/adapters/input/http/paymentsRoutes.js";
 
 const paymentsRoutes = createPaymentsRoutes({
   requireAuth: (_req, _res, next) => next(),

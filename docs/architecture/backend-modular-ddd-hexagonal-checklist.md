@@ -26,7 +26,7 @@ The backend already matches the guide in these areas:
   [backend/src/app/startApplication.js](/home/ousaro/Projects/OsaroTechStore/backend/src/app/startApplication.js) imports [backend/src/modules/products/bootstrap.js](/home/ousaro/Projects/OsaroTechStore/backend/src/modules/products/bootstrap.js)
   To align with the guide, those entry points should be exposed through module-level public exports instead of reaching into private internals.
 
-- [ ] Reshape `adapters/` to the guide's explicit input/output split.
+- [x] Reshape `adapters/` to the guide's explicit input/output split.
   `guide.md` defines adapters as `adapters/input/...` and `adapters/output/...`.
   The current backend keeps adapter types directly under `adapters/`, for example:
   `adapters/http`, `adapters/persistence`, `adapters/repositories`, `adapters/collaboration`, `adapters/gateways`, `adapters/services`, and `adapters/schedulers`.

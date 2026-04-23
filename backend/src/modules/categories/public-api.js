@@ -1,2 +1,2 @@
-export { createCategoriesRoutes } from "./adapters/http/categoriesRoutes.js";
-export { createCategoryDeletedProductCleanupTranslator } from "./adapters/collaboration/categoryDeletedProductCleanupTranslator.js";
+export { createCategoriesRoutes } from "./adapters/input/http/categoriesRoutes.js";
+export { createCategoryDeletedProductCleanupTranslator } from "./adapters/input/collaboration/categoryDeletedProductCleanupTranslator.js";
