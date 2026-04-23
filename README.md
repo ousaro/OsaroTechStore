@@ -56,19 +56,66 @@ cd ../frontend && npm install
 
 ### 2) Configure environment variables
 
-Create `backend/.env`:
+Create these backend env files:
 
 ```env
+# backend/.env
 PORT=5000
 CLIENT_URL=http://localhost:3000
+DATABASE_PROVIDER=mongo
+AUTH_PROVIDERS=credentials
+PAYMENT_PROVIDER=stripe
+SESSION_SECRET=change-me
+TOKEN_SECRET=change-me
+```
+
+```env
+# backend/.env.dev
+PORT=5000
+CLIENT_URL=http://localhost:3000
+DATABASE_PROVIDER=mongo
 MONGO_URI=<your_mongodb_connection_string>
+AUTH_PROVIDERS=credentials,google
 GOOGLE_CLIENT_ID=<google_client_id>
 GOOGLE_CLIENT_SECRET=<google_client_secret>
-SESSION_SECRET=<session_secret>
-CALLBACK_URL=<google_callback_url>
-TOKEN_SECRET=<jwt_secret>
-STRIPE_SECTET_KEY=<stripe_secret_key>
+CALLBACK_URL=http://localhost:5000/api/users/auth/google/callback
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=<stripe_secret_key>
 STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
+```
+
+```env
+# backend/.env.test
+PORT=5000
+CLIENT_URL=http://localhost:3000
+DATABASE_PROVIDER=mongo
+MONGO_URI=mongodb://127.0.0.1:27017/osarotechstore-test
+AUTH_PROVIDERS=credentials,google
+GOOGLE_CLIENT_ID=test-google-client-id
+GOOGLE_CLIENT_SECRET=test-google-client-secret
+CALLBACK_URL=http://localhost:5000/api/users/auth/google/callback
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_test_backend
+STRIPE_WEBHOOK_SECRET=whsec_test_backend
+SESSION_SECRET=test-session-secret
+TOKEN_SECRET=test-token-secret
+```
+
+```env
+# backend/.env.prod
+PORT=5000
+CLIENT_URL=<your_frontend_url>
+DATABASE_PROVIDER=mongo
+MONGO_URI=<your_production_connection_string>
+AUTH_PROVIDERS=credentials,google
+GOOGLE_CLIENT_ID=<google_client_id>
+GOOGLE_CLIENT_SECRET=<google_client_secret>
+CALLBACK_URL=<your_google_callback_url>
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=<stripe_secret_key>
+STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
+SESSION_SECRET=<strong_session_secret>
+TOKEN_SECRET=<strong_jwt_secret>
 ```
 
 Create `frontend/.env`:
@@ -80,7 +127,9 @@ REACT_APP_FOR_PASSWORD_RESET=<password_reset_url_if_used>
 REACT_APP_STRIPE_PUBLIC_KEY=<stripe_publishable_key>
 ```
 
-Note: `STRIPE_SECTET_KEY` is intentionally spelled this way to match the current backend implementation.
+Notes:
+- The backend loads `backend/.env` first, then overlays `backend/.env.dev`, `backend/.env.test`, or `backend/.env.prod` based on `NODE_ENV`.
+- `STRIPE_SECRET_KEY` is the preferred name now, but the backend still accepts legacy `STRIPE_SECTET_KEY`.
 
 Development note:
 - MongoDB is still required for backend startup.
@@ -92,7 +141,7 @@ Development note:
 Backend (from `backend/`):
 
 ```bash
-npm run backend
+npm run backend:dev
 ```
 
 Frontend (from `frontend/`):
@@ -104,8 +153,12 @@ npm start
 ## Scripts
 
 Backend (`backend/package.json`):
-- `npm run backend` -> starts API with nodemon
-- `npm test` -> runs backend tests
+- `npm run backend` -> alias for `npm run backend:dev`
+- `npm run backend:dev` -> starts the API with `NODE_ENV=development`
+- `npm run backend:test` -> starts the API with `NODE_ENV=test`
+- `npm run backend:prod` -> starts the API with `NODE_ENV=production`
+- `npm test` -> alias for `npm run test:backend`
+- `npm run test:backend` -> runs backend tests with `NODE_ENV=test`
 
 Frontend (`frontend/package.json`):
 - `npm start` -> starts React dev server

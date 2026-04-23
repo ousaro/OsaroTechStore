@@ -16,6 +16,12 @@ export const createPaymentsRoutes = ({
   }),
 }) => {
   const paymentsRoutes = express.Router();
+  const canHandlePayments =
+    paymentStrategy.paymentsEnabled &&
+    typeof createPaymentIntentHandler === "function" &&
+    typeof getSessionDetailsHandler === "function";
+  const canHandleWebhook =
+    paymentStrategy.webhookEnabled && typeof stripeWebhookHandler === "function";
   const paymentsUnavailable = (_req, res) =>
     res
       .status(503)
@@ -28,16 +34,16 @@ export const createPaymentsRoutes = ({
   paymentsRoutes.post(
     "/webhook",
     express.raw({ type: "application/json" }),
-    paymentStrategy.webhookEnabled ? stripeWebhookHandler : webhookUnavailable
+    canHandleWebhook ? stripeWebhookHandler : webhookUnavailable
   );
   paymentsRoutes.use(requireAuth);
   paymentsRoutes.post(
     "/create-payment-intent",
-    paymentStrategy.paymentsEnabled ? createPaymentIntentHandler : paymentsUnavailable
+    canHandlePayments ? createPaymentIntentHandler : paymentsUnavailable
   );
   paymentsRoutes.get(
     "/session-details/:sessionId",
-    paymentStrategy.paymentsEnabled ? getSessionDetailsHandler : paymentsUnavailable
+    canHandlePayments ? getSessionDetailsHandler : paymentsUnavailable
   );
 
   return paymentsRoutes;

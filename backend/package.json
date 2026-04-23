@@ -4,8 +4,12 @@
   "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
   "type": "module",
   "scripts": {
-    "backend": "nodemon src/server.js",
-    "test": "cross-env NODE_ENV=test mocha --timeout 10000 --require @babel/register 'src/tests/**/*.test.js'"
+    "backend": "npm run backend:dev",
+    "backend:dev": "cross-env NODE_ENV=development nodemon src/server.js",
+    "backend:test": "cross-env NODE_ENV=test node src/server.js",
+    "backend:prod": "cross-env NODE_ENV=production node src/server.js",
+    "test": "npm run test:backend",
+    "test:backend": "cross-env NODE_ENV=test mocha --timeout 10000 --require @babel/register 'src/tests/**/*.test.js'"
   },
   "author": "",
   "license": "ISC",

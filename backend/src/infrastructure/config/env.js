@@ -1,6 +1,39 @@
+import fs from "fs";
+import path from "path";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const backendRoot = path.resolve(__dirname, "../../..");
+const normalizedNodeEnv = (process.env.NODE_ENV || "development").trim().toLowerCase();
+const envFileByNodeEnv = {
+  development: ".env.dev",
+  dev: ".env.dev",
+  test: ".env.test",
+  production: ".env.prod",
+  prod: ".env.prod",
+};
+
+const loadEnvFile = (fileName, override = false) => {
+  if (!fileName) {
+    return;
+  }
+
+  const filePath = path.join(backendRoot, fileName);
+
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  dotenv.config({
+    path: filePath,
+    override,
+  });
+};
+
+loadEnvFile(".env");
+loadEnvFile(envFileByNodeEnv[normalizedNodeEnv], true);
 
 const parseProviderList = (value) => {
   if (!value) {
@@ -24,7 +57,7 @@ const buildOAuthProviderConfig = ({
   callbackUrl,
 });
 
-if (process.env.NODE_ENV === "test") {
+if (normalizedNodeEnv === "test") {
   process.env.DATABASE_PROVIDER ||= "mongo";
   process.env.MONGO_URI ||= "mongodb://127.0.0.1:27017/osarotechstore-test";
   process.env.SESSION_SECRET ||= "test-session-secret";
@@ -94,7 +127,7 @@ const oauthProviders = {
 const paymentProvider = (process.env.PAYMENT_PROVIDER || "stripe").trim().toLowerCase();
 
 export const env = {
-  nodeEnv: process.env.NODE_ENV || "development",
+  nodeEnv: normalizedNodeEnv,
   port: Number(process.env.PORT || 5000),
   databaseProvider,
   databaseConnection: databaseConnectionByProvider[databaseProvider] || "",
