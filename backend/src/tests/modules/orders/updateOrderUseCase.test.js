@@ -5,7 +5,7 @@ import { OrderNotFoundError } from "../../../modules/orders/application/errors/O
 import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 
 describe("updateOrderUseCase", () => {
-  it("persists a shaped order patch instead of raw updates", async () => {
+  it("persists a shaped lifecycle patch instead of raw updates", async () => {
     let persistedPatch = null;
     const updateOrderUseCase = buildUpdateOrderUseCase({
       orderRepository: {
@@ -23,20 +23,17 @@ describe("updateOrderUseCase", () => {
       updates: {
         status: "paid",
         paymentStatus: "paid",
-        totalPrice: 150,
       },
     });
 
     expect(persistedPatch).to.deep.equal({
       status: "paid",
       paymentStatus: "paid",
-      totalPrice: 150,
     });
     expect(result).to.deep.equal({
       _id: "o1",
       status: "paid",
       paymentStatus: "paid",
-      totalPrice: 150,
     });
   });
 
@@ -177,5 +174,28 @@ describe("updateOrderUseCase", () => {
       _id: "o1",
       status: "processing",
     });
+  });
+
+  it("rejects immutable order fields after placement", async () => {
+    const updateOrderUseCase = buildUpdateOrderUseCase({
+      orderRepository: {
+        isValidId: () => true,
+        findById: async () => ({ _id: "o1", status: "pending", paymentStatus: "pending" }),
+        findByIdAndUpdate: async () => {
+          throw new Error("should not update");
+        },
+      },
+    });
+
+    try {
+      await updateOrderUseCase({
+        id: "o1",
+        updates: { paymentMethod: "cash" },
+      });
+      throw new Error("Expected updateOrderUseCase to throw");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("paymentMethod is immutable after order placement");
+    }
   });
 });

@@ -11,8 +11,10 @@ import {
   transitionOrderStatus,
 } from "../../../../src/modules/orders/domain/entities/Order.js";
 import { prepareOrderLifecyclePatch } from "../../../../src/modules/orders/domain/services/orderLifecycleService.js";
+import { prepareOrderUpdatePatch } from "../../../../src/modules/orders/domain/services/orderUpdatePolicyService.js";
 import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { createMoney } from "../../../../src/modules/orders/domain/value-objects/Money.js";
+import { createOrderLine } from "../../../../src/modules/orders/domain/value-objects/OrderLine.js";
 import { createOrderStatus } from "../../../../src/modules/orders/domain/value-objects/OrderStatus.js";
 import { createPaymentStatus } from "../../../../src/modules/orders/domain/value-objects/PaymentStatus.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
@@ -43,6 +45,7 @@ describe("Order Domain", () => {
     expect(order.toPrimitives().paymentReference).to.equal("pay_123");
     expect(order.toPrimitives().transactionId).to.equal(undefined);
     expect(order.toPrimitives().paymentDetails).to.equal(undefined);
+    expect(order.toPrimitives().products).to.deep.equal([{ productId: "p1", qty: 1 }]);
     expect(order.totalPrice.toPrimitives()).to.equal(100);
     expect(order.status.toPrimitives()).to.equal("pending");
     expect(order.paymentStatus.toPrimitives()).to.equal("pending");
@@ -77,18 +80,14 @@ describe("Order Domain", () => {
     }
   });
 
-  it("creates an update patch for valid partial updates", () => {
+  it("creates an update patch for valid lifecycle updates", () => {
     const patch = createOrderUpdatePatch({
       status: "paid",
-      totalPrice: 150,
-      paymentReference: "pay_123",
       paymentStatus: "paid",
     });
 
     expect(patch.toPrimitives()).to.deep.equal({
       status: "paid",
-      totalPrice: 150,
-      paymentReference: "pay_123",
       paymentStatus: "paid",
     });
   });
@@ -148,6 +147,27 @@ describe("Order Domain", () => {
       postalCode: "20000",
       country: "MA",
     });
+  });
+
+  it("creates an order-line value object with stable primitives", () => {
+    const line = createOrderLine({
+      productId: "p1",
+      qty: 2,
+      title: "Phone",
+    });
+
+    expect(line.toPrimitives()).to.deep.equal({
+      productId: "p1",
+      qty: 2,
+      title: "Phone",
+    });
+  });
+
+  it("rejects invalid order lines", () => {
+    expect(() => createOrderLine({ productId: "", qty: 0 })).to.throw(
+      DomainValidationError,
+      "orderLine.productId is required"
+    );
   });
 
   it("creates a money value object with stable primitives", () => {
@@ -227,6 +247,23 @@ describe("Order Domain", () => {
     ).to.throw(
       DomainValidationError,
       "Order status paid requires paymentStatus paid"
+    );
+  });
+
+  it("rejects immutable order fields after placement", () => {
+    expect(() =>
+      prepareOrderUpdatePatch({
+        currentOrder: {
+          status: "pending",
+          paymentStatus: "pending",
+        },
+        updates: {
+          paymentMethod: "cash",
+        },
+      })
+    ).to.throw(
+      DomainValidationError,
+      "paymentMethod is immutable after order placement"
     );
   });
 });

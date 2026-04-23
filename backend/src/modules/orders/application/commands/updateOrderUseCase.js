@@ -1,6 +1,6 @@
 import { OrderNotFoundError } from "../errors/OrderApplicationError.js";
 import { createOrderUpdatePatch } from "../../domain/entities/Order.js";
-import { prepareOrderLifecyclePatch } from "../../domain/services/orderLifecycleService.js";
+import { prepareOrderUpdatePatch as prepareOrderDomainUpdatePatch } from "../../domain/services/orderUpdatePolicyService.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
 
 export const buildUpdateOrderUseCase = ({ orderRepository }) => {
@@ -10,20 +10,16 @@ export const buildUpdateOrderUseCase = ({ orderRepository }) => {
       throw new OrderNotFoundError("Invalid order ID");
     }
 
-    let patchUpdates = { ...updates };
+    const currentOrder = await orderRepository.findById(id);
 
-    if (patchUpdates.status !== undefined || patchUpdates.paymentStatus !== undefined) {
-      const currentOrder = await orderRepository.findById(id);
-
-      if (!currentOrder) {
-        throw new OrderNotFoundError("Order not found");
-      }
-
-      patchUpdates = prepareOrderLifecyclePatch({
-        currentOrder,
-        updates: patchUpdates,
-      });
+    if (!currentOrder) {
+      throw new OrderNotFoundError("Order not found");
     }
+
+    const patchUpdates = prepareOrderDomainUpdatePatch({
+      currentOrder,
+      updates: { ...updates },
+    });
 
     const patch = createOrderUpdatePatch(patchUpdates);
     const order = await orderRepository.findByIdAndUpdate(id, patch);

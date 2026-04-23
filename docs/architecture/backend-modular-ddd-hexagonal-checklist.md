@@ -37,11 +37,11 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 4. Order Modeling
 
-- [ ] Replace the raw `products` array in orders with a clearer order-line concept if order invariants will continue to grow
-- [ ] Define which order fields are immutable after placement and enforce that in the domain/application layer
-- [ ] Move more order updates from generic patch construction toward explicit behaviors where the business language is stable
-- [ ] Reassess whether `paymentMethod` belongs in the order aggregate as intent, in payments as execution detail, or split across both
-- [ ] Tighten the order model around fulfillment state versus payment state ownership
+- [x] Replace the raw `products` array in orders with a clearer order-line concept if order invariants will continue to grow
+- [x] Define which order fields are immutable after placement and enforce that in the domain/application layer
+- [x] Move more order updates from generic patch construction toward explicit behaviors where the business language is stable
+- [x] Reassess whether `paymentMethod` belongs in the order aggregate as intent, in payments as execution detail, or split across both
+- [x] Tighten the order model around fulfillment state versus payment state ownership
 
 ## 5. Auth and Users Boundary
 

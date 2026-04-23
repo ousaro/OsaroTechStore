@@ -1,12 +1,10 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createAddress } from "../value-objects/Address.js";
 import { createMoney } from "../value-objects/Money.js";
+import { createOrderLines } from "../value-objects/OrderLine.js";
 import { createOrderStatus } from "../value-objects/OrderStatus.js";
 import { createPaymentStatus } from "../value-objects/PaymentStatus.js";
-import {
-  assertNonEmptyArray,
-  assertString,
-} from "../validation/orderValidation.js";
+import { assertString } from "../validation/orderValidation.js";
 
 export const createOrder = ({
   ownerId,
@@ -20,7 +18,7 @@ export const createOrder = ({
   transactionId,
 }) => {
   assertString(ownerId, "ownerId is required");
-  assertNonEmptyArray(products, "products must be a non-empty array");
+  const orderLines = createOrderLines(products);
   assertString(paymentMethod, "paymentMethod is required");
   const stablePaymentReference = paymentReference ?? transactionId;
   assertString(stablePaymentReference, "paymentReference is required");
@@ -31,10 +29,11 @@ export const createOrder = ({
 
   const props = {
     ownerId,
-    products,
+    products: orderLines,
     totalPrice: orderTotalPrice,
     status: orderStatus,
     address: orderAddress,
+    // paymentMethod stays on the order as checkout intent; provider execution stays in payments.
     paymentMethod,
     paymentStatus: orderPaymentStatus,
     paymentReference: stablePaymentReference,
@@ -45,6 +44,7 @@ export const createOrder = ({
     toPrimitives() {
       return {
         ...props,
+        products: props.products.map((line) => line.toPrimitives()),
         totalPrice: props.totalPrice.toPrimitives(),
         status: props.status.toPrimitives(),
         address: props.address.toPrimitives(),
@@ -133,7 +133,7 @@ export const createOrderUpdatePatch = (updates) => {
   }
 
   if (patch.products !== undefined) {
-    assertNonEmptyArray(patch.products, "products must be a non-empty array");
+    patch.products = createOrderLines(patch.products);
   }
 
   delete patch.transactionId;
@@ -143,6 +143,9 @@ export const createOrderUpdatePatch = (updates) => {
     toPrimitives() {
       return {
         ...patch,
+        ...(patch.products
+          ? { products: patch.products.map((line) => line.toPrimitives()) }
+          : {}),
         ...(patch.totalPrice ? { totalPrice: patch.totalPrice.toPrimitives() } : {}),
         ...(patch.status ? { status: patch.status.toPrimitives() } : {}),
         ...(patch.address ? { address: patch.address.toPrimitives() } : {}),
