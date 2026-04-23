@@ -35,7 +35,6 @@ describe("Order Domain", () => {
       paymentMethod: "card",
       paymentStatus: "pending",
       paymentReference: "pay_123",
-      transactionId: "tx-1",
     });
 
     expect(order.toPrimitives().ownerId).to.equal("u1");
@@ -43,8 +42,6 @@ describe("Order Domain", () => {
     expect(order.toPrimitives().status).to.equal("pending");
     expect(order.toPrimitives().paymentStatus).to.equal("pending");
     expect(order.toPrimitives().paymentReference).to.equal("pay_123");
-    expect(order.toPrimitives().transactionId).to.equal(undefined);
-    expect(order.toPrimitives().paymentDetails).to.equal(undefined);
     expect(order.toPrimitives().products).to.deep.equal([{ productId: "p1", qty: 1 }]);
     expect(order.totalPrice.toPrimitives()).to.equal(100);
     expect(order.status.toPrimitives()).to.equal("pending");
@@ -68,7 +65,6 @@ describe("Order Domain", () => {
         paymentMethod: "card",
         paymentStatus: "pending",
         paymentReference: "pay_123",
-        transactionId: "tx-1",
       });
       expect.fail("Expected createOrder to throw");
     } catch (error) {
@@ -114,8 +110,6 @@ describe("Order Domain", () => {
       paymentStatus: "pending",
       paymentReference: "pay_123",
     });
-    expect(order.toPrimitives().paymentDetails).to.equal(undefined);
-    expect(order.toPrimitives().transactionId).to.equal(undefined);
   });
 
   it("throws when an update patch contains an invalid address", () => {

@@ -15,13 +15,11 @@ export const createOrder = ({
   paymentMethod,
   paymentStatus,
   paymentReference,
-  transactionId,
 }) => {
   assertString(ownerId, "ownerId is required");
   const orderLines = createOrderLines(products);
   assertString(paymentMethod, "paymentMethod is required");
-  const stablePaymentReference = paymentReference ?? transactionId;
-  assertString(stablePaymentReference, "paymentReference is required");
+  assertString(paymentReference, "paymentReference is required");
   const orderAddress = createAddress(address);
   const orderTotalPrice = createMoney(totalPrice);
   const orderStatus = createOrderStatus(status);
@@ -36,7 +34,7 @@ export const createOrder = ({
     // paymentMethod stays on the order as checkout intent; provider execution stays in payments.
     paymentMethod,
     paymentStatus: orderPaymentStatus,
-    paymentReference: stablePaymentReference,
+    paymentReference,
   };
 
   return Object.freeze({
@@ -116,14 +114,6 @@ export const createOrderUpdatePatch = (updates) => {
     assertString(patch.paymentReference, "paymentReference is required");
   }
 
-  if (patch.transactionId !== undefined) {
-    assertString(patch.transactionId, "transactionId is required");
-  }
-
-  if (patch.transactionId !== undefined && patch.paymentReference === undefined) {
-    patch.paymentReference = patch.transactionId;
-  }
-
   if (patch.paymentStatus !== undefined) {
     patch.paymentStatus = createPaymentStatus(patch.paymentStatus);
   }
@@ -135,9 +125,6 @@ export const createOrderUpdatePatch = (updates) => {
   if (patch.products !== undefined) {
     patch.products = createOrderLines(patch.products);
   }
-
-  delete patch.transactionId;
-  delete patch.paymentDetails;
 
   return Object.freeze({
     toPrimitives() {

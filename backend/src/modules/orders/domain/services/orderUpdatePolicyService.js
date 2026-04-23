@@ -8,8 +8,6 @@ const IMMUTABLE_ORDER_FIELDS_AFTER_PLACEMENT = new Set([
   "address",
   "paymentMethod",
   "paymentReference",
-  "transactionId",
-  "paymentDetails",
 ]);
 
 export const prepareOrderUpdatePatch = ({ currentOrder, updates }) => {

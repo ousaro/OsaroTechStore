@@ -15,7 +15,6 @@ describe("order read model", () => {
         paymentMethod: "card",
         paymentStatus: "pending",
         paymentReference: "pay_123",
-        transactionId: "legacy",
       })
     ).to.deep.equal({
       _id: "o1",

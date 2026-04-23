@@ -391,15 +391,6 @@ components:
           type: string
         paymentReference:
           type: string
-        transactionId:
-          type: string
-          deprecated: true
-          description: Legacy alias for paymentReference accepted during migration.
-        paymentDetails:
-          type: object
-          additionalProperties: true
-          deprecated: true
-          description: Legacy provider-specific payload accepted during migration but not persisted on orders.
     OrderUpdateRequest:
       type: object
       properties:
@@ -420,15 +411,6 @@ components:
           type: string
         paymentReference:
           type: string
-        transactionId:
-          type: string
-          deprecated: true
-          description: Legacy alias for paymentReference accepted during migration.
-        paymentDetails:
-          type: object
-          additionalProperties: true
-          deprecated: true
-          description: Legacy provider-specific payload accepted during migration but not persisted on orders.
     PaymentIntentItem:
       type: object
       required: [name, price, quantity]

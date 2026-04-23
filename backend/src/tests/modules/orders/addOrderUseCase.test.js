@@ -37,8 +37,7 @@ describe("addOrderUseCase", () => {
       },
       paymentMethod: "card",
       paymentStatus: "pending",
-      transactionId: "tx-1",
-      paymentDetails: { provider: "stripe" },
+      paymentReference: "tx-1",
     });
 
     expect(result).to.deep.equal({
@@ -96,7 +95,7 @@ describe("addOrderUseCase", () => {
     ).to.throw(DomainValidationError, "order id is required to create OrderPlaced");
   });
 
-  it("prefers the payments-owned reference when paymentDetails provides one", async () => {
+  it("requires paymentReference explicitly instead of legacy payment aliases", async () => {
     let createdOrder = null;
     const addOrderUseCase = buildAddOrderUseCase({
       orderRepository: {
@@ -107,28 +106,32 @@ describe("addOrderUseCase", () => {
       },
     });
 
-    await addOrderUseCase({
-      ownerId: "u1",
-      products: [{ productId: "p1", qty: 1 }],
-      totalPrice: 100,
-      status: "pending",
-      address: {
-        city: "Casablanca",
-        addressLine: "Street 1",
-        postalCode: "20000",
-        country: "MA",
-      },
-      paymentMethod: "card",
-      paymentStatus: "pending",
-      transactionId: "pi_provider_123",
-      paymentDetails: {
-        provider: "stripe",
-        paymentReference: "pay_123",
-      },
-    });
+    try {
+      await addOrderUseCase({
+        ownerId: "u1",
+        products: [{ productId: "p1", qty: 1 }],
+        totalPrice: 100,
+        status: "pending",
+        address: {
+          city: "Casablanca",
+          addressLine: "Street 1",
+          postalCode: "20000",
+          country: "MA",
+        },
+        paymentMethod: "card",
+        paymentStatus: "pending",
+        transactionId: "pi_provider_123",
+        paymentDetails: {
+          provider: "stripe",
+          paymentReference: "pay_123",
+        },
+      });
+      expect.fail("Expected addOrderUseCase to reject legacy payment aliases");
+    } catch (error) {
+      expect(error).to.be.instanceOf(DomainValidationError);
+      expect(error.message).to.equal("paymentReference is required");
+    }
 
-    expect(createdOrder.transactionId).to.equal(undefined);
-    expect(createdOrder.paymentReference).to.equal("pay_123");
-    expect(createdOrder.paymentDetails).to.equal(undefined);
+    expect(createdOrder).to.equal(null);
   });
 });

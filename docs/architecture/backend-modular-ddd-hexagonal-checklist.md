@@ -14,10 +14,10 @@ Completed items, historical progress notes, and now-implemented migration steps 
 
 ## 2. Legacy Payment/Order Compatibility Cleanup
 
-- [ ] Remove legacy `transactionId` fallback handling from order creation once old clients no longer depend on it
-- [ ] Remove legacy `paymentDetails` fallback handling from order creation once old clients no longer depend on it
-- [ ] Remove `transactionId` fallback lookup support from the order repository once old persisted records are migrated
-- [ ] Remove legacy payment-field references from order update-policy and mapping code when the migration window is closed
+- [x] Remove legacy `transactionId` fallback handling from order creation once old clients no longer depend on it
+- [x] Remove legacy `paymentDetails` fallback handling from order creation once old clients no longer depend on it
+- [x] Remove `transactionId` fallback lookup support from the order repository once old persisted records are migrated
+- [x] Remove legacy payment-field references from order update-policy and mapping code when the migration window is closed
 
 ## 3. Payments Ubiquitous Language Cleanup
 

@@ -19,9 +19,7 @@ export const createMongooseOrderRepository = () => {
     },
 
     async findByPaymentReference(paymentReference) {
-      const doc = await OrderModel.findOne({
-        $or: [{ paymentReference }, { transactionId: paymentReference }],
-      });
+      const doc = await OrderModel.findOne({ paymentReference });
       return doc ? toOrderRecord(doc) : null;
     },
 
