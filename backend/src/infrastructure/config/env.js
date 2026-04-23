@@ -28,4 +28,16 @@ export const env = {
   tokenSecret: process.env.TOKEN_SECRET,
   stripeSecretKey: process.env.STRIPE_SECTET_KEY || "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
+  googleClientId: process.env.GOOGLE_CLIENT_ID || "",
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+  googleCallbackUrl: process.env.CALLBACK_URL || "",
+  googleOAuthEnabled: Boolean(
+    process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.CALLBACK_URL
+  ),
+  stripePaymentsEnabled: Boolean(process.env.STRIPE_SECTET_KEY),
+  stripeWebhookEnabled: Boolean(
+    process.env.STRIPE_SECTET_KEY && process.env.STRIPE_WEBHOOK_SECRET
+  ),
 };

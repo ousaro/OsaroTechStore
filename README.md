@@ -82,6 +82,11 @@ REACT_APP_STRIPE_PUBLIC_KEY=<stripe_publishable_key>
 
 Note: `STRIPE_SECTET_KEY` is intentionally spelled this way to match the current backend implementation.
 
+Development note:
+- MongoDB is still required for backend startup.
+- Google OAuth is optional in development; if its env vars are omitted, `/api/users/auth/google` returns `503` instead of crashing the server.
+- Stripe is optional in development; if its env vars are omitted, payment routes return `503` instead of crashing the server.
+
 ### 3) Run the app
 
 Backend (from `backend/`):
