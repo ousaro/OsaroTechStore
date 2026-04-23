@@ -6,44 +6,72 @@ import { buildDeleteProductUseCase } from "./application/commands/deleteProductU
 import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
 import { buildRefreshNewProductStatusUseCase } from "./application/commands/refreshNewProductStatusUseCase.js";
 import { createProductsInputPort } from "./ports/input/productsInputPort.js";
-import { createMongooseProductRepository } from "./adapters/output/repositories/mongooseProductRepository.js";
 import { createProductHttpController } from "./adapters/input/http/productHttpController.js";
 import { createNewProductStatusScheduler } from "./adapters/input/schedulers/newProductStatusScheduler.js";
 
-const productRepository = createMongooseProductRepository();
-
-const getAllProductsUseCase = buildGetAllProductsUseCase({
+export const createProductsModule = ({
   productRepository,
-});
+  schedulerFactory = createNewProductStatusScheduler,
+} = {}) => {
+  const getAllProductsUseCase = buildGetAllProductsUseCase({
+    productRepository,
+  });
+  const getProductByIdUseCase = buildGetProductByIdUseCase({
+    productRepository,
+  });
+  const addProductUseCase = buildAddProductUseCase({ productRepository });
+  const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
+  const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
+  const removeProductsByCategoryUseCase = buildRemoveProductsByCategoryUseCase({ productRepository });
+  const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
+  const productsInputPort = createProductsInputPort({
+    getAllProducts: getAllProductsUseCase,
+    getProductById: getProductByIdUseCase,
+    addProduct: addProductUseCase,
+    updateProduct: updateProductUseCase,
+    deleteProduct: deleteProductUseCase,
+  });
+  const newProductStatusScheduler = schedulerFactory({
+    refreshNewProductStatusUseCase,
+  });
 
-const getProductByIdUseCase = buildGetProductByIdUseCase({
-  productRepository,
-});
-const addProductUseCase = buildAddProductUseCase({ productRepository });
-const updateProductUseCase = buildUpdateProductUseCase({ productRepository });
-const deleteProductUseCase = buildDeleteProductUseCase({ productRepository });
-const removeProductsByCategoryUseCase = buildRemoveProductsByCategoryUseCase({ productRepository });
-const refreshNewProductStatusUseCase = buildRefreshNewProductStatusUseCase({ productRepository });
-const productsInputPort = createProductsInputPort({
-  getAllProducts: getAllProductsUseCase,
-  getProductById: getProductByIdUseCase,
-  addProduct: addProductUseCase,
-  updateProduct: updateProductUseCase,
-  deleteProduct: deleteProductUseCase,
-});
-const newProductStatusScheduler = createNewProductStatusScheduler({
-  refreshNewProductStatusUseCase,
-});
+  return {
+    ...createProductHttpController({
+      productsInputPort,
+    }),
+    removeProductsByCategory: (payload) => removeProductsByCategoryUseCase(payload),
+    startNewProductStatusScheduler: () => newProductStatusScheduler.start(),
+  };
+};
 
-export const {
-  getAllProductsHandler,
-  getProductByIdHandler,
-  addProductHandler,
-  updateProductHandler,
-  deleteProductHandler,
-} = createProductHttpController({
-  productsInputPort,
-});
+export let getAllProductsHandler;
+export let getProductByIdHandler;
+export let addProductHandler;
+export let updateProductHandler;
+export let deleteProductHandler;
+export let startNewProductStatusScheduler;
 
-export const removeProductsByCategory = (payload) => removeProductsByCategoryUseCase(payload);
-export const startNewProductStatusScheduler = () => newProductStatusScheduler.start();
+let productsModule;
+
+const getConfiguredProductsModule = () => {
+  if (!productsModule) {
+    throw new Error("Products module has not been configured");
+  }
+
+  return productsModule;
+};
+
+export const removeProductsByCategory = (...args) =>
+  getConfiguredProductsModule().removeProductsByCategory(...args);
+
+export const configureProductsModule = (dependencies) => {
+  productsModule = createProductsModule(dependencies);
+  ({
+    getAllProductsHandler,
+    getProductByIdHandler,
+    addProductHandler,
+    updateProductHandler,
+    deleteProductHandler,
+    startNewProductStatusScheduler,
+  } = productsModule);
+};

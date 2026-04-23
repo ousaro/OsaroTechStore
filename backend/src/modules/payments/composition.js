@@ -5,27 +5,23 @@ import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookU
 import { buildGetSessionDetailsUseCase } from "./application/queries/getSessionDetailsUseCase.js";
 import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
 import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
-import { createStripeGateway } from "./adapters/output/gateways/stripeGateway.js";
-import { createMongoosePaymentRepository } from "./adapters/output/repositories/mongoosePaymentRepository.js";
 import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
 
-const paymentGateway = createStripeGateway({
-  secretKey: env.stripeSecretKey,
-  webhookSecret: env.stripeWebhookSecret,
-});
-const paymentRepository = createMongoosePaymentRepository();
 const defaultPaymentEventPublisher = null;
 
-export const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
+export const createPaymentsModule = ({
+  paymentGateway,
   paymentRepository,
-});
-const buildPaymentsModule = ({
   paymentEventPublisher = defaultPaymentEventPublisher,
+  clientUrl = env.clientUrl,
 } = {}) => {
+  const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
+    paymentRepository,
+  });
   const createPaymentIntentUseCase = buildCreatePaymentIntentUseCase({
     paymentGateway,
     paymentRepository,
-    clientUrl: env.clientUrl,
+    clientUrl,
   });
   const verifyWebhookUseCase = buildVerifyWebhookUseCase({
     paymentGateway,
@@ -44,22 +40,37 @@ const buildPaymentsModule = ({
     getSessionDetails: getSessionDetailsUseCase,
   });
 
-  return createPaymentsHttpController({
-    paymentsCommandPort,
-    paymentsQueryPort,
-  });
+  return {
+    ...createPaymentsHttpController({
+      paymentsCommandPort,
+      paymentsQueryPort,
+    }),
+    linkPaymentToOrder,
+  };
 };
 
 export let createPaymentIntentHandler;
 export let stripeWebhookHandler;
 export let getSessionDetailsHandler;
 
+let paymentsModule;
+
+const getConfiguredPaymentsModule = () => {
+  if (!paymentsModule) {
+    throw new Error("Payments module has not been configured");
+  }
+
+  return paymentsModule;
+};
+
+export const linkPaymentToOrder = (...args) =>
+  getConfiguredPaymentsModule().linkPaymentToOrder(...args);
+
 export const configurePaymentsModule = (options = {}) => {
+  paymentsModule = createPaymentsModule(options);
   ({
     createPaymentIntentHandler,
     stripeWebhookHandler,
     getSessionDetailsHandler,
-  } = buildPaymentsModule(options));
+  } = paymentsModule);
 };
-
-configurePaymentsModule();

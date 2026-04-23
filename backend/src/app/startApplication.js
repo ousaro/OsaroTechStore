@@ -2,17 +2,23 @@ import { createApp } from "./createApp.js";
 import { registerApplicationWorkflows } from "./registerApplicationWorkflows.js";
 import { startNewProductStatusScheduler } from "../modules/products/app-api.js";
 import { connectMongo } from "../shared/infrastructure/persistence/connectMongo.js";
+import { configureApplicationModules } from "../infrastructure/bootstrap/configureApplicationModules.js";
+import { applicationEventBus } from "./applicationEventBus.js";
 
 export const startApplication = async ({
   mongoUri,
   port,
   connectDatabase = connectMongo,
+  configureModules = configureApplicationModules,
   createHttpApp = createApp,
   registerWorkflows = registerApplicationWorkflows,
   startRuntimeHooks = startNewProductStatusScheduler,
   logger = console,
 }) => {
   await connectDatabase(mongoUri);
+  configureModules({
+    eventBus: applicationEventBus,
+  });
   registerWorkflows();
 
   const app = createHttpApp();

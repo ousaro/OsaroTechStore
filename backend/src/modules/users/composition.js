@@ -4,49 +4,39 @@ import { buildUpdateUserUseCase } from "./application/commands/updateUserUseCase
 import { buildUpdateUserPasswordUseCase } from "./application/commands/updateUserPasswordUseCase.js";
 import { buildDeleteUserUseCase } from "./application/commands/deleteUserUseCase.js";
 import { createUsersInputPort } from "./ports/input/usersInputPort.js";
-import {
-  getManagedUserCredentials,
-  getManagedUserProfile,
-  listManagedUserProfiles,
-  removeManagedUserProfile,
-  updateManagedUserCredentials,
-  updateManagedUserProfile,
-} from "../auth/public-api.js";
-import { createMongooseUserRepository } from "./adapters/output/repositories/mongooseUserRepository.js";
 import { createUsersHttpController } from "./adapters/input/http/usersHttpController.js";
 
-const authUserManagement = {
-  getManagedUserCredentials,
-  getManagedUserProfile,
-  listManagedUserProfiles,
-  removeManagedUserProfile,
-  updateManagedUserCredentials,
-  updateManagedUserProfile,
+export const createUsersModule = ({ userRepository }) => {
+  const getAllUsersUseCase = buildGetAllUsersUseCase({ userRepository });
+  const getUserByIdUseCase = buildGetUserByIdUseCase({ userRepository });
+  const updateUserUseCase = buildUpdateUserUseCase({ userRepository });
+  const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({ userRepository });
+  const deleteUserUseCase = buildDeleteUserUseCase({ userRepository });
+  const usersInputPort = createUsersInputPort({
+    getAllUsers: getAllUsersUseCase,
+    getUserById: getUserByIdUseCase,
+    updateUser: updateUserUseCase,
+    updateUserPassword: updateUserPasswordUseCase,
+    deleteUser: deleteUserUseCase,
+  });
+
+  return createUsersHttpController({
+    usersInputPort,
+  });
 };
 
-const userRepository = createMongooseUserRepository({
-  authUserManagement,
-});
+export let getAllUsersHandler;
+export let getUserByIdHandler;
+export let updateUserHandler;
+export let updateUserPasswordHandler;
+export let deleteUserHandler;
 
-const getAllUsersUseCase = buildGetAllUsersUseCase({ userRepository });
-const getUserByIdUseCase = buildGetUserByIdUseCase({ userRepository });
-const updateUserUseCase = buildUpdateUserUseCase({ userRepository });
-const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({ userRepository });
-const deleteUserUseCase = buildDeleteUserUseCase({ userRepository });
-const usersInputPort = createUsersInputPort({
-  getAllUsers: getAllUsersUseCase,
-  getUserById: getUserByIdUseCase,
-  updateUser: updateUserUseCase,
-  updateUserPassword: updateUserPasswordUseCase,
-  deleteUser: deleteUserUseCase,
-});
-
-export const {
-  getAllUsersHandler,
-  getUserByIdHandler,
-  updateUserHandler,
-  updateUserPasswordHandler,
-  deleteUserHandler,
-} = createUsersHttpController({
-  usersInputPort,
-});
+export const configureUsersModule = (dependencies) => {
+  ({
+    getAllUsersHandler,
+    getUserByIdHandler,
+    updateUserHandler,
+    updateUserPasswordHandler,
+    deleteUserHandler,
+  } = createUsersModule(dependencies));
+};

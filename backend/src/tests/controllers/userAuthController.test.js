@@ -2,6 +2,9 @@ import { describe, it, beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import User from '../../modules/auth/adapters/output/persistence/userModel.js';
+import { configureAuthModule } from '../../modules/auth/app-api.js';
+import { createMongooseAuthUserRepository } from '../../modules/auth/adapters/output/repositories/mongooseAuthUserRepository.js';
+import { createJwtTokenService } from '../../modules/auth/adapters/output/services/jwtTokenService.js';
 import {
   registerUserHandler as registerUser,
   loginUserHandler as loginUser,
@@ -9,12 +12,21 @@ import {
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+process.env.NODE_ENV ||= 'test';
+process.env.MONGO_URI ||= 'mongodb://127.0.0.1:27017/osarotechstore-test';
+process.env.SESSION_SECRET ||= 'test-session-secret';
+process.env.TOKEN_SECRET ||= 'test-token-secret';
+
 const flushAsyncHandler = () => new Promise((resolve) => setImmediate(resolve));
 
 describe('UserAuth Controller - Unit Tests', function() {
     let sandbox;
   
     beforeEach(() => {
+      configureAuthModule({
+        authUserRepository: createMongooseAuthUserRepository(),
+        tokenService: createJwtTokenService(),
+      });
       sandbox = sinon.createSandbox();
     });
   

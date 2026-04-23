@@ -22,6 +22,9 @@ describe("startApplication", () => {
       connectDatabase: async (mongoUri) => {
         calls.push(["connectDatabase", mongoUri]);
       },
+      configureModules: () => {
+        calls.push(["configureModules"]);
+      },
       createHttpApp: () => {
         calls.push(["createHttpApp"]);
         return app;
@@ -38,6 +41,7 @@ describe("startApplication", () => {
     expect(server).to.equal(fakeServer);
     expect(calls).to.deep.equal([
       ["connectDatabase", "mongodb://localhost:27017/osaro-test"],
+      ["configureModules"],
       ["registerWorkflows"],
       ["createHttpApp"],
       ["startRuntimeHooks"],

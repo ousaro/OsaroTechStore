@@ -9,6 +9,9 @@ import { setupGooglePassport } from "../../output/oauth/googlePassport.js";
 
 const googleOauthUnavailable = (_req, res) =>
   res.status(503).json({ message: "Google OAuth is not configured for this environment" });
+const registerUserHttpHandler = (req, res, next) => registerUserHandler(req, res, next);
+const loginUserHttpHandler = (req, res, next) => loginUserHandler(req, res, next);
+const googleCallbackHttpHandler = (req, res, next) => googleCallbackHandler(req, res, next);
 
 export const createAuthRoutes = ({
   googleOAuthEnabled = env.googleOAuthEnabled,
@@ -19,8 +22,8 @@ export const createAuthRoutes = ({
 } = {}) => {
   const authRoutes = router();
 
-  authRoutes.post("/register", registerUserHandler);
-  authRoutes.post("/login", loginUserHandler);
+  authRoutes.post("/register", registerUserHttpHandler);
+  authRoutes.post("/login", loginUserHttpHandler);
 
   if (googleOAuthEnabled) {
     const passport = setupGooglePassport({
@@ -33,7 +36,7 @@ export const createAuthRoutes = ({
     authRoutes.get(
       "/google/callback",
       passport.authenticate("google", { failureRedirect: `${clientUrl}/login` }),
-      googleCallbackHandler
+      googleCallbackHttpHandler
     );
   } else {
     authRoutes.get("/google", googleOauthUnavailable);

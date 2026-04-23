@@ -9,29 +9,28 @@ import { buildHandlePaymentFailureUseCase } from "./application/commands/handleP
 import { buildHandlePaymentRefundUseCase } from "./application/commands/handlePaymentRefundUseCase.js";
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
-import { createMongooseOrderRepository } from "./adapters/output/repositories/mongooseOrderRepository.js";
 import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
 
-const orderRepository = createMongooseOrderRepository();
 const defaultOrderEventPublisher = null;
 
-const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
-const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
-export const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
+export const createOrdersModule = ({
   orderRepository,
-});
-export const handlePaymentFailure = buildHandlePaymentFailureUseCase({
-  orderRepository,
-});
-export const handlePaymentExpiration = buildHandlePaymentExpirationUseCase({
-  orderRepository,
-});
-export const handlePaymentRefund = buildHandlePaymentRefundUseCase({
-  orderRepository,
-});
-const buildOrderModule = ({
   orderEventPublisher = defaultOrderEventPublisher,
 } = {}) => {
+  const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
+  const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
+  const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
+    orderRepository,
+  });
+  const handlePaymentFailure = buildHandlePaymentFailureUseCase({
+    orderRepository,
+  });
+  const handlePaymentExpiration = buildHandlePaymentExpirationUseCase({
+    orderRepository,
+  });
+  const handlePaymentRefund = buildHandlePaymentRefundUseCase({
+    orderRepository,
+  });
   const addOrderUseCase = buildAddOrderUseCase({
     orderRepository,
     orderEventPublisher,
@@ -48,10 +47,16 @@ const buildOrderModule = ({
     getOrderById: getOrderByIdUseCase,
   });
 
-  return createOrdersHttpController({
-    ordersCommandPort,
-    ordersQueryPort,
-  });
+  return {
+    ...createOrdersHttpController({
+      ordersCommandPort,
+      ordersQueryPort,
+    }),
+    confirmOrderPayment,
+    handlePaymentFailure,
+    handlePaymentExpiration,
+    handlePaymentRefund,
+  };
 };
 
 export let getAllOrdersHandler;
@@ -60,14 +65,35 @@ export let addOrderHandler;
 export let updateOrderHandler;
 export let deleteOrderHandler;
 
+let ordersModule;
+
+const getConfiguredOrdersModule = () => {
+  if (!ordersModule) {
+    throw new Error("Orders module has not been configured");
+  }
+
+  return ordersModule;
+};
+
+export const confirmOrderPayment = (...args) =>
+  getConfiguredOrdersModule().confirmOrderPayment(...args);
+
+export const handlePaymentFailure = (...args) =>
+  getConfiguredOrdersModule().handlePaymentFailure(...args);
+
+export const handlePaymentExpiration = (...args) =>
+  getConfiguredOrdersModule().handlePaymentExpiration(...args);
+
+export const handlePaymentRefund = (...args) =>
+  getConfiguredOrdersModule().handlePaymentRefund(...args);
+
 export const configureOrdersModule = (options = {}) => {
+  ordersModule = createOrdersModule(options);
   ({
     getAllOrdersHandler,
     getOrderByIdHandler,
     addOrderHandler,
     updateOrderHandler,
     deleteOrderHandler,
-  } = buildOrderModule(options));
+  } = ordersModule);
 };
-
-configureOrdersModule();
