@@ -1,5 +1,6 @@
 import { OrderNotFoundError } from "../errors/OrderApplicationError.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { toOrderReadModel } from "../read-models/orderReadModel.js";
 
 export const buildGetOrderByIdUseCase = ({ orderRepository }) => {
   assertOrderRepositoryPort(orderRepository, ["isValidId", "findById"]);
@@ -13,6 +14,6 @@ export const buildGetOrderByIdUseCase = ({ orderRepository }) => {
       throw new OrderNotFoundError("Order not found");
     }
 
-    return order;
+    return toOrderReadModel(order);
   };
 };

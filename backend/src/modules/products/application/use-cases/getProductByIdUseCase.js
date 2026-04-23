@@ -1,5 +1,6 @@
 import { ProductNotFoundError } from "../errors/ProductApplicationError.js";
 import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
+import { toProductReadModel } from "../read-models/productReadModel.js";
 
 export const buildGetProductByIdUseCase = ({ productRepository }) => {
   assertProductRepositoryPort(productRepository, ["findById", "findRelated"]);
@@ -13,8 +14,8 @@ export const buildGetProductByIdUseCase = ({ productRepository }) => {
     const relatedProducts = await productRepository.findRelated(productId);
 
     return {
-      product,
-      relatedProducts,
+      product: toProductReadModel(product),
+      relatedProducts: relatedProducts.map(toProductReadModel),
     };
   };
 };

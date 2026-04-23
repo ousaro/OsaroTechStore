@@ -1,5 +1,6 @@
 import { ProductNotFoundError } from "../errors/ProductApplicationError.js";
 import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
+import { toProductReadModel } from "../read-models/productReadModel.js";
 
 export const buildDeleteProductUseCase = ({ productRepository }) => {
   assertProductRepositoryPort(productRepository, ["isValidId", "findByIdAndDelete"]);
@@ -13,6 +14,6 @@ export const buildDeleteProductUseCase = ({ productRepository }) => {
       throw new ProductNotFoundError("Product not found");
     }
 
-    return deleted;
+    return toProductReadModel(deleted);
   };
 };

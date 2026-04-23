@@ -4,6 +4,7 @@ import {
   UserValidationError,
 } from "../errors/UserApplicationError.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, [
@@ -51,6 +52,6 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
       throw new UserNotFoundError("User not found");
     }
 
-    return user;
+    return toUserReadModel(user);
   };
 };

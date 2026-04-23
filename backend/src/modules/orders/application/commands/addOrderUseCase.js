@@ -2,6 +2,7 @@ import { createOrder } from "../../domain/entities/Order.js";
 import { createOrderPlacedEvent } from "../../domain/events/OrderPlaced.js";
 import { assertOrderEventPublisherPort } from "../../ports/output/orderEventPublisherPort.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { toOrderReadModel } from "../read-models/orderReadModel.js";
 
 export const buildAddOrderUseCase = ({
   orderRepository,
@@ -32,6 +33,6 @@ export const buildAddOrderUseCase = ({
       await orderEventPublisher.publish(createOrderPlacedEvent(createdOrder));
     }
 
-    return createdOrder;
+    return toOrderReadModel(createdOrder);
   };
 };

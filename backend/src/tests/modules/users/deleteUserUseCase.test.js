@@ -15,7 +15,7 @@ describe("deleteUserUseCase", () => {
 
     const result = await deleteUserUseCase({ id: deletedUser._id });
 
-    expect(result).to.equal(deletedUser);
+    expect(result).to.deep.equal(deletedUser);
   });
 
   it("throws 404 when the user id is invalid", async () => {

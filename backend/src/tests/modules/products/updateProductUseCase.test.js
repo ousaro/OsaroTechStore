@@ -28,7 +28,6 @@ describe("updateProductUseCase", () => {
     });
     expect(result).to.deep.equal({
       _id: "p1",
-      raw_price: 1200,
       price: 1080,
     });
   });

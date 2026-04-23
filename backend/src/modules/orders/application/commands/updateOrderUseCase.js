@@ -2,6 +2,7 @@ import { OrderNotFoundError } from "../errors/OrderApplicationError.js";
 import { createOrderUpdatePatch } from "../../domain/entities/Order.js";
 import { prepareOrderUpdatePatch as prepareOrderDomainUpdatePatch } from "../../domain/services/orderUpdatePolicyService.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { toOrderReadModel } from "../read-models/orderReadModel.js";
 
 export const buildUpdateOrderUseCase = ({ orderRepository }) => {
   assertOrderRepositoryPort(orderRepository, ["isValidId", "findById", "findByIdAndUpdate"]);
@@ -27,6 +28,6 @@ export const buildUpdateOrderUseCase = ({ orderRepository }) => {
       throw new OrderNotFoundError("Order not found");
     }
 
-    return order;
+    return toOrderReadModel(order);
   };
 };

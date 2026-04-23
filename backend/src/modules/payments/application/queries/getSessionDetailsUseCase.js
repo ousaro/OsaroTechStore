@@ -2,6 +2,7 @@ import { createPaymentSession } from "../../domain/entities/PaymentSession.js";
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
 import { toPaymentSessionDto } from "../dto/paymentSessionDto.js";
+import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
 
 export const buildGetSessionDetailsUseCase = ({
   paymentGateway,
@@ -16,12 +17,14 @@ export const buildGetSessionDetailsUseCase = ({
     const persistedSession = await paymentRepository.findPaymentSessionById(sessionId);
 
     if (persistedSession) {
-      return toPaymentSessionDto(createPaymentSession(persistedSession).toPrimitives());
+      return toPaymentReadModel(
+        toPaymentSessionDto(createPaymentSession(persistedSession).toPrimitives())
+      );
     }
 
     const session = await paymentGateway.getCheckoutSession(sessionId);
     const paymentSession = createPaymentSession(session);
     await paymentRepository.savePaymentSession(paymentSession.toPrimitives());
-    return toPaymentSessionDto(paymentSession.toPrimitives());
+    return toPaymentReadModel(toPaymentSessionDto(paymentSession.toPrimitives()));
   };
 };

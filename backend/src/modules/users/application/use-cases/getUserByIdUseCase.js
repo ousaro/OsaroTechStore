@@ -1,5 +1,6 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildGetUserByIdUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, ["isValidId", "findById"]);
@@ -13,6 +14,6 @@ export const buildGetUserByIdUseCase = ({ userRepository }) => {
       throw new UserNotFoundError("User not found");
     }
 
-    return user;
+    return toUserReadModel(user);
   };
 };

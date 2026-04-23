@@ -15,7 +15,7 @@ describe("getOrderByIdUseCase", () => {
 
     const result = await getOrderByIdUseCase({ id: order._id });
 
-    expect(result).to.equal(order);
+    expect(result).to.deep.equal({ _id: "507f1f77bcf86cd799439012", status: "pending" });
   });
 
   it("throws 404 when the order id is invalid", async () => {

@@ -15,7 +15,7 @@ describe("deleteProductUseCase", () => {
 
     const result = await deleteProductUseCase({ id: deletedProduct._id });
 
-    expect(result).to.equal(deletedProduct);
+    expect(result).to.deep.equal(deletedProduct);
   });
 
   it("throws when the product id is invalid", async () => {

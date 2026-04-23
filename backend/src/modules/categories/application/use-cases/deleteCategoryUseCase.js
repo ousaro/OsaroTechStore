@@ -5,6 +5,7 @@ import {
 import { createCategoryDeletedEvent } from "../../domain/events/CategoryDeleted.js";
 import { assertCategoryRepositoryPort } from "../../ports/output/categoryRepositoryPort.js";
 import { assertCategoryEventPublisherPort } from "../../ports/output/categoryEventPublisherPort.js";
+import { toCategoryReadModel } from "../read-models/categoryReadModel.js";
 
 export const buildDeleteCategoryUseCase = ({
   categoryRepository,
@@ -25,6 +26,6 @@ export const buildDeleteCategoryUseCase = ({
 
     await categoryEventPublisher.publish(createCategoryDeletedEvent(deleted));
 
-    return deleted;
+    return toCategoryReadModel(deleted);
   };
 };

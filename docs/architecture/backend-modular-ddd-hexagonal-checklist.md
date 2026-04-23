@@ -53,14 +53,14 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 6. Output Boundaries and DTOs
 
-- [ ] Stop returning repository-shaped records directly from use cases where external consumers need a stable API contract
-- [ ] Introduce explicit output DTOs or read models for `users`
-- [ ] Remove `password` from all user-facing and admin-facing response shapes
-- [ ] Introduce explicit output DTOs or read models for `orders`
-- [ ] Introduce explicit output DTOs or read models for `payments`
-- [ ] Revisit `products` output shaping and decide which fields are transport concerns versus internal records
-- [ ] Restore or intentionally remove `description` from category repository/application output so the category boundary is internally consistent
-- [ ] Add transport-level tests that prove sensitive/internal fields do not leak
+- [x] Stop returning repository-shaped records directly from use cases where external consumers need a stable API contract
+- [x] Introduce explicit output DTOs or read models for `users`
+- [x] Remove `password` from all user-facing and admin-facing response shapes
+- [x] Introduce explicit output DTOs or read models for `orders`
+- [x] Introduce explicit output DTOs or read models for `payments`
+- [x] Revisit `products` output shaping and decide which fields are transport concerns versus internal records
+- [x] Restore or intentionally remove `description` from category repository/application output so the category boundary is internally consistent
+- [x] Add transport-level tests that prove sensitive/internal fields do not leak
 
 ## 7. Ports and Contracts
 

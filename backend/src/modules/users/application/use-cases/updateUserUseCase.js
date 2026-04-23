@@ -1,6 +1,7 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
 import { createUserProfileUpdatePatch } from "../../domain/entities/User.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildUpdateUserUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndUpdate"]);
@@ -16,6 +17,6 @@ export const buildUpdateUserUseCase = ({ userRepository }) => {
       throw new UserNotFoundError("User not found");
     }
 
-    return user;
+    return toUserReadModel(user);
   };
 };

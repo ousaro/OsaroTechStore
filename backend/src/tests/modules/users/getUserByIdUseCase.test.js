@@ -15,7 +15,7 @@ describe("getUserByIdUseCase", () => {
 
     const result = await getUserByIdUseCase({ id: user._id });
 
-    expect(result).to.equal(user);
+    expect(result).to.deep.equal(user);
   });
 
   it("throws 404 when the user id is invalid", async () => {

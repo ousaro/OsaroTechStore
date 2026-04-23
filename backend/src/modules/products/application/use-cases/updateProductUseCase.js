@@ -1,6 +1,7 @@
 import { createProductUpdatePatch } from "../../domain/entities/Product.js";
 import { ProductNotFoundError } from "../errors/ProductApplicationError.js";
 import { assertProductRepositoryPort } from "../../ports/output/productRepositoryPort.js";
+import { toProductReadModel } from "../read-models/productReadModel.js";
 
 export const buildUpdateProductUseCase = ({ productRepository }) => {
   assertProductRepositoryPort(productRepository, ["isValidId", "findById", "findByIdAndUpdate"]);
@@ -23,6 +24,6 @@ export const buildUpdateProductUseCase = ({ productRepository }) => {
       throw new ProductNotFoundError("Product not found");
     }
 
-    return product;
+    return toProductReadModel(product);
   };
 };

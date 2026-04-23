@@ -1,5 +1,6 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildDeleteUserUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndDelete"]);
@@ -13,6 +14,6 @@ export const buildDeleteUserUseCase = ({ userRepository }) => {
       throw new UserNotFoundError("User not found");
     }
 
-    return deletedUser;
+    return toUserReadModel(deletedUser);
   };
 };

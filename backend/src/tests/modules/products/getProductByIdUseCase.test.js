@@ -17,8 +17,8 @@ describe("getProductByIdUseCase", () => {
     const result = await getProductByIdUseCase({ productId: "p1" });
 
     expect(result).to.deep.equal({
-      product,
-      relatedProducts,
+      product: { _id: "p1", name: "Phone" },
+      relatedProducts: [{ _id: "p2", name: "Case" }],
     });
   });
 
