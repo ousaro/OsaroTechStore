@@ -7,3 +7,4 @@ export {
   updateManagedUserProfile,
   verifyAccessToken,
 } from "./composition.js";
+export { default as authRoutes } from "./adapters/http/authRoutes.js";

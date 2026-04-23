@@ -1,17 +1,19 @@
 import { applicationEventBus } from "./applicationEventBus.js";
-import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/adapters/collaboration/categoryDeletedProductCleanupTranslator.js";
-import { createPaymentConfirmedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentConfirmedOrderSyncTranslator.js";
-import { createPaymentExpiredOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentExpiredOrderSyncTranslator.js";
-import { createPaymentFailedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentFailedOrderSyncTranslator.js";
-import { createPaymentRefundedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentRefundedOrderSyncTranslator.js";
-import { createOrderPlacedPaymentLinkTranslator } from "../modules/payments/adapters/collaboration/orderPlacedPaymentLinkTranslator.js";
+import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/public-api.js";
 import {
   confirmOrderPayment,
+  createPaymentConfirmedOrderSyncTranslator,
+  createPaymentExpiredOrderSyncTranslator,
+  createPaymentFailedOrderSyncTranslator,
+  createPaymentRefundedOrderSyncTranslator,
   handlePaymentExpiration,
   handlePaymentFailure,
   handlePaymentRefund,
 } from "../modules/orders/public-api.js";
-import { linkPaymentToOrder } from "../modules/payments/public-api.js";
+import {
+  createOrderPlacedPaymentLinkTranslator,
+  linkPaymentToOrder,
+} from "../modules/payments/public-api.js";
 import { removeProductsByCategory } from "../modules/products/public-api.js";
 
 export const registerApplicationWorkflows = ({
