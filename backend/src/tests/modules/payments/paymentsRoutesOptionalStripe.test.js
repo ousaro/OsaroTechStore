@@ -43,6 +43,11 @@ describe("paymentsRoutes without Stripe configuration", () => {
 
     const paymentsRoutes = createPaymentsRoutes({
       requireAuth: (_req, _res, next) => next(),
+      paymentStrategy: {
+        label: "Stripe",
+        paymentsEnabled: false,
+        webhookEnabled: false,
+      },
     });
     const createPaymentIntentRouteLayer = paymentsRoutes.stack.find(
       (layer) => layer.route?.path === "/create-payment-intent"

@@ -2,8 +2,8 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import { createAuthRoutes } from "../../../modules/auth/adapters/input/http/authRoutes.js";
 
-describe("authRoutes without Google OAuth configuration", () => {
-  it("returns 503 instead of crashing when Google OAuth is disabled", async () => {
+describe("authRoutes provider strategies", () => {
+  it("returns 503 for providers that are declared but not implemented yet", async () => {
     const authRoutes = createAuthRoutes({
       oauthProviders: {
         google: {
@@ -14,7 +14,7 @@ describe("authRoutes without Google OAuth configuration", () => {
           callbackUrl: "",
         },
         github: {
-          enabled: false,
+          enabled: true,
           configured: false,
           clientId: "",
           clientSecret: "",
@@ -29,8 +29,8 @@ describe("authRoutes without Google OAuth configuration", () => {
         },
       },
     });
-    const googleRouteLayer = authRoutes._router.stack.find((layer) => layer.route?.path === "/google");
-    expect(googleRouteLayer).to.exist;
+    const githubRouteLayer = authRoutes._router.stack.find((layer) => layer.route?.path === "/github");
+    expect(githubRouteLayer).to.exist;
 
     const responseState = {};
     const res = {
@@ -44,12 +44,12 @@ describe("authRoutes without Google OAuth configuration", () => {
       },
     };
 
-    googleRouteLayer.route.stack[0].handle({}, res);
+    githubRouteLayer.route.stack[0].handle({}, res);
 
     expect(responseState).to.deep.equal({
       status: 503,
       body: {
-        message: "Google OAuth is not configured for this environment",
+        message: "GitHub OAuth is not configured for this environment",
       },
     });
   });

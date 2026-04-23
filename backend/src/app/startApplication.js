@@ -8,6 +8,7 @@ import { applicationEventBus } from "./applicationEventBus.js";
 export const startApplication = async ({
   mongoUri,
   port,
+  databaseStrategy = null,
   connectDatabase = connectMongo,
   configureModules = configureApplicationModules,
   createHttpApp = createApp,
@@ -15,9 +16,15 @@ export const startApplication = async ({
   startRuntimeHooks = startNewProductStatusScheduler,
   logger = console,
 }) => {
-  await connectDatabase(mongoUri);
+  if (databaseStrategy) {
+    await databaseStrategy.connect();
+  } else {
+    await connectDatabase(mongoUri);
+  }
+
   configureModules({
     eventBus: applicationEventBus,
+    ...(databaseStrategy ? { databaseStrategy } : {}),
   });
   registerWorkflows();
 

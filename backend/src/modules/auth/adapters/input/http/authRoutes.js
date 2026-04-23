@@ -5,19 +5,13 @@ import {
   loginUserHandler,
   googleCallbackHandler,
 } from "./httpHandlers.js";
-import { setupGooglePassport } from "../../output/oauth/googlePassport.js";
-
-const googleOauthUnavailable = (_req, res) =>
-  res.status(503).json({ message: "Google OAuth is not configured for this environment" });
+import { resolveOAuthStrategies } from "../../output/oauth/oauthProviderRegistry.js";
 const registerUserHttpHandler = (req, res, next) => registerUserHandler(req, res, next);
 const loginUserHttpHandler = (req, res, next) => loginUserHandler(req, res, next);
-const googleCallbackHttpHandler = (req, res, next) => googleCallbackHandler(req, res, next);
+const externalAuthCallbackHttpHandler = (req, res, next) => googleCallbackHandler(req, res, next);
 
 export const createAuthRoutes = ({
-  googleOAuthEnabled = env.googleOAuthEnabled,
-  googleClientId = env.googleClientId,
-  googleClientSecret = env.googleClientSecret,
-  googleCallbackUrl = env.googleCallbackUrl,
+  oauthProviders = env.oauthProviders,
   clientUrl = env.clientUrl,
 } = {}) => {
   const authRoutes = router();
@@ -25,22 +19,20 @@ export const createAuthRoutes = ({
   authRoutes.post("/register", registerUserHttpHandler);
   authRoutes.post("/login", loginUserHttpHandler);
 
-  if (googleOAuthEnabled) {
-    const passport = setupGooglePassport({
-      clientId: googleClientId,
-      clientSecret: googleClientSecret,
-      callbackUrl: googleCallbackUrl,
-    });
+  const oauthStrategies = resolveOAuthStrategies({
+    oauthProviders,
+    clientUrl,
+    callbackHandler: externalAuthCallbackHttpHandler,
+  });
 
-    authRoutes.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-    authRoutes.get(
-      "/google/callback",
-      passport.authenticate("google", { failureRedirect: `${clientUrl}/login` }),
-      googleCallbackHttpHandler
-    );
-  } else {
-    authRoutes.get("/google", googleOauthUnavailable);
-    authRoutes.get("/google/callback", googleOauthUnavailable);
+  for (const strategy of oauthStrategies) {
+    authRoutes.get(`/${strategy.name}`, strategy.authenticateHandler);
+
+    if (Array.isArray(strategy.callbackHandler)) {
+      authRoutes.get(`/${strategy.name}/callback`, ...strategy.callbackHandler);
+    } else {
+      authRoutes.get(`/${strategy.name}/callback`, strategy.callbackHandler);
+    }
   }
 
   return authRoutes;

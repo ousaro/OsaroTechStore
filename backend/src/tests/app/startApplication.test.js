@@ -49,4 +49,46 @@ describe("startApplication", () => {
     ]);
     expect(logger.log.callCount).to.equal(2);
   });
+
+  it("prefers the selected database strategy when one is provided", async () => {
+    const calls = [];
+    const fakeServer = { close: sinon.spy() };
+    const app = {
+      listen(_port, onListen) {
+        onListen();
+        return fakeServer;
+      },
+    };
+
+    const server = await startApplication({
+      port: 5000,
+      databaseStrategy: {
+        async connect() {
+          calls.push(["databaseStrategy.connect"]);
+        },
+      },
+      connectDatabase: async () => {
+        calls.push(["connectDatabase"]);
+      },
+      configureModules: () => {
+        calls.push(["configureModules"]);
+      },
+      createHttpApp: () => app,
+      registerWorkflows: () => {
+        calls.push(["registerWorkflows"]);
+      },
+      startRuntimeHooks: () => {
+        calls.push(["startRuntimeHooks"]);
+      },
+      logger: { log() {} },
+    });
+
+    expect(server).to.equal(fakeServer);
+    expect(calls).to.deep.equal([
+      ["databaseStrategy.connect"],
+      ["configureModules"],
+      ["registerWorkflows"],
+      ["startRuntimeHooks"],
+    ]);
+  });
 });

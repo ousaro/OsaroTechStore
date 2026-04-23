@@ -13,28 +13,30 @@ import { configureOrdersModule } from "../../modules/orders/app-api.js";
 import { configurePaymentsModule } from "../../modules/payments/app-api.js";
 import { configureProductsModule } from "../../modules/products/app-api.js";
 import { configureUsersModule } from "../../modules/users/app-api.js";
-import { createMongooseAuthUserRepository } from "../../modules/auth/adapters/output/repositories/mongooseAuthUserRepository.js";
 import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
-import { createMongooseCategoryRepository } from "../../modules/categories/adapters/output/repositories/mongooseCategoryRepository.js";
-import { createMongooseOrderRepository } from "../../modules/orders/adapters/output/repositories/mongooseOrderRepository.js";
-import { createStripeGateway } from "../../modules/payments/adapters/output/gateways/stripeGateway.js";
-import { createMongoosePaymentRepository } from "../../modules/payments/adapters/output/repositories/mongoosePaymentRepository.js";
-import { createMongooseProductRepository } from "../../modules/products/adapters/output/repositories/mongooseProductRepository.js";
-import { createMongooseUserRepository } from "../../modules/users/adapters/output/repositories/mongooseUserRepository.js";
+import { resolveDatabaseStrategy } from "../providers/databases/databaseStrategies.js";
+import { resolvePaymentGatewayStrategy } from "../providers/payments/paymentGatewayStrategies.js";
 
 export const configureApplicationModules = ({
   eventBus = null,
-  authUserRepository = createMongooseAuthUserRepository(),
-  tokenService = createJwtTokenService(),
-  categoryRepository = createMongooseCategoryRepository(),
-  orderRepository = createMongooseOrderRepository(),
-  paymentGateway = createStripeGateway({
-    secretKey: env.stripeSecretKey,
-    webhookSecret: env.stripeWebhookSecret,
+  databaseStrategy = resolveDatabaseStrategy({
+    provider: env.databaseProvider,
+    connection: env.databaseConnection,
   }),
-  paymentRepository = createMongoosePaymentRepository(),
-  productRepository = createMongooseProductRepository(),
-  userRepositoryFactory = createMongooseUserRepository,
+  tokenService = createJwtTokenService(),
+  paymentStrategy = resolvePaymentGatewayStrategy({
+    provider: env.paymentProvider,
+    stripeSecretKey: env.stripeSecretKey,
+    stripeWebhookSecret: env.stripeWebhookSecret,
+  }),
+  repositoryBundle = databaseStrategy.createRepositories(),
+  authUserRepository = repositoryBundle.authUserRepository,
+  categoryRepository = repositoryBundle.categoryRepository,
+  orderRepository = repositoryBundle.orderRepository,
+  paymentGateway = paymentStrategy.paymentGateway,
+  paymentRepository = repositoryBundle.paymentRepository,
+  productRepository = repositoryBundle.productRepository,
+  userRepositoryFactory = repositoryBundle.userRepositoryFactory,
 } = {}) => {
   configureAuthModule({
     authUserRepository,
