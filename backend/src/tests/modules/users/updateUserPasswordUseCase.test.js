@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildUpdateUserPasswordUseCase } from "../../../modules/users/application/use-cases/updateUserPasswordUseCase.js";
+import { buildUpdateUserPasswordUseCase } from "../../../modules/users/application/commands/updateUserPasswordUseCase.js";
 import {
   UserNotFoundError,
   UserValidationError,

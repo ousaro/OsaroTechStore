@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildUpdateUserUseCase } from "../../../modules/users/application/use-cases/updateUserUseCase.js";
+import { buildUpdateUserUseCase } from "../../../modules/users/application/commands/updateUserUseCase.js";
 import { UserNotFoundError } from "../../../modules/users/application/errors/UserApplicationError.js";
 import { DomainValidationError } from "../../../shared/domain/errors/DomainValidationError.js";
 

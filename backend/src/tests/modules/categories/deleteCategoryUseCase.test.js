@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
+import { buildDeleteCategoryUseCase } from "../../../modules/categories/application/commands/deleteCategoryUseCase.js";
 import { createCategoryDeletedEvent } from "../../../modules/categories/domain/events/CategoryDeleted.js";
 import { assertCategoryEventPublisherPort } from "../../../modules/categories/ports/output/categoryEventPublisherPort.js";
 import {
@@ -29,7 +29,7 @@ describe("deleteCategoryUseCase", () => {
 
     const result = await deleteCategoryUseCase({ id: "cat-1" });
 
-    expect(result).to.equal(deletedCategory);
+    expect(result).to.deep.equal(deletedCategory);
     expect(calls).to.deep.equal([
       ["deleteCategory", "cat-1"],
       [

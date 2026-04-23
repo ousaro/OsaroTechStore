@@ -3,7 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { createInProcessEventBus } from "../../shared/infrastructure/events/createInProcessEventBus.js";
 import { registerApplicationWorkflows } from "../../app/registerApplicationWorkflows.js";
-import { buildDeleteCategoryUseCase } from "../../modules/categories/application/use-cases/deleteCategoryUseCase.js";
+import { buildDeleteCategoryUseCase } from "../../modules/categories/application/commands/deleteCategoryUseCase.js";
 
 describe("cross-module workflows", () => {
   it("registers CategoryDeleted workflow subscriptions in the application workflow registry", async () => {
@@ -103,7 +103,11 @@ describe("cross-module workflows", () => {
       type: "OrderPlaced",
       payload: {
         orderId: "order-1",
+        ownerId: "user-1",
+        status: "pending",
+        paymentStatus: "pending",
         paymentReference: "pay_123",
+        totalPrice: 100,
       },
     });
 

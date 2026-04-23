@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildGetAllCategoriesUseCase } from "../../../modules/categories/application/use-cases/getAllCategoriesUseCase.js";
+import { buildGetAllCategoriesUseCase } from "../../../modules/categories/application/queries/getAllCategoriesUseCase.js";
 
 describe("getAllCategoriesUseCase", () => {
   it("returns category read models with description", async () => {

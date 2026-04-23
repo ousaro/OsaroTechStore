@@ -1,8 +1,8 @@
-import { buildGetAllUsersUseCase } from "./application/use-cases/getAllUsersUseCase.js";
-import { buildGetUserByIdUseCase } from "./application/use-cases/getUserByIdUseCase.js";
-import { buildUpdateUserUseCase } from "./application/use-cases/updateUserUseCase.js";
-import { buildUpdateUserPasswordUseCase } from "./application/use-cases/updateUserPasswordUseCase.js";
-import { buildDeleteUserUseCase } from "./application/use-cases/deleteUserUseCase.js";
+import { buildGetAllUsersUseCase } from "./application/queries/getAllUsersUseCase.js";
+import { buildGetUserByIdUseCase } from "./application/queries/getUserByIdUseCase.js";
+import { buildUpdateUserUseCase } from "./application/commands/updateUserUseCase.js";
+import { buildUpdateUserPasswordUseCase } from "./application/commands/updateUserPasswordUseCase.js";
+import { buildDeleteUserUseCase } from "./application/commands/deleteUserUseCase.js";
 import { createUsersInputPort } from "./ports/input/usersInputPort.js";
 import {
   getManagedUserCredentials,

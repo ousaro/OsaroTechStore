@@ -1,10 +1,10 @@
-import { buildGetAllProductsUseCase } from "./application/use-cases/getAllProductsUseCase.js";
-import { buildGetProductByIdUseCase } from "./application/use-cases/getProductByIdUseCase.js";
-import { buildAddProductUseCase } from "./application/use-cases/addProductUseCase.js";
-import { buildUpdateProductUseCase } from "./application/use-cases/updateProductUseCase.js";
-import { buildDeleteProductUseCase } from "./application/use-cases/deleteProductUseCase.js";
-import { buildRemoveProductsByCategoryUseCase } from "./application/use-cases/removeProductsByCategoryUseCase.js";
-import { buildRefreshNewProductStatusUseCase } from "./application/use-cases/refreshNewProductStatusUseCase.js";
+import { buildGetAllProductsUseCase } from "./application/queries/getAllProductsUseCase.js";
+import { buildGetProductByIdUseCase } from "./application/queries/getProductByIdUseCase.js";
+import { buildAddProductUseCase } from "./application/commands/addProductUseCase.js";
+import { buildUpdateProductUseCase } from "./application/commands/updateProductUseCase.js";
+import { buildDeleteProductUseCase } from "./application/commands/deleteProductUseCase.js";
+import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
+import { buildRefreshNewProductStatusUseCase } from "./application/commands/refreshNewProductStatusUseCase.js";
 import { createProductsInputPort } from "./ports/input/productsInputPort.js";
 import { createMongooseProductRepository } from "./infrastructure/repositories/mongooseProductRepository.js";
 import { createProductHttpController } from "./infrastructure/http/productHttpController.js";

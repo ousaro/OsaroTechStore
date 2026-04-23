@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildGetUserByIdUseCase } from "../../../modules/users/application/use-cases/getUserByIdUseCase.js";
+import { buildGetUserByIdUseCase } from "../../../modules/users/application/queries/getUserByIdUseCase.js";
 import { UserNotFoundError } from "../../../modules/users/application/errors/UserApplicationError.js";
 
 describe("getUserByIdUseCase", () => {

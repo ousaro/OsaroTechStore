@@ -79,9 +79,9 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 9. Structural Cleanup
 
-- [ ] Remove `application/use-cases` folders that are now unused in modules that standardized on `commands/` and `queries/`
-- [ ] Remove `domain/ports` in `orders` if it is not part of an active design direction
-- [ ] Keep folder conventions aligned with actual module complexity instead of preserving placeholders
+- [x] Remove `application/use-cases` folders that are now unused in modules that standardized on `commands/` and `queries/`
+- [x] Remove `domain/ports` in `orders` if it is not part of an active design direction
+- [x] Keep folder conventions aligned with actual module complexity instead of preserving placeholders
 
 ## 10. structure
 

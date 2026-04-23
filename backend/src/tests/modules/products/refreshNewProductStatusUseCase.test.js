@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { buildRefreshNewProductStatusUseCase } from "../../../modules/products/application/use-cases/refreshNewProductStatusUseCase.js";
+import { buildRefreshNewProductStatusUseCase } from "../../../modules/products/application/commands/refreshNewProductStatusUseCase.js";
 
 describe("refreshNewProductStatusUseCase", () => {
   it("uses the business-shaped listedAt field instead of persistence timestamps", async () => {

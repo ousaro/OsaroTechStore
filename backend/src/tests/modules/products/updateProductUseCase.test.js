@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildUpdateProductUseCase } from "../../../modules/products/application/use-cases/updateProductUseCase.js";
+import { buildUpdateProductUseCase } from "../../../modules/products/application/commands/updateProductUseCase.js";
 import { ProductNotFoundError } from "../../../modules/products/application/errors/ProductApplicationError.js";
 
 describe("updateProductUseCase", () => {

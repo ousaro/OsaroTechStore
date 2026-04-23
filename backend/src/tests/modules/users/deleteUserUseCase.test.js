@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { buildDeleteUserUseCase } from "../../../modules/users/application/use-cases/deleteUserUseCase.js";
+import { buildDeleteUserUseCase } from "../../../modules/users/application/commands/deleteUserUseCase.js";
 import { UserNotFoundError } from "../../../modules/users/application/errors/UserApplicationError.js";
 
 describe("deleteUserUseCase", () => {
