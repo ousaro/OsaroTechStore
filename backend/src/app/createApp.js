@@ -12,11 +12,15 @@ import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddle
 import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/createRequireAuthMiddleware.js";
 import { authRoutes, verifyAccessToken } from "../modules/auth/public-api.js";
-import { createUsersRoutes } from "../modules/users/public-api.js";
+import { configureCategoriesModule, createCategoriesRoutes } from "../modules/categories/public-api.js";
+import { configureOrdersModule, createOrdersRoutes } from "../modules/orders/public-api.js";
+import {
+  configurePaymentsModule,
+  createPaymentsRoutes,
+} from "../modules/payments/public-api.js";
 import { createProductsRoutes } from "../modules/products/public-api.js";
-import { createCategoriesRoutes } from "../modules/categories/public-api.js";
-import { createOrdersRoutes } from "../modules/orders/public-api.js";
-import { createPaymentsRoutes } from "../modules/payments/public-api.js";
+import { createUsersRoutes } from "../modules/users/public-api.js";
+import { applicationEventBus } from "./applicationEventBus.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +37,16 @@ export const createSelectiveBodyParser = (bodyParser) => {
 };
 
 export const createApp = () => {
+  configureCategoriesModule({
+    categoryEventPublisher: applicationEventBus,
+  });
+  configureOrdersModule({
+    orderEventPublisher: applicationEventBus,
+  });
+  configurePaymentsModule({
+    paymentEventPublisher: applicationEventBus,
+  });
+
   const app = express();
   const jsonBodyParser = express.json({ limit: "50mb" });
   const urlencodedBodyParser = express.urlencoded({ limit: "50mb", extended: true });

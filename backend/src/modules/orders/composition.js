@@ -11,17 +11,12 @@ import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
 import { createMongooseOrderRepository } from "./adapters/output/repositories/mongooseOrderRepository.js";
 import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
-import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const orderRepository = createMongooseOrderRepository();
-const orderEventPublisher = applicationEventBus;
+const defaultOrderEventPublisher = null;
 
 const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
 const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
-const addOrderUseCase = buildAddOrderUseCase({
-  orderRepository,
-  orderEventPublisher,
-});
 export const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
   orderRepository,
 });
@@ -34,25 +29,45 @@ export const handlePaymentExpiration = buildHandlePaymentExpirationUseCase({
 export const handlePaymentRefund = buildHandlePaymentRefundUseCase({
   orderRepository,
 });
-const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
-const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });
-const ordersCommandPort = createOrdersCommandPort({
-  addOrder: addOrderUseCase,
-  updateOrder: updateOrderUseCase,
-  deleteOrder: deleteOrderUseCase,
-});
-const ordersQueryPort = createOrdersQueryPort({
-  getAllOrders: getAllOrdersUseCase,
-  getOrderById: getOrderByIdUseCase,
-});
+const buildOrderModule = ({
+  orderEventPublisher = defaultOrderEventPublisher,
+} = {}) => {
+  const addOrderUseCase = buildAddOrderUseCase({
+    orderRepository,
+    orderEventPublisher,
+  });
+  const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
+  const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });
+  const ordersCommandPort = createOrdersCommandPort({
+    addOrder: addOrderUseCase,
+    updateOrder: updateOrderUseCase,
+    deleteOrder: deleteOrderUseCase,
+  });
+  const ordersQueryPort = createOrdersQueryPort({
+    getAllOrders: getAllOrdersUseCase,
+    getOrderById: getOrderByIdUseCase,
+  });
 
-export const {
-  getAllOrdersHandler,
-  getOrderByIdHandler,
-  addOrderHandler,
-  updateOrderHandler,
-  deleteOrderHandler,
-} = createOrdersHttpController({
-  ordersCommandPort,
-  ordersQueryPort,
-});
+  return createOrdersHttpController({
+    ordersCommandPort,
+    ordersQueryPort,
+  });
+};
+
+export let getAllOrdersHandler;
+export let getOrderByIdHandler;
+export let addOrderHandler;
+export let updateOrderHandler;
+export let deleteOrderHandler;
+
+export const configureOrdersModule = (options = {}) => {
+  ({
+    getAllOrdersHandler,
+    getOrderByIdHandler,
+    addOrderHandler,
+    updateOrderHandler,
+    deleteOrderHandler,
+  } = buildOrderModule(options));
+};
+
+configureOrdersModule();

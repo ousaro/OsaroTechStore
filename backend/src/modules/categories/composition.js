@@ -4,10 +4,11 @@ import { buildDeleteCategoryUseCase } from "./application/commands/deleteCategor
 import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
 import { createMongooseCategoryRepository } from "./adapters/output/repositories/mongooseCategoryRepository.js";
 import { createCategoriesHttpController } from "./adapters/input/http/categoriesHttpController.js";
-import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const categoryRepository = createMongooseCategoryRepository();
-const categoryEventPublisher = applicationEventBus;
+const defaultCategoryEventPublisher = {
+  async publish() {},
+};
 
 const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
   categoryRepository,
@@ -15,20 +16,34 @@ const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
 const addNewCategoryUseCase = buildAddNewCategoryUseCase({
   categoryRepository,
 });
-const deleteCategoryUseCase = buildDeleteCategoryUseCase({
-  categoryRepository,
-  categoryEventPublisher,
-});
-const categoriesInputPort = createCategoriesInputPort({
-  getAllCategories: getAllCategoriesUseCase,
-  addNewCategory: addNewCategoryUseCase,
-  deleteCategory: deleteCategoryUseCase,
-});
+const buildCategoryModule = ({
+  categoryEventPublisher = defaultCategoryEventPublisher,
+} = {}) => {
+  const deleteCategoryUseCase = buildDeleteCategoryUseCase({
+    categoryRepository,
+    categoryEventPublisher,
+  });
+  const categoriesInputPort = createCategoriesInputPort({
+    getAllCategories: getAllCategoriesUseCase,
+    addNewCategory: addNewCategoryUseCase,
+    deleteCategory: deleteCategoryUseCase,
+  });
 
-export const {
-  getAllCategoriesHandler,
-  addNewCategoryHandler,
-  deleteCategoryHandler,
-} = createCategoriesHttpController({
-  categoriesInputPort,
-});
+  return createCategoriesHttpController({
+    categoriesInputPort,
+  });
+};
+
+export let getAllCategoriesHandler;
+export let addNewCategoryHandler;
+export let deleteCategoryHandler;
+
+export const configureCategoriesModule = (options = {}) => {
+  ({
+    getAllCategoriesHandler,
+    addNewCategoryHandler,
+    deleteCategoryHandler,
+  } = buildCategoryModule(options));
+};
+
+configureCategoriesModule();
