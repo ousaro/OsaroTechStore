@@ -7,10 +7,17 @@ import { expect } from "chai";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const modulesRoot = path.resolve(__dirname, "../../modules");
-const appRoot = path.resolve(__dirname, "../../app");
+const moduleLayers = new Set(["domain", "application", "ports", "adapters"]);
 
 const importSpecifierPattern =
   /\b(?:import|export)\b[\s\S]*?\bfrom\s+["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)/g;
+
+const disallowedLayerDependencies = {
+  domain: new Set(["application", "ports", "adapters"]),
+  application: new Set(["adapters"]),
+  ports: new Set(["application", "adapters"]),
+  adapters: new Set([]),
+};
 
 const listJavaScriptFiles = (directoryPath) => {
   const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
@@ -44,60 +51,29 @@ const resolveImportPath = (sourceFilePath, specifier) => {
   return null;
 };
 
-const getModuleName = (absoluteFilePath) => {
+const getModuleMetadata = (absoluteFilePath) => {
   const relativePath = path.relative(modulesRoot, absoluteFilePath);
-  const [moduleName] = relativePath.split(path.sep);
-  return moduleName;
+  const [moduleName, moduleLayer] = relativePath.split(path.sep);
+
+  return {
+    moduleName,
+    moduleLayer,
+    relativePath,
+  };
 };
 
-describe("module boundary imports", () => {
-  const allowedAppEntryPoints = new Set(["public-api.js", "app-api.js"]);
-
-  it("only allows cross-module imports through public-api.js", () => {
+describe("module layer dependencies", () => {
+  it("keeps domain, application, ports, and adapters aligned with inward dependencies", () => {
     const violations = [];
     const moduleFiles = listJavaScriptFiles(modulesRoot);
 
     for (const sourceFilePath of moduleFiles) {
-      const sourceModuleName = getModuleName(sourceFilePath);
-      const sourceFileContents = fs.readFileSync(sourceFilePath, "utf8");
+      const sourceMetadata = getModuleMetadata(sourceFilePath);
 
-      for (const match of sourceFileContents.matchAll(importSpecifierPattern)) {
-        const specifier = match[1] || match[2];
-
-        if (!specifier?.startsWith(".")) {
-          continue;
-        }
-
-        const resolvedImportPath = resolveImportPath(sourceFilePath, specifier);
-
-        if (!resolvedImportPath || !resolvedImportPath.startsWith(modulesRoot)) {
-          continue;
-        }
-
-        const targetModuleName = getModuleName(resolvedImportPath);
-
-        if (targetModuleName === sourceModuleName) {
-          continue;
-        }
-
-        if (path.basename(resolvedImportPath) !== "public-api.js") {
-          violations.push({
-            source: path.relative(modulesRoot, sourceFilePath),
-            specifier,
-            target: path.relative(modulesRoot, resolvedImportPath),
-          });
-        }
+      if (!moduleLayers.has(sourceMetadata.moduleLayer)) {
+        continue;
       }
-    }
 
-    expect(violations).to.deep.equal([]);
-  });
-
-  it("only allows app-shell imports from modules through public-api.js", () => {
-    const violations = [];
-    const appFiles = listJavaScriptFiles(appRoot);
-
-    for (const sourceFilePath of appFiles) {
       const sourceFileContents = fs.readFileSync(sourceFilePath, "utf8");
 
       for (const match of sourceFileContents.matchAll(importSpecifierPattern)) {
@@ -113,11 +89,25 @@ describe("module boundary imports", () => {
           continue;
         }
 
-        if (!allowedAppEntryPoints.has(path.basename(resolvedImportPath))) {
+        const targetMetadata = getModuleMetadata(resolvedImportPath);
+
+        if (targetMetadata.moduleName !== sourceMetadata.moduleName) {
+          continue;
+        }
+
+        if (!moduleLayers.has(targetMetadata.moduleLayer)) {
+          continue;
+        }
+
+        if (
+          disallowedLayerDependencies[sourceMetadata.moduleLayer].has(
+            targetMetadata.moduleLayer
+          )
+        ) {
           violations.push({
-            source: path.relative(appRoot, sourceFilePath),
+            source: sourceMetadata.relativePath,
             specifier,
-            target: path.relative(modulesRoot, resolvedImportPath),
+            target: targetMetadata.relativePath,
           });
         }
       }

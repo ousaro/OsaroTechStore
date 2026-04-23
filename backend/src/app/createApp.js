@@ -11,14 +11,15 @@ import { env } from "../infrastructure/config/env.js";
 import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddleware.js";
 import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/createRequireAuthMiddleware.js";
-import { authRoutes, verifyAccessToken } from "../modules/auth/public-api.js";
+import { authRoutes } from "../modules/auth/app-api.js";
+import { verifyAccessToken } from "../modules/auth/public-api.js";
 import { configureCategoriesModule, createCategoriesRoutes } from "../modules/categories/public-api.js";
 import { configureOrdersModule, createOrdersRoutes } from "../modules/orders/public-api.js";
 import {
   configurePaymentsModule,
   createPaymentsRoutes,
 } from "../modules/payments/public-api.js";
-import { createProductsRoutes } from "../modules/products/public-api.js";
+import { createProductsRoutes } from "../modules/products/app-api.js";
 import { createUsersRoutes } from "../modules/users/public-api.js";
 import { applicationEventBus } from "./applicationEventBus.js";
 

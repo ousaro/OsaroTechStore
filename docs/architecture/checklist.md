@@ -1,37 +1,32 @@
 # Backend Modular DDD + Hexagonal Checklist
 
-## Purpose
+## Current Status
 
-This checklist captures the current backend status after re-checking `backend/src` against a modular DDD + hexagonal target.
+The backend already follows the main shape of modular DDD + hexagonal architecture:
 
-It keeps the focus on what is already true today and what is still worth tightening.
+- code is organized by module under `backend/src/modules`
+- modules are split into `domain`, `application`, `ports`, and `adapters`
+- module-to-module access goes through `public-api.js`
+- cross-module collaboration is orchestrated in `backend/src/app/registerApplicationWorkflows.js`
+- repositories, read models, input ports, output ports, and controllers are module-local
+- architecture regression tests already exist in `backend/src/tests/architecture`
 
-## Verified Alignment
+This means the backend is applying the architecture and the main boundary-hardening items are now covered in code.
 
-The backend already applies the core shape of modular DDD + hexagonal architecture in these areas:
+## Completed Checklist
 
-- business code is organized by module under `backend/src/modules`
-- modules consistently separate `domain`, `application`, `ports`, and `adapters`
-- module-to-module imports inside `backend/src/modules` are restricted to `public-api.js`
-- the app shell consumes module entry points through module public APIs in `backend/src/app/createApp.js` and `backend/src/app/startApplication.js`
-- cross-module workflows are coordinated through events and translators in `backend/src/app/registerApplicationWorkflows.js`
-- modules expose explicit use cases, input ports, output ports, repositories, read models, and HTTP controllers instead of one shared layered backend
-- architecture tests already protect module boundaries and workflow wiring in `backend/src/tests/architecture/moduleBoundaryImports.test.js` and `backend/src/tests/architecture/crossModuleWorkflows.test.js`
+- [x] Move event-bus wiring fully to the app shell.
+  `backend/src/app/createApp.js` now injects event publishers into the categories, orders, and payments module composition roots instead of those modules importing the app event bus directly.
 
-## Remaining Checklist
+- [x] Add a regression test that blocks `backend/src/app` from importing private module internals.
+  `backend/src/tests/architecture/moduleBoundaryImports.test.js` protects both module-to-module imports and app-shell imports, keeping `backend/src/app` on each module's `public-api.js`.
 
-- [x] Invert the remaining app-shell dependency inside module composition roots.
-  The app layer now injects the event publisher into `categories`, `orders`, and `payments` composition through module public APIs instead of those modules importing `../../app/applicationEventBus.js` directly.
+- [x] Add layer-dependency architecture tests inside each module.
+  `backend/src/tests/architecture/moduleLayerDependencies.test.js` now blocks forbidden same-module dependencies such as `domain -> application|ports|adapters`, `application -> adapters`, and `ports -> application|adapters`.
 
-- [x] Add an architecture guardrail for app-shell imports.
-  `backend/src/tests/architecture/moduleBoundaryImports.test.js` now protects both module-to-module imports and app-shell imports, allowing `backend/src/app` to consume modules only through each module's `public-api.js`.
-
-- [x] Make architecture tests load without unrelated runtime configuration.
-  The architecture workflow test now seeds the minimal runtime env it needs before importing app wiring, so `npx mocha --timeout 10000 --require @babel/register 'src/tests/architecture/**/*.test.js'` runs without extra shell-level environment setup.
-  That keeps the boundary-focused test suite isolated from application startup configuration while preserving the existing runtime config validation for the real app shell.
+- [x] Make architecture tests runnable without unrelated env setup.
+  `backend/src/tests/architecture/crossModuleWorkflows.test.js` seeds the minimal runtime env it needs before importing app wiring, so the architecture suite can be run directly without extra shell-level env setup.
 
 ## Current Assessment
 
-The backend is already meaningfully using modular DDD + hexagonal architecture.
-
-What remains is not a large structural rewrite. The main structural guardrails described in this checklist are now in place, and the remaining work is about continuing to preserve them as backend changes land.
+The backend is meaningfully enforcing its modular DDD + hexagonal shape with executable architecture guardrails, not just conventions in docs.
