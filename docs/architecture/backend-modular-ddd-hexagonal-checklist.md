@@ -27,8 +27,8 @@ Completed items, historical progress notes, and now-implemented migration steps 
 
 ## 4. Payment Workflow Extensibility
 
-- [ ] Decide what the next supported `workflowType` should look like before adding another payment provider or non-redirect payment flow
-- [ ] Expand the payment-workflow type model deliberately when a second workflow is introduced, instead of reintroducing provider-specific assumptions piecemeal
+- [x] Decide what the next supported `workflowType` should look like before adding another payment provider or non-redirect payment flow
+- [x] Expand the payment-workflow type model deliberately when a second workflow is introduced, instead of reintroducing provider-specific assumptions piecemeal
 
 ## 5. Regression Protection
 

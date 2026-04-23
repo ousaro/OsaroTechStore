@@ -112,9 +112,27 @@ What is still intentionally narrow:
 
 That is acceptable today because the system only implements one payment workflow.
 
-The remaining architectural question is not urgent implementation, but readiness:
+The remaining architectural question was not urgent implementation, but readiness. That decision is now explicit:
 
-- when a second payment provider or non-redirect workflow is introduced, the module should expand the workflow-type model deliberately rather than reintroducing provider-specific assumptions ad hoc
+- the next supported `workflowType` should be `direct_payment`
+- `direct_payment` means a payment flow where the backend and provider coordinate against a provider payment object directly, without a redirect URL being the core workflow primitive
+
+Expected shape of `direct_payment` when it is introduced:
+
+- `paymentReference` remains the stable cross-module correlation key
+- `provider`, `workflowType`, `providerPaymentId`, and `paymentStatus` remain first-class workflow fields
+- `url` becomes optional/absent rather than being treated as a required concept
+- the workflow can begin in `pending` without a redirect session ever existing
+- payment outcome events stay provider-neutral and continue to drive order collaboration exactly the same way
+
+Expansion rules for the model:
+
+- add the new workflow type deliberately in the domain allow-list instead of broadening validation loosely
+- add workflow-type-specific gateway and application behaviors rather than overloading redirect-session methods with branching logic
+- keep repository persistence provider-neutral by storing shared workflow fields first and treating provider extras as adapter concerns
+- do not rename `paymentReference` or reintroduce provider IDs as cross-module identifiers
+
+This keeps the current `redirect_session` workflow narrow and honest today while making the next expansion path explicit.
 
 ## 5. Structural Cleanup Is Mostly Done, with Small Residue in Terminology
 
@@ -153,4 +171,4 @@ The remaining architecture work should be tackled in this order:
 1. make the long-term `auth`/`users` ownership decision explicit
 2. remove legacy `transactionId`/`paymentDetails` compatibility paths once they are no longer needed
 3. align payment workflow naming with the broader payment-workflow model
-4. expand workflow-type abstractions only when a second provider or payment workflow actually arrives
+4. introduce `direct_payment` as the next workflow type if a second provider or non-redirect flow is added, and expand workflow abstractions deliberately at that point
