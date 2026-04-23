@@ -32,4 +32,4 @@ Completed items, historical progress notes, and now-implemented migration steps 
 
 ## 5. Regression Protection
 
-- [ ] Keep regression tests aligned with current mapper/read-model contracts so architecture docs and test expectations do not drift apart again
+- [x] Keep regression tests aligned with current mapper/read-model contracts so architecture docs and test expectations do not drift apart again
