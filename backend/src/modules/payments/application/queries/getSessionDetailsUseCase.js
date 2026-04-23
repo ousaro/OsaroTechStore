@@ -1,10 +1,10 @@
-import { createPaymentWorkflow } from "../../domain/entities/PaymentSession.js";
+import { createPaymentWorkflow } from "../../domain/entities/PaymentWorkflow.js";
 import { assertRedirectPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import {
   assertPaymentRepositoryCommandPort,
   assertPaymentRepositoryQueryPort,
 } from "../../ports/output/paymentRepositoryPort.js";
-import { toPaymentWorkflowDto } from "../dto/paymentSessionDto.js";
+import { toPaymentWorkflowDto } from "../dto/paymentWorkflowDto.js";
 import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
 
 export const buildGetSessionDetailsUseCase = ({

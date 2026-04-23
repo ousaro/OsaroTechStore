@@ -5,8 +5,8 @@ import {
   createCheckoutItem,
   createCheckoutItems,
 } from "../../../../src/modules/payments/domain/value-objects/CheckoutItem.js";
-import { createPaymentWorkflow } from "../../../../src/modules/payments/domain/entities/PaymentSession.js";
-import { createRedirectPaymentWorkflow } from "../../../../src/modules/payments/domain/services/paymentSessionWorkflowService.js";
+import { createPaymentWorkflow } from "../../../../src/modules/payments/domain/entities/PaymentWorkflow.js";
+import { createRedirectPaymentWorkflow } from "../../../../src/modules/payments/domain/services/paymentWorkflowService.js";
 
 describe("Payment Domain", () => {
   it("creates checkout items and a payment workflow with stable primitives", () => {

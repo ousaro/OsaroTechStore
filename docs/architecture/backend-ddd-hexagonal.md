@@ -93,11 +93,9 @@ The payments module has moved beyond a thin checkout-session pass-through:
 
 The remaining inconsistency is naming:
 
-- the core entity file is still `PaymentSession.js`
-- the workflow service is still `paymentSessionWorkflowService.js`
-- `createCheckoutSessionWorkflow` still carries narrower naming than the current domain model
+- the internal query/use-case and HTTP route names still speak in `session` terms because the current external flow is still redirect-session based
 
-That does not break the architecture, but it does leave the ubiquitous language one step behind the implementation.
+That does not break the architecture, but it does leave one thin transport/application seam speaking in narrower terms than the broader domain model.
 
 ## 4. Payment Workflow Extensibility Is Prepared, but Still Single-Workflow
 
@@ -126,10 +124,7 @@ The larger structural cleanup is complete:
 - `infrastructure/` was renamed to `adapters/`
 - central config moved to a global infrastructure location
 
-The remaining cleanup is mostly terminology consistency:
-
-- legacy `PaymentSession` naming
-- legacy payment-field compatibility paths in orders
+The remaining cleanup is mostly terminology consistency in externally visible payment route/query naming.
 
 ## 6. Testing Is Strong, but It Must Keep Guarding the New Boundaries
 

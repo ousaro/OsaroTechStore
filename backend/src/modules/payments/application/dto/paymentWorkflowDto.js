@@ -19,5 +19,3 @@ export const toPaymentWorkflowDto = (paymentWorkflow) => {
     paymentStatus: paymentWorkflow.paymentStatus,
   };
 };
-
-export const toPaymentSessionDto = toPaymentWorkflowDto;

@@ -59,5 +59,3 @@ export const createPaymentWorkflow = ({
     },
   });
 };
-
-export const createPaymentSession = createPaymentWorkflow;

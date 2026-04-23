@@ -21,9 +21,9 @@ Completed items, historical progress notes, and now-implemented migration steps 
 
 ## 3. Payments Ubiquitous Language Cleanup
 
-- [ ] Rename `PaymentSession.js` so the file name matches the broader payment-workflow model
-- [ ] Rename `paymentSessionWorkflowService.js` so the service name matches the broader payment-workflow model
-- [ ] Rename any remaining session-specific builder names, such as `createCheckoutSessionWorkflow`, where the code now models a broader payment workflow
+- [x] Rename `PaymentSession.js` so the file name matches the broader payment-workflow model
+- [x] Rename `paymentSessionWorkflowService.js` so the service name matches the broader payment-workflow model
+- [x] Rename any remaining session-specific builder names, such as `createCheckoutSessionWorkflow`, where the code now models a broader payment workflow
 
 ## 4. Payment Workflow Extensibility
 

@@ -2,9 +2,9 @@ import { DomainValidationError } from "../../../../shared/domain/errors/DomainVa
 import { createCheckoutItems } from "../../domain/value-objects/CheckoutItem.js";
 import { assertRedirectPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import { assertPaymentRepositoryCommandPort } from "../../ports/output/paymentRepositoryPort.js";
-import { createRedirectPaymentWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
+import { createRedirectPaymentWorkflow } from "../../domain/services/paymentWorkflowService.js";
 import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
-import { toPaymentCheckoutRedirectDto } from "../dto/paymentSessionDto.js";
+import { toPaymentCheckoutRedirectDto } from "../dto/paymentWorkflowDto.js";
 
 export const buildCreatePaymentIntentUseCase = ({
   paymentGateway,
