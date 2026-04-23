@@ -12,8 +12,8 @@ import {
   updateManagedUserCredentials,
   updateManagedUserProfile,
 } from "../auth/public-api.js";
-import { createMongooseUserRepository } from "./infrastructure/repositories/mongooseUserRepository.js";
-import { createUsersHttpController } from "./infrastructure/http/usersHttpController.js";
+import { createMongooseUserRepository } from "./adapters/repositories/mongooseUserRepository.js";
+import { createUsersHttpController } from "./adapters/http/usersHttpController.js";
 
 const authUserManagement = {
   getManagedUserCredentials,

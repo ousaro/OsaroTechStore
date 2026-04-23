@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toCategoryRecord } from "../../../modules/categories/infrastructure/repositories/categoryRecordMapper.js";
+import { toCategoryRecord } from "../../../modules/categories/adapters/repositories/categoryRecordMapper.js";
 
 describe("category record mapper", () => {
   it("maps a raw category into a stable repository record shape", () => {

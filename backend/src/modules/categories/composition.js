@@ -2,8 +2,8 @@ import { buildGetAllCategoriesUseCase } from "./application/queries/getAllCatego
 import { buildAddNewCategoryUseCase } from "./application/commands/addNewCategoryUseCase.js";
 import { buildDeleteCategoryUseCase } from "./application/commands/deleteCategoryUseCase.js";
 import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
-import { createMongooseCategoryRepository } from "./infrastructure/repositories/mongooseCategoryRepository.js";
-import { createCategoriesHttpController } from "./infrastructure/http/categoriesHttpController.js";
+import { createMongooseCategoryRepository } from "./adapters/repositories/mongooseCategoryRepository.js";
+import { createCategoriesHttpController } from "./adapters/http/categoriesHttpController.js";
 import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const categoryRepository = createMongooseCategoryRepository();

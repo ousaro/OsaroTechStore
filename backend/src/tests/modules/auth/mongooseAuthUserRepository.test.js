@@ -1,8 +1,8 @@
 import { describe, it, afterEach } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createMongooseAuthUserRepository } from "../../../modules/auth/infrastructure/repositories/mongooseAuthUserRepository.js";
-import UserModel from "../../../modules/auth/infrastructure/persistence/userModel.js";
+import { createMongooseAuthUserRepository } from "../../../modules/auth/adapters/repositories/mongooseAuthUserRepository.js";
+import UserModel from "../../../modules/auth/adapters/persistence/userModel.js";
 import { AuthUnauthorizedError } from "../../../modules/auth/application/errors/AuthApplicationError.js";
 
 describe("mongooseAuthUserRepository", () => {

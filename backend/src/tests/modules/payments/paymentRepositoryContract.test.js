@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createMongoosePaymentRepository } from "../../../modules/payments/infrastructure/repositories/mongoosePaymentRepository.js";
+import { createMongoosePaymentRepository } from "../../../modules/payments/adapters/repositories/mongoosePaymentRepository.js";
 import { assertPaymentRepositoryPort } from "../../../modules/payments/ports/output/paymentRepositoryPort.js";
 
 describe("payment repository contract", () => {

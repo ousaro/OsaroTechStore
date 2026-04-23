@@ -85,5 +85,5 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 10. structure
 
-- [ ] the config should be under the global /infrastructure
-- [ ] the infrastructre folder in each module should be named adapters because it is and implementation
+- [x] the config should be under the global /infrastructure
+- [x] the infrastructre folder in each module should be named adapters because it is and implementation

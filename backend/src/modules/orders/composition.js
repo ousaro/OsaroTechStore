@@ -9,8 +9,8 @@ import { buildHandlePaymentFailureUseCase } from "./application/commands/handleP
 import { buildHandlePaymentRefundUseCase } from "./application/commands/handlePaymentRefundUseCase.js";
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
-import { createMongooseOrderRepository } from "./infrastructure/repositories/mongooseOrderRepository.js";
-import { createOrdersHttpController } from "./infrastructure/http/ordersHttpController.js";
+import { createMongooseOrderRepository } from "./adapters/repositories/mongooseOrderRepository.js";
+import { createOrdersHttpController } from "./adapters/http/ordersHttpController.js";
 import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const orderRepository = createMongooseOrderRepository();

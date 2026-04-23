@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createCategoryDeletedProductCleanupTranslator } from "../../../modules/categories/infrastructure/collaboration/categoryDeletedProductCleanupTranslator.js";
+import { createCategoryDeletedProductCleanupTranslator } from "../../../modules/categories/adapters/collaboration/categoryDeletedProductCleanupTranslator.js";
 
 describe("categoryDeletedProductCleanupTranslator", () => {
   it("translates CategoryDeleted into a product cleanup call", async () => {

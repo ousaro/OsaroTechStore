@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { createMongooseCategoryRepository } from "../../../modules/categories/infrastructure/repositories/mongooseCategoryRepository.js";
+import { createMongooseCategoryRepository } from "../../../modules/categories/adapters/repositories/mongooseCategoryRepository.js";
 import { assertCategoryRepositoryPort } from "../../../modules/categories/ports/output/categoryRepositoryPort.js";
 
 describe("category repository contract", () => {

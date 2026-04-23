@@ -1,10 +1,10 @@
 import { applicationEventBus } from "./applicationEventBus.js";
-import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/infrastructure/collaboration/categoryDeletedProductCleanupTranslator.js";
-import { createPaymentConfirmedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentConfirmedOrderSyncTranslator.js";
-import { createPaymentExpiredOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentExpiredOrderSyncTranslator.js";
-import { createPaymentFailedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentFailedOrderSyncTranslator.js";
-import { createPaymentRefundedOrderSyncTranslator } from "../modules/orders/infrastructure/collaboration/paymentRefundedOrderSyncTranslator.js";
-import { createOrderPlacedPaymentLinkTranslator } from "../modules/payments/infrastructure/collaboration/orderPlacedPaymentLinkTranslator.js";
+import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/adapters/collaboration/categoryDeletedProductCleanupTranslator.js";
+import { createPaymentConfirmedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentConfirmedOrderSyncTranslator.js";
+import { createPaymentExpiredOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentExpiredOrderSyncTranslator.js";
+import { createPaymentFailedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentFailedOrderSyncTranslator.js";
+import { createPaymentRefundedOrderSyncTranslator } from "../modules/orders/adapters/collaboration/paymentRefundedOrderSyncTranslator.js";
+import { createOrderPlacedPaymentLinkTranslator } from "../modules/payments/adapters/collaboration/orderPlacedPaymentLinkTranslator.js";
 import {
   confirmOrderPayment,
   handlePaymentExpiration,

@@ -1,4 +1,4 @@
-import { env } from "./config/env.js";
+import { env } from "./infrastructure/config/env.js";
 import { startApplication } from "./app/startApplication.js";
 
 startApplication({

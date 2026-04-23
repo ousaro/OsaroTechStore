@@ -1,11 +1,11 @@
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import User from '../../modules/auth/infrastructure/persistence/userModel.js';
+import User from '../../modules/auth/adapters/persistence/userModel.js';
 import {
   registerUserHandler as registerUser,
   loginUserHandler as loginUser,
-} from '../../modules/auth/infrastructure/http/httpHandlers.js';
+} from '../../modules/auth/adapters/http/httpHandlers.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 

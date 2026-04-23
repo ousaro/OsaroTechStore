@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
-import { createOrdersHttpController } from "../../../modules/orders/infrastructure/http/ordersHttpController.js";
+import { createOrdersHttpController } from "../../../modules/orders/adapters/http/ordersHttpController.js";
 
 describe("orders http controller", () => {
   it("returns shaped order payloads without legacy payment internals", async () => {

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { createPaymentsCommandPort } from "../../../../src/modules/payments/ports/input/paymentsCommandPort.js";
 import { createPaymentsQueryPort } from "../../../../src/modules/payments/ports/input/paymentsQueryPort.js";
-import { createPaymentsHttpController } from "../../../../src/modules/payments/infrastructure/http/paymentsHttpController.js";
+import { createPaymentsHttpController } from "../../../../src/modules/payments/adapters/http/paymentsHttpController.js";
 
 const flushAsyncHandler = () => new Promise((resolve) => setImmediate(resolve));
 

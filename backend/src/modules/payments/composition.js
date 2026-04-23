@@ -1,13 +1,13 @@
-import { env } from "../../config/env.js";
+import { env } from "../../infrastructure/config/env.js";
 import { buildCreatePaymentIntentUseCase } from "./application/commands/createPaymentIntentUseCase.js";
 import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPaymentToOrderUseCase.js";
 import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookUseCase.js";
 import { buildGetSessionDetailsUseCase } from "./application/queries/getSessionDetailsUseCase.js";
 import { createPaymentsCommandPort } from "./ports/input/paymentsCommandPort.js";
 import { createPaymentsQueryPort } from "./ports/input/paymentsQueryPort.js";
-import { createStripeGateway } from "./infrastructure/gateways/stripeGateway.js";
-import { createMongoosePaymentRepository } from "./infrastructure/repositories/mongoosePaymentRepository.js";
-import { createPaymentsHttpController } from "./infrastructure/http/paymentsHttpController.js";
+import { createStripeGateway } from "./adapters/gateways/stripeGateway.js";
+import { createMongoosePaymentRepository } from "./adapters/repositories/mongoosePaymentRepository.js";
+import { createPaymentsHttpController } from "./adapters/http/paymentsHttpController.js";
 import { applicationEventBus } from "../../app/applicationEventBus.js";
 
 const paymentGateway = createStripeGateway({

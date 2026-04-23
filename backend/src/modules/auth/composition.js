@@ -2,9 +2,9 @@ import { buildRegisterUserUseCase } from "./application/commands/registerUserUse
 import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.js";
 import { createAuthInputPort } from "./ports/input/authInputPort.js";
 import { buildVerifyAccessTokenUseCase } from "./application/queries/verifyAccessTokenUseCase.js";
-import { createMongooseAuthUserRepository } from "./infrastructure/repositories/mongooseAuthUserRepository.js";
-import { createJwtTokenService } from "./infrastructure/services/jwtTokenService.js";
-import { createAuthHttpController } from "./infrastructure/http/authHttpController.js";
+import { createMongooseAuthUserRepository } from "./adapters/repositories/mongooseAuthUserRepository.js";
+import { createJwtTokenService } from "./adapters/services/jwtTokenService.js";
+import { createAuthHttpController } from "./adapters/http/authHttpController.js";
 
 const authUserRepository = createMongooseAuthUserRepository();
 const tokenService = createJwtTokenService();

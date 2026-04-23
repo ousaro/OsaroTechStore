@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
-import { env } from "../../../../config/env.js";
+import { env } from "../../../../infrastructure/config/env.js";
 
 export const createJwtTokenService = () => {
   return {
