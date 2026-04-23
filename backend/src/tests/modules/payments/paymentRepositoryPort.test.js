@@ -10,9 +10,9 @@ describe("payment repository port helpers", () => {
     expect(() =>
       assertPaymentRepositoryQueryPort(
         {
-          findPaymentSessionById: async () => null,
+          findPaymentWorkflowById: async () => null,
         },
-        ["findPaymentSessionById"]
+        ["findPaymentWorkflowById"]
       )
     ).to.not.throw();
   });
@@ -21,10 +21,10 @@ describe("payment repository port helpers", () => {
     expect(() =>
       assertPaymentRepositoryCommandPort(
         {
-          findPaymentSessionById: async () => null,
+          findPaymentWorkflowById: async () => null,
         },
-        ["findPaymentSessionById"]
+        ["findPaymentWorkflowById"]
       )
-    ).to.throw("paymentRepository command port must not require findPaymentSessionById");
+    ).to.throw("paymentRepository command port must not require findPaymentWorkflowById");
   });
 });

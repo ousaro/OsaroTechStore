@@ -72,10 +72,10 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 8. Payments Provider Flexibility
 
-- [ ] Separate provider-agnostic payment workflow concepts from Stripe-specific redirect-session assumptions
-- [ ] Define which payment application concepts must survive a provider change without changing the rest of the backend
-- [ ] Expand the payment persistence model so it can represent more than the current Stripe checkout-session lifecycle if needed
-- [ ] Decide whether the current `PaymentSession` concept should evolve into a broader payment aggregate or remain a narrower workflow record
+- [x] Separate provider-agnostic payment workflow concepts from Stripe-specific redirect-session assumptions
+- [x] Define which payment application concepts must survive a provider change without changing the rest of the backend
+- [x] Expand the payment persistence model so it can represent more than the current Stripe checkout-session lifecycle if needed
+- [x] Decide whether the current `PaymentSession` concept should evolve into a broader payment aggregate or remain a narrower workflow record
 
 ## 9. Structural Cleanup
 

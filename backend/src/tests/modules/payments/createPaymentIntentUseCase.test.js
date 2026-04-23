@@ -6,8 +6,8 @@ import { PaymentValidationError } from "../../../../src/modules/payments/applica
 
 describe("createPaymentIntentUseCase", () => {
   it("throws 400 when items is empty", async () => {
-    const paymentGateway = { createCheckoutSession: sinon.stub() };
-    const paymentRepository = { savePaymentSession: sinon.stub() };
+    const paymentGateway = { createRedirectPayment: sinon.stub() };
+    const paymentRepository = { savePaymentWorkflow: sinon.stub() };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
       paymentRepository,
@@ -25,8 +25,8 @@ describe("createPaymentIntentUseCase", () => {
   });
 
   it("throws 400 when item payload is invalid", async () => {
-    const paymentGateway = { createCheckoutSession: sinon.stub() };
-    const paymentRepository = { savePaymentSession: sinon.stub() };
+    const paymentGateway = { createRedirectPayment: sinon.stub() };
+    const paymentRepository = { savePaymentWorkflow: sinon.stub() };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
       paymentRepository,
@@ -45,12 +45,15 @@ describe("createPaymentIntentUseCase", () => {
 
   it("returns checkout url for valid items", async () => {
     const paymentGateway = {
-      createCheckoutSession: sinon
-        .stub()
-        .resolves({ id: "cs_test_123", url: "https://stripe.test/session" }),
+      createRedirectPayment: sinon.stub().resolves({
+        id: "cs_test_123",
+        provider: "stripe",
+        workflowType: "redirect_session",
+        url: "https://stripe.test/session",
+      }),
     };
     const paymentRepository = {
-      savePaymentSession: sinon.stub().resolves(),
+      savePaymentWorkflow: sinon.stub().resolves(),
     };
     const useCase = buildCreatePaymentIntentUseCase({
       paymentGateway,
@@ -63,9 +66,11 @@ describe("createPaymentIntentUseCase", () => {
     });
 
     expect(result).to.deep.equal({ url: "https://stripe.test/session" });
-    expect(paymentGateway.createCheckoutSession.calledOnce).to.equal(true);
-    expect(paymentRepository.savePaymentSession.calledOnceWithExactly({
+    expect(paymentGateway.createRedirectPayment.calledOnce).to.equal(true);
+    expect(paymentRepository.savePaymentWorkflow.calledOnceWithExactly({
       id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       url: "https://stripe.test/session",
       paymentStatus: "pending",
     })).to.equal(true);

@@ -9,10 +9,10 @@ describe("payment repository contract", () => {
 
     expect(() =>
       assertPaymentRepositoryPort(repository, [
-        "savePaymentSession",
-        "findPaymentSessionById",
+        "savePaymentWorkflow",
+        "findPaymentWorkflowById",
         "linkPaymentToOrder",
-        "updatePaymentSessionStatus",
+        "updatePaymentWorkflowStatus",
         "applyWebhookStateChangeOnce",
       ])
     ).to.not.throw();

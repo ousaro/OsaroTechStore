@@ -6,18 +6,20 @@ import { buildGetSessionDetailsUseCase } from "../../../../src/modules/payments/
 describe("getSessionDetailsUseCase", () => {
   it("returns persisted payment session state before falling back to Stripe", async () => {
     const paymentGateway = {
-      getCheckoutSession: sinon.stub(),
+      getRedirectPayment: sinon.stub(),
     };
     const paymentRepository = {
-      findPaymentSessionById: sinon
+      findPaymentWorkflowById: sinon
         .stub()
         .resolves({
           id: "cs_test_123",
           paymentReference: "pay_123",
-          providerTransactionId: "pi_123",
+          provider: "stripe",
+          workflowType: "redirect_session",
+          providerPaymentId: "pi_123",
           paymentStatus: "paid",
         }),
-      savePaymentSession: sinon.stub(),
+      savePaymentWorkflow: sinon.stub(),
     };
     const useCase = buildGetSessionDetailsUseCase({
       paymentGateway,
@@ -29,21 +31,26 @@ describe("getSessionDetailsUseCase", () => {
     expect(result).to.deep.equal({
       id: "cs_test_123",
       paymentReference: "pay_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "paid",
     });
-    expect(paymentGateway.getCheckoutSession.called).to.equal(false);
-    expect(paymentRepository.savePaymentSession.called).to.equal(false);
+    expect(paymentGateway.getRedirectPayment.called).to.equal(false);
+    expect(paymentRepository.savePaymentWorkflow.called).to.equal(false);
   });
 
   it("persists the Stripe session when no internal state exists yet", async () => {
     const paymentGateway = {
-      getCheckoutSession: sinon
-        .stub()
-        .resolves({ id: "cs_test_123", paymentStatus: "pending" }),
+      getRedirectPayment: sinon.stub().resolves({
+        id: "cs_test_123",
+        provider: "stripe",
+        workflowType: "redirect_session",
+        paymentStatus: "pending",
+      }),
     };
     const paymentRepository = {
-      findPaymentSessionById: sinon.stub().resolves(null),
-      savePaymentSession: sinon.stub().resolves(),
+      findPaymentWorkflowById: sinon.stub().resolves(null),
+      savePaymentWorkflow: sinon.stub().resolves(),
     };
     const useCase = buildGetSessionDetailsUseCase({
       paymentGateway,
@@ -54,10 +61,14 @@ describe("getSessionDetailsUseCase", () => {
 
     expect(result).to.deep.equal({
       id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "pending",
     });
-    expect(paymentRepository.savePaymentSession.calledOnceWithExactly({
+    expect(paymentRepository.savePaymentWorkflow.calledOnceWithExactly({
       id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "pending",
     })).to.equal(true);
   });

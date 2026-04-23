@@ -3,33 +3,62 @@ import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositor
 import { toPaymentRecord } from "./paymentRecordMapper.js";
 
 export const createMongoosePaymentRepository = () => {
-  const repository = {
-    async savePaymentSession(session) {
-      const doc = await PaymentModel.findOneAndUpdate(
-        { sessionId: session.id },
-        {
-          sessionId: session.id,
-          ...(session.url ? { url: session.url } : {}),
-          ...(session.providerTransactionId
-            ? { providerTransactionId: session.providerTransactionId }
-            : {}),
-          paymentStatus: session.paymentStatus,
-          provider: "stripe",
-          statusUpdatedAt: new Date(),
-        },
-        {
-          new: true,
-          upsert: true,
-          setDefaultsOnInsert: true,
-        }
-      );
+  const savePaymentWorkflow = async (paymentWorkflow) => {
+    const workflowId = paymentWorkflow.id;
+    const providerPaymentId =
+      paymentWorkflow.providerPaymentId ?? paymentWorkflow.providerTransactionId;
+    const provider = paymentWorkflow.provider ?? "stripe";
+    const workflowType = paymentWorkflow.workflowType ?? "redirect_session";
 
-      return toPaymentRecord(doc);
+    const doc = await PaymentModel.findOneAndUpdate(
+      {
+        $or: [{ providerWorkflowId: workflowId }, { sessionId: workflowId }],
+      },
+      {
+        providerWorkflowId: workflowId,
+        sessionId: workflowId,
+        ...(paymentWorkflow.url ? { url: paymentWorkflow.url } : {}),
+        ...(providerPaymentId ? { providerPaymentId, providerTransactionId: providerPaymentId } : {}),
+        ...(paymentWorkflow.providerStatus
+          ? { providerStatus: paymentWorkflow.providerStatus }
+          : {}),
+        paymentStatus: paymentWorkflow.paymentStatus,
+        provider,
+        workflowType,
+        statusUpdatedAt: new Date(),
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+
+    return toPaymentRecord(doc);
+  };
+
+  const findPaymentWorkflowById = async (paymentId) => {
+    const doc = await PaymentModel.findOne({
+      $or: [{ providerWorkflowId: paymentId }, { sessionId: paymentId }],
+    });
+    return toPaymentRecord(doc);
+  };
+
+  const repository = {
+    async savePaymentWorkflow(paymentWorkflow) {
+      return savePaymentWorkflow(paymentWorkflow);
+    },
+
+    async savePaymentSession(session) {
+      return savePaymentWorkflow(session);
+    },
+
+    async findPaymentWorkflowById(paymentId) {
+      return findPaymentWorkflowById(paymentId);
     },
 
     async findPaymentSessionById(sessionId) {
-      const doc = await PaymentModel.findOne({ sessionId });
-      return toPaymentRecord(doc);
+      return findPaymentWorkflowById(sessionId);
     },
 
     async linkPaymentToOrder({ paymentReference, orderId }) {
@@ -42,9 +71,23 @@ export const createMongoosePaymentRepository = () => {
       return toPaymentRecord(doc);
     },
 
+    async updatePaymentWorkflowStatus(paymentId, paymentStatus) {
+      const doc = await PaymentModel.findOneAndUpdate(
+        {
+          $or: [{ providerWorkflowId: paymentId }, { sessionId: paymentId }],
+        },
+        { paymentStatus, statusUpdatedAt: new Date() },
+        { new: true }
+      );
+
+      return toPaymentRecord(doc);
+    },
+
     async updatePaymentSessionStatus(sessionId, paymentStatus) {
       const doc = await PaymentModel.findOneAndUpdate(
-        { sessionId },
+        {
+          $or: [{ providerWorkflowId: sessionId }, { sessionId }],
+        },
         { paymentStatus, statusUpdatedAt: new Date() },
         { new: true }
       );
@@ -54,26 +97,55 @@ export const createMongoosePaymentRepository = () => {
 
     async applyWebhookStateChangeOnce({
       eventId,
+      id,
       sessionId,
+      provider,
+      workflowType,
+      providerPaymentId,
       providerTransactionId,
+      providerStatus,
       occurredAt,
       paymentStatus,
+      paymentOutcome,
     }) {
+      const workflowId = id ?? sessionId;
+      const normalizedProviderPaymentId =
+        providerPaymentId ?? providerTransactionId;
       const effectiveOccurredAt =
         occurredAt instanceof Date && !Number.isNaN(occurredAt.valueOf())
           ? occurredAt
           : new Date();
       const doc = await PaymentModel.findOneAndUpdate(
         {
-          sessionId,
+          $or: [{ providerWorkflowId: workflowId }, { sessionId: workflowId }],
           processedWebhookEventIds: { $ne: eventId },
         },
         {
+          providerWorkflowId: workflowId,
+          sessionId: workflowId,
           paymentStatus,
-          ...(providerTransactionId ? { providerTransactionId } : {}),
+          ...(provider ? { provider } : {}),
+          ...(workflowType ? { workflowType } : {}),
+          ...(normalizedProviderPaymentId
+            ? {
+                providerPaymentId: normalizedProviderPaymentId,
+                providerTransactionId: normalizedProviderPaymentId,
+              }
+            : {}),
+          ...(providerStatus ? { providerStatus } : {}),
           lastWebhookEventId: eventId,
           statusUpdatedAt: effectiveOccurredAt,
           ...(paymentStatus === "paid" ? { paidAt: effectiveOccurredAt } : {}),
+          ...(paymentStatus === "failed" &&
+          paymentOutcome !== "expired"
+            ? { failedAt: effectiveOccurredAt }
+            : {}),
+          ...(paymentOutcome === "expired"
+            ? { expiredAt: effectiveOccurredAt }
+            : {}),
+          ...(paymentStatus === "refunded"
+            ? { refundedAt: effectiveOccurredAt }
+            : {}),
           $addToSet: { processedWebhookEventIds: eventId },
         },
         { new: true }
@@ -84,9 +156,12 @@ export const createMongoosePaymentRepository = () => {
   };
 
   assertPaymentRepositoryPort(repository, [
+    "savePaymentWorkflow",
+    "findPaymentWorkflowById",
     "savePaymentSession",
     "findPaymentSessionById",
     "linkPaymentToOrder",
+    "updatePaymentWorkflowStatus",
     "updatePaymentSessionStatus",
     "applyWebhookStateChangeOnce",
   ]);

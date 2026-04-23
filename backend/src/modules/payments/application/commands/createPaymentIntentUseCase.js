@@ -1,8 +1,8 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createCheckoutItems } from "../../domain/value-objects/CheckoutItem.js";
-import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
+import { assertRedirectPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import { assertPaymentRepositoryCommandPort } from "../../ports/output/paymentRepositoryPort.js";
-import { createCheckoutSessionWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
+import { createRedirectPaymentWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
 import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
 import { toPaymentCheckoutRedirectDto } from "../dto/paymentSessionDto.js";
 
@@ -11,8 +11,8 @@ export const buildCreatePaymentIntentUseCase = ({
   paymentRepository,
   clientUrl,
 }) => {
-  assertPaymentGatewayPort(paymentGateway, ["createCheckoutSession"]);
-  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentSession"]);
+  assertRedirectPaymentGatewayPort(paymentGateway, ["createRedirectPayment"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentWorkflow"]);
 
   return async ({ items }) => {
     let checkoutItems;
@@ -27,17 +27,17 @@ export const buildCreatePaymentIntentUseCase = ({
       throw error;
     }
 
-    const session = await paymentGateway.createCheckoutSession({
+    const payment = await paymentGateway.createRedirectPayment({
       items: checkoutItems.map((item) => item.toPrimitives()),
       successUrl: `${clientUrl}/successPayment?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${clientUrl}/Cart`,
     });
 
-    const paymentSession = createCheckoutSessionWorkflow({
-      gatewaySession: session,
+    const paymentWorkflow = createRedirectPaymentWorkflow({
+      gatewayPayment: payment,
     });
-    await paymentRepository.savePaymentSession(paymentSession.toPrimitives());
+    await paymentRepository.savePaymentWorkflow(paymentWorkflow.toPrimitives());
 
-    return toPaymentCheckoutRedirectDto(paymentSession.toPrimitives());
+    return toPaymentCheckoutRedirectDto(paymentWorkflow.toPrimitives());
   };
 };

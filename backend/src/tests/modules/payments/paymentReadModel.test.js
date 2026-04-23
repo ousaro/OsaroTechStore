@@ -10,8 +10,11 @@ describe("payment read model", () => {
         paymentReference: "pay_123",
         orderId: "o1",
         url: "https://checkout.test",
+        provider: "stripe",
+        workflowType: "redirect_session",
         paymentStatus: "paid",
-        providerTransactionId: "pi_123",
+        providerPaymentId: "pi_123",
+        providerStatus: "paid",
         lastWebhookEventId: "evt_123",
       })
     ).to.deep.equal({
@@ -19,6 +22,8 @@ describe("payment read model", () => {
       paymentReference: "pay_123",
       orderId: "o1",
       url: "https://checkout.test",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "paid",
     });
   });

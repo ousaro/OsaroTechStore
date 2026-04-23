@@ -6,7 +6,7 @@ import {
 } from "../../../modules/payments/infrastructure/gateways/stripePayloadTranslator.js";
 
 describe("stripe payload translator", () => {
-  it("translates checkout session payloads into stable payment DTOs", () => {
+  it("translates checkout session payloads into provider-agnostic payment workflows", () => {
     expect(
       toStripeCheckoutSessionDto({
         id: "cs_test_123",
@@ -16,8 +16,11 @@ describe("stripe payload translator", () => {
       })
     ).to.deep.equal({
       id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       url: "https://stripe.test/session",
-      providerTransactionId: "pi_123",
+      providerPaymentId: "pi_123",
+      providerStatus: "paid",
       paymentStatus: "paid",
     });
   });
@@ -37,8 +40,11 @@ describe("stripe payload translator", () => {
       })
     ).to.deep.include({
       eventId: "evt_test_123",
+      id: "cs_test_123",
       sessionId: "cs_test_123",
-      providerTransactionId: "pi_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
+      providerPaymentId: "pi_123",
       paymentStatus: "paid",
     });
   });
@@ -57,7 +63,10 @@ describe("stripe payload translator", () => {
       })
     ).to.deep.include({
       eventId: "evt_test_expired",
+      id: "cs_test_124",
       sessionId: "cs_test_124",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "failed",
       paymentOutcome: "expired",
     });

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import Stripe from "stripe";
 import { createStripeGateway } from "../../../modules/payments/infrastructure/gateways/stripeGateway.js";
-import { assertPaymentGatewayPort } from "../../../modules/payments/ports/output/paymentGatewayPort.js";
+import { assertRedirectPaymentGatewayPort } from "../../../modules/payments/ports/output/paymentGatewayPort.js";
 
 describe("stripe gateway contract", () => {
   afterEach(() => {
@@ -17,10 +17,10 @@ describe("stripe gateway contract", () => {
     });
 
     expect(() =>
-      assertPaymentGatewayPort(gateway, [
-        "createCheckoutSession",
+      assertRedirectPaymentGatewayPort(gateway, [
+        "createRedirectPayment",
         "verifyWebhook",
-        "getCheckoutSession",
+        "getRedirectPayment",
       ])
     ).to.not.throw();
   });
@@ -40,12 +40,12 @@ describe("stripe gateway contract", () => {
       webhookSecret: "whsec_test_123",
     });
 
-    const createResult = await gateway.createCheckoutSession({
+    const createResult = await gateway.createRedirectPayment({
       items: [{ name: "Phone", price: 100, quantity: 2 }],
       successUrl: "http://localhost:3000/success",
       cancelUrl: "http://localhost:3000/cancel",
     });
-    const retrieveResult = await gateway.getCheckoutSession("cs_test_123");
+    const retrieveResult = await gateway.getRedirectPayment("cs_test_123");
 
     const webhookPayload = JSON.stringify({
       id: "evt_test_123",
@@ -82,14 +82,28 @@ describe("stripe gateway contract", () => {
       success_url: "http://localhost:3000/success",
       cancel_url: "http://localhost:3000/cancel",
     });
-    expect(createResult).to.deep.equal({ id: "cs_test_123", url: "https://stripe.test/session" });
+    expect(createResult).to.deep.equal({
+      id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
+      url: "https://stripe.test/session",
+    });
 
     expect(checkoutRetrieveStub.calledOnceWithExactly("cs_test_123")).to.equal(true);
-    expect(retrieveResult).to.deep.equal({ id: "cs_test_123", paymentStatus: "paid" });
+    expect(retrieveResult).to.deep.equal({
+      id: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
+      providerStatus: "paid",
+      paymentStatus: "paid",
+    });
 
-    expect(webhookResult).to.deep.equal({
+    expect(webhookResult).to.deep.include({
       eventId: "evt_test_123",
+      id: "cs_test_123",
       sessionId: "cs_test_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "paid",
     });
   });

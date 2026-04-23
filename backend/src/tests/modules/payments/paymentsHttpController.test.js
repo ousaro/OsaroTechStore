@@ -16,6 +16,8 @@ describe("payments http controller", () => {
       getSessionDetails: sinon.stub().resolves({
         id: "cs_123",
         paymentReference: "pay_123",
+        provider: "stripe",
+        workflowType: "redirect_session",
         paymentStatus: "paid",
       }),
     };
@@ -46,8 +48,10 @@ describe("payments http controller", () => {
     expect(captured.body).to.deep.equal({
       id: "cs_123",
       paymentReference: "pay_123",
+      provider: "stripe",
+      workflowType: "redirect_session",
       paymentStatus: "paid",
     });
-    expect("providerTransactionId" in captured.body).to.equal(false);
+    expect("providerPaymentId" in captured.body).to.equal(false);
   });
 });

@@ -11,3 +11,24 @@ export const assertPaymentGatewayPort = (paymentGateway, requiredMethods = []) =
 
   return paymentGateway;
 };
+
+const assertAllowedPaymentGatewayMethods = (requiredMethods, allowedMethods, portName) => {
+  for (const methodName of requiredMethods) {
+    if (!allowedMethods.has(methodName)) {
+      throw new Error(`${portName} must not require ${methodName}`);
+    }
+  }
+};
+
+export const assertRedirectPaymentGatewayPort = (
+  paymentGateway,
+  requiredMethods = []
+) => {
+  assertAllowedPaymentGatewayMethods(
+    requiredMethods,
+    new Set(["createRedirectPayment", "getRedirectPayment", "verifyWebhook"]),
+    "redirect payment gateway port"
+  );
+
+  return assertPaymentGatewayPort(paymentGateway, requiredMethods);
+};

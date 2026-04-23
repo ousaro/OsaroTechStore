@@ -1,19 +1,23 @@
-export const toPaymentCheckoutRedirectDto = (paymentSession) => {
+export const toPaymentCheckoutRedirectDto = (paymentWorkflow) => {
   return {
-    url: paymentSession.url,
+    url: paymentWorkflow.url,
   };
 };
 
-export const toPaymentSessionDto = (paymentSession) => {
+export const toPaymentWorkflowDto = (paymentWorkflow) => {
   return {
-    id: paymentSession.id,
-    ...(paymentSession.paymentReference
-      ? { paymentReference: paymentSession.paymentReference }
+    id: paymentWorkflow.id,
+    ...(paymentWorkflow.paymentReference
+      ? { paymentReference: paymentWorkflow.paymentReference }
       : {}),
-    ...(paymentSession.url ? { url: paymentSession.url } : {}),
-    ...(paymentSession.providerTransactionId
-      ? { providerTransactionId: paymentSession.providerTransactionId }
+    ...(paymentWorkflow.url ? { url: paymentWorkflow.url } : {}),
+    provider: paymentWorkflow.provider,
+    workflowType: paymentWorkflow.workflowType,
+    ...(paymentWorkflow.providerStatus
+      ? { providerStatus: paymentWorkflow.providerStatus }
       : {}),
-    paymentStatus: paymentSession.paymentStatus,
+    paymentStatus: paymentWorkflow.paymentStatus,
   };
 };
+
+export const toPaymentSessionDto = toPaymentWorkflowDto;

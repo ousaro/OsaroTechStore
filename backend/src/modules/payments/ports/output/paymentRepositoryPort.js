@@ -26,7 +26,7 @@ export const assertPaymentRepositoryQueryPort = (
 ) => {
   assertAllowedPaymentRepositoryMethods(
     requiredMethods,
-    new Set(["findPaymentSessionById"]),
+    new Set(["findPaymentWorkflowById"]),
     "paymentRepository query port"
   );
   return assertPaymentRepositoryPort(paymentRepository, requiredMethods);
@@ -39,9 +39,9 @@ export const assertPaymentRepositoryCommandPort = (
   assertAllowedPaymentRepositoryMethods(
     requiredMethods,
     new Set([
-      "savePaymentSession",
+      "savePaymentWorkflow",
       "linkPaymentToOrder",
-      "updatePaymentSessionStatus",
+      "updatePaymentWorkflowStatus",
       "applyWebhookStateChangeOnce",
     ]),
     "paymentRepository command port"

@@ -1,31 +1,31 @@
-import { createPaymentSession } from "../../domain/entities/PaymentSession.js";
-import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
+import { createPaymentWorkflow } from "../../domain/entities/PaymentSession.js";
+import { assertRedirectPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import {
   assertPaymentRepositoryCommandPort,
   assertPaymentRepositoryQueryPort,
 } from "../../ports/output/paymentRepositoryPort.js";
-import { toPaymentSessionDto } from "../dto/paymentSessionDto.js";
+import { toPaymentWorkflowDto } from "../dto/paymentSessionDto.js";
 import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
 
 export const buildGetSessionDetailsUseCase = ({
   paymentGateway,
   paymentRepository,
 }) => {
-  assertPaymentGatewayPort(paymentGateway, ["getCheckoutSession"]);
-  assertPaymentRepositoryQueryPort(paymentRepository, ["findPaymentSessionById"]);
-  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentSession"]);
+  assertRedirectPaymentGatewayPort(paymentGateway, ["getRedirectPayment"]);
+  assertPaymentRepositoryQueryPort(paymentRepository, ["findPaymentWorkflowById"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentWorkflow"]);
   return async ({ sessionId }) => {
-    const persistedSession = await paymentRepository.findPaymentSessionById(sessionId);
+    const persistedPayment = await paymentRepository.findPaymentWorkflowById(sessionId);
 
-    if (persistedSession) {
+    if (persistedPayment) {
       return toPaymentReadModel(
-        toPaymentSessionDto(createPaymentSession(persistedSession).toPrimitives())
+        toPaymentWorkflowDto(createPaymentWorkflow(persistedPayment).toPrimitives())
       );
     }
 
-    const session = await paymentGateway.getCheckoutSession(sessionId);
-    const paymentSession = createPaymentSession(session);
-    await paymentRepository.savePaymentSession(paymentSession.toPrimitives());
-    return toPaymentReadModel(toPaymentSessionDto(paymentSession.toPrimitives()));
+    const payment = await paymentGateway.getRedirectPayment(sessionId);
+    const paymentWorkflow = createPaymentWorkflow(payment);
+    await paymentRepository.savePaymentWorkflow(paymentWorkflow.toPrimitives());
+    return toPaymentReadModel(toPaymentWorkflowDto(paymentWorkflow.toPrimitives()));
   };
 };

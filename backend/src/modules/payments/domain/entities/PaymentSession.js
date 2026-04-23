@@ -1,17 +1,22 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 
 const ALLOWED_PAYMENT_STATUSES = new Set(["pending", "paid", "failed", "refunded"]);
+const ALLOWED_WORKFLOW_TYPES = new Set(["redirect_session"]);
 
-export const createPaymentSession = ({
+export const createPaymentWorkflow = ({
   id,
   url,
   paymentReference,
+  provider = "stripe",
+  workflowType = "redirect_session",
+  providerPaymentId,
   providerTransactionId,
+  providerStatus,
   payment_status,
   paymentStatus,
 }) => {
   if (typeof id !== "string" || id.trim() === "") {
-    throw new DomainValidationError("payment session id is required");
+    throw new DomainValidationError("payment workflow id is required");
   }
 
   const normalizedPaymentStatus = (paymentStatus ?? payment_status ?? "pending")
@@ -19,14 +24,31 @@ export const createPaymentSession = ({
     .toLowerCase();
 
   if (!ALLOWED_PAYMENT_STATUSES.has(normalizedPaymentStatus)) {
-    throw new DomainValidationError("Invalid payment session status");
+    throw new DomainValidationError("Invalid payment workflow status");
+  }
+
+  if (typeof provider !== "string" || provider.trim() === "") {
+    throw new DomainValidationError("payment provider is required");
+  }
+
+  if (
+    typeof workflowType !== "string" ||
+    workflowType.trim() === "" ||
+    !ALLOWED_WORKFLOW_TYPES.has(workflowType.trim().toLowerCase())
+  ) {
+    throw new DomainValidationError("Invalid payment workflow type");
   }
 
   const props = {
     id,
     ...(paymentReference ? { paymentReference } : {}),
     ...(url ? { url } : {}),
-    ...(providerTransactionId ? { providerTransactionId } : {}),
+    provider: provider.trim().toLowerCase(),
+    workflowType: workflowType.trim().toLowerCase(),
+    ...(providerPaymentId ?? providerTransactionId
+      ? { providerPaymentId: providerPaymentId ?? providerTransactionId }
+      : {}),
+    ...(providerStatus ? { providerStatus } : {}),
     paymentStatus: normalizedPaymentStatus,
   };
 
@@ -37,3 +59,5 @@ export const createPaymentSession = ({
     },
   });
 };
+
+export const createPaymentSession = createPaymentWorkflow;
