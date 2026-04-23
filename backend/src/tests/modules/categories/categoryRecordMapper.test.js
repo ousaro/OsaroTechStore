@@ -7,6 +7,7 @@ describe("category record mapper", () => {
     const rawCategory = {
       _id: "cat-1",
       name: "Phones",
+      description: "Smartphones and accessories",
       image: "phones.png",
       createdAt: new Date("2024-01-01T00:00:00.000Z"),
       updatedAt: new Date("2024-01-02T00:00:00.000Z"),
@@ -16,6 +17,7 @@ describe("category record mapper", () => {
     expect(toCategoryRecord(rawCategory)).to.deep.equal({
       _id: "cat-1",
       name: "Phones",
+      description: "Smartphones and accessories",
       image: "phones.png",
     });
   });

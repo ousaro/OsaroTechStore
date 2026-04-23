@@ -2,233 +2,149 @@
 
 ## Purpose
 
-This document records the remaining architecture gaps in `backend/src` after reviewing the current backend against the modular DDD + hexagonal guide in `guide.md`.
+This document records the remaining architecture gaps in `backend/src` after re-checking the current codebase against `guide.md`.
 
-It is intentionally focused on what is still missing, inconsistent, or worth tightening next.
+It now reflects the backend after the workflow-registry, order/payment collaboration, output-read-model, and adapter-boundary work that has already landed.
 
 Verified baseline for this analysis:
 
 - modules exist for `auth`, `users`, `products`, `categories`, `orders`, and `payments`
 - cross-module imports are restricted to `public-api.js`
-- the runtime has a real bootstrap path through `app/createApp.js` and `app/startApplication.js`
-- the codebase has an in-process event bus
-- `npm test` in `backend/` passes with `139 passing`
+- module implementation folders now use `adapters/`
+- config now lives under `src/infrastructure/config`
+- the application boot path registers workflows centrally through `app/registerApplicationWorkflows.js`
+- `CategoryDeleted`, `OrderPlaced`, `PaymentConfirmed`, `PaymentFailed`, `PaymentExpired`, and `PaymentRefunded` are all part of the current application workflow model
+- orders and payments now collaborate through a stable `paymentReference`
+- explicit read models/DTOs exist for users, orders, payments, products, and categories
 
-## 1. Composition Root Is Still Split
+## Current Assessment
 
-The backend has a cleaner bootstrap than before, but the real application composition is still distributed across multiple places:
+The backend is no longer best described as “halfway to hexagonal”.
 
-- `app/createApp.js` wires middleware and routes
-- `app/startApplication.js` starts infrastructure and runtime hooks
-- `modules/categories/composition.js` subscribes cross-module event handlers during module composition
-- `modules/orders/composition.js` and `modules/payments/composition.js` publish events but do not own workflow subscribers
+It is now a real modular monolith with:
 
-This means the system has a bootstrap path, but not yet a single explicit workflow/composition root for module collaboration.
+- module-local application/domain/ports/adapters structure
+- a central application workflow registry
+- event-driven cross-module collaboration for category cleanup and payment/order synchronization
+- stronger output boundaries
+- narrower public APIs
+- better separation between profile and credential collaboration in the auth/users seam
 
-Main consequences:
+The remaining work is now residual architecture tightening, not a large reconstruction.
 
-- cross-module event registration is hidden inside modules instead of being declared centrally
-- it is harder to see all running workflows in one place
-- adding more event-driven collaboration will increase coupling-by-wiring unless subscriptions move to an application-level workflow registry
+## 1. Auth and Users Still Share One Persistence Owner
 
-## 2. Event-Driven Architecture Is Only Half Implemented
+The `auth`/`users` boundary is much cleaner than before:
 
-The event bus exists, but only one real cross-module workflow is wired end to end:
+- `users` now collaborates through explicit profile and credential capabilities
+- profile updates reject credential fields
+- profile payloads are validated and sanitized at the port boundary
+- `users` returns read models without passwords
 
-- `CategoryDeleted` -> translator -> `products.removeProductsByCategory`
+What is still unresolved is ownership depth.
 
-Two other published events currently stop at publication:
+Today:
 
-- `OrderPlaced`
-- `PaymentConfirmed`
+- `auth` still owns the underlying account persistence
+- `users` owns profile-facing behavior and profile update rules
+- `users` does not yet own a separate persistence model or storage boundary
 
-There are no subscribers for them in the running application.
+This is no longer a contract-shape problem. It is now a strategic bounded-context decision:
 
-Main consequences:
+- keep `users` as a profile facade over auth-owned accounts and document that as the intended model
+- or move toward a truly separate users-owned persistence boundary later
 
-- orders publish a domain event without any downstream business reaction
-- payments publish a payment outcome event without updating order state
-- the code has the shape of event-driven collaboration, but not the business workflow yet
+Until that decision is made explicit, the seam remains valid but transitional.
 
-The next event-driven gap is specifically `payments` -> `orders`:
+## 2. Legacy Payment/Order Compatibility Paths Still Exist
 
-- `payments` persists checkout-session state and publishes `PaymentConfirmed`
-- `orders` still owns `paymentStatus`, `transactionId`, and `paymentDetails`
-- no order-side handler consumes payment confirmation and applies order lifecycle rules
+The new `paymentReference` boundary is in place and is the correct architecture.
 
-This is the most important unfinished modular workflow in the backend.
+However, the code still carries compatibility bridges for older payloads and records:
 
-## 3. Orders and Payments Still Share the Wrong Responsibilities
+- order creation still derives `paymentReference` from legacy `transactionId` and `paymentDetails`
+- the order repository still falls back to `transactionId` in one lookup path
+- order mapping still tolerates legacy record shapes during translation
+- immutable-field policy still knows about `transactionId` and `paymentDetails`
 
-The strongest remaining bounded-context problem is the order/payment seam.
+These are reasonable migration safeguards, but they are now legacy residue rather than target architecture.
 
-Today `orders` still stores:
+The remaining work is to remove those fallbacks once old clients and old persisted records no longer need them.
 
-- `paymentMethod`
-- `paymentStatus`
-- `transactionId`
-- `paymentDetails`
+## 3. Payments Language Is Broader, but Some Naming Is Still Session-Specific
 
-And `payments` stores only a thin payment session record:
+The payments module has moved beyond a thin checkout-session pass-through:
 
-- `sessionId`
-- `url`
-- `paymentStatus`
-- `provider`
-- `processedWebhookEventIds`
+- payment persistence now includes `paymentReference`, `orderId`, provider fields, lifecycle timestamps, and idempotency data
+- read models are provider-neutral
+- webhook outcomes publish distinct payment state-change events
+- the module now links orders and payments through workflow events
 
-That creates an awkward split:
+The remaining inconsistency is naming:
 
-- order state still contains provider-facing payment detail
-- payment state does not contain enough business correlation data to drive order updates
-- payment persistence is durable enough for idempotency, but not rich enough for business ownership
+- the core entity file is still `PaymentSession.js`
+- the workflow service is still `paymentSessionWorkflowService.js`
+- `createCheckoutSessionWorkflow` still carries narrower naming than the current domain model
 
-Concrete missing pieces:
+That does not break the architecture, but it does leave the ubiquitous language one step behind the implementation.
 
-- a stable order-to-payment correlation field
-- a payment reference owned by the payments module and referenced by orders
-- payment records that can carry order linkage, provider transaction ids, provider references, and lifecycle timestamps
-- a clear rule for which payment data is fulfillment-relevant in orders and which must live only in payments
+## 4. Payment Workflow Extensibility Is Prepared, but Still Single-Workflow
 
-Until that seam is finished, `orders` cannot become a clean aggregate boundary and `payments` remains a partially internalized gateway workflow.
+The payment model is now more provider-neutral than before:
 
-## 4. Orders Are the Closest Aggregate, but the Model Is Still Too CRUD-Shaped
+- workflow records carry provider-neutral status and references
+- event payloads are correlation-safe
+- transport and read models avoid leaking Stripe internals
 
-`orders` is the richest module today, but it still carries several signs of an unfinished aggregate:
+What is still intentionally narrow:
 
-- `createOrder` accepts a broad payload and persists raw `products`
-- `createOrderUpdatePatch` is still patch-oriented rather than behavior-oriented for most fields
-- `paymentDetails` is a free-form object
-- the module has explicit lifecycle rules for status changes, but not a full order workflow boundary
+- `workflowType` currently only allows `redirect_session`
+- the current domain still assumes a redirect-based checkout workflow
 
-What is still missing for a more complete aggregate:
+That is acceptable today because the system only implements one payment workflow.
 
-- a richer order-line model instead of a raw `products` array
-- a domain-level concept for payment reference instead of `transactionId`
-- explicit behaviors for more than status transitions
-- a clearer distinction between immutable order creation data and mutable fulfillment state
+The remaining architectural question is not urgent implementation, but readiness:
 
-The current structure is good enough to support lifecycle rules, but not yet strong enough to be called a fully modeled order aggregate.
+- when a second payment provider or non-redirect workflow is introduced, the module should expand the workflow-type model deliberately rather than reintroducing provider-specific assumptions ad hoc
 
-## 5. Auth and Users Are Still Separated by a Data-Access Facade, Not a True Collaboration Contract
+## 5. Structural Cleanup Is Mostly Done, with Small Residue in Terminology
 
-The current `auth`/`users` split is explicit, but the boundary is still thin.
+The larger structural cleanup is complete:
 
-`users` depends on `auth/public-api.js` for:
+- empty placeholder folders are gone
+- `infrastructure/` was renamed to `adapters/`
+- central config moved to a global infrastructure location
 
-- `listManagedUserAccounts`
-- `getManagedUserAccount`
-- `updateManagedUserAccountProfile`
-- `removeManagedUserAccount`
+The remaining cleanup is mostly terminology consistency:
 
-Those names are better than raw repository verbs, but the behavior is still essentially delegated account data access.
+- legacy `PaymentSession` naming
+- legacy payment-field compatibility paths in orders
 
-Main consequences:
+## 6. Testing Is Strong, but It Must Keep Guarding the New Boundaries
 
-- `users` does not own a separate profile model
-- `auth` still owns the record that `users` reads and updates
-- the seam is application-shaped in naming, but persistence-shaped in substance
+The test suite now covers much more of the architecture directly:
 
-This module boundary still needs one of two architectural outcomes:
+- workflow-registry subscriptions
+- cross-module workflow routing
+- order/payment synchronization paths
+- output shaping for users, orders, payments, products, and categories
+- event contracts
+- command/query repository-port helpers
 
-- introduce a real profile model owned by `users`, with explicit synchronization/collaboration rules
-- or collapse `auth` and `users` conceptually if a separate bounded context is not going to emerge
+The main testing risk now is drift, not absence.
 
-Without that decision being completed in code, the separation remains organizational more than domain-driven.
+Important boundaries that should stay protected:
 
-## 6. Internal Records Still Leak Through Application and HTTP Boundaries
+- auth/users profile vs credential separation
+- `paymentReference` as the stable correlation key
+- read-model/DTO shaping that keeps legacy or sensitive fields out of transport payloads
+- application workflow registration staying centralized
 
-Several modules still expose internal repository records directly as application/transport responses.
+## Priority Order
 
-The clearest remaining issues are:
+The remaining architecture work should be tackled in this order:
 
-- `users` record mapping includes `password`, and the users HTTP controller returns use-case payloads directly
-- `categories` domain requires `description`, but `categoryRecordMapper.js` drops it entirely
-- `orders`, `products`, and `payments` still return repository-shaped records instead of explicit response DTOs
-
-This is both an architectural and boundary-design problem:
-
-- response contracts are not clearly separated from persistence records
-- read-model shaping is inconsistent across modules
-- sensitive or irrelevant internal fields can leak too far upward
-
-The backend needs clearer output DTO/read-model boundaries, especially for:
-
-- `users`
-- `orders`
-- `payments`
-- `categories`
-
-## 7. Ports Are Narrower, but They Are Still Only Runtime Shape Checks
-
-The current ports are useful as lightweight boundaries, but they remain minimal assertion helpers:
-
-- they check that required methods exist
-- they do not encode semantic guarantees
-- they do not model request/response DTO contracts directly
-
-This matters most at the higher-value seams:
-
-- auth/users collaboration
-- payments gateway integration
-- event publication/consumption contracts
-- repository read/write model boundaries
-
-The architecture does not need heavy abstraction for its own sake, but it does need stronger contract definition where behavior, payload shape, and ownership matter.
-
-## 8. Payments Are Provider-Neutral at the Edge, but Not Yet Provider-Replaceable End to End
-
-The Stripe adapter is correctly isolated, and webhook translation is provider-neutral at the application boundary.
-
-The remaining gap is deeper than translation:
-
-- checkout session creation still assumes Stripe-style redirect checkout
-- payment persistence has no provider capability metadata beyond `provider: "stripe"`
-- the domain model is still a payment-session model, not a broader payment workflow model
-
-So the architecture is better prepared for provider replacement than before, but not yet designed for a second payment provider without reshaping the application workflow and persistence model.
-
-## 9. Module Structure Has Some Mechanical Residue
-
-There are still empty structure folders:
-
-- `modules/auth/application/use-cases`
-- `modules/orders/application/use-cases`
-- `modules/orders/domain/ports`
-- `modules/payments/application/use-cases`
-
-This is small compared with the workflow gaps above, but it is a real signal:
-
-- some folder conventions are now historical rather than meaningful
-- structure is slightly ahead of the actual design in a few places
-
-That should be cleaned up so the module layout continues to communicate intent accurately.
-
-## 10. Testing Is Strong on Units and Contracts, but Thin on Running Workflows
-
-The current backend test suite gives a good foundation:
-
-- domain tests exist for the richer modules
-- repository/gateway contract tests exist
-- the event bus is tested
-- the category-to-product workflow is tested
-- application bootstrap and webhook raw-body handling are tested
-
-Remaining testing gaps map directly to the architecture gaps:
-
-- no end-to-end workflow test for payment confirmation updating orders
-- no integration test for `OrderPlaced` subscribers because there are no subscribers yet
-- limited HTTP adapter coverage outside specific controller tests
-- no tests protecting output DTO/read-model sanitization for users and other modules
-- no composition-root test that verifies all application event subscriptions are registered in one place
-
-## 11. Priority Order for the Next Architectural Work
-
-If the goal is to strengthen the architecture without rewriting the backend, the next sequence should be:
-
-1. finish the `payments` -> `orders` collaboration with a stable correlation model and order-side event handling
-2. remove payment-provider detail from the order model and move it into payments-owned records
-3. fix output-boundary shaping so internal repository records stop leaking to controllers and clients
-4. decide whether `users` becomes a true profile module or is conceptually merged with `auth`
-5. centralize cross-module event subscriptions in an application-level workflow/composition registry
-6. clean up leftover mechanical structure and tighten ports where semantics matter
+1. make the long-term `auth`/`users` ownership decision explicit
+2. remove legacy `transactionId`/`paymentDetails` compatibility paths once they are no longer needed
+3. align payment workflow naming with the broader payment-workflow model
+4. expand workflow-type abstractions only when a second provider or payment workflow actually arrives
