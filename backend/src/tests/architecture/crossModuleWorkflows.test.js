@@ -2,8 +2,21 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { createInProcessEventBus } from "../../shared/infrastructure/events/createInProcessEventBus.js";
-import { registerApplicationWorkflows } from "../../app/registerApplicationWorkflows.js";
-import { buildDeleteCategoryUseCase } from "../../modules/categories/application/commands/deleteCategoryUseCase.js";
+
+process.env.NODE_ENV ||= "test";
+process.env.MONGO_URI ||= "mongodb://127.0.0.1:27017/osarotechstore-test";
+process.env.SESSION_SECRET ||= "test-session-secret";
+process.env.TOKEN_SECRET ||= "test-token-secret";
+process.env.CLIENT_URL ||= "http://localhost:3000";
+process.env.STRIPE_SECTET_KEY ||= "sk_test_architecture";
+process.env.STRIPE_WEBHOOK_SECRET ||= "whsec_architecture";
+
+const { registerApplicationWorkflows } = await import(
+  "../../app/registerApplicationWorkflows.js"
+);
+const { buildDeleteCategoryUseCase } = await import(
+  "../../modules/categories/application/commands/deleteCategoryUseCase.js"
+);
 
 describe("cross-module workflows", () => {
   it("registers CategoryDeleted workflow subscriptions in the application workflow registry", async () => {

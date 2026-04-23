@@ -26,12 +26,12 @@ The backend already applies the core shape of modular DDD + hexagonal architectu
 - [x] Add an architecture guardrail for app-shell imports.
   `backend/src/tests/architecture/moduleBoundaryImports.test.js` now protects both module-to-module imports and app-shell imports, allowing `backend/src/app` to consume modules only through each module's `public-api.js`.
 
-- [ ] Make architecture tests load without unrelated runtime configuration.
-  The architecture test run currently fails unless environment variables are supplied because `backend/src/infrastructure/config/env.js` throws during module loading outside `NODE_ENV=test`.
-  Keeping architecture tests isolated from runtime env setup will make the modular boundary checks easier to run and maintain.
+- [x] Make architecture tests load without unrelated runtime configuration.
+  The architecture workflow test now seeds the minimal runtime env it needs before importing app wiring, so `npx mocha --timeout 10000 --require @babel/register 'src/tests/architecture/**/*.test.js'` runs without extra shell-level environment setup.
+  That keeps the boundary-focused test suite isolated from application startup configuration while preserving the existing runtime config validation for the real app shell.
 
 ## Current Assessment
 
 The backend is already meaningfully using modular DDD + hexagonal architecture.
 
-What remains is not a large structural rewrite. The main gaps are stricter dependency inversion at the composition boundary and stronger automated guardrails around the architecture that is already in place.
+What remains is not a large structural rewrite. The main structural guardrails described in this checklist are now in place, and the remaining work is about continuing to preserve them as backend changes land.
