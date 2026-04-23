@@ -1,4 +1,4 @@
-import { createUserPasswordUpdateCommand, createUserUpdatePatch } from "../../domain/entities/User.js";
+import { createUserPasswordUpdateCommand } from "../../domain/entities/User.js";
 import {
   UserNotFoundError,
   UserValidationError,
@@ -8,10 +8,10 @@ import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.
 export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
   assertUserRepositoryPort(userRepository, [
     "isValidId",
-    "findById",
+    "getCredentialsById",
     "comparePassword",
     "hashPassword",
-    "findByIdAndUpdate",
+    "updateCredentialsById",
   ]);
   return async ({ id, requesterId, updates }) => {
     if (!userRepository.isValidId(id)) {
@@ -23,15 +23,15 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
 
     if (command.newPassword) {
       if (id.toString() === requesterId.toString()) {
-        const currentUser = await userRepository.findById(id);
+        const currentCredentials = await userRepository.getCredentialsById(id);
 
-        if (!currentUser) {
+        if (!currentCredentials) {
           throw new UserNotFoundError("User not found");
         }
 
         const match = await userRepository.comparePassword(
           command.currentPassword,
-          currentUser.password
+          currentCredentials.password
         );
         if (!match) {
           throw new UserValidationError("Current password is incorrect");
@@ -44,7 +44,9 @@ export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
     delete patch.newPassword;
     delete patch.currentPassword;
 
-    const user = await userRepository.findByIdAndUpdate(id, createUserUpdatePatch(patch));
+    const user = await userRepository.updateCredentialsById(id, {
+      password: patch.password,
+    });
     if (!user) {
       throw new UserNotFoundError("User not found");
     }

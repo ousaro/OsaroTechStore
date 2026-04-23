@@ -8,7 +8,6 @@ export const toUserRecord = (rawUser) => {
     firstName: rawUser.firstName,
     lastName: rawUser.lastName,
     email: rawUser.email,
-    password: rawUser.password,
     admin: rawUser.admin,
     picture: rawUser.picture,
     phone: rawUser.phone,

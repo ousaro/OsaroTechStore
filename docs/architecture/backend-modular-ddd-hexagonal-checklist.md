@@ -45,11 +45,11 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 5. Auth and Users Boundary
 
-- [ ] Decide whether `users` will own a true profile model or remain a facade over auth-owned account records
-- [ ] If `users` remains separate, introduce a real users-owned model and collaboration flow instead of delegated account data access
+- [x] Decide whether `users` will own a true profile model or remain a facade over auth-owned account records
+- [x] If `users` remains separate, introduce a real users-owned model and collaboration flow instead of delegated account data access
 - [ ] If `users` will not gain a distinct model, document and execute a conceptual merge path with `auth`
-- [ ] Replace auth-managed account access functions with a clearer collaboration contract if the modules stay separate
-- [ ] Separate credential concerns from profile/admin concerns more explicitly in the cross-module payloads
+- [x] Replace auth-managed account access functions with a clearer collaboration contract if the modules stay separate
+- [x] Separate credential concerns from profile/admin concerns more explicitly in the cross-module payloads
 
 ## 6. Output Boundaries and DTOs
 

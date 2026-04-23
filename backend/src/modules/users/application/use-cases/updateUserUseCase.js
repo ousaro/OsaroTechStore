@@ -1,5 +1,5 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
-import { createUserUpdatePatch } from "../../domain/entities/User.js";
+import { createUserProfileUpdatePatch } from "../../domain/entities/User.js";
 import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
 
 export const buildUpdateUserUseCase = ({ userRepository }) => {
@@ -9,7 +9,7 @@ export const buildUpdateUserUseCase = ({ userRepository }) => {
       throw new UserNotFoundError(`No such user ${id}`);
     }
 
-    const patch = createUserUpdatePatch(updates);
+    const patch = createUserProfileUpdatePatch(updates);
 
     const user = await userRepository.findByIdAndUpdate(id, patch);
     if (!user) {

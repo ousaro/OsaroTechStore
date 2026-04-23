@@ -12,10 +12,10 @@ describe("updateUserPasswordUseCase", () => {
     const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({
       userRepository: {
         isValidId: () => true,
-        findById: async () => null,
+        getCredentialsById: async () => null,
         comparePassword: async () => false,
         hashPassword: async () => "hashed-password",
-        findByIdAndUpdate: async () => null,
+        updateCredentialsById: async () => null,
       },
     });
 
@@ -36,10 +36,13 @@ describe("updateUserPasswordUseCase", () => {
     const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({
       userRepository: {
         isValidId: () => true,
-        findById: async () => ({ _id: "507f1f77bcf86cd799439011", password: "stored-hash" }),
+        getCredentialsById: async () => ({
+          _id: "507f1f77bcf86cd799439011",
+          password: "stored-hash",
+        }),
         comparePassword: async () => false,
         hashPassword: async () => "hashed-password",
-        findByIdAndUpdate: async () => null,
+        updateCredentialsById: async () => null,
       },
     });
 
@@ -65,10 +68,13 @@ describe("updateUserPasswordUseCase", () => {
     const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({
       userRepository: {
         isValidId: () => true,
-        findById: async () => ({ _id: "507f1f77bcf86cd799439011", password: "stored-hash" }),
+        getCredentialsById: async () => ({
+          _id: "507f1f77bcf86cd799439011",
+          password: "stored-hash",
+        }),
         comparePassword: async () => true,
         hashPassword: async () => "hashed-password",
-        findByIdAndUpdate: async () => null,
+        updateCredentialsById: async () => null,
       },
     });
 

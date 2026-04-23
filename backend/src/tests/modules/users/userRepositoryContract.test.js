@@ -7,11 +7,13 @@ import { assertUserRepositoryPort } from "../../../modules/users/ports/output/us
 describe("user repository contract", () => {
   it("implements the expected user repository port", () => {
     const repository = createMongooseUserRepository({
-      authAccountAccess: {
-        listManagedUserAccounts: async () => [],
-        getManagedUserAccount: async () => null,
-        updateManagedUserAccountProfile: async () => null,
-        removeManagedUserAccount: async () => null,
+      authUserManagement: {
+        listManagedUserProfiles: async () => [],
+        getManagedUserProfile: async () => null,
+        updateManagedUserProfile: async () => null,
+        removeManagedUserProfile: async () => null,
+        getManagedUserCredentials: async () => null,
+        updateManagedUserCredentials: async () => null,
       },
     });
 
@@ -22,6 +24,8 @@ describe("user repository contract", () => {
         "findById",
         "findByIdAndUpdate",
         "findByIdAndDelete",
+        "getCredentialsById",
+        "updateCredentialsById",
         "comparePassword",
         "hashPassword",
       ])
@@ -29,23 +33,27 @@ describe("user repository contract", () => {
   });
 
   it("requires the auth account access port dependency", () => {
-    expect(() => createMongooseUserRepository({ authAccountAccess: {} })).to.throw(
-      "authAccountAccess port must implement listManagedUserAccounts"
+    expect(() => createMongooseUserRepository({ authUserManagement: {} })).to.throw(
+      "authAccountAccess port must implement listManagedUserProfiles"
     );
 
     expect(() =>
       assertAuthAccountAccessPort(
         {
-          listManagedUserAccounts: async () => [],
-          getManagedUserAccount: async () => null,
-          updateManagedUserAccountProfile: async () => null,
-          removeManagedUserAccount: async () => null,
+          listManagedUserProfiles: async () => [],
+          getManagedUserProfile: async () => null,
+          updateManagedUserProfile: async () => null,
+          removeManagedUserProfile: async () => null,
+          getManagedUserCredentials: async () => null,
+          updateManagedUserCredentials: async () => null,
         },
         [
-          "listManagedUserAccounts",
-          "getManagedUserAccount",
-          "updateManagedUserAccountProfile",
-          "removeManagedUserAccount",
+          "listManagedUserProfiles",
+          "getManagedUserProfile",
+          "updateManagedUserProfile",
+          "removeManagedUserProfile",
+          "getManagedUserCredentials",
+          "updateManagedUserCredentials",
         ]
       )
     ).to.not.throw();
@@ -58,7 +66,6 @@ describe("user repository contract", () => {
       firstName: "John",
       lastName: "Doe",
       email: "john@example.com",
-      password: "hashed-password",
       admin: false,
       picture: "profile.jpg",
       phone: "+123456789",
@@ -72,22 +79,30 @@ describe("user repository contract", () => {
     };
     const expectedUserRecord = { ...rawUser };
     const repository = createMongooseUserRepository({
-      authAccountAccess: {
-        listManagedUserAccounts: async () => {
-          calls.push(["listManagedUserAccounts"]);
+      authUserManagement: {
+        listManagedUserProfiles: async () => {
+          calls.push(["listManagedUserProfiles"]);
           return [rawUser];
         },
-        getManagedUserAccount: async (id) => {
-          calls.push(["getManagedUserAccount", id]);
+        getManagedUserProfile: async (id) => {
+          calls.push(["getManagedUserProfile", id]);
           return rawUser;
         },
-        updateManagedUserAccountProfile: async (id, updates) => {
-          calls.push(["updateManagedUserAccountProfile", id, updates]);
+        updateManagedUserProfile: async (id, updates) => {
+          calls.push(["updateManagedUserProfile", id, updates]);
           return { ...rawUser, ...updates };
         },
-        removeManagedUserAccount: async (id) => {
-          calls.push(["removeManagedUserAccount", id]);
+        removeManagedUserProfile: async (id) => {
+          calls.push(["removeManagedUserProfile", id]);
           return rawUser;
+        },
+        getManagedUserCredentials: async (id) => {
+          calls.push(["getManagedUserCredentials", id]);
+          return { _id: id, password: "hashed-password" };
+        },
+        updateManagedUserCredentials: async (id, updates) => {
+          calls.push(["updateManagedUserCredentials", id, updates]);
+          return { ...rawUser };
         },
       },
     });
@@ -102,16 +117,27 @@ describe("user repository contract", () => {
     const getResult = await repository.findById(rawUser._id);
     const updateResult = await repository.findByIdAndUpdate(rawUser._id, patch);
     const deleteResult = await repository.findByIdAndDelete(rawUser._id);
+    const credentials = await repository.getCredentialsById(rawUser._id);
+    const credentialUpdateResult = await repository.updateCredentialsById(rawUser._id, {
+      password: "new-hash",
+    });
 
     expect(listResult).to.deep.equal([expectedUserRecord]);
     expect(getResult).to.deep.equal(expectedUserRecord);
     expect(updateResult).to.deep.equal({ ...expectedUserRecord, firstName: "Jane" });
     expect(deleteResult).to.deep.equal(expectedUserRecord);
+    expect(credentials).to.deep.equal({
+      _id: "507f1f77bcf86cd799439011",
+      password: "hashed-password",
+    });
+    expect(credentialUpdateResult).to.deep.equal(expectedUserRecord);
     expect(calls).to.deep.equal([
-      ["listManagedUserAccounts"],
-      ["getManagedUserAccount", "507f1f77bcf86cd799439011"],
-      ["updateManagedUserAccountProfile", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
-      ["removeManagedUserAccount", "507f1f77bcf86cd799439011"],
+      ["listManagedUserProfiles"],
+      ["getManagedUserProfile", "507f1f77bcf86cd799439011"],
+      ["updateManagedUserProfile", "507f1f77bcf86cd799439011", { firstName: "Jane" }],
+      ["removeManagedUserProfile", "507f1f77bcf86cd799439011"],
+      ["getManagedUserCredentials", "507f1f77bcf86cd799439011"],
+      ["updateManagedUserCredentials", "507f1f77bcf86cd799439011", { password: "new-hash" }],
     ]);
   });
 });

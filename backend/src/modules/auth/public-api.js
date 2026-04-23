@@ -1,7 +1,9 @@
 export {
-  getManagedUserAccount,
-  listManagedUserAccounts,
-  removeManagedUserAccount,
-  updateManagedUserAccountProfile,
+  getManagedUserCredentials,
+  getManagedUserProfile,
+  listManagedUserProfiles,
+  removeManagedUserProfile,
+  updateManagedUserCredentials,
+  updateManagedUserProfile,
   verifyAccessToken,
 } from "./composition.js";
