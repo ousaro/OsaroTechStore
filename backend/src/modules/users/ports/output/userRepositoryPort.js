@@ -11,3 +11,29 @@ export const assertUserRepositoryPort = (userRepository, requiredMethods = []) =
 
   return userRepository;
 };
+
+const assertAllowedUserRepositoryMethods = (requiredMethods, allowedMethods, portName) => {
+  for (const methodName of requiredMethods) {
+    if (!allowedMethods.has(methodName)) {
+      throw new Error(`${portName} must not require ${methodName}`);
+    }
+  }
+};
+
+export const assertUserRepositoryQueryPort = (userRepository, requiredMethods = []) => {
+  assertAllowedUserRepositoryMethods(
+    requiredMethods,
+    new Set(["isValidId", "findAllNonAdminSorted", "findById", "getCredentialsById"]),
+    "userRepository query port"
+  );
+  return assertUserRepositoryPort(userRepository, requiredMethods);
+};
+
+export const assertUserRepositoryCommandPort = (userRepository, requiredMethods = []) => {
+  assertAllowedUserRepositoryMethods(
+    requiredMethods,
+    new Set(["findByIdAndUpdate", "findByIdAndDelete", "updateCredentialsById", "hashPassword", "comparePassword"]),
+    "userRepository command port"
+  );
+  return assertUserRepositoryPort(userRepository, requiredMethods);
+};

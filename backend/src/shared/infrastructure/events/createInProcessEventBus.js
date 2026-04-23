@@ -1,3 +1,5 @@
+import { assertApplicationEvent } from "../../application/contracts/applicationEventContract.js";
+
 export const createInProcessEventBus = () => {
   const handlersByType = new Map();
 
@@ -25,6 +27,8 @@ export const createInProcessEventBus = () => {
     },
 
     async publish(event) {
+      assertApplicationEvent(event);
+
       const eventType = event?.type;
 
       if (typeof eventType !== "string" || eventType.trim() === "") {

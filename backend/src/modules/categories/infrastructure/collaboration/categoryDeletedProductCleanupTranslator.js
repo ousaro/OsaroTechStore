@@ -1,3 +1,5 @@
+import { assertApplicationEvent } from "../../../../shared/application/contracts/applicationEventContract.js";
+
 export const createCategoryDeletedProductCleanupTranslator = ({
   removeProductsByCategory,
 }) => {
@@ -10,6 +12,8 @@ export const createCategoryDeletedProductCleanupTranslator = ({
       if (event?.type !== "CategoryDeleted") {
         return;
       }
+
+      assertApplicationEvent(event, { expectedType: "CategoryDeleted" });
 
       await removeProductsByCategory({
         categoryId: event.payload.categoryId,

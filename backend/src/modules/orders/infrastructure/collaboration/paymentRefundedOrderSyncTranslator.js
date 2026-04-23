@@ -1,3 +1,5 @@
+import { assertApplicationEvent } from "../../../../shared/application/contracts/applicationEventContract.js";
+
 export const createPaymentRefundedOrderSyncTranslator = ({
   handlePaymentRefund,
 }) => {
@@ -10,6 +12,8 @@ export const createPaymentRefundedOrderSyncTranslator = ({
       if (event?.type !== "PaymentRefunded") {
         return;
       }
+
+      assertApplicationEvent(event, { expectedType: "PaymentRefunded" });
 
       await handlePaymentRefund({
         paymentReference: event.payload.paymentReference ?? event.payload.sessionId,

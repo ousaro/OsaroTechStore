@@ -1,7 +1,7 @@
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
 import { createPaymentStateChangeEvent } from "../../domain/events/createPaymentStateChangeEvent.js";
 import { assertPaymentEventPublisherPort } from "../../ports/output/paymentEventPublisherPort.js";
-import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
+import { assertPaymentRepositoryCommandPort } from "../../ports/output/paymentRepositoryPort.js";
 
 export const buildVerifyWebhookUseCase = ({
   paymentGateway,
@@ -9,7 +9,7 @@ export const buildVerifyWebhookUseCase = ({
   paymentEventPublisher = null,
 }) => {
   assertPaymentGatewayPort(paymentGateway, ["verifyWebhook"]);
-  assertPaymentRepositoryPort(paymentRepository, ["applyWebhookStateChangeOnce"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["applyWebhookStateChangeOnce"]);
   if (paymentEventPublisher) {
     assertPaymentEventPublisherPort(paymentEventPublisher, ["publish"]);
   }

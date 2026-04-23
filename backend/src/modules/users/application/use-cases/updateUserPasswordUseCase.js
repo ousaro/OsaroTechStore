@@ -3,13 +3,15 @@ import {
   UserNotFoundError,
   UserValidationError,
 } from "../errors/UserApplicationError.js";
-import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import {
+  assertUserRepositoryCommandPort,
+  assertUserRepositoryQueryPort,
+} from "../../ports/output/userRepositoryPort.js";
 import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildUpdateUserPasswordUseCase = ({ userRepository }) => {
-  assertUserRepositoryPort(userRepository, [
-    "isValidId",
-    "getCredentialsById",
+  assertUserRepositoryQueryPort(userRepository, ["isValidId", "getCredentialsById"]);
+  assertUserRepositoryCommandPort(userRepository, [
     "comparePassword",
     "hashPassword",
     "updateCredentialsById",

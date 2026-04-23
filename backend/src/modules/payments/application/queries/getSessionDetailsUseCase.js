@@ -1,6 +1,9 @@
 import { createPaymentSession } from "../../domain/entities/PaymentSession.js";
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
-import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
+import {
+  assertPaymentRepositoryCommandPort,
+  assertPaymentRepositoryQueryPort,
+} from "../../ports/output/paymentRepositoryPort.js";
 import { toPaymentSessionDto } from "../dto/paymentSessionDto.js";
 import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
 
@@ -9,10 +12,8 @@ export const buildGetSessionDetailsUseCase = ({
   paymentRepository,
 }) => {
   assertPaymentGatewayPort(paymentGateway, ["getCheckoutSession"]);
-  assertPaymentRepositoryPort(paymentRepository, [
-    "findPaymentSessionById",
-    "savePaymentSession",
-  ]);
+  assertPaymentRepositoryQueryPort(paymentRepository, ["findPaymentSessionById"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentSession"]);
   return async ({ sessionId }) => {
     const persistedSession = await paymentRepository.findPaymentSessionById(sessionId);
 

@@ -1,10 +1,13 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
 import { createUserProfileUpdatePatch } from "../../domain/entities/User.js";
-import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { assertUserRepositoryCommandPort } from "../../ports/output/userRepositoryPort.js";
 import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildUpdateUserUseCase = ({ userRepository }) => {
-  assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndUpdate"]);
+  assertUserRepositoryCommandPort(userRepository, ["findByIdAndUpdate"]);
+  if (typeof userRepository?.isValidId !== "function") {
+    throw new Error("userRepository port must implement isValidId");
+  }
   return async ({ id, updates }) => {
     if (!userRepository.isValidId(id)) {
       throw new UserNotFoundError(`No such user ${id}`);

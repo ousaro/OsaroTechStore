@@ -1,7 +1,7 @@
-import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
+import { assertPaymentRepositoryCommandPort } from "../../ports/output/paymentRepositoryPort.js";
 
 export const buildLinkPaymentToOrderUseCase = ({ paymentRepository }) => {
-  assertPaymentRepositoryPort(paymentRepository, ["linkPaymentToOrder"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["linkPaymentToOrder"]);
 
   return async ({ paymentReference, orderId }) => {
     if (typeof paymentReference !== "string" || paymentReference.trim() === "") {

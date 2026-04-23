@@ -1,9 +1,9 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
-import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { assertUserRepositoryQueryPort } from "../../ports/output/userRepositoryPort.js";
 import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildGetUserByIdUseCase = ({ userRepository }) => {
-  assertUserRepositoryPort(userRepository, ["isValidId", "findById"]);
+  assertUserRepositoryQueryPort(userRepository, ["isValidId", "findById"]);
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
       throw new UserNotFoundError("No such user");

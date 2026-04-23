@@ -1,14 +1,14 @@
 import { createOrder } from "../../domain/entities/Order.js";
 import { createOrderPlacedEvent } from "../../domain/events/OrderPlaced.js";
 import { assertOrderEventPublisherPort } from "../../ports/output/orderEventPublisherPort.js";
-import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { assertOrderRepositoryCommandPort } from "../../ports/output/orderRepositoryPort.js";
 import { toOrderReadModel } from "../read-models/orderReadModel.js";
 
 export const buildAddOrderUseCase = ({
   orderRepository,
   orderEventPublisher = null,
 }) => {
-  assertOrderRepositoryPort(orderRepository, ["create"]);
+  assertOrderRepositoryCommandPort(orderRepository, ["create"]);
   if (orderEventPublisher) {
     assertOrderEventPublisherPort(orderEventPublisher, ["publish"]);
   }

@@ -1,17 +1,12 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { toUserRecord } from "./userRecordMapper.js";
-import { assertAuthAccountAccessPort } from "../../ports/output/authAccountAccessPort.js";
+import { createValidatedAuthAccountAccess } from "../../ports/output/authAccountAccessPort.js";
 
 export const createMongooseUserRepository = ({ authUserManagement }) => {
-  assertAuthAccountAccessPort(authUserManagement, [
-    "listManagedUserProfiles",
-    "getManagedUserProfile",
-    "updateManagedUserProfile",
-    "removeManagedUserProfile",
-    "getManagedUserCredentials",
-    "updateManagedUserCredentials",
-  ]);
+  const validatedAuthUserManagement = createValidatedAuthAccountAccess(
+    authUserManagement
+  );
 
   return {
     isValidId(id) {
@@ -19,17 +14,17 @@ export const createMongooseUserRepository = ({ authUserManagement }) => {
     },
 
     async findAllNonAdminSorted() {
-      const docs = await authUserManagement.listManagedUserProfiles();
+      const docs = await validatedAuthUserManagement.listManagedUserProfiles();
       return docs.map(toUserRecord);
     },
 
     async findById(id) {
-      const doc = await authUserManagement.getManagedUserProfile(id);
+      const doc = await validatedAuthUserManagement.getManagedUserProfile(id);
       return doc ? toUserRecord(doc) : null;
     },
 
     async findByIdAndUpdate(id, patch) {
-      const doc = await authUserManagement.updateManagedUserProfile(
+      const doc = await validatedAuthUserManagement.updateManagedUserProfile(
         id,
         patch.toPrimitives()
       );
@@ -37,16 +32,19 @@ export const createMongooseUserRepository = ({ authUserManagement }) => {
     },
 
     async findByIdAndDelete(id) {
-      const doc = await authUserManagement.removeManagedUserProfile(id);
+      const doc = await validatedAuthUserManagement.removeManagedUserProfile(id);
       return doc ? toUserRecord(doc) : null;
     },
 
     async getCredentialsById(id) {
-      return authUserManagement.getManagedUserCredentials(id);
+      return validatedAuthUserManagement.getManagedUserCredentials(id);
     },
 
     async updateCredentialsById(id, updates) {
-      const doc = await authUserManagement.updateManagedUserCredentials(id, updates);
+      const doc = await validatedAuthUserManagement.updateManagedUserCredentials(
+        id,
+        updates
+      );
       return doc ? toUserRecord(doc) : null;
     },
 

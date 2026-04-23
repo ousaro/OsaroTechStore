@@ -14,7 +14,11 @@ describe("orderPlacedPaymentLinkTranslator", () => {
       type: "OrderPlaced",
       payload: {
         orderId: "order-1",
+        ownerId: "user-1",
+        status: "pending",
+        paymentStatus: "pending",
         paymentReference: "pay_123",
+        totalPrice: 100,
       },
     });
 
@@ -24,18 +28,27 @@ describe("orderPlacedPaymentLinkTranslator", () => {
     })).to.equal(true);
   });
 
-  it("ignores OrderPlaced events that do not carry a payment reference", async () => {
+  it("rejects OrderPlaced events that do not carry a payment reference", async () => {
     const linkPaymentToOrder = sinon.stub().resolves();
     const translator = createOrderPlacedPaymentLinkTranslator({
       linkPaymentToOrder,
     });
 
-    await translator.publish({
-      type: "OrderPlaced",
-      payload: {
-        orderId: "order-1",
-      },
-    });
+    try {
+      await translator.publish({
+        type: "OrderPlaced",
+        payload: {
+          orderId: "order-1",
+          ownerId: "user-1",
+          status: "pending",
+          paymentStatus: "pending",
+          totalPrice: 100,
+        },
+      });
+      expect.fail("Expected translator to reject invalid OrderPlaced payload");
+    } catch (error) {
+      expect(error.message).to.equal("event.payload.paymentReference is required");
+    }
 
     expect(linkPaymentToOrder.called).to.equal(false);
   });

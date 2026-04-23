@@ -1,9 +1,12 @@
 import { UserNotFoundError } from "../errors/UserApplicationError.js";
-import { assertUserRepositoryPort } from "../../ports/output/userRepositoryPort.js";
+import { assertUserRepositoryCommandPort } from "../../ports/output/userRepositoryPort.js";
 import { toUserReadModel } from "../read-models/userReadModel.js";
 
 export const buildDeleteUserUseCase = ({ userRepository }) => {
-  assertUserRepositoryPort(userRepository, ["isValidId", "findByIdAndDelete"]);
+  assertUserRepositoryCommandPort(userRepository, ["findByIdAndDelete"]);
+  if (typeof userRepository?.isValidId !== "function") {
+    throw new Error("userRepository port must implement isValidId");
+  }
   return async ({ id }) => {
     if (!userRepository.isValidId(id)) {
       throw new UserNotFoundError("No such user");

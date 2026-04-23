@@ -1,7 +1,7 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createCheckoutItems } from "../../domain/value-objects/CheckoutItem.js";
 import { assertPaymentGatewayPort } from "../../ports/output/paymentGatewayPort.js";
-import { assertPaymentRepositoryPort } from "../../ports/output/paymentRepositoryPort.js";
+import { assertPaymentRepositoryCommandPort } from "../../ports/output/paymentRepositoryPort.js";
 import { createCheckoutSessionWorkflow } from "../../domain/services/paymentSessionWorkflowService.js";
 import { PaymentValidationError } from "../errors/PaymentApplicationError.js";
 import { toPaymentCheckoutRedirectDto } from "../dto/paymentSessionDto.js";
@@ -12,7 +12,7 @@ export const buildCreatePaymentIntentUseCase = ({
   clientUrl,
 }) => {
   assertPaymentGatewayPort(paymentGateway, ["createCheckoutSession"]);
-  assertPaymentRepositoryPort(paymentRepository, ["savePaymentSession"]);
+  assertPaymentRepositoryCommandPort(paymentRepository, ["savePaymentSession"]);
 
   return async ({ items }) => {
     let checkoutItems;

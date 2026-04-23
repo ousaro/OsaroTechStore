@@ -1,3 +1,5 @@
+import { assertApplicationEvent } from "../../../../shared/application/contracts/applicationEventContract.js";
+
 export const createOrderPlacedPaymentLinkTranslator = ({
   linkPaymentToOrder,
 }) => {
@@ -11,9 +13,7 @@ export const createOrderPlacedPaymentLinkTranslator = ({
         return;
       }
 
-      if (!event.payload?.paymentReference) {
-        return;
-      }
+      assertApplicationEvent(event, { expectedType: "OrderPlaced" });
 
       await linkPaymentToOrder({
         paymentReference: event.payload.paymentReference,

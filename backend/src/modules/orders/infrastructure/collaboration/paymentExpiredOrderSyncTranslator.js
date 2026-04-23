@@ -1,3 +1,5 @@
+import { assertApplicationEvent } from "../../../../shared/application/contracts/applicationEventContract.js";
+
 export const createPaymentExpiredOrderSyncTranslator = ({
   handlePaymentExpiration,
 }) => {
@@ -10,6 +12,8 @@ export const createPaymentExpiredOrderSyncTranslator = ({
       if (event?.type !== "PaymentExpired") {
         return;
       }
+
+      assertApplicationEvent(event, { expectedType: "PaymentExpired" });
 
       await handlePaymentExpiration({
         paymentReference: event.payload.paymentReference ?? event.payload.sessionId,

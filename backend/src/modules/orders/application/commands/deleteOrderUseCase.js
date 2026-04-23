@@ -1,9 +1,12 @@
 import { OrderNotFoundError } from "../errors/OrderApplicationError.js";
-import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { assertOrderRepositoryCommandPort } from "../../ports/output/orderRepositoryPort.js";
 import { toOrderReadModel } from "../read-models/orderReadModel.js";
 
 export const buildDeleteOrderUseCase = ({ orderRepository }) => {
-  assertOrderRepositoryPort(orderRepository, ["isValidId", "findByIdAndDelete"]);
+  assertOrderRepositoryCommandPort(orderRepository, ["findByIdAndDelete"]);
+  if (typeof orderRepository?.isValidId !== "function") {
+    throw new Error("orderRepository port must implement isValidId");
+  }
   return async ({ id }) => {
     if (!orderRepository.isValidId(id)) {
       throw new OrderNotFoundError("No such Order");

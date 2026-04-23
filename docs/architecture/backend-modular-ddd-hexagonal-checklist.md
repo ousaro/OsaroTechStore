@@ -64,11 +64,11 @@ Completed items and historical progress notes have been removed on purpose.
 
 ## 7. Ports and Contracts
 
-- [ ] Strengthen the auth/users contract so it describes behavior and payloads, not just callable method names
-- [ ] Strengthen event publication/consumption contracts around payload schema and correlation requirements
-- [ ] Review repository ports for places where command/query responsibilities should be clearer
-- [ ] Add explicit DTO contracts at module boundaries where raw record shapes are still doing double duty
-- [ ] Decide where lightweight runtime assertions are sufficient and where richer contract tests should become mandatory
+- [x] Strengthen the auth/users contract so it describes behavior and payloads, not just callable method names
+- [x] Strengthen event publication/consumption contracts around payload schema and correlation requirements
+- [x] Review repository ports for places where command/query responsibilities should be clearer
+- [x] Add explicit DTO contracts at module boundaries where raw record shapes are still doing double duty
+- [x] Decide where lightweight runtime assertions are sufficient and where richer contract tests should become mandatory
 
 ## 8. Payments Provider Flexibility
 
