@@ -32,7 +32,7 @@ It is now a real modular monolith with:
 
 The remaining work is now residual architecture tightening, not a large reconstruction.
 
-## 1. Auth and Users Still Share One Persistence Owner
+## 1. Auth and Users Boundary Decision
 
 The `auth`/`users` boundary is much cleaner than before:
 
@@ -41,20 +41,31 @@ The `auth`/`users` boundary is much cleaner than before:
 - profile payloads are validated and sanitized at the port boundary
 - `users` returns read models without passwords
 
-What is still unresolved is ownership depth.
+The remaining issue was ownership depth. That decision is now explicit.
 
-Today:
+Current intended model:
 
 - `auth` still owns the underlying account persistence
 - `users` owns profile-facing behavior and profile update rules
-- `users` does not yet own a separate persistence model or storage boundary
+- `users` intentionally does not own a separate persistence model right now
 
-This is no longer a contract-shape problem. It is now a strategic bounded-context decision:
+This is no longer a contract-shape problem. It is a deliberate bounded-context split:
 
-- keep `users` as a profile facade over auth-owned accounts and document that as the intended model
-- or move toward a truly separate users-owned persistence boundary later
+- keep `users` as a profile facade over auth-owned accounts
+- keep profile behavior, validation, read-model shaping, and admin-facing profile operations in `users`
+- keep credential storage, authentication, and account persistence ownership in `auth`
 
-Until that decision is made explicit, the seam remains valid but transitional.
+Why this is the chosen direction today:
+
+- there is no second persistence model for users yet
+- the current use cases are profile-oriented, not identity-provider orchestration
+- the cross-module contract is now narrow enough that `users` can evolve its behavior without leaking credential concerns back out
+
+This means the current seam is valid and intentional, not transitional.
+
+Future reconsideration trigger:
+
+- introduce separate users-owned persistence only if product requirements demand profile data with an independent lifecycle, storage model, or synchronization boundary that auth should no longer own
 
 ## 2. Legacy Payment/Order Compatibility Paths Still Exist
 

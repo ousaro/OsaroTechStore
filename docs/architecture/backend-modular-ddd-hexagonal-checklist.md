@@ -8,9 +8,9 @@ Completed items, historical progress notes, and now-implemented migration steps 
 
 ## 1. Auth and Users Boundary
 
-- [ ] Decide whether `users` is intentionally a profile facade over auth-owned accounts or whether it should eventually own separate persistence
-- [ ] If the facade model is the intended end state, document it clearly in the architecture docs as a deliberate bounded-context decision
-- [ ] If separate users-owned persistence is still the target, define the migration and synchronization strategy explicitly before adding more cross-module behavior
+- [x] Decide whether `users` is intentionally a profile facade over auth-owned accounts or whether it should eventually own separate persistence
+- [x] If the facade model is the intended end state, document it clearly in the architecture docs as a deliberate bounded-context decision
+- [x] If separate users-owned persistence is still the target, define the migration and synchronization strategy explicitly before adding more cross-module behavior
 
 ## 2. Legacy Payment/Order Compatibility Cleanup
 
