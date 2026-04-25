@@ -1,14 +1,4 @@
-const assertNonEmptyString = (value, fieldName) => {
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new Error(`${fieldName} is required`);
-  }
-};
-
-const assertObject = (value, fieldName) => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${fieldName} must be an object`);
-  }
-};
+import { assertNonEmptyString, assertObject } from "../../infrastructure/assertions";
 
 const EVENT_PAYLOAD_ASSERTIONS = {
   CategoryDeleted(payload) {
@@ -65,6 +55,20 @@ const EVENT_PAYLOAD_ASSERTIONS = {
   },
 };
 
+// TODO: you should split this to assert[ModuleEventName]Event.js like assertCategoryDeletedEvent.js
+// exemple for the event 
+/*
+export const createPaymentConfirmedEvent = (payload) => {
+  const event = {
+    type: "PaymentConfirmed",
+    payload,
+  };
+
+  assertPaymentConfirmedEvent(event);
+
+  return event;
+};
+*/
 export const assertApplicationEvent = (event, { expectedType } = {}) => {
   assertObject(event, "event");
   assertNonEmptyString(event.type, "event.type");
@@ -81,3 +85,4 @@ export const assertApplicationEvent = (event, { expectedType } = {}) => {
 
   return event;
 };
+

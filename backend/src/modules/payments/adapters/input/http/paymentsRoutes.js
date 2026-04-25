@@ -1,6 +1,6 @@
 import express from "express";
 import { env } from "../../../../../infrastructure/config/env.js";
-import { resolvePaymentGatewayStrategy } from "../../../../../infrastructure/providers/payments/paymentGatewayStrategies.js";
+import { resolvePaymentGatewayStrategy } from "../../../../../infrastructure/providers/payments/resolvePaymentGateway.js";
 import {
   createPaymentIntentHandler,
   stripeWebhookHandler,

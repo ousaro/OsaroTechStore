@@ -63,10 +63,15 @@ const getConfiguredProductsModule = () => {
 export const removeProductsByCategory = (...args) =>
   getConfiguredProductsModule().removeProductsByCategory(...args);
 
-export const startNewProductStatusScheduler = (...args) =>
-  getConfiguredProductsModule().startNewProductStatusScheduler(...args);
+
+class ProductService {
+  startProductStatusScheduler() {
+    getConfiguredProductsModule().startNewProductStatusScheduler();
+  }
+}
 
 export const configureProductsModule = (dependencies) => {
+  const productService = new ProductService()
   productsModule = createProductsModule(dependencies);
   ({
     getAllProductsHandler,
@@ -74,5 +79,6 @@ export const configureProductsModule = (dependencies) => {
     addProductHandler,
     updateProductHandler,
     deleteProductHandler,
+    productService
   } = productsModule);
 };

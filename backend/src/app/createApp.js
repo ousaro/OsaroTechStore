@@ -7,17 +7,19 @@ import path from "path";
 import { fileURLToPath } from "url";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+// config
 import { env } from "../infrastructure/config/env.js";
-import { notFoundMiddleware } from "../shared/infrastructure/http/notFoundMiddleware.js";
-import { errorMiddleware } from "../shared/infrastructure/http/errorMiddleware.js";
-import { createRequireAuthMiddleware } from "../shared/infrastructure/http/createRequireAuthMiddleware.js";
-import { authRoutes } from "../modules/auth/app-api.js";
-import { verifyAccessToken } from "../modules/auth/public-api.js";
-import { createCategoriesRoutes } from "../modules/categories/app-api.js";
-import { createOrdersRoutes } from "../modules/orders/app-api.js";
-import { createPaymentsRoutes } from "../modules/payments/app-api.js";
-import { createProductsRoutes } from "../modules/products/app-api.js";
-import { createUsersRoutes } from "../modules/users/app-api.js";
+// Shared
+import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
+import { errorMiddleware } from "../shared/infrastructure/http/middleware/errorMiddleware.js";
+import { createRequireAuthMiddleware } from "../shared/infrastructure/http/middleware/createRequireAuthMiddleware.js";
+// Routes
+import { authRoutes } from "../modules/auth/composition.js";
+import { createCategoriesRoutes } from "../modules/categories/composition.js";
+import { createOrdersRoutes } from "../modules/orders/composition.js";
+import { createPaymentsRoutes } from "../modules/payments/composition.js";
+import { createProductsRoutes } from "../modules/products/composition.js";
+import { createUsersRoutes } from "../modules/users/composition.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,11 +35,11 @@ export const createSelectiveBodyParser = (bodyParser) => {
   };
 };
 
-export const createApp = () => {
+export const createApp = ({ tokenService }) => {
   const app = express();
   const jsonBodyParser = express.json({ limit: "50mb" });
   const urlencodedBodyParser = express.urlencoded({ limit: "50mb", extended: true });
-  const requireAuth = createRequireAuthMiddleware({ verifyAccessToken });
+  const requireAuth = createRequireAuthMiddleware({ tokenService });
 
   app.use(createSelectiveBodyParser(jsonBodyParser));
   app.use(createSelectiveBodyParser(urlencodedBodyParser));

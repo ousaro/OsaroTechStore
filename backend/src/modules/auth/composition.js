@@ -3,6 +3,8 @@ import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.j
 import { createAuthInputPort } from "./ports/input/authInputPort.js";
 import { buildVerifyAccessTokenUseCase } from "./application/queries/verifyAccessTokenUseCase.js";
 import { createAuthHttpController } from "./adapters/input/http/authHttpController.js";
+import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
+
 
 const toManagedUserProfile = (authUserRecord) => {
   if (!authUserRecord) {
@@ -17,7 +19,10 @@ const toManagedUserProfile = (authUserRecord) => {
   return managedUserProfile;
 };
 
-export const createAuthModule = ({ authUserRepository, tokenService }) => {
+export const createAuthModule = ({ authUserRepository }) => {
+
+  const tokenService = createJwtTokenService();
+
   const registerUserUseCase = buildRegisterUserUseCase({
     authUserRepository,
     tokenService,
@@ -78,7 +83,7 @@ export const createAuthModule = ({ authUserRepository, tokenService }) => {
     removeManagedUserProfile,
     getManagedUserCredentials,
     updateManagedUserCredentials,
-    verifyAccessToken,
+    tokenService
   };
 };
 

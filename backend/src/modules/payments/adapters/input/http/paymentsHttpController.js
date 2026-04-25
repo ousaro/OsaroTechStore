@@ -1,4 +1,4 @@
-import { asyncHandler } from "../../../../../shared/infrastructure/http/asyncHandler.js";
+import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { PaymentWebhookError } from "../../../application/errors/PaymentApplicationError.js";
 import { assertPaymentsCommandPort } from "../../../ports/input/paymentsCommandPort.js";
 import { assertPaymentsQueryPort } from "../../../ports/input/paymentsQueryPort.js";

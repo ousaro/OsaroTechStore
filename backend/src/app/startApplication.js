@@ -1,42 +1,39 @@
 import { createApp } from "./createApp.js";
 import { registerApplicationWorkflows } from "./registerApplicationWorkflows.js";
-import { startNewProductStatusScheduler } from "../modules/products/app-api.js";
-import { connectMongo } from "../shared/infrastructure/persistence/connectMongo.js";
+import { startProductStatusScheduler } from "../infrastructure/runtime/schedulers/startProductStatusScheduler.js";
 import { configureApplicationModules } from "../infrastructure/bootstrap/configureApplicationModules.js";
 import { applicationEventBus } from "./applicationEventBus.js";
 
 export const startApplication = async ({
-  mongoUri,
   port,
-  databaseStrategy = null,
-  connectDatabase = connectMongo,
+  eventBus = applicationEventBus,
   configureModules = configureApplicationModules,
   createHttpApp = createApp,
   registerWorkflows = registerApplicationWorkflows,
-  startRuntimeHooks = startNewProductStatusScheduler,
+  startRuntimeHooks = startProductStatusScheduler,
   logger = console,
 }) => {
-  if (databaseStrategy) {
-    await databaseStrategy.connect();
-  } else {
-    await connectDatabase(mongoUri);
-  }
 
-  configureModules({
-    eventBus: applicationEventBus,
-    ...(databaseStrategy ? { databaseStrategy } : {}),
+  const { auth, product } = configureModules({
+    eventBus
   });
-  registerWorkflows();
 
-  const app = createHttpApp();
-  startRuntimeHooks();
+  registerWorkflows({
+    eventBus
+  });
+
+  const { tokenService } = auth
+  const { productService } = product
+
+  const app = createHttpApp({ tokenService });
+  startRuntimeHooks({ productService });
 
   return new Promise((resolve) => {
     let server;
     server = app.listen(port, () => {
       logger.log(`API listening on port ${port}`);
       logger.log(`Swagger UI: http://localhost:${port}/api/docs`);
-      queueMicrotask(() => resolve(server));
+      queueMicrotask(() => resolve(server)); // using queueMicrotask to ensure the server is fully started before resolving the promise
     });
   });
 };

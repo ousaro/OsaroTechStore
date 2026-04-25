@@ -1,73 +1,20 @@
-import { applicationEventBus } from "./applicationEventBus.js";
-import { createCategoryDeletedProductCleanupTranslator } from "../modules/categories/public-api.js";
-import {
-  confirmOrderPayment,
-  createPaymentConfirmedOrderSyncTranslator,
-  createPaymentExpiredOrderSyncTranslator,
-  createPaymentFailedOrderSyncTranslator,
-  createPaymentRefundedOrderSyncTranslator,
-  handlePaymentExpiration,
-  handlePaymentFailure,
-  handlePaymentRefund,
-} from "../modules/orders/public-api.js";
-import {
-  createOrderPlacedPaymentLinkTranslator,
-  linkPaymentToOrder,
-} from "../modules/payments/public-api.js";
-import { removeProductsByCategory } from "../modules/products/public-api.js";
+import { handlePaymentConfirmed } from "../modules/payments/application/handlers/handlePaymentConfirmed.js";
+import { handlePaymentFailed } from "../modules/payments/application/handlers/handlePaymentFailed.js";
+import { handlePaymentExpired } from "../modules/payments/application/handlers/handlePaymentExpired.js";
+import { handlePaymentRefunded } from "../modules/payments/application/handlers/handlePaymentRefunded.js";
+import { handleOrderPlaced } from "../modules/orders/application/handlers/handleOrderPlaced.js";
+import { handleCategoryDeleted } from "../modules/categories/application/handlers/handleCategoryDeleted.js";
 
-export const registerApplicationWorkflows = ({
-  eventBus = applicationEventBus,
-  createCategoryDeletedTranslator = createCategoryDeletedProductCleanupTranslator,
-  createPaymentConfirmedTranslator = createPaymentConfirmedOrderSyncTranslator,
-  createPaymentFailedTranslator = createPaymentFailedOrderSyncTranslator,
-  createPaymentExpiredTranslator = createPaymentExpiredOrderSyncTranslator,
-  createPaymentRefundedTranslator = createPaymentRefundedOrderSyncTranslator,
-  createOrderPlacedTranslator = createOrderPlacedPaymentLinkTranslator,
-  removeProductsByCategoryHandler = removeProductsByCategory,
-  confirmOrderPaymentHandler = confirmOrderPayment,
-  handlePaymentFailureHandler = handlePaymentFailure,
-  handlePaymentExpirationHandler = handlePaymentExpiration,
-  handlePaymentRefundHandler = handlePaymentRefund,
-  linkPaymentToOrderHandler = linkPaymentToOrder,
-} = {}) => {
-  const categoryDeletedProductCleanupTranslator = createCategoryDeletedTranslator({
-    removeProductsByCategory: removeProductsByCategoryHandler,
-  });
-  const paymentConfirmedOrderSyncTranslator = createPaymentConfirmedTranslator({
-    confirmOrderPayment: confirmOrderPaymentHandler,
-  });
-  const paymentFailedOrderSyncTranslator = createPaymentFailedTranslator({
-    handlePaymentFailure: handlePaymentFailureHandler,
-  });
-  const paymentExpiredOrderSyncTranslator = createPaymentExpiredTranslator({
-    handlePaymentExpiration: handlePaymentExpirationHandler,
-  });
-  const paymentRefundedOrderSyncTranslator = createPaymentRefundedTranslator({
-    handlePaymentRefund: handlePaymentRefundHandler,
-  });
-  const orderPlacedPaymentLinkTranslator = createOrderPlacedTranslator({
-    linkPaymentToOrder: linkPaymentToOrderHandler,
-  });
+export const registerApplicationWorkflows = ({ eventBus }) => {
+  eventBus.subscribe("CategoryDeleted", handleCategoryDeleted);
 
-  return [
-    eventBus.subscribe("CategoryDeleted", (event) =>
-      categoryDeletedProductCleanupTranslator.publish(event)
-    ),
-    eventBus.subscribe("OrderPlaced", (event) =>
-      orderPlacedPaymentLinkTranslator.publish(event)
-    ),
-    eventBus.subscribe("PaymentConfirmed", (event) =>
-      paymentConfirmedOrderSyncTranslator.publish(event)
-    ),
-    eventBus.subscribe("PaymentFailed", (event) =>
-      paymentFailedOrderSyncTranslator.publish(event)
-    ),
-    eventBus.subscribe("PaymentExpired", (event) =>
-      paymentExpiredOrderSyncTranslator.publish(event)
-    ),
-    eventBus.subscribe("PaymentRefunded", (event) =>
-      paymentRefundedOrderSyncTranslator.publish(event)
-    ),
-  ];
+  eventBus.subscribe("OrderPlaced", handleOrderPlaced);
+
+  eventBus.subscribe("PaymentConfirmed", handlePaymentConfirmed);
+
+  eventBus.subscribe("PaymentFailed", handlePaymentFailed);
+
+  eventBus.subscribe("PaymentExpired", handlePaymentExpired);
+
+  eventBus.subscribe("PaymentRefunded", handlePaymentRefunded);
 };

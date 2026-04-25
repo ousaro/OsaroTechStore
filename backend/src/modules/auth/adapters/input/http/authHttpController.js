@@ -1,4 +1,4 @@
-import { asyncHandler } from "../../../../../shared/infrastructure/http/asyncHandler.js";
+import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { assertAuthInputPort } from "../../../ports/input/authInputPort.js";
 
 export const createAuthHttpController = ({ authInputPort }) => {

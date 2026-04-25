@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { resolvePaymentGatewayStrategy } from "../../../infrastructure/providers/payments/paymentGatewayStrategies.js";
+import { resolvePaymentGatewayStrategy } from "../../../infrastructure/providers/payments/resolvePaymentGateway.js";
 
 describe("payment gateway strategies", () => {
   it("returns Stripe when the provider is selected and configured", () => {

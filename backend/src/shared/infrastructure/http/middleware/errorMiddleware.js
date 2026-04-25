@@ -1,4 +1,4 @@
-import { resolveHttpError } from "./resolveHttpError.js";
+import { resolveHttpError } from "../errors/resolveHttpError.js";
 
 export const errorMiddleware = (error, req, res, next) => {
   const { statusCode, body } = resolveHttpError(error);

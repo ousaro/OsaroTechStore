@@ -1,4 +1,4 @@
-import { asyncHandler } from "../../../../../shared/infrastructure/http/asyncHandler.js";
+import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { assertProductsInputPort } from "../../../ports/input/productsInputPort.js";
 
 export const createProductHttpController = ({ productsInputPort }) => {

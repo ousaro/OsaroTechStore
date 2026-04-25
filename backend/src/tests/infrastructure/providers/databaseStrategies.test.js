@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { resolveDatabaseStrategy } from "../../../infrastructure/providers/databases/databaseStrategies.js";
+import { resolveDatabaseStrategy } from "../../../infrastructure/providers/databases/resolveDatabaseProvider.js";
 
 describe("database strategies", () => {
   it("builds the MongoDB repository bundle", () => {

@@ -2,8 +2,8 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { CategoryNotFoundError, CategoryValidationError } from "../../modules/categories/application/errors/CategoryApplicationError.js";
-import { errorMiddleware } from "../../shared/infrastructure/http/errorMiddleware.js";
-import { HttpValidationError } from "../../shared/infrastructure/http/HttpValidationError.js";
+import { errorMiddleware } from "../../shared/infrastructure/http/middleware/errorMiddleware.js";
+import { HttpValidationError } from "../../shared/infrastructure/http/errors/HttpValidationError.js";
 import { AuthUnauthorizedError } from "../../modules/auth/application/errors/AuthApplicationError.js";
 import { OrderNotFoundError } from "../../modules/orders/application/errors/OrderApplicationError.js";
 import {

@@ -1,4 +1,4 @@
-import { asyncHandler } from "../../../../../shared/infrastructure/http/asyncHandler.js";
+import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { assertOrdersCommandPort } from "../../../ports/input/ordersCommandPort.js";
 import { assertOrdersQueryPort } from "../../../ports/input/ordersQueryPort.js";
 

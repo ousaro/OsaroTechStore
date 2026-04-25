@@ -8,13 +8,17 @@ export const createJwtTokenService = () => {
       return jwt.sign({ _id: userId }, env.tokenSecret, { expiresIn: "2d" });
     },
 
-    verifyAndExtractUserId(authorizationHeader) {
+    verify(authorizationHeader) {
       const [scheme, token] = authorizationHeader.split(" ");
 
       if (scheme !== "Bearer" || !token) {
         throw new AuthUnauthorizedError("Request is not authorized");
       }
 
+      this.extractUserId(token)
+    },
+
+     extractUserId(token) {
       try {
         const { _id } = jwt.verify(token, env.tokenSecret);
         return _id;
@@ -22,5 +26,6 @@ export const createJwtTokenService = () => {
         throw new AuthUnauthorizedError("Request is not authorized");
       }
     },
+
   };
 };

@@ -1,17 +1,12 @@
-import { assertApplicationEvent } from "../../application/contracts/applicationEventContract.js";
+import { assertFunction, assertNonEmptyString } from "../assertions";
 
 export const createInProcessEventBus = () => {
   const handlersByType = new Map();
 
   return {
     subscribe(eventType, handler) {
-      if (typeof eventType !== "string" || eventType.trim() === "") {
-        throw new Error("eventType is required");
-      }
-
-      if (typeof handler !== "function") {
-        throw new Error("event handler is required");
-      }
+      assertNonEmptyString(eventType, "eventType");
+      assertFunction(handler, "handler");
 
       const handlers = handlersByType.get(eventType) ?? new Set();
       handlers.add(handler);
@@ -27,19 +22,13 @@ export const createInProcessEventBus = () => {
     },
 
     async publish(event) {
-      assertApplicationEvent(event);
-
       const eventType = event?.type;
 
-      if (typeof eventType !== "string" || eventType.trim() === "") {
-        throw new Error("event.type is required");
-      }
+      assertNonEmptyString(eventType, "event.type");
 
       const handlers = handlersByType.get(eventType);
 
-      if (!handlers || handlers.size === 0) {
-        return;
-      }
+      if (!handlers) return;
 
       for (const handler of handlers) {
         await handler(event);
