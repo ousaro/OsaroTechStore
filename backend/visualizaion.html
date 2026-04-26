@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Orders Module - Hexagonal Architecture</title>
+<style>
+  body {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+
+.container {
+display: grid;
+grid-template-columns: 1fr 2fr 1fr;
+gap: 20px;
+max-width: 1200px;
+width: 100%;
+}
+
+.box {
+border: 2px solid #334155;
+border-radius: 10px;
+padding: 15px;
+background: #1e293b;
+}
+
+.title {
+font-weight: bold;
+margin-bottom: 10px;
+color: #38bdf8;
+}
+
+.input { border-color: #22c55e; }
+.output { border-color: #f97316; }
+.core { border-color: #a78bfa; }
+
+.item {
+margin: 6px 0;
+padding: 6px;
+background: #020617;
+border-radius: 6px;
+font-size: 14px;
+}
+
+.arrow {
+text-align: center;
+font-size: 22px;
+color: #94a3b8;
+} </style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- INPUT SIDE -->
+
+  <div class="box input">
+    <div class="title">INPUT (Adapters)</div>
+    <div class="item">HTTP Routes (ordersRoutes)</div>
+    <div class="item">Event Handler (PaymentConfirmed)</div>
+    <div class="item">Scheduler / Cron</div>
+
+```
+<div class="title">INPUT PORTS</div>
+<div class="item">ordersCommandPort</div>
+<div class="item">ordersQueryPort</div>
+```
+
+  </div>
+
+  <!-- CORE -->
+
+  <div class="box core">
+    <div class="title">APPLICATION CORE</div>
+
+```
+<div class="item">addOrderUseCase</div>
+<div class="item">updateOrderUseCase</div>
+<div class="item">deleteOrderUseCase</div>
+<div class="item">confirmOrderPaymentUseCase</div>
+<div class="item">handlePaymentFailureUseCase</div>
+
+<div class="title">DOMAIN</div>
+<div class="item">Order Entity</div>
+<div class="item">OrderStatus (CREATED → PAID → SHIPPED)</div>
+<div class="item">Domain Errors</div>
+```
+
+  </div>
+
+  <!-- OUTPUT SIDE -->
+
+  <div class="box output">
+    <div class="title">OUTPUT PORTS</div>
+    <div class="item">orderRepository</div>
+    <div class="item">eventPublisher</div>
+
+```
+<div class="title">OUTPUT ADAPTERS</div>
+<div class="item">Mongo/Postgres Repo</div>
+<div class="item">EventBus</div>
+```
+
+  </div>
+
+</div>
+
+</body>
+</html>

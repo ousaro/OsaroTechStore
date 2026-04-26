@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import OrderModel from "../persistence/orderModel.js";
-import { toOrderRecord } from "../persistence/orderRecordMapper.js";
+import OrderModel from "../../persistence/mongo/orderModel.js";
+import { toOrderRecord } from "../../persistence/mongo/orderRecordMapper.js";
 
 export const createMongooseOrderRepository = () => {
   return {

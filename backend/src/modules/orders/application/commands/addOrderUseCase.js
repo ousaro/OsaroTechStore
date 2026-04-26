@@ -15,7 +15,7 @@ export const buildAddOrderUseCase = ({
 
   return async (payload) => {
     const order = createOrder(payload);
-    // Thin orchestration: validate/build in domain, persistence in repository.
+    
     const createdOrder = await orderRepository.create(order);
 
     if (orderEventPublisher) {

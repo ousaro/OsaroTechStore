@@ -1,4 +1,3 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import {
   cancelOrder,
   deliverOrder,
@@ -7,7 +6,10 @@ import {
   startOrderProcessing,
   transitionOrderStatus,
 } from "../entities/Order.js";
-import { createPaymentStatus } from "../value-objects/PaymentStatus.js";
+import { createPaymentStatus } from "../../../payments/domain/value-objects/PaymentStatus.js";
+import { assertObject } from "../../../../shared/infrastructure/assertions";
+import { OrderStatusRequiredPaymentStatusPaidError } from "../errors/OrderStatusRequiredPaymentStatusPaidError.js";
+
 
 const ORDER_STATUSES_REQUIRING_PAID_PAYMENT = new Set([
   "paid",
@@ -25,13 +27,8 @@ const ORDER_STATUS_BEHAVIORS = {
 };
 
 export const prepareOrderLifecyclePatch = ({ currentOrder, updates }) => {
-  if (!currentOrder || typeof currentOrder !== "object") {
-    throw new Error("currentOrder is required");
-  }
-
-  if (!updates || typeof updates !== "object") {
-    throw new Error("updates are required");
-  }
+  assertObject(currentOrder, "currentOrder")
+  assertObject(updates, "updates")
 
   const patchUpdates = { ...updates };
   const nextPaymentStatus =
@@ -57,7 +54,7 @@ export const prepareOrderLifecyclePatch = ({ currentOrder, updates }) => {
     ORDER_STATUSES_REQUIRING_PAID_PAYMENT.has(effectiveOrderStatus) &&
     nextPaymentStatus !== "paid"
   ) {
-    throw new DomainValidationError(
+    throw new OrderStatusRequiredPaymentStatusPaidError(
       `Order status ${effectiveOrderStatus} requires paymentStatus paid`
     );
   }

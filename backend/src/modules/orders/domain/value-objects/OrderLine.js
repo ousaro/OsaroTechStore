@@ -1,23 +1,15 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+import { assertPositifNumber, assertNonEmptyString, assertNonEmptyArray, assertObject } from "../../../../shared/infrastructure/assertions/index.js";
 
-const assertPositiveInteger = (value, fieldName) => {
-  if (!Number.isInteger(value) || value <= 0) {
-    throw new DomainValidationError(`${fieldName} must be a positive integer`);
-  }
-};
+
 
 export const createOrderLine = (line) => {
-  if (!line || typeof line !== "object") {
-    throw new DomainValidationError("order line is required");
-  }
+  assertObject(line, "orderLine")
 
   const { productId, qty, ...rest } = line;
 
-  if (typeof productId !== "string" || productId.trim() === "") {
-    throw new DomainValidationError("orderLine.productId is required");
-  }
+  assertNonEmptyString(productId, "productId")
 
-  assertPositiveInteger(qty, "orderLine.qty");
+  assertPositifNumber(qty, "orderLine.qty");
 
   const props = {
     ...rest,
@@ -34,9 +26,7 @@ export const createOrderLine = (line) => {
 };
 
 export const createOrderLines = (lines) => {
-  if (!Array.isArray(lines) || lines.length === 0) {
-    throw new DomainValidationError("products must be a non-empty array");
-  }
+  assertNonEmptyArray(lines, "products")
 
   return Object.freeze(lines.map((line) => createOrderLine(line)));
 };

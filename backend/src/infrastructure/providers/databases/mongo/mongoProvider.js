@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-import { createAuthUserMongoRepository } from "../../../modules/auth/adapters/mongo/user.repository.mongo.js";
-import { createCategoriesMongoRepository } from "../../../modules/categories/adapters/mongo/user.repository.mongo.js";
-import { createOrdersMongoRepository } from "../../../modules/orders/adapters/mongo/user.repository.mongo.js";
-import { createPaymentsMongoRepository } from "../../../modules/payments/adapters/mongo/user.repository.mongo.js";
-import { createProductsMongoRepository } from "../../../modules/products/adapters/mongo/user.repository.mongo.js";
-import { createUsersMongoRepository } from "../../../modules/users/adapters/mongo/user.repository.mongo.js";
+import { createMongooseAuthUserRepository } from "../../../../modules/auth/adapters/output/repositories/mongo/mongooseAuthUserRepository.js";
+import { createMongooseUserRepository } from "../../../../modules/users/adapters/output/repositories/mongo/mongooseUserRepository.js";
+import { createMongooseCategorieRepository } from "../../../../modules/categories/output/adapters/repositories/mongo/mongooseCategoryRepository.js";
+import { createMongooseOrderRepository } from "../../../../modules/orders/adapters/output/repositories/mongo/mongooseOrderRepository.js";
+import { createMongoosePaymentRepository } from "../../../../modules/payments/adapters/output/repositories/mongo/mongoosePaymentRepository.js";
+import { createMongooseProductRepository } from "../../../../modules/products/adapters/output/repositories/mongo/mongooseProductRepository.js";
 
 export const createMongoProvider = ({ uri, options = {} }) => {
   if (!uri) {
@@ -42,12 +42,12 @@ export const createMongoProvider = ({ uri, options = {} }) => {
 
     createRepositories(){
       return {
-          authUserRepository: createAuthUserMongoRepository(this.getClient()),
-          userRepository: createUsersMongoRepository(this.getClient()),
-          categoryRepository: createCategoriesMongoRepository(this.getClient()),
-          orderRepository: createOrdersMongoRepository(this.getClient()), 
-          paymentRepository: createPaymentsMongoRepository(this.getClient()),
-          productRepository: createProductsMongoRepository(this.getClient()),
+          authUserRepository: createMongooseAuthUserRepository(this.getClient()),
+          userRepository: createMongooseUserRepository(this.getClient()),
+          categoryRepository: createMongooseCategorieRepository(this.getClient()),
+          orderRepository: createMongooseOrderRepository(this.getClient()), 
+          paymentRepository: createMongoosePaymentRepository(this.getClient()),
+          productRepository: createMongooseProductRepository(this.getClient()),
       }
     }
   };

@@ -15,8 +15,8 @@ import { prepareOrderUpdatePatch } from "../../../../src/modules/orders/domain/s
 import { createAddress } from "../../../../src/modules/orders/domain/value-objects/Address.js";
 import { createMoney } from "../../../../src/modules/orders/domain/value-objects/Money.js";
 import { createOrderLine } from "../../../../src/modules/orders/domain/value-objects/OrderLine.js";
-import { createOrderStatus } from "../../../../src/modules/orders/domain/value-objects/OrderStatus.js";
-import { createPaymentStatus } from "../../../../src/modules/orders/domain/value-objects/PaymentStatus.js";
+import { createOrderStatus } from "../../../modules/orders/domain/errors/OrderStatusNotAllowedError.js";
+import { createPaymentStatus } from "../../../modules/payments/domain/value-objects/PaymentStatus.js";
 import { DomainValidationError } from "../../../../src/shared/domain/errors/DomainValidationError.js";
 
 describe("Order Domain", () => {

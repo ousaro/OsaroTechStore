@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toOrderRecord } from "../../modules/orders/adapters/output/persistence/orderRecordMapper.js";
+import { toOrderRecord } from "../../modules/orders/adapters/output/persistence/mongo/orderRecordMapper.js";
 import { toOrderReadModel } from "../../modules/orders/application/read-models/orderReadModel.js";
 import { toUserReadModel } from "../../modules/users/application/read-models/userReadModel.js";
 import { toPaymentReadModel } from "../../modules/payments/application/read-models/paymentReadModel.js";

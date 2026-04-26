@@ -10,12 +10,12 @@ import { buildHandlePaymentRefundUseCase } from "./application/commands/handlePa
 import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
 import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
 import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
+import { handleOrderPlaced } from "./application/handlers/handleOrderPlaced.js";
 
-const defaultOrderEventPublisher = null;
 
 export const createOrdersModule = ({
   orderRepository,
-  orderEventPublisher = defaultOrderEventPublisher,
+  orderEventPublisher = null,
 } = {}) => {
   const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
   const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
@@ -59,41 +59,17 @@ export const createOrdersModule = ({
   };
 };
 
-export let getAllOrdersHandler;
-export let getOrderByIdHandler;
-export let addOrderHandler;
-export let updateOrderHandler;
-export let deleteOrderHandler;
-
-let ordersModule;
-
-const getConfiguredOrdersModule = () => {
-  if (!ordersModule) {
-    throw new Error("Orders module has not been configured");
-  }
-
-  return ordersModule;
+export const registerOrderWorkflows = ({ eventBus }) => {
+  eventBus.subscribe("OrderPlaced", handleOrderPlaced);
 };
-
-export const confirmOrderPayment = (...args) =>
-  getConfiguredOrdersModule().confirmOrderPayment(...args);
-
-export const handlePaymentFailure = (...args) =>
-  getConfiguredOrdersModule().handlePaymentFailure(...args);
-
-export const handlePaymentExpiration = (...args) =>
-  getConfiguredOrdersModule().handlePaymentExpiration(...args);
-
-export const handlePaymentRefund = (...args) =>
-  getConfiguredOrdersModule().handlePaymentRefund(...args);
 
 export const configureOrdersModule = (options = {}) => {
   ordersModule = createOrdersModule(options);
-  ({
+  return {
     getAllOrdersHandler,
     getOrderByIdHandler,
     addOrderHandler,
     updateOrderHandler,
     deleteOrderHandler,
-  } = ordersModule);
+  } = ordersModule;
 };

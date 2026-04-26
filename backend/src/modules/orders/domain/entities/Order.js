@@ -1,10 +1,10 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { createAddress } from "../value-objects/Address.js";
 import { createMoney } from "../value-objects/Money.js";
 import { createOrderLines } from "../value-objects/OrderLine.js";
 import { createOrderStatus } from "../value-objects/OrderStatus.js";
-import { createPaymentStatus } from "../value-objects/PaymentStatus.js";
-import { assertString } from "../validation/orderValidation.js";
+import { createPaymentStatus } from "../../../payments/domain/value-objects/PaymentStatus.js";
+import { assertNonEmptyString } from "../../../../shared/infrastructure/assertions";
+import { OrderStatusTransactionNotAllowedError } from "../errors/OrderStatusTransactionNotAllowedError.js";
 
 export const createOrder = ({
   ownerId,
@@ -16,10 +16,10 @@ export const createOrder = ({
   paymentStatus,
   paymentReference,
 }) => {
-  assertString(ownerId, "ownerId is required");
+  assertNonEmptyString(ownerId, "ownerId");
   const orderLines = createOrderLines(products);
-  assertString(paymentMethod, "paymentMethod is required");
-  assertString(paymentReference, "paymentReference is required");
+  assertNonEmptyString(paymentMethod, "paymentMethod");
+  assertNonEmptyString(paymentReference, "paymentReference");
   const orderAddress = createAddress(address);
   const orderTotalPrice = createMoney(totalPrice);
   const orderStatus = createOrderStatus(status);
@@ -72,7 +72,7 @@ export const transitionOrderStatus = (currentOrder, nextStatus) => {
   const allowedNextStatuses = ALLOWED_ORDER_STATUS_TRANSITIONS[currentStatus] ?? new Set();
 
   if (!allowedNextStatuses.has(targetStatus)) {
-    throw new DomainValidationError(
+    throw new OrderStatusTransactionNotAllowedError(
       `Invalid order status transition from ${currentStatus} to ${targetStatus}`
     );
   }
@@ -107,11 +107,11 @@ export const createOrderUpdatePatch = (updates) => {
   }
 
   if (patch.paymentMethod !== undefined) {
-    assertString(patch.paymentMethod, "paymentMethod is required");
+    assertNonEmptyString(patch.paymentMethod, "paymentMethod");
   }
 
   if (patch.paymentReference !== undefined) {
-    assertString(patch.paymentReference, "paymentReference is required");
+    assertNonEmptyString(patch.paymentReference, "paymentReference");
   }
 
   if (patch.paymentStatus !== undefined) {

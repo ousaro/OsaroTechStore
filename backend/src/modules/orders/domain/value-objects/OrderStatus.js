@@ -1,6 +1,7 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+import { assertNonEmptyString } from "../../../../shared/infrastructure/assertions";
+import { OrderStatusNotAllowedError } from "../errors/OrderStatusNotAllowedError.js"
 
-const ALLOWED_ORDER_STATUSES = new Set([
+export const ALLOWED_ORDER_STATUSES = new Set([
   "pending",
   "paid",
   "processing",
@@ -9,15 +10,14 @@ const ALLOWED_ORDER_STATUSES = new Set([
   "cancelled",
 ]);
 
+
 export const createOrderStatus = (value) => {
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new DomainValidationError("status is required");
-  }
+  assertNonEmptyString(value, "status");
 
   const normalizedValue = value.trim().toLowerCase();
 
   if (!ALLOWED_ORDER_STATUSES.has(normalizedValue)) {
-    throw new DomainValidationError("Invalid order status");
+    throw new OrderStatusNotAllowedError("Invalid order status");
   }
 
   return Object.freeze({

@@ -1,7 +1,7 @@
-import { assertPositiveNumber } from "../validation/orderValidation.js";
+import { assertPositifNumber } from "../../../../shared/infrastructure/assertions";
 
 export const createMoney = (amount) => {
-  assertPositiveNumber(amount, "totalPrice must be a positive number");
+  assertPositifNumber(amount, "amount");
 
   return Object.freeze({
     amount,

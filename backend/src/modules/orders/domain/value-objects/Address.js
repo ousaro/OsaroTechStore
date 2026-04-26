@@ -1,4 +1,4 @@
-import { assertRequiredFields } from "../validation/orderValidation.js";
+import { assertRequiredFields } from "../../../../shared/infrastructure/assertions";
 
 export const createAddress = ({ city, addressLine, postalCode, country }) => {
   const props = {

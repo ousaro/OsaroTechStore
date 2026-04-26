@@ -1,6 +1,6 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
 import { buildUpdateOrderUseCase } from "./updateOrderUseCase.js";
 import { assertOrderRepositoryPort } from "../../ports/output/orderRepositoryPort.js";
+import { assertFunction,assertNonEmptyString } from "../../../../shared/infrastructure/assertions";
 
 export const buildConfirmOrderPaymentUseCase = ({
   orderRepository,
@@ -9,20 +9,13 @@ export const buildConfirmOrderPaymentUseCase = ({
 }) => {
   assertOrderRepositoryPort(orderRepository, ["findByPaymentReference"]);
 
-  if (!logger || typeof logger.warn !== "function") {
-    throw new Error("logger.warn is required");
-  }
+  assertFunction(logger.warn, 'logger.warn')
 
   const updateOrderUseCase =
     updateOrder ?? buildUpdateOrderUseCase({ orderRepository });
 
   return async ({ paymentReference, eventId } = {}) => {
-    if (
-      typeof paymentReference !== "string" ||
-      paymentReference.trim() === ""
-    ) {
-      throw new DomainValidationError("paymentReference is required");
-    }
+    assertNonEmptyString(paymentReference, "paymentReference")
 
     const order = await orderRepository.findByPaymentReference(paymentReference);
 

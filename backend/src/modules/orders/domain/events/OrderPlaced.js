@@ -1,17 +1,14 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+import { assertNonEmptyString, assertObject } from "../../../../shared/infrastructure/assertions";
+import { assertEventOrderPlaced } from "./assertEventOrderPlaced";
 
 export const createOrderPlacedEvent = (order) => {
-  if (!order || typeof order !== "object") {
-    throw new DomainValidationError("order is required to create OrderPlaced");
-  }
+  assertObject(order, "order")
 
   const orderId = order._id ?? order.id;
 
-  if (typeof orderId !== "string" || orderId.trim() === "") {
-    throw new DomainValidationError("order id is required to create OrderPlaced");
-  }
+  assertNonEmptyString(orderId, "orderId")
 
-  return Object.freeze({
+  const event = Object.freeze({
     type: "OrderPlaced",
     payload: {
       orderId,
@@ -22,4 +19,6 @@ export const createOrderPlacedEvent = (order) => {
       totalPrice: order.totalPrice,
     },
   });
+
+  return assertEventOrderPlaced(event, {expectedType: "OrderPlaced"})
 };

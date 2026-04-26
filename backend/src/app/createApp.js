@@ -14,12 +14,12 @@ import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/not
 import { errorMiddleware } from "../shared/infrastructure/http/middleware/errorMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/middleware/createRequireAuthMiddleware.js";
 // Routes
-import { authRoutes } from "../modules/auth/composition.js";
-import { createCategoriesRoutes } from "../modules/categories/composition.js";
-import { createOrdersRoutes } from "../modules/orders/composition.js";
-import { createPaymentsRoutes } from "../modules/payments/composition.js";
-import { createProductsRoutes } from "../modules/products/composition.js";
-import { createUsersRoutes } from "../modules/users/composition.js";
+import { authRoutes } from "../modules/auth/public-api.js";
+import { createCategoriesRoutes } from "../modules/categories/public-api.js";
+import { createOrdersRoutes } from "../modules/orders/public-api.js";
+import { createPaymentsRoutes } from "../modules/payments/public-api.js";
+import { createProductsRoutes } from "../modules/products/public-api.js";
+import { createUsersRoutes } from "../modules/users/public-api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

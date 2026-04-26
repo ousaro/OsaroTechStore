@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toOrderRecord } from "../../../modules/orders/adapters/output/persistence/orderRecordMapper.js";
+import { toOrderRecord } from "../../../modules/orders/adapters/output/persistence/mongo/orderRecordMapper.js";
 
 describe("order record mapper", () => {
   it("maps a raw order into a stable repository record shape", () => {
