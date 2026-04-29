@@ -1,39 +1,46 @@
-import mongoose from "mongoose";
-import OrderModel from "../../persistence/mongo/orderModel.js";
-import { toOrderRecord } from "../../persistence/mongo/orderRecordMapper.js";
+/**
+ * Mongoose Order Repository.
+ *
+ * Fixed from original:
+ *  - Accepts dbClient injected by the composition root.
+ *  - Creates its own model from the connection — no global OrderModel import.
+ *  - All methods return plain records via toOrderRecord() mapper.
+ */
+import { createOrderModel }  from "../persistence/mongo/orderModel.js";
+import { toOrderRecord }     from "../persistence/mongo/orderRecordMapper.js";
 
-export const createMongooseOrderRepository = () => {
+export const createMongooseOrderRepository = ({ dbClient }) => {
+  const OrderModel = createOrderModel(dbClient);
+
   return {
-    isValidId(id) {
-      return mongoose.Types.ObjectId.isValid(id);
+    async findAll() {
+      const docs = await OrderModel.find().sort({ createdAt: -1 });
+      return docs.map(toOrderRecord);
     },
 
-    async findAllSorted() {
-      const docs = await OrderModel.find({}).sort({ createdAt: -1 });
+    async findByOwnerId(ownerId) {
+      const docs = await OrderModel.find({ ownerId }).sort({ createdAt: -1 });
       return docs.map(toOrderRecord);
     },
 
     async findById(id) {
       const doc = await OrderModel.findById(id);
-      return doc ? toOrderRecord(doc) : null;
-    },
-
-    async findByPaymentReference(paymentReference) {
-      const doc = await OrderModel.findOne({ paymentReference });
-      return doc ? toOrderRecord(doc) : null;
-    },
-
-    async create(order) {
-      const doc = await OrderModel.create(order.toPrimitives());
       return toOrderRecord(doc);
     },
-    async findByIdAndUpdate(id, patch) {
-      const doc = await OrderModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
-      return doc ? toOrderRecord(doc) : null;
+
+    async create(primitives) {
+      const doc = await OrderModel.create(primitives);
+      return toOrderRecord(doc);
     },
-    async findByIdAndDelete(id) {
-      const doc = await OrderModel.findByIdAndDelete({ _id: id });
-      return doc ? toOrderRecord(doc) : null;
+
+    async updateById(id, primitives) {
+      const doc = await OrderModel.findByIdAndUpdate(id, primitives, { new: true });
+      return toOrderRecord(doc);
+    },
+
+    async deleteById(id) {
+      const doc = await OrderModel.findByIdAndDelete(id);
+      return toOrderRecord(doc);
     },
   };
 };

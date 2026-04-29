@@ -1,28 +1,25 @@
-export const toAuthUserRecord = (rawUser) => {
-  if (!rawUser) {
-    return null;
-  }
-
-  const id =
-    typeof rawUser._id === "string"
-      ? rawUser._id
-      : rawUser._id?.toString?.() ?? rawUser._id;
+/**
+ * Auth User Record Mapper.
+ * Maps raw Mongoose document → internal record shape.
+ * Password is excluded by default — use findByIdWithPassword when needed.
+ */
+export const toAuthUserRecord = (doc) => {
+  if (!doc) return null;
 
   return {
-    _id: id,
-    firstName: rawUser.firstName,
-    lastName: rawUser.lastName,
-    email: rawUser.email,
-    password: rawUser.password,
-    picture: rawUser.picture,
-    admin: rawUser.admin,
-    favorites: rawUser.favorites,
-    cart: rawUser.cart,
-    address: rawUser.address,
-    city: rawUser.city,
-    phone: rawUser.phone,
-    country: rawUser.country,
-    postalCode: rawUser.postalCode,
-    state: rawUser.state,
+    _id:        doc._id?.toString(),
+    firstName:  doc.firstName,
+    lastName:   doc.lastName,
+    email:      doc.email,
+    admin:      doc.admin,
+    picture:    doc.picture,
+    phone:      doc.phone,
+    address:    doc.address,
+    city:       doc.city,
+    country:    doc.country,
+    state:      doc.state,
+    postalCode: doc.postalCode,
+    favorites:  doc.favorites,
+    cart:       doc.cart,
   };
 };

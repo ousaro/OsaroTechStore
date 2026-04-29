@@ -1,61 +1,77 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
-
-const ALLOWED_PAYMENT_STATUSES = new Set(["pending", "paid", "failed", "refunded"]);
-const ALLOWED_WORKFLOW_TYPES = new Set(["redirect_session"]);
+/**
+ * PaymentWorkflow Domain Entity.
+ *
+ * Fixed from original:
+ *  - No longer accepts snake_case fields (payment_status). All normalization
+ *    happens in the record mapper before reaching the domain.
+ *  - Uses shared/domain/value-objects/PaymentStatus — not its own copy.
+ *  - Immutable via Object.freeze().
+ */
+import { createPaymentStatus, PAYMENT_STATUSES }
+  from "../../../../shared/domain/value-objects/PaymentStatus.js";
+import { assertNonEmptyString }
+  from "../../../../shared/kernel/assertions/index.js";
+import { DomainValidationError }
+  from "../../../../shared/domain/errors/index.js";
 
 export const createPaymentWorkflow = ({
-  id,
-  url,
-  paymentReference,
-  provider = "stripe",
-  workflowType = "redirect_session",
-  providerPaymentId,
-  providerTransactionId,
-  providerStatus,
-  payment_status,
+  _id,
+  orderId,
+  provider,
+  workflowType,
   paymentStatus,
+  sessionId,
+  providerPaymentId,
+  providerStatus,
+  url,
+  occurredAt,
 }) => {
-  if (typeof id !== "string" || id.trim() === "") {
-    throw new DomainValidationError("payment workflow id is required");
-  }
+  assertNonEmptyString(orderId,      "orderId");
+  assertNonEmptyString(provider,     "provider");
+  assertNonEmptyString(workflowType, "workflowType");
 
-  const normalizedPaymentStatus = (paymentStatus ?? payment_status ?? "pending")
-    .trim()
-    .toLowerCase();
-
-  if (!ALLOWED_PAYMENT_STATUSES.has(normalizedPaymentStatus)) {
-    throw new DomainValidationError("Invalid payment workflow status");
-  }
-
-  if (typeof provider !== "string" || provider.trim() === "") {
-    throw new DomainValidationError("payment provider is required");
-  }
-
-  if (
-    typeof workflowType !== "string" ||
-    workflowType.trim() === "" ||
-    !ALLOWED_WORKFLOW_TYPES.has(workflowType.trim().toLowerCase())
-  ) {
-    throw new DomainValidationError("Invalid payment workflow type");
-  }
-
-  const props = {
-    id,
-    ...(paymentReference ? { paymentReference } : {}),
-    ...(url ? { url } : {}),
-    provider: provider.trim().toLowerCase(),
-    workflowType: workflowType.trim().toLowerCase(),
-    ...(providerPaymentId ?? providerTransactionId
-      ? { providerPaymentId: providerPaymentId ?? providerTransactionId }
-      : {}),
-    ...(providerStatus ? { providerStatus } : {}),
-    paymentStatus: normalizedPaymentStatus,
-  };
+  const status = createPaymentStatus(paymentStatus ?? PAYMENT_STATUSES.PENDING);
 
   return Object.freeze({
-    ...props,
+    _id,
+    orderId,
+    provider,
+    workflowType,
+    paymentStatus: status,
+    sessionId:         sessionId         ?? null,
+    providerPaymentId: providerPaymentId ?? null,
+    providerStatus:    providerStatus    ?? null,
+    url:               url               ?? null,
+    occurredAt:        occurredAt        ?? new Date().toISOString(),
+
+    applyStateChange({ paymentStatus: nextStatus, providerPaymentId: nextProviderPaymentId, providerStatus: nextProviderStatus }) {
+      return createPaymentWorkflow({
+        _id,
+        orderId,
+        provider,
+        workflowType,
+        paymentStatus:     nextStatus ?? status.value,
+        sessionId,
+        providerPaymentId: nextProviderPaymentId ?? providerPaymentId,
+        providerStatus:    nextProviderStatus    ?? providerStatus,
+        url,
+        occurredAt: new Date().toISOString(),
+      });
+    },
+
     toPrimitives() {
-      return { ...props };
+      return {
+        _id,
+        orderId,
+        provider,
+        workflowType,
+        paymentStatus:     status.toPrimitives(),
+        sessionId,
+        providerPaymentId,
+        providerStatus,
+        url,
+        occurredAt,
+      };
     },
   });
 };

@@ -1,75 +1,67 @@
-import { buildGetAllOrdersUseCase } from "./application/queries/getAllOrdersUseCase.js";
-import { buildGetOrderByIdUseCase } from "./application/queries/getOrderByIdUseCase.js";
-import { buildAddOrderUseCase } from "./application/commands/addOrderUseCase.js";
-import { buildConfirmOrderPaymentUseCase } from "./application/commands/confirmOrderPaymentUseCase.js";
-import { buildUpdateOrderUseCase } from "./application/commands/updateOrderUseCase.js";
-import { buildDeleteOrderUseCase } from "./application/commands/deleteOrderUseCase.js";
-import { buildHandlePaymentExpirationUseCase } from "./application/commands/handlePaymentExpirationUseCase.js";
-import { buildHandlePaymentFailureUseCase } from "./application/commands/handlePaymentFailureUseCase.js";
-import { buildHandlePaymentRefundUseCase } from "./application/commands/handlePaymentRefundUseCase.js";
-import { createOrdersCommandPort } from "./ports/input/ordersCommandPort.js";
-import { createOrdersQueryPort } from "./ports/input/ordersQueryPort.js";
-import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
-import { handleOrderPlaced } from "./application/handlers/handleOrderPlaced.js";
+/**
+ * Orders Module Composition.
+ *
+ * Pure factory function. The composition root calls this once and holds
+ * the returned instance. No module-level let singletons. No env imports.
+ *
+ * Fixed from original:
+ *  - Removed all module-level `export let handler` declarations (crash bug).
+ *  - configureOrdersModule / createOrdersModule duality eliminated.
+ *  - confirmOrderPayment exposed as a collaboration method for translators.
+ *  - createRoutes is a factory that receives requireAuth at registration time.
+ */
+import {
+  buildAddOrderUseCase,
+  buildUpdateOrderUseCase,
+  buildDeleteOrderUseCase,
+  buildConfirmOrderPaymentUseCase,
+  buildGetAllOrdersUseCase,
+  buildGetOrderByIdUseCase,
+} from "./application/useCases.js";
 
+import { createOrdersCommandPort, createOrdersQueryPort }
+  from "./ports/input/ordersInputPort.js";
+import { assertOrderRepositoryPort, assertOrderEventPublisherPort }
+  from "./ports/output/ordersOutputPort.js";
+
+import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
+import { createOrdersRoutes }         from "./adapters/input/http/ordersRoutes.js";
 
 export const createOrdersModule = ({
   orderRepository,
-  orderEventPublisher = null,
-} = {}) => {
-  const getAllOrdersUseCase = buildGetAllOrdersUseCase({ orderRepository });
-  const getOrderByIdUseCase = buildGetOrderByIdUseCase({ orderRepository });
-  const confirmOrderPayment = buildConfirmOrderPaymentUseCase({
-    orderRepository,
-  });
-  const handlePaymentFailure = buildHandlePaymentFailureUseCase({
-    orderRepository,
-  });
-  const handlePaymentExpiration = buildHandlePaymentExpirationUseCase({
-    orderRepository,
-  });
-  const handlePaymentRefund = buildHandlePaymentRefundUseCase({
-    orderRepository,
-  });
-  const addOrderUseCase = buildAddOrderUseCase({
-    orderRepository,
-    orderEventPublisher,
-  });
-  const updateOrderUseCase = buildUpdateOrderUseCase({ orderRepository });
-  const deleteOrderUseCase = buildDeleteOrderUseCase({ orderRepository });
-  const ordersCommandPort = createOrdersCommandPort({
-    addOrder: addOrderUseCase,
-    updateOrder: updateOrderUseCase,
-    deleteOrder: deleteOrderUseCase,
-  });
-  const ordersQueryPort = createOrdersQueryPort({
-    getAllOrders: getAllOrdersUseCase,
-    getOrderById: getOrderByIdUseCase,
+  orderEventPublisher,
+  logger,
+}) => {
+  // ── Validate output ports ────────────────────────────────────────────────
+  assertOrderRepositoryPort(orderRepository);
+  assertOrderEventPublisherPort(orderEventPublisher);
+
+  // ── Use cases ────────────────────────────────────────────────────────────
+  const addOrder            = buildAddOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const updateOrder         = buildUpdateOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const deleteOrder         = buildDeleteOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const confirmOrderPayment = buildConfirmOrderPaymentUseCase({ orderRepository, logger });
+  const getAllOrders         = buildGetAllOrdersUseCase({ orderRepository });
+  const getOrderById        = buildGetOrderByIdUseCase({ orderRepository });
+
+  // ── Input ports ──────────────────────────────────────────────────────────
+  const commandPort = createOrdersCommandPort({
+    addOrder, updateOrder, deleteOrder, confirmOrderPayment,
   });
 
+  const queryPort = createOrdersQueryPort({ getAllOrders, getOrderById });
+
+  // ── HTTP adapter ─────────────────────────────────────────────────────────
+  const controller = createOrdersHttpController({ commandPort, queryPort });
+
+  const createRoutes = ({ requireAuth } = {}) =>
+    createOrdersRoutes({ controller, requireAuth });
+
+  // ── Public surface ───────────────────────────────────────────────────────
+  // confirmOrderPayment is exposed for the collaboration translator
+  // wired in the composition root — not called directly by other modules.
   return {
-    ...createOrdersHttpController({
-      ordersCommandPort,
-      ordersQueryPort,
-    }),
-    confirmOrderPayment,
-    handlePaymentFailure,
-    handlePaymentExpiration,
-    handlePaymentRefund,
+    createRoutes,
+    confirmOrderPayment,  // consumed by paymentConfirmedOrderSyncTranslator
   };
-};
-
-export const registerOrderWorkflows = ({ eventBus }) => {
-  eventBus.subscribe("OrderPlaced", handleOrderPlaced);
-};
-
-export const configureOrdersModule = (options = {}) => {
-  ordersModule = createOrdersModule(options);
-  return {
-    getAllOrdersHandler,
-    getOrderByIdHandler,
-    addOrderHandler,
-    updateOrderHandler,
-    deleteOrderHandler,
-  } = ordersModule;
 };

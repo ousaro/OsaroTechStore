@@ -1,42 +1,21 @@
-import { buildGetAllUsersUseCase } from "./application/queries/getAllUsersUseCase.js";
-import { buildGetUserByIdUseCase } from "./application/queries/getUserByIdUseCase.js";
-import { buildUpdateUserUseCase } from "./application/commands/updateUserUseCase.js";
-import { buildUpdateUserPasswordUseCase } from "./application/commands/updateUserPasswordUseCase.js";
-import { buildDeleteUserUseCase } from "./application/commands/deleteUserUseCase.js";
-import { createUsersInputPort } from "./ports/input/usersInputPort.js";
+import {
+  buildGetUserProfileUseCase, buildUpdateUserProfileUseCase,
+  buildUpdateUserCartUseCase, buildUpdateUserFavoritesUseCase,
+} from "./application/useCases.js";
 import { createUsersHttpController } from "./adapters/input/http/usersHttpController.js";
+import { createUsersRoutes }         from "./adapters/input/http/usersRoutes.js";
 
-export const createUsersModule = ({ userRepository }) => {
-  const getAllUsersUseCase = buildGetAllUsersUseCase({ userRepository });
-  const getUserByIdUseCase = buildGetUserByIdUseCase({ userRepository });
-  const updateUserUseCase = buildUpdateUserUseCase({ userRepository });
-  const updateUserPasswordUseCase = buildUpdateUserPasswordUseCase({ userRepository });
-  const deleteUserUseCase = buildDeleteUserUseCase({ userRepository });
-  const usersInputPort = createUsersInputPort({
-    getAllUsers: getAllUsersUseCase,
-    getUserById: getUserByIdUseCase,
-    updateUser: updateUserUseCase,
-    updateUserPassword: updateUserPasswordUseCase,
-    deleteUser: deleteUserUseCase,
-  });
+export const createUsersModule = ({ userRepository, logger }) => {
+  const getUserProfile     = buildGetUserProfileUseCase({ userRepository });
+  const updateUserProfile  = buildUpdateUserProfileUseCase({ userRepository });
+  const updateUserCart     = buildUpdateUserCartUseCase({ userRepository });
+  const updateUserFavorites= buildUpdateUserFavoritesUseCase({ userRepository });
 
-  return createUsersHttpController({
-    usersInputPort,
-  });
-};
+  const commandPort = { updateUserProfile, updateUserCart, updateUserFavorites };
+  const queryPort   = { getUserProfile };
+  const controller  = createUsersHttpController({ commandPort, queryPort });
 
-export let getAllUsersHandler;
-export let getUserByIdHandler;
-export let updateUserHandler;
-export let updateUserPasswordHandler;
-export let deleteUserHandler;
-
-export const configureUsersModule = (dependencies) => {
-  ({
-    getAllUsersHandler,
-    getUserByIdHandler,
-    updateUserHandler,
-    updateUserPasswordHandler,
-    deleteUserHandler,
-  } = createUsersModule(dependencies));
+  return {
+    createRoutes: ({ requireAuth } = {}) => createUsersRoutes({ controller, requireAuth }),
+  };
 };

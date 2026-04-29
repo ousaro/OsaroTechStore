@@ -1,48 +1,62 @@
-import mongoose from "mongoose";
-import ProductModel from "../persistence/productModel.js";
-import { toProductRecord } from "./productRecordMapper.js";
+import { createProductModel } from "../persistence/productModel.js";
 
-export const createMongooseProductRepository = () => {
+const toRecord = (doc) => {
+  if (!doc) return null;
+  const obj = doc.toObject ? doc.toObject() : doc;
   return {
-    isValidId(id) {
-      return mongoose.Types.ObjectId.isValid(id);
+    _id:         obj._id?.toString(),
+    name:        obj.name,
+    description: obj.description,
+    price:       obj.price,
+    currency:    obj.currency,
+    category:    obj.category?.toString(),
+    stock:       obj.stock,
+    images:      obj.images,
+    status:      obj.status,
+    createdAt:   obj.createdAt,
+    updatedAt:   obj.updatedAt,
+  };
+};
+
+export const createMongooseProductRepository = ({ dbClient }) => {
+  const ProductModel = createProductModel(dbClient);
+
+  return {
+    async findAll({ category, status } = {}) {
+      const filter = {};
+      if (category) filter.category = category;
+      if (status)   filter.status   = status;
+      const docs = await ProductModel.find(filter).sort({ createdAt: -1 });
+      return docs.map(toRecord);
     },
 
-    async findAll() {
-      const docs = await ProductModel.find({}).sort({ createdAt: -1 });
-      return docs.map(toProductRecord);
+    async findById(id) {
+      return toRecord(await ProductModel.findById(id));
     },
 
-    async findById(productId) {
-      const doc = await ProductModel.findById(productId);
-      return doc ? toProductRecord(doc) : null;
+    async create(primitives) {
+      return toRecord(await ProductModel.create(primitives));
     },
 
-    async findRelated(productId) {
-      const docs = await ProductModel.findRelated(productId);
-      return docs.map(toProductRecord);
+    async updateById(id, updates) {
+      return toRecord(await ProductModel.findByIdAndUpdate(id, updates, { new: true }));
     },
-    async create(product) {
-      const doc = await ProductModel.create(product.toPrimitives());
-      return toProductRecord(doc);
+
+    async deleteById(id) {
+      return toRecord(await ProductModel.findByIdAndDelete(id));
     },
-    async findByIdAndUpdate(id, patch) {
-      const doc = await ProductModel.findByIdAndUpdate(id, patch.toPrimitives(), { new: true });
-      return doc ? toProductRecord(doc) : null;
-    },
-    async findByIdAndDelete(id) {
-      const doc = await ProductModel.findByIdAndDelete({ _id: id });
-      return doc ? toProductRecord(doc) : null;
-    },
+
     async deleteByCategoryId(categoryId) {
-      await ProductModel.deleteMany({ categoryId });
+      const result = await ProductModel.deleteMany({ category: categoryId });
+      return result.deletedCount;
     },
-    async updateNewStatus(id, isNewProduct) {
-      const doc = await ProductModel.findById(id);
-      if (!doc) return null;
-      doc.isNewProduct = isNewProduct;
-      await doc.save();
-      return toProductRecord(doc);
+
+    async updateStatusBefore({ fromStatus, toStatus, before }) {
+      const result = await ProductModel.updateMany(
+        { status: fromStatus, createdAt: { $lte: before } },
+        { $set: { status: toStatus } }
+      );
+      return result.modifiedCount;
     },
   };
 };

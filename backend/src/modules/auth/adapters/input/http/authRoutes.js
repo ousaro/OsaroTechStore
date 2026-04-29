@@ -1,41 +1,39 @@
-import router from "express";
-import { env } from "../../../../../infrastructure/config/env.js";
-import {
-  registerUserHandler,
-  loginUserHandler,
-  googleCallbackHandler,
-} from "./httpHandlers.js";
+/**
+ * Auth Routes Factory.
+ * Fixed: no longer exports a default pre-built router (was causing singleton coupling).
+ * The composition root calls createRoutes({ requireAuth }) explicitly.
+ */
+import { Router } from "express";
 import { resolveOAuthStrategies } from "../../output/oauth/oauthProviderRegistry.js";
-const registerUserHttpHandler = (req, res, next) => registerUserHandler(req, res, next);
-const loginUserHttpHandler = (req, res, next) => loginUserHandler(req, res, next);
-const externalAuthCallbackHttpHandler = (req, res, next) => googleCallbackHandler(req, res, next);
 
-export const createAuthRoutes = ({
-  oauthProviders = env.oauthProviders,
-  clientUrl = env.clientUrl,
-} = {}) => {
-  const authRoutes = router();
+export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clientUrl }) => {
+  const router = Router();
 
-  authRoutes.post("/register", registerUserHttpHandler);
-  authRoutes.post("/login", loginUserHttpHandler);
+  // Public routes
+  router.post("/register", controller.registerUser);
+  router.post("/login",    controller.loginUser);
 
+  // Admin routes (protected)
+  router.get("/users",         requireAuth, controller.listUsers);
+  router.get("/users/:id",     requireAuth, controller.getUser);
+  router.put("/users/:id",     requireAuth, controller.updateUser);
+  router.delete("/users/:id",  requireAuth, controller.deleteUser);
+
+  // OAuth routes
   const oauthStrategies = resolveOAuthStrategies({
     oauthProviders,
     clientUrl,
-    callbackHandler: externalAuthCallbackHttpHandler,
+    callbackHandler: controller.googleCallbackHandler,
   });
 
   for (const strategy of oauthStrategies) {
-    authRoutes.get(`/${strategy.name}`, strategy.authenticateHandler);
-
+    router.get(`/${strategy.name}`, strategy.authenticateHandler);
     if (Array.isArray(strategy.callbackHandler)) {
-      authRoutes.get(`/${strategy.name}/callback`, ...strategy.callbackHandler);
+      router.get(`/${strategy.name}/callback`, ...strategy.callbackHandler);
     } else {
-      authRoutes.get(`/${strategy.name}/callback`, strategy.callbackHandler);
+      router.get(`/${strategy.name}/callback`, strategy.callbackHandler);
     }
   }
 
-  return authRoutes;
+  return router;
 };
-
-export default createAuthRoutes();

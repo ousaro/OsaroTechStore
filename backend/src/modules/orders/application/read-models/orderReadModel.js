@@ -1,19 +1,21 @@
-export const toOrderReadModel = (order) => {
-  if (!order) {
-    return null;
-  }
+/**
+ * Order Read Model.
+ * Maps the persistence record into the shape returned by the API.
+ * Read models are intentionally flat and client-friendly.
+ */
+export const toOrderReadModel = (record) => {
+  if (!record) return null;
 
-  return Object.fromEntries(
-    Object.entries({
-      _id: order._id,
-      ownerId: order.ownerId,
-      products: order.products,
-      totalPrice: order.totalPrice,
-      status: order.status,
-      address: order.address,
-      paymentMethod: order.paymentMethod,
-      paymentStatus: order.paymentStatus,
-      paymentReference: order.paymentReference,
-    }).filter(([, value]) => value !== undefined)
-  );
+  return {
+    _id:             record._id?.toString(),
+    ownerId:         record.ownerId?.toString(),
+    orderLines:      record.orderLines ?? [],
+    deliveryAddress: record.deliveryAddress ?? {},
+    currency:        record.currency,
+    orderStatus:     record.orderStatus,
+    paymentStatus:   record.paymentStatus,
+    totalPrice:      record.totalPrice,
+    createdAt:       record.createdAt,
+    updatedAt:       record.updatedAt,
+  };
 };

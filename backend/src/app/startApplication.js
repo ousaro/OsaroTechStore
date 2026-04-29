@@ -1,39 +1,81 @@
+/**
+ * Application Bootstrap.
+ *
+ * Orchestrates the startup sequence:
+ *  1. Configure all modules (wires the full dependency graph)
+ *  2. Create the Express app with injected routes
+ *  3. Start the HTTP server
+ *  4. Start background schedulers
+ *  5. Register graceful shutdown handlers
+ */
+
 import { createApp } from "./createApp.js";
-import { registerApplicationWorkflows } from "./registerApplicationWorkflows.js";
-import { startProductStatusScheduler } from "../infrastructure/runtime/schedulers/startProductStatusScheduler.js";
-import { configureApplicationModules } from "../infrastructure/bootstrap/configureApplicationModules.js";
-import { applicationEventBus } from "./applicationEventBus.js";
 
-export const startApplication = async ({
-  port,
-  eventBus = applicationEventBus,
-  configureModules = configureApplicationModules,
-  createHttpApp = createApp,
-  registerWorkflows = registerApplicationWorkflows,
-  startRuntimeHooks = startProductStatusScheduler,
-  logger = console,
-}) => {
+export const startApplication = async ({ port, env }) => {
+  // Step 1 — Wire everything (DB connect happens inside here)
+  const { configureApplicationModules } = await import(
+    "../infrastructure/bootstrap/configureApplicationModules.js"
+  );
 
-  const { auth, product } = configureModules({
-    eventBus
+  const {
+    logger,
+    tokenService,
+    paymentStrategy,
+    authRoutes,
+    usersRoutes,
+    productsRoutes,
+    categoriesRoutes,
+    ordersRoutes,
+    paymentsRoutes,
+    schedulers,
+    shutdown,
+  } = await configureApplicationModules({ env });
+
+  // Step 2 — Build Express app with injected dependencies
+  // TODO: the paymentStrategy is not used in the createApp
+  const app = createApp({
+    logger,
+    tokenService,
+    paymentStrategy,
+    authRoutes,
+    usersRoutes,
+    productsRoutes,
+    categoriesRoutes,
+    ordersRoutes,
+    paymentsRoutes,
   });
 
-  registerWorkflows({
-    eventBus
-  });
-
-  const { tokenService } = auth
-  const { productService } = product
-
-  const app = createHttpApp({ tokenService });
-  startRuntimeHooks({ productService });
-
-  return new Promise((resolve) => {
-    let server;
-    server = app.listen(port, () => {
-      logger.log(`API listening on port ${port}`);
-      logger.log(`Swagger UI: http://localhost:${port}/api/docs`);
-      queueMicrotask(() => resolve(server)); // using queueMicrotask to ensure the server is fully started before resolving the promise
+  // Step 3 — Start HTTP server
+  const server = app.listen(port, () => {
+    logger.info({
+      msg: `Server running`,
+      port,
+      env: process.env.NODE_ENV ?? "development",
     });
   });
+
+  // Step 4 — Start background schedulers (after server is ready)
+  for (const scheduler of schedulers) {
+    scheduler.start();
+    logger.info({ msg: "Scheduler started", name: scheduler.name ?? "unnamed" });
+  }
+
+  // Step 5 — Graceful shutdown on SIGTERM/SIGINT (Docker, k8s, Ctrl+C)
+  const handleShutdown = async (signal) => {
+    logger.info({ msg: `Received ${signal}, shutting down gracefully` });
+    server.close(async () => {
+      await shutdown();
+      process.exit(0);
+    });
+    // Force exit after 10s if server doesn't close
+    setTimeout(() => {
+      logger.error({ msg: "Forced shutdown after timeout" });
+      process.exit(1);
+    }, 10_000);
+  };
+
+  process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+  process.on("SIGINT",  () => handleShutdown("SIGINT"));
+
+  return server;
 };

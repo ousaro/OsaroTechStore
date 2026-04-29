@@ -1,21 +1,11 @@
-import router from "express";
-import {
-  getAllUsersHandler,
-  getUserByIdHandler,
-  updateUserHandler,
-  updateUserPasswordHandler,
-  deleteUserHandler,
-} from "./httpHandlers.js";
-
-export const createUsersRoutes = ({ requireAuth }) => {
-  const usersRoutes = router();
-
-  usersRoutes.use(requireAuth);
-  usersRoutes.get("/", getAllUsersHandler);
-  usersRoutes.get("/:id", getUserByIdHandler);
-  usersRoutes.put("/:id", updateUserHandler);
-  usersRoutes.put("/passUpdate/:id", updateUserPasswordHandler);
-  usersRoutes.delete("/:id", deleteUserHandler);
-
-  return usersRoutes;
+import { Router } from "express";
+export const createUsersRoutes = ({ controller, requireAuth }) => {
+  const router = Router();
+  router.use(requireAuth);
+  router.get("/me",                      controller.getMyProfile);
+  router.get("/:id",                     controller.getUserById);
+  router.put("/me",                      controller.updateProfile);
+  router.put("/me/cart",                 controller.updateCart);
+  router.put("/me/favorites/:productId", controller.updateFavorites);
+  return router;
 };

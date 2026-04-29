@@ -1,27 +1,10 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+// Category domain entity
+import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const createCategory = ({ name, description, image }) => {
-  const emptyFields = [];
-  if (!name) emptyFields.push("name");
-  if (!description) emptyFields.push("description");
-  if (!image) emptyFields.push("image");
-
-  if (emptyFields.length > 0) {
-    throw new DomainValidationError("Please fill in all the fields", {
-      meta: { emptyFields },
-    });
-  }
-
-  const props = {
-    name,
-    description,
-    image,
-  };
-
+export const createCategory = ({ _id, name, description = "" }) => {
+  assertNonEmptyString(name, "name");
   return Object.freeze({
-    ...props,
-    toPrimitives() {
-      return { ...props };
-    },
+    _id, name, description,
+    toPrimitives: () => ({ _id, name, description }),
   });
 };

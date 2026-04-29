@@ -1,13 +1,19 @@
-import { ApplicationError } from "../../../../shared/application/errors/ApplicationError.js";
+import {
+  ApplicationValidationError,
+  ApplicationNotFoundError,
+  ServiceUnavailableError,
+} from "../../../../shared/application/errors/index.js";
 
-export class PaymentValidationError extends ApplicationError {
-  constructor(message, options = {}) {
-    super(message, { code: "PAYMENT_VALIDATION", ...options });
-  }
+export class PaymentValidationError extends ApplicationValidationError {
+  constructor(message) { super(message); }
 }
 
-export class PaymentWebhookError extends ApplicationError {
-  constructor(message, options = {}) {
-    super(message, { code: "PAYMENT_WEBHOOK_ERROR", ...options });
+export class PaymentNotFoundError extends ApplicationNotFoundError {
+  constructor(message) { super(message); }
+}
+
+export class PaymentsDisabledError extends ServiceUnavailableError {
+  constructor() {
+    super("Payment processing is not enabled. Set PAYMENT_PROVIDER in .env");
   }
 }

@@ -1,20 +1,22 @@
-export const toAuthPrincipal = (user, token) => {
-  const {
-    _id,
-    firstName,
-    lastName,
-    email,
-    picture,
-    admin,
-    favorites,
-    cart,
-    address,
-    city,
-    phone,
-    country,
-    postalCode,
-    state,
-  } = user;
-
-  return { _id, firstName, lastName, email, picture, token, admin, favorites, cart, address, city, phone, country, postalCode, state };
-};
+/**
+ * AuthPrincipal — the read model returned after successful login/register.
+ * Includes all fields the client needs to bootstrap a session.
+ */
+export const toAuthPrincipal = (user, token) =>
+  Object.freeze({
+    _id:        user._id,
+    firstName:  user.firstName,
+    lastName:   user.lastName,
+    email:      user.email,
+    picture:    user.picture,
+    admin:      user.admin,
+    favorites:  user.favorites,
+    cart:       user.cart,
+    address:    user.address,
+    city:       user.city,
+    phone:      user.phone,
+    country:    user.country,
+    postalCode: user.postalCode,
+    state:      user.state,
+    token,
+  });

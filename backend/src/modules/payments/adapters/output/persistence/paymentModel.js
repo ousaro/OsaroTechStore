@@ -1,35 +1,23 @@
 import mongoose from "mongoose";
 
-const Schema = mongoose.Schema;
-
-const paymentSchema = new Schema(
+const paymentWorkflowSchema = new mongoose.Schema(
   {
-    paymentReference: {
-      type: String,
-      required: true,
-      unique: true,
-      default: () => `pay_${new mongoose.Types.ObjectId().toString()}`,
-    },
-    providerWorkflowId: { type: String, required: true, unique: true },
-    sessionId: { type: String, required: true, unique: true },
-    orderId: { type: String, required: false, index: true },
-    url: { type: String, required: false },
-    providerPaymentId: { type: String, required: false },
-    providerTransactionId: { type: String, required: false },
-    workflowType: { type: String, required: true, default: "redirect_session" },
-    paymentStatus: { type: String, required: true, default: "pending" },
-    providerStatus: { type: String, required: false },
-    provider: { type: String, required: true, default: "stripe" },
-    lastWebhookEventId: { type: String, required: false },
-    statusUpdatedAt: { type: Date, required: false },
-    paidAt: { type: Date, required: false },
-    failedAt: { type: Date, required: false },
-    expiredAt: { type: Date, required: false },
-    refundedAt: { type: Date, required: false },
-    processedWebhookEventIds: { type: [String], required: true, default: [] },
+    orderId:           { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
+    provider:          { type: String, required: true },
+    workflowType:      { type: String, required: true },
+    paymentStatus:     { type: String, required: true, default: "pending" },
+    sessionId:         { type: String, default: null },
+    providerPaymentId: { type: String, default: null },
+    providerStatus:    { type: String, default: null },
+    url:               { type: String, default: null },
+    occurredAt:        { type: Date,   default: Date.now },
   },
   { timestamps: true }
 );
 
-const PaymentModel = mongoose.model("Payment", paymentSchema);
-export default PaymentModel;
+paymentWorkflowSchema.index({ sessionId: 1 });
+paymentWorkflowSchema.index({ orderId:   1 });
+
+export const createPaymentModel = (connection) =>
+  connection.models.PaymentWorkflow ??
+  connection.model("PaymentWorkflow", paymentWorkflowSchema);

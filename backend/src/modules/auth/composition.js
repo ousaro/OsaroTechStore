@@ -1,133 +1,62 @@
-import { buildRegisterUserUseCase } from "./application/commands/registerUserUseCase.js";
-import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.js";
-import { createAuthInputPort } from "./ports/input/authInputPort.js";
-import { buildVerifyAccessTokenUseCase } from "./application/queries/verifyAccessTokenUseCase.js";
-import { createAuthHttpController } from "./adapters/input/http/authHttpController.js";
-import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
+/**
+ * Auth Module Composition.
+ *
+ * Pure factory — no global let singletons, no env imports.
+ * The composition root calls createAuthModule() and holds the instance.
+ *
+ *  - Auth-specific admin operations (listManagedUserProfiles etc.) are now
+ *    proper use cases in application/queries and application/commands —
+ *    not inline logic inside the composition.
+ *  - Returns createRoutes factory and public use cases as a plain object.
+ */
 
+import { buildRegisterUserUseCase }  from "./application/commands/registerUserUseCase.js";
+import { buildLoginUserUseCase }     from "./application/commands/loginUserUseCase.js";
+import { buildListUsersUseCase }     from "./application/queries/listUsersUseCase.js";
+import { buildGetUserUseCase }       from "./application/queries/getUserUseCase.js";
+import { buildUpdateUserUseCase }    from "./application/commands/updateManagedUserUseCase.js";
+import { buildDeleteUserUseCase }    from "./application/commands/deleteManagedUserUseCase.js";
 
-const toManagedUserProfile = (authUserRecord) => {
-  if (!authUserRecord) {
-    return null;
-  }
+import { createAuthInputPort }       from "./ports/input/authInputPort.js";
+import { createAuthHttpController }  from "./adapters/input/http/authHttpController.js";
+import { createAuthRoutes }          from "./adapters/input/http/authRoutes.js";
 
-  const {
-    password: _password,
-    ...managedUserProfile
-  } = authUserRecord;
+export const createAuthModule = ({
+  authUserRepository,
+  tokenService,
+  oauthProviders,
+  clientUrl,
+  logger,
+}) => {
+  // ── Use cases ─────────────────────────────────────────────────────────────
+  const registerUser  = buildRegisterUserUseCase({ authUserRepository, tokenService, logger });
+  const loginUser     = buildLoginUserUseCase({ authUserRepository, tokenService, logger });
+  const listUsers     = buildListUsersUseCase({ authUserRepository });
+  const getUser       = buildGetUserUseCase({ authUserRepository });
+  const updateUser    = buildUpdateUserUseCase({ authUserRepository });
+  const deleteUser    = buildDeleteUserUseCase({ authUserRepository });
 
-  return managedUserProfile;
-};
-
-export const createAuthModule = ({ authUserRepository }) => {
-
-  const tokenService = createJwtTokenService();
-
-  const registerUserUseCase = buildRegisterUserUseCase({
-    authUserRepository,
-    tokenService,
-  });
-  const loginUserUseCase = buildLoginUserUseCase({
-    authUserRepository,
-    tokenService,
-  });
-  const verifyAccessTokenUseCase = buildVerifyAccessTokenUseCase({
-    tokenService,
-    authUserRepository,
-  });
+  // ── Input port ────────────────────────────────────────────────────────────
   const authInputPort = createAuthInputPort({
-    registerUser: registerUserUseCase,
-    loginUser: loginUserUseCase,
+    registerUser,
+    loginUser,
+    listUsers,
+    getUser,
+    updateUser,
+    deleteUser,
   });
-  const httpHandlers = createAuthHttpController({
-    authInputPort,
-  });
 
-  const listManagedUserProfiles = async () => {
-    const accounts = await authUserRepository.findManagedAccountsSorted();
-    return accounts.map(toManagedUserProfile);
-  };
+  // ── HTTP controller ───────────────────────────────────────────────────────
+  const controller = createAuthHttpController({ authInputPort });
 
-  const getManagedUserProfile = async (id) =>
-    toManagedUserProfile(await authUserRepository.findById(id));
+  // ── Route factory (receives requireAuth at registration time) ─────────────
+  const createRoutes = ({ requireAuth } = {}) =>
+    createAuthRoutes({
+      controller,
+      requireAuth,
+      oauthProviders,
+      clientUrl,
+    });
 
-  const updateManagedUserProfile = async (id, updates) =>
-    toManagedUserProfile(await authUserRepository.findByIdAndUpdate(id, updates, { new: true }));
-
-  const removeManagedUserProfile = async (id) =>
-    toManagedUserProfile(await authUserRepository.findByIdAndDelete({ _id: id }));
-
-  const getManagedUserCredentials = async (id) => {
-    const authUserRecord = await authUserRepository.findById(id);
-
-    if (!authUserRecord) {
-      return null;
-    }
-
-    return {
-      _id: authUserRecord._id,
-      password: authUserRecord.password,
-    };
-  };
-
-  const updateManagedUserCredentials = async (id, updates) =>
-    toManagedUserProfile(await authUserRepository.findByIdAndUpdate(id, updates, { new: true }));
-
-  const verifyAccessToken = (authorizationHeader) => verifyAccessTokenUseCase({ authorizationHeader });
-
-  return {
-    ...httpHandlers,
-    listManagedUserProfiles,
-    getManagedUserProfile,
-    updateManagedUserProfile,
-    removeManagedUserProfile,
-    getManagedUserCredentials,
-    updateManagedUserCredentials,
-    tokenService
-  };
-};
-
-let authModule;
-
-const getConfiguredAuthModule = () => {
-  if (!authModule) {
-    throw new Error("Auth module has not been configured");
-  }
-
-  return authModule;
-};
-
-export const registerUserHandler = (...args) =>
-  getConfiguredAuthModule().registerUserHandler(...args);
-
-export const loginUserHandler = (...args) =>
-  getConfiguredAuthModule().loginUserHandler(...args);
-
-export const googleCallbackHandler = (...args) =>
-  getConfiguredAuthModule().googleCallbackHandler(...args);
-
-export const listManagedUserProfiles = (...args) =>
-  getConfiguredAuthModule().listManagedUserProfiles(...args);
-
-export const getManagedUserProfile = (...args) =>
-  getConfiguredAuthModule().getManagedUserProfile(...args);
-
-export const updateManagedUserProfile = (...args) =>
-  getConfiguredAuthModule().updateManagedUserProfile(...args);
-
-export const removeManagedUserProfile = (...args) =>
-  getConfiguredAuthModule().removeManagedUserProfile(...args);
-
-export const getManagedUserCredentials = (...args) =>
-  getConfiguredAuthModule().getManagedUserCredentials(...args);
-
-export const updateManagedUserCredentials = (...args) =>
-  getConfiguredAuthModule().updateManagedUserCredentials(...args);
-
-export const verifyAccessToken = (...args) =>
-  getConfiguredAuthModule().verifyAccessToken(...args);
-
-export const configureAuthModule = (dependencies) => {
-  authModule = createAuthModule(dependencies);
-  return authModule;
+  return { createRoutes };
 };

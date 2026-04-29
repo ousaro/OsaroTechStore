@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Reference — osaroTechStore Backend v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Sora:wght@300;400;600;700;800&display=swap');
+
+  :root {
+    --bg:          #080b10;
+    --surface:     #0e1219;
+    --surface2:    #141820;
+    --surface3:    #1b2130;
+    --border:      #1f2738;
+    --border2:     #283048;
+    --text:        #b8c4d8;
+    --text-dim:    #566075;
+    --text-bright: #e8edf7;
+    --accent:      #4e8cf8;
+    --accent2:     #7c5df8;
+    --green:       #43c98a;
+    --green-dim:   #0b2318;
+    --red:         #f05959;
+    --red-dim:     #2a0d0d;
+    --yellow:      #e8c350;
+    --yellow-dim:  #2a2108;
+    --orange:      #f48040;
+    --orange-dim:  #2a1408;
+    --teal:        #38d4c8;
+    --mono:        'JetBrains Mono', monospace;
+    --sans:        'Sora', sans-serif;
+  }
+
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────────────────────── */
+  .page { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 0 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .sidebar-logo-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .nav-group { margin-bottom: 6px; padding: 0 16px; }
+
+  .nav-group-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 10px 8px 6px;
+    display: block;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.12s;
+    cursor: pointer;
+  }
+
+  .nav-link:hover { background: var(--surface3); color: var(--text-bright); }
+  .nav-link.active { background: var(--surface3); color: var(--accent); }
+
+  .nav-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  .main { flex: 1; min-width: 0; }
+
+  /* ── Hero ────────────────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0a0f1a 0%, #0d1525 50%, #0a1020 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 64px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 600px 300px at 70% 50%, rgba(78,140,248,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text-bright);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 36px;
+  }
+
+  .hero-stat { display: flex; flex-direction: column; gap: 2px; }
+
+  .hero-stat-num {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .hero-stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── Content ─────────────────────────────────────────────────────────────── */
+  .content { padding: 56px 64px; max-width: 920px; }
+
+  section { margin-bottom: 64px; }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 12px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+    font-family: var(--mono);
+  }
+
+  /* ── Cards ───────────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+  }
+
+  .card p { font-size: 13px; color: var(--text); }
+
+  /* ── Code blocks ─────────────────────────────────────────────────────────── */
+  .code-block {
+    background: #050709;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .code-header {
+    background: var(--surface2);
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .code-header .lang { color: var(--accent); font-weight: 600; }
+
+  pre {
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .kw  { color: #c792ea; }
+  .fn  { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm  { color: #4a5570; font-style: italic; }
+  .hl  { color: var(--accent); }
+  .dim { color: var(--text-dim); }
+  .grn { color: var(--green); }
+  .ylw { color: var(--yellow); }
+  .org { color: var(--orange); }
+
+  /* ── Layer diagram ───────────────────────────────────────────────────────── */
+  .layer-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 20px 0;
+  }
+
+  .layer {
+    display: flex;
+    align-items: stretch;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .layer-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .layer-body {
+    flex: 1;
+    background: var(--surface);
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-left: 1px solid var(--border);
+  }
+
+  .layer-body .item {
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text);
+  }
+
+  .layer-infra  .layer-name { background: rgba(78,140,248,0.1); color: var(--accent); }
+  .layer-app    .layer-name { background: rgba(67,201,138,0.1); color: var(--green); }
+  .layer-domain .layer-name { background: rgba(232,195,80,0.1); color: var(--yellow); }
+  .layer-kernel .layer-name { background: rgba(124,93,248,0.1); color: var(--accent2); }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    margin: 2px 0;
+    letter-spacing: -2px;
+  }
+
+  /* ── Rule cards ──────────────────────────────────────────────────────────── */
+  .rule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .rule-card .num {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--border2);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .rule-card .rule-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .rule-card p { font-size: 12px; color: var(--text-dim); }
+
+  /* ── Flow diagram ────────────────────────────────────────────────────────── */
+  .flow {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: #050709;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    line-height: 2;
+    color: var(--text-dim);
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .flow .step  { color: var(--text); }
+  .flow .arrow { color: var(--border2); }
+  .flow .mod   { color: var(--accent); }
+  .flow .event { color: var(--yellow); }
+  .flow .port  { color: var(--green); }
+  .flow .infra { color: var(--accent2); }
+  .flow .note  { color: var(--text-dim); font-style: italic; }
+
+  /* ── Provider switcher table ─────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 12.5px;
+  }
+
+  th {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  td {
+    border: 1px solid var(--border);
+    padding: 9px 14px;
+    color: var(--text);
+    background: var(--surface);
+    vertical-align: top;
+  }
+
+  td code, th code {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  tr:hover td { background: var(--surface2); }
+
+  /* ── Callouts ────────────────────────────────────────────────────────────── */
+  .callout {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .callout.rule  { background: rgba(67,201,138,0.07); border: 1px solid rgba(67,201,138,0.2); }
+  .callout.warn  { background: rgba(232,195,80,0.07); border: 1px solid rgba(232,195,80,0.2); }
+  .callout.info  { background: rgba(78,140,248,0.07); border: 1px solid rgba(78,140,248,0.2); }
+
+  .callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .callout p { color: var(--text); line-height: 1.65; }
+  .callout strong { color: var(--text-bright); }
+
+  /* ── Tag pills ───────────────────────────────────────────────────────────── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  .tag.fixed { background: var(--green-dim); color: var(--green); border: 1px solid rgba(67,201,138,0.3); }
+  .tag.rule  { background: rgba(78,140,248,0.1); color: var(--accent); border: 1px solid rgba(78,140,248,0.25); }
+  .tag.warn  { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(232,195,80,0.3); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<!-- ── Sidebar ──────────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">osaroTechStore</div>
+    <div class="sidebar-logo-sub">Architecture Reference v2.0</div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Overview</span>
+    <a class="nav-link" href="#philosophy"><span class="nav-dot" style="background:var(--accent)"></span>Core Philosophy</a>
+    <a class="nav-link" href="#layers"><span class="nav-dot" style="background:var(--accent2)"></span>Layer Rules</a>
+    <a class="nav-link" href="#structure"><span class="nav-dot" style="background:var(--green)"></span>Folder Structure</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Architecture</span>
+    <a class="nav-link" href="#modules"><span class="nav-dot" style="background:var(--yellow)"></span>Module Anatomy</a>
+    <a class="nav-link" href="#composition"><span class="nav-dot" style="background:var(--teal)"></span>Composition Root</a>
+    <a class="nav-link" href="#events"><span class="nav-dot" style="background:var(--orange)"></span>Event Bus</a>
+    <a class="nav-link" href="#ports"><span class="nav-dot" style="background:var(--accent2)"></span>Ports & Adapters</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Switching Providers</span>
+    <a class="nav-link" href="#providers"><span class="nav-dot" style="background:var(--green)"></span>Provider System</a>
+    <a class="nav-link" href="#add-db"><span class="nav-dot" style="background:var(--text-dim)"></span>Add a Database</a>
+    <a class="nav-link" href="#add-payment"><span class="nav-dot" style="background:var(--text-dim)"></span>Add a Payment Gateway</a>
+    <a class="nav-link" href="#add-bus"><span class="nav-dot" style="background:var(--text-dim)"></span>Add an Event Bus</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Key Fixes</span>
+    <a class="nav-link" href="#fixes"><span class="nav-dot" style="background:var(--red)"></span>What Was Fixed</a>
+    <a class="nav-link" href="#patterns"><span class="nav-dot" style="background:var(--accent)"></span>Patterns Reference</a>
+  </div>
+</nav>
+
+<!-- ── Main ──────────────────────────────────────────────────────────────────── -->
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-badge">◈ DDD + Modular Hexagonal Architecture</div>
+    <h1>osaroTechStore Backend<br><span>Architecture Reference</span></h1>
+    <p class="hero-sub">Production-grade Node.js backend using Domain-Driven Design with Modular Hexagonal Architecture. Every provider — database, payments, event bus — is switchable via config with zero module code changes.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">6</div><div class="hero-stat-label">Bounded Contexts</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">105</div><div class="hero-stat-label">Source Files</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Critical Bugs Fixed</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Switchable Providers</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── Philosophy ─────────────────────────────────────────────────────── -->
+    <section id="philosophy">
+      <h2 class="section-title">Core Philosophy</h2>
+      <div class="section-sub">Three rules. Everything follows from them.</div>
+
+      <div class="rule-grid">
+        <div class="rule-card">
+          <div class="num">01</div>
+          <div class="rule-title">Dependencies point inward only</div>
+          <p>Infrastructure depends on domain. Domain depends on nothing. The domain layer has zero imports from any other project layer — only from the shared kernel.</p>
+        </div>
+        <div class="rule-card">
+          <div class="num">02</div>
+          <div class="rule-title">Modules communicate via events only</div>
+          <p>No module imports another module's domain. Cross-module communication happens through domain events on the event bus, mediated by collaboration translators.</p>
+        </div>
+        <div class="rule-card">
+          <div class="num">03</div>
+          <div class="rule-title">One composition root owns all wiring</div>
+          <p><code>configureApplicationModules.js</code> is the only file that knows the full dependency graph. Nothing else creates or holds module instances.</p>
+        </div>
+        <div class="rule-card">
+          <div class="num">04</div>
+          <div class="rule-title">Ports define contracts, adapters implement them</div>
+          <p>Every external dependency (DB, payment gateway, event bus) is accessed through a port interface. Swap the adapter without touching any use case.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Layer Rules ────────────────────────────────────────────────────── -->
+    <section id="layers">
+      <h2 class="section-title">Layer Rules</h2>
+      <div class="section-sub">What each layer can and cannot import</div>
+
+      <div class="layer-diagram">
+        <div class="layer layer-infra">
+          <div class="layer-name">Infrastructure</div>
+          <div class="layer-body">
+            <span class="item">Mongoose models</span>
+            <span class="item">Express routers</span>
+            <span class="item">JWT service</span>
+            <span class="item">Stripe gateway</span>
+            <span class="item">configureApplicationModules</span>
+          </div>
+        </div>
+        <div class="arrow-down">↕</div>
+        <div class="layer layer-app">
+          <div class="layer-name">Application</div>
+          <div class="layer-body">
+            <span class="item">Use cases</span>
+            <span class="item">Read models</span>
+            <span class="item">Application errors</span>
+            <span class="item">Port assertions</span>
+          </div>
+        </div>
+        <div class="arrow-down">↕</div>
+        <div class="layer layer-domain">
+          <div class="layer-name">Domain</div>
+          <div class="layer-body">
+            <span class="item">Entities</span>
+            <span class="item">Value objects</span>
+            <span class="item">Domain events</span>
+            <span class="item">Domain services</span>
+            <span class="item">Domain errors</span>
+          </div>
+        </div>
+        <div class="arrow-down">↕</div>
+        <div class="layer layer-kernel">
+          <div class="layer-name">Shared Kernel</div>
+          <div class="layer-body">
+            <span class="item">Assertions</span>
+            <span class="item">DomainError base</span>
+            <span class="item">createDomainEvent</span>
+            <span class="item">PaymentStatus VO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout rule">
+        <span class="callout-icon">→</span>
+        <p><strong>The import rule:</strong> Domain imports only from <code>shared/kernel</code> and <code>shared/domain</code>. Application imports from domain and shared. Infrastructure imports from everything. If you find <code>import</code> going the wrong direction, that's a violation — fix it.</p>
+      </div>
+    </section>
+
+    <!-- ── Folder Structure ───────────────────────────────────────────────── -->
+    <section id="structure">
+      <h2 class="section-title">Folder Structure</h2>
+      <div class="section-sub">Every folder has one job. No exceptions.</div>
+
+      <div class="code-block">
+        <div class="code-header"><span>src/ — full tree</span><span class="lang">tree</span></div>
+        <pre><span class="hl">src/</span>
+├── <span class="grn">shared/</span>                        <span class="cm">← shared kernel: no module imports this from another module</span>
+│   ├── kernel/assertions/         <span class="cm">← zero-dep utils, safe for domain layer</span>
+│   ├── domain/
+│   │   ├── errors/                <span class="cm">← DomainValidationError, DomainNotFoundError</span>
+│   │   ├── events/createDomainEvent.js  <span class="cm">← event envelope (id, type, occurredAt, version)</span>
+│   │   └── value-objects/PaymentStatus.js  <span class="cm">← shared between orders+payments</span>
+│   ├── application/
+│   │   ├── errors/                <span class="cm">← ApplicationError hierarchy → HTTP status mapping</span>
+│   │   ├── contracts/             <span class="cm">← assertApplicationEvent (ACL for event bus)</span>
+│   │   └── ports/                 <span class="cm">← loggerPort, eventBusPort</span>
+│   └── infrastructure/
+│       ├── http/middleware/       <span class="cm">← asyncHandler, errorMiddleware, requestIdMiddleware</span>
+│       ├── http/errors/           <span class="cm">← httpErrorCodes, resolveHttpError</span>
+│       └── events/
+│           ├── adapters/          <span class="cm">← inProcessEventBus, redisStreamEventBus</span>
+│           └── resolveEventBus.js <span class="cm">← switches adapter via EVENT_BUS_PROVIDER</span>
+│
+├── <span class="grn">modules/</span>                       <span class="cm">← each folder = one bounded context</span>
+│   └── orders/                    <span class="cm">← example (all 6 modules same structure)</span>
+│       ├── domain/
+│       │   ├── entities/Order.js
+│       │   ├── value-objects/     <span class="cm">← Money (with currency!), OrderStatus, OrderLine, Address</span>
+│       │   ├── events/            <span class="cm">← OrderPlaced, OrderUpdated, OrderCancelled</span>
+│       │   ├── services/          <span class="cm">← applyPaymentOutcomeToOrder, assertOrderUpdateAllowed</span>
+│       │   └── errors/            <span class="cm">← extends DomainValidationError from shared/domain</span>
+│       ├── application/
+│       │   ├── useCases.js        <span class="cm">← builders: buildAddOrderUseCase etc.</span>
+│       │   ├── read-models/       <span class="cm">← toOrderReadModel (flat, API-friendly)</span>
+│       │   └── errors/            <span class="cm">← extends ApplicationError from shared/application</span>
+│       ├── ports/
+│       │   ├── input/             <span class="cm">← createOrdersCommandPort, createOrdersQueryPort</span>
+│       │   └── output/            <span class="cm">← assertOrderRepositoryPort, assertOrderEventPublisherPort</span>
+│       ├── adapters/
+│       │   ├── input/
+│       │   │   ├── http/          <span class="cm">← ordersHttpController, ordersRoutes</span>
+│       │   │   └── collaboration/ <span class="cm">← paymentConfirmedOrderSyncTranslator (ACL)</span>
+│       │   └── output/
+│       │       ├── persistence/   <span class="cm">← orderModel.js (Mongoose schema)</span>
+│       │       └── repositories/  <span class="cm">← mongooseOrderRepository, orderRecordMapper</span>
+│       └── composition.js         <span class="cm">← pure factory, no globals, no env imports</span>
+│
+├── <span class="grn">infrastructure/</span>
+│   ├── config/env.js              <span class="cm">← single source of truth for all env vars</span>
+│   ├── providers/
+│   │   ├── databases/
+│   │   │   ├── mongo/mongoProvider.js   <span class="cm">← exposes getConnection() ONLY, no repo knowledge</span>
+│   │   │   └── resolveDatabaseStrategy.js  <span class="cm">← switches via DATABASE_PROVIDER</span>
+│   │   ├── payments/
+│   │   │   ├── stripe/stripeGateway.js
+│   │   │   └── resolvePaymentStrategy.js   <span class="cm">← switches via PAYMENT_PROVIDER</span>
+│   │   └── logger/consoleLogger.js
+│   └── bootstrap/
+│       └── configureApplicationModules.js  <span class="cm">← THE composition root</span>
+│
+└── <span class="grn">app/</span>
+    ├── createApp.js               <span class="cm">← Express factory, receives injected route factories</span>
+    ├── startApplication.js        <span class="cm">← startup sequence + graceful shutdown</span>
+    └── server.js                  <span class="cm">← entry point (8 lines)</span></pre>
+      </div>
+    </section>
+
+    <!-- ── Module Anatomy ─────────────────────────────────────────────────── -->
+    <section id="modules">
+      <h2 class="section-title">Module Anatomy</h2>
+      <div class="section-sub">Every module has the same internal structure. No exceptions.</div>
+
+      <div class="card">
+        <div class="card-title">composition.js — pure factory, no singletons</div>
+        <p>The only public file that wires a module. Returns <code>{ createRoutes, [collaborationMethod] }</code>. Never imports env. Never uses module-level <code>let</code> exports. The composition root calls it once and holds the instance.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>modules/orders/composition.js — canonical pattern</span><span class="lang">js</span></div>
+        <pre><span class="kw">export const</span> <span class="fn">createOrdersModule</span> = ({ orderRepository, orderEventPublisher, logger }) => {
+  <span class="cm">// 1. Validate output ports at wiring time</span>
+  <span class="fn">assertOrderRepositoryPort</span>(orderRepository);
+  <span class="fn">assertOrderEventPublisherPort</span>(orderEventPublisher);
+
+  <span class="cm">// 2. Build use cases (builder pattern, closed over deps)</span>
+  <span class="kw">const</span> addOrder = <span class="fn">buildAddOrderUseCase</span>({ orderRepository, orderEventPublisher, logger });
+
+  <span class="cm">// 3. Wire input ports</span>
+  <span class="kw">const</span> commandPort = <span class="fn">createOrdersCommandPort</span>({ addOrder, ... });
+
+  <span class="cm">// 4. Wire HTTP adapter</span>
+  <span class="kw">const</span> controller = <span class="fn">createOrdersHttpController</span>({ commandPort, queryPort });
+
+  <span class="cm">// 5. Return route factory + any collaboration methods</span>
+  <span class="kw">return</span> {
+    createRoutes: ({ requireAuth } = {}) => <span class="fn">createOrdersRoutes</span>({ controller, requireAuth }),
+    confirmOrderPayment,  <span class="cm">// ← consumed by event translator in composition root</span>
+  };
+};</pre>
+      </div>
+    </section>
+
+    <!-- ── Composition Root ───────────────────────────────────────────────── -->
+    <section id="composition">
+      <h2 class="section-title">Composition Root</h2>
+      <div class="section-sub">The only place that sees the full graph</div>
+
+      <div class="flow">
+<span class="cm">configureApplicationModules.js — execution sequence:</span>
+
+<span class="step">1. Create logger</span>
+<span class="arrow">   ↓</span>
+<span class="step">2. Resolve providers</span>   <span class="infra">resolveDatabaseStrategy</span> · <span class="infra">resolvePaymentStrategy</span> · <span class="infra">resolveEventBus</span>
+<span class="arrow">   ↓</span>
+<span class="step">3. Connect database</span>    <span class="infra">database.connect()</span>  →  <span class="infra">dbClient = database.getConnection()</span>
+<span class="arrow">   ↓</span>
+<span class="step">4. Create repositories</span> <span class="note">(composition root wires them — NOT the DB provider)</span>
+   <span class="infra">createMongooseOrderRepository({ dbClient })</span>
+   <span class="infra">createMongoosePaymentRepository({ dbClient })</span>
+<span class="arrow">   ↓</span>
+<span class="step">5. Create modules</span>      <span class="note">(pure factories, hold instances locally)</span>
+   <span class="mod">ordersModule</span> = <span class="fn">createOrdersModule</span>({ orderRepository, orderEventPublisher: eventBus, logger })
+   <span class="mod">paymentsModule</span> = <span class="fn">createPaymentsModule</span>({ paymentGateway, paymentRepository, ... })
+<span class="arrow">   ↓</span>
+<span class="step">6. Register workflows</span>  <span class="note">(event bus subscriptions — cross-module collaboration)</span>
+   <span class="infra">eventBus.subscribe</span>(<span class="event">"OrderPlaced"</span>,     → <span class="mod">paymentsModule.linkPaymentToOrder</span>)
+   <span class="infra">eventBus.subscribe</span>(<span class="event">"CategoryDeleted"</span>,  → <span class="mod">productsModule.removeProductsByCategory</span>)
+   <span class="infra">eventBus.subscribe</span>(<span class="event">"PaymentConfirmed"</span>, → <span class="mod">ordersModule.confirmOrderPayment</span>)
+<span class="arrow">   ↓</span>
+<span class="step">7. Return to createApp</span> <span class="note">(route factories only — no module refs escape)</span>
+   authRoutes · usersRoutes · productsRoutes · categoriesRoutes · ordersRoutes · paymentsRoutes
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <p><strong>The singleton anti-pattern that was fixed:</strong> Original code used <code>export let getAllOrdersHandler;</code> at module level and populated it via <code>configureOrdersModule()</code>. This created mutable globals, made tests non-isolatable, and crashed when import order shifted. The fix: composition root holds all instances in local scope. Nothing else.</p>
+      </div>
+    </section>
+
+    <!-- ── Event Bus ──────────────────────────────────────────────────────── -->
+    <section id="events">
+      <h2 class="section-title">Event-Driven Cross-Module Communication</h2>
+      <div class="section-sub">Modules never import each other. Events are the only bridge.</div>
+
+      <div class="flow">
+<span class="cm">Order placement flow — full event chain:</span>
+
+<span class="step">HTTP POST /api/orders</span>
+<span class="arrow">   ↓</span>
+<span class="mod">ordersHttpController.addOrder</span>
+<span class="arrow">   ↓</span>
+<span class="port">ordersCommandPort.addOrder</span>
+<span class="arrow">   ↓</span>
+<span class="fn">buildAddOrderUseCase</span> → creates Order entity → validates → saves → publishes
+<span class="arrow">   ↓</span>
+<span class="event">OrderPlaced { id, type, occurredAt, version, payload: { orderId, orderLines, ... } }</span>
+<span class="arrow">   ↓ eventBus.publish()</span>
+<span class="event">Promise.allSettled([...handlers])</span>  <span class="cm">← handlers isolated, one failure doesn't block others</span>
+<span class="arrow">   ↓</span>
+<span class="mod">orderPlacedPaymentLinkTranslator.publish(event)</span>
+<span class="arrow">   ↓ ACL: assertApplicationEvent() validates envelope</span>
+<span class="port">paymentsModule.linkPaymentToOrder({ orderId, orderLines })</span>
+<span class="arrow">   ↓</span>
+<span class="fn">buildLinkPaymentToOrderUseCase</span> → creates Stripe session → saves PaymentWorkflow
+<span class="arrow">   ↓ Stripe webhook later:</span>
+<span class="event">PaymentConfirmed { orderId, paymentStatus: "paid" }</span>
+<span class="arrow">   ↓</span>
+<span class="mod">paymentConfirmedOrderSyncTranslator</span> → <span class="port">ordersModule.confirmOrderPayment</span>
+<span class="arrow">   ↓</span>
+<span class="fn">applyPaymentOutcomeToOrder</span> → Order status: pending → processing
+      </div>
+    </section>
+
+    <!-- ── Ports & Adapters ───────────────────────────────────────────────── -->
+    <section id="ports">
+      <h2 class="section-title">Ports & Adapters Pattern</h2>
+      <div class="section-sub">Ports define what. Adapters define how. Composition root decides which.</div>
+
+      <div class="card">
+        <div class="card-title">Output port: assertOrderRepositoryPort</div>
+        <p>Validates that the injected repository implements the required methods at startup. If a method is missing, you get a clear error at boot — not a cryptic undefined is not a function at runtime.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>ports/output/ordersOutputPort.js</span><span class="lang">js</span></div>
+        <pre><span class="kw">const</span> REPO_METHODS = [<span class="str">"findAll"</span>, <span class="str">"findById"</span>, <span class="str">"create"</span>, <span class="str">"updateById"</span>, <span class="str">"deleteById"</span>];
+
+<span class="kw">export const</span> <span class="fn">assertOrderRepositoryPort</span> = (repo) => {
+  <span class="kw">for</span> (<span class="kw">const</span> m <span class="kw">of</span> REPO_METHODS) {
+    <span class="kw">if</span> (typeof repo[m] !== <span class="str">"function"</span>)
+      <span class="kw">throw new</span> Error(`orderRepository must implement .${m}()`);
+  }
+  <span class="kw">return</span> repo;
+};</pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">→</span>
+        <p><strong>To add a PostgreSQL repository:</strong> Create <code>modules/orders/adapters/output/repositories/postgres/pgOrderRepository.js</code> that exports <code>createPgOrderRepository({ dbClient })</code> with the same methods. Add the <code>"postgres"</code> case to <code>resolveDatabaseStrategy.js</code>. Set <code>DATABASE_PROVIDER=postgres</code>. Done — zero module code changes.</p>
+      </div>
+    </section>
+
+    <!-- ── Provider System ────────────────────────────────────────────────── -->
+    <section id="providers">
+      <h2 class="section-title">Switchable Provider System</h2>
+      <div class="section-sub">Change a .env value. Restart. Different provider. No code changes.</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Provider Type</th>
+            <th>Env Var</th>
+            <th>Options</th>
+            <th>Resolver File</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Database</strong></td>
+            <td><code>DATABASE_PROVIDER</code></td>
+            <td><code>mongo</code> · <code>postgres</code></td>
+            <td><code>infrastructure/providers/databases/resolveDatabaseStrategy.js</code></td>
+          </tr>
+          <tr>
+            <td><strong>Payment</strong></td>
+            <td><code>PAYMENT_PROVIDER</code></td>
+            <td><code>stripe</code> · <code>paypal</code> · <code>disabled</code></td>
+            <td><code>infrastructure/providers/payments/resolvePaymentStrategy.js</code></td>
+          </tr>
+          <tr>
+            <td><strong>Event Bus</strong></td>
+            <td><code>EVENT_BUS_PROVIDER</code></td>
+            <td><code>inprocess</code> · <code>redis</code></td>
+            <td><code>shared/infrastructure/events/resolveEventBus.js</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Add a Database ─────────────────────────────────────────────────── -->
+    <section id="add-db">
+      <h2 class="section-title">How to Add a New Database</h2>
+      <div class="section-sub">Example: adding PostgreSQL with pg/Knex</div>
+
+      <div class="code-block">
+        <div class="code-header"><span>Step 1 — Create the provider</span><span class="lang">js</span></div>
+        <pre><span class="cm">// src/infrastructure/providers/databases/postgres/postgresProvider.js</span>
+<span class="kw">import</span> knex <span class="kw">from</span> <span class="str">"knex"</span>;
+
+<span class="kw">export const</span> <span class="fn">createPostgresProvider</span> = ({ connectionString, logger }) => {
+  <span class="kw">const</span> db = knex({ client: <span class="str">"pg"</span>, connection: connectionString });
+
+  <span class="kw">return</span> {
+    connect:       async () => { await db.raw(<span class="str">"SELECT 1"</span>); logger.info({ msg: <span class="str">"PostgreSQL connected"</span> }); },
+    disconnect:    async () => db.destroy(),
+    getConnection: ()    => db,   <span class="cm">// same interface as mongoProvider</span>
+  };
+};</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>Step 2 — Add to resolver</span><span class="lang">js</span></div>
+        <pre><span class="cm">// resolveDatabaseStrategy.js — add one case</span>
+<span class="kw">case</span> <span class="str">"postgres"</span>:
+  <span class="kw">return</span> <span class="fn">createPostgresProvider</span>({ connectionString: env.postgresUrl, logger });</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>Step 3 — Create repository adapter per module</span><span class="lang">js</span></div>
+        <pre><span class="cm">// modules/orders/adapters/output/repositories/postgres/pgOrderRepository.js</span>
+<span class="kw">export const</span> <span class="fn">createPgOrderRepository</span> = ({ dbClient }) => ({
+  findAll:    () => dbClient(<span class="str">"orders"</span>).select(<span class="str">"*"</span>).orderBy(<span class="str">"created_at"</span>, <span class="str">"desc"</span>),
+  findById:   (id) => dbClient(<span class="str">"orders"</span>).where({ id }).first(),
+  create:     (data) => dbClient(<span class="str">"orders"</span>).insert(data).returning(<span class="str">"*"</span>),
+  updateById: (id, data) => dbClient(<span class="str">"orders"</span>).where({ id }).update(data).returning(<span class="str">"*"</span>),
+  deleteById: (id) => dbClient(<span class="str">"orders"</span>).where({ id }).delete().returning(<span class="str">"*"</span>),
+});</pre>
+      </div>
+
+      <div class="callout rule">
+        <span class="callout-icon">✓</span>
+        <p><strong>Composition root update:</strong> In <code>configureApplicationModules.js</code>, the repository creation is already isolated per module. Wrap it in a <code>DATABASE_PROVIDER</code> check to pick the right factory. No module code changes anywhere else.</p>
+      </div>
+    </section>
+
+    <!-- ── Add a Payment Gateway ──────────────────────────────────────────── -->
+    <section id="add-payment">
+      <h2 class="section-title">How to Add a New Payment Gateway</h2>
+      <div class="section-sub">Example: adding PayPal</div>
+
+      <div class="code-block">
+        <div class="code-header"><span>The gateway interface (paymentGatewayPort)</span><span class="lang">js</span></div>
+        <pre><span class="cm">// Your gateway must implement these methods:</span>
+{
+  <span class="fn">createRedirectPayment</span>: async ({ items, successUrl, cancelUrl }) => ({
+    id, provider, workflowType, url, paymentStatus
+  }),
+  <span class="fn">verifyWebhook</span>: (rawBody, signature) => ({
+    eventId, sessionId, paymentStatus, providerPaymentId, occurredAt
+  }),
+  <span class="fn">getRedirectPayment</span>: async (sessionId) => ({ id, paymentStatus, ... }),
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>Add to resolver — that's it</span><span class="lang">js</span></div>
+        <pre><span class="cm">// resolvePaymentStrategy.js</span>
+<span class="kw">case</span> <span class="str">"paypal"</span>:
+  <span class="kw">const</span> gateway = <span class="fn">createPaypalGateway</span>({ clientId: env.paypalClientId, ... });
+  <span class="kw">return</span> { provider: <span class="str">"paypal"</span>, gateway, paymentsEnabled: <span class="kw">true</span>, webhookEnabled: <span class="kw">true</span> };</pre>
+      </div>
+    </section>
+
+    <!-- ── Add an Event Bus ───────────────────────────────────────────────── -->
+    <section id="add-bus">
+      <h2 class="section-title">How to Add a New Event Bus</h2>
+      <div class="section-sub">Example: enabling Redis Streams in production</div>
+
+      <div class="code-block">
+        <div class="code-header"><span>The event bus interface</span><span class="lang">js</span></div>
+        <pre><span class="cm">// Every event bus adapter must implement:</span>
+{
+  <span class="fn">publish</span>:   async (event) => void,        <span class="cm">// event has: id, type, occurredAt, payload</span>
+  <span class="fn">subscribe</span>: (eventType, handler) => unsubscribeFn,
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>Switch via .env — zero code changes</span><span class="lang">bash</span></div>
+        <pre><span class="cm"># .env</span>
+EVENT_BUS_PROVIDER=redis
+REDIS_URL=redis://your-redis-host:6379</pre>
+      </div>
+    </section>
+
+    <!-- ── What Was Fixed ─────────────────────────────────────────────────── -->
+    <section id="fixes">
+      <h2 class="section-title">What Was Fixed <span class="tag fixed">v1 → v2</span></h2>
+      <div class="section-sub">Every crash, violation, and structural bug corrected</div>
+
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Bug / Violation</th><th>Fix</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td>Export name mismatch: <code>resolveDatabaseProvider</code> exported but imported as <code>resolveDatabaseStrategy</code> — ESM crash</td>
+            <td>Renamed to <code>resolveDatabaseStrategy</code> consistently everywhere</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td>Orders <code>export let handler</code> variables never declared — <code>ReferenceError</code> at startup</td>
+            <td>Eliminated global let pattern entirely; composition root holds instances</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td><code>configureApplicationModules</code> returns <code>{ authModule }</code> but <code>startApplication</code> destructures <code>{ auth }</code> — key mismatch</td>
+            <td>Composition root now returns pre-built route factories; no destructuring mismatch</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td><code>handleOrderPlaced</code> was an empty function body — event published, nothing happens</td>
+            <td>Removed stub; OrderPlaced is handled by the payments translator correctly</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td><code>productService</code> in products composition was overwritten to <code>undefined</code> by destructuring</td>
+            <td>Removed phantom singleton; scheduler is a proper use case builder</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">crash</span></td>
+            <td>Typo filename <code>stripeProvide.js</code> — <code>MODULE_NOT_FOUND</code> on Linux/Docker</td>
+            <td>Renamed to <code>stripeGateway.js</code>; consolidated with module-level adapter</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">ddd</span></td>
+            <td><code>Order</code> entity imported <code>PaymentStatus</code> from <code>payments/domain</code> — cross-domain import</td>
+            <td>Moved <code>PaymentStatus</code> to <code>shared/domain/value-objects</code>; both modules import from there</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">ddd</span></td>
+            <td><code>Money</code> value object had no currency — <code>Money(100)</code> was meaningless</td>
+            <td><code>createMoney({ amount, currency })</code> — currency required, enforced, validated</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">ddd</span></td>
+            <td>Auth composition had inline DB operations (list/update users) — application logic in composition</td>
+            <td>Extracted into proper use cases: <code>buildListUsersUseCase</code>, <code>buildUpdateManagedUserUseCase</code> etc.</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">ddd</span></td>
+            <td><code>PaymentWorkflow</code> entity accepted <code>payment_status</code> snake_case — DB format leaking into domain</td>
+            <td>Normalization moved to <code>paymentRecordMapper.js</code>; domain receives camelCase only</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">hex</span></td>
+            <td><code>mongoProvider</code> imported all 6 module repositories — inverted dependency</td>
+            <td>Provider exposes <code>getConnection()</code> only; composition root wires repositories</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">hex</span></td>
+            <td><code>payments/composition.js</code> imported <code>env</code> directly — infra in application layer</td>
+            <td><code>clientUrl</code> is a required parameter; <code>env</code> never imported inside modules</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">hex</span></td>
+            <td>Event bus swallowed errors — one failing handler crashed the chain</td>
+            <td><code>Promise.allSettled()</code>: all handlers run; failures are logged, not re-thrown</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">structural</span></td>
+            <td>Assertions in <code>shared/infrastructure</code> — imported by domain (wrong direction)</td>
+            <td>Moved to <code>shared/kernel/assertions</code> — layer-neutral, safe for domain</td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">structural</span></td>
+            <td>Domain errors extended plain <code>Error</code>; <code>error.code</code> not set — all 400s became 500s</td>
+            <td>Full error hierarchy: <code>DomainError</code> → <code>DomainValidationError</code> etc. with correct <code>.code</code></td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">structural</span></td>
+            <td>No request ID — impossible to correlate logs across a request</td>
+            <td><code>requestIdMiddleware</code> attaches UUID to every request; logger reads <code>req.requestId</code></td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">naming</span></td>
+            <td><code>assertPositifNumber</code>, <code>ImmutableFiledsAfterOrderPlacementError</code>, <code>TRANSACION</code>, <code>createMongooseCategorieRepository</code></td>
+            <td>All typos corrected: <code>assertPositiveNumber</code>, <code>ImmutableFieldsAfterOrderPlacementError</code>, <code>TRANSITION</code>, <code>createMongooseCategoryRepository</code></td>
+          </tr>
+          <tr>
+            <td><span class="tag warn">structural</span></td>
+            <td><code>categories/output/adapters/repositories/</code> — path inverted vs all other modules</td>
+            <td>Corrected to <code>categories/adapters/output/repositories/</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Patterns Reference ─────────────────────────────────────────────── -->
+    <section id="patterns">
+      <h2 class="section-title">Patterns Quick Reference</h2>
+      <div class="section-sub">The building blocks used throughout this codebase</div>
+
+      <div class="rule-grid">
+        <div class="rule-card">
+          <div class="rule-title">Builder Pattern for Use Cases</div>
+          <p><code>buildAddOrderUseCase({ repo, logger })</code> returns a function. Dependencies are closed over. Easy to test: pass mocks as arguments.</p>
+        </div>
+        <div class="rule-card">
+          <div class="rule-title">Anti-Corruption Layer (ACL)</div>
+          <p>Collaboration translators (<code>orderPlacedPaymentLinkTranslator</code>) validate and translate events between bounded contexts. Modules stay independent.</p>
+        </div>
+        <div class="rule-card">
+          <div class="rule-title">Strategy Pattern</div>
+          <p>Each resolver (<code>resolveDatabaseStrategy</code>, <code>resolvePaymentStrategy</code>, <code>resolveEventBus</code>) selects an adapter via config. Open for extension, closed for modification.</p>
+        </div>
+        <div class="rule-card">
+          <div class="rule-title">Record Mapper</div>
+          <p>Every repository has a mapper (<code>toOrderRecord</code>). DB format ↔ domain primitives conversion happens <em>exclusively</em> in the mapper. Domains never see snake_case or MongoDB ObjectIds.</p>
+        </div>
+        <div class="rule-card">
+          <div class="rule-title">Port Assertion</div>
+          <p><code>assertOrderRepositoryPort(repo)</code> validates the contract at wiring time. Fail fast at startup rather than fail mysteriously at runtime on first use.</p>
+        </div>
+        <div class="rule-card">
+          <div class="rule-title">Domain Event Envelope</div>
+          <p><code>createDomainEvent(type, payload)</code> stamps every event with <code>id</code> (dedup), <code>occurredAt</code> (timeline), <code>version</code> (schema evolution), <code>correlationId</code> (tracing).</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+</div>
+
+</body>
+</html>

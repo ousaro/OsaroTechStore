@@ -1,7 +1,10 @@
-import { ApplicationError } from "../../../../shared/application/errors/ApplicationError.js";
+import { ApplicationValidationError, ApplicationNotFoundError }
+  from "../../../../shared/application/errors/index.js";
 
-export class ProductNotFoundError extends ApplicationError {
-  constructor(message, options = {}) {
-    super(message, { code: "PRODUCT_NOT_FOUND", ...options });
-  }
+export class ProductValidationError extends ApplicationValidationError {
+  constructor(message) { super(message); }
+}
+
+export class ProductNotFoundError extends ApplicationNotFoundError {
+  constructor(message) { super(message); }
 }

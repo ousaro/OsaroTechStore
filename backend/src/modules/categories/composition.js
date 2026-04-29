@@ -1,46 +1,22 @@
-import { buildGetAllCategoriesUseCase } from "./application/queries/getAllCategoriesUseCase.js";
-import { buildAddNewCategoryUseCase } from "./application/commands/addNewCategoryUseCase.js";
-import { buildDeleteCategoryUseCase } from "./application/commands/deleteCategoryUseCase.js";
-import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
+import {
+  buildAddCategoryUseCase, buildUpdateCategoryUseCase, buildDeleteCategoryUseCase,
+  buildGetAllCategoriesUseCase, buildGetCategoryByIdUseCase,
+} from "./application/useCases.js";
 import { createCategoriesHttpController } from "./adapters/input/http/categoriesHttpController.js";
+import { createCategoriesRoutes }         from "./adapters/input/http/categoriesRoutes.js";
 
-const defaultCategoryEventPublisher = {
-  async publish() {},
-};
+export const createCategoriesModule = ({ categoryRepository, categoryEventPublisher, logger }) => {
+  const addCategory    = buildAddCategoryUseCase({ categoryRepository, categoryEventPublisher, logger });
+  const updateCategory = buildUpdateCategoryUseCase({ categoryRepository });
+  const deleteCategory = buildDeleteCategoryUseCase({ categoryRepository, categoryEventPublisher, logger });
+  const getAllCategories = buildGetAllCategoriesUseCase({ categoryRepository });
+  const getCategoryById = buildGetCategoryByIdUseCase({ categoryRepository });
 
-export const createCategoriesModule = ({
-  categoryRepository,
-  categoryEventPublisher = defaultCategoryEventPublisher,
-} = {}) => {
-  const getAllCategoriesUseCase = buildGetAllCategoriesUseCase({
-    categoryRepository,
-  });
-  const addNewCategoryUseCase = buildAddNewCategoryUseCase({
-    categoryRepository,
-  });
-  const deleteCategoryUseCase = buildDeleteCategoryUseCase({
-    categoryRepository,
-    categoryEventPublisher,
-  });
-  const categoriesInputPort = createCategoriesInputPort({
-    getAllCategories: getAllCategoriesUseCase,
-    addNewCategory: addNewCategoryUseCase,
-    deleteCategory: deleteCategoryUseCase,
-  });
+  const commandPort = { addCategory, updateCategory, deleteCategory };
+  const queryPort   = { getAllCategories, getCategoryById };
+  const controller  = createCategoriesHttpController({ commandPort, queryPort });
 
-  return createCategoriesHttpController({
-    categoriesInputPort,
-  });
-};
-
-export let getAllCategoriesHandler;
-export let addNewCategoryHandler;
-export let deleteCategoryHandler;
-
-export const configureCategoriesModule = (options = {}) => {
-  ({
-    getAllCategoriesHandler,
-    addNewCategoryHandler,
-    deleteCategoryHandler,
-  } = createCategoriesModule(options));
+  return {
+    createRoutes: ({ requireAuth } = {}) => createCategoriesRoutes({ controller, requireAuth }),
+  };
 };

@@ -1,21 +1,14 @@
-import router from "express";
-import {
-  getAllOrdersHandler,
-  getOrderByIdHandler,
-  addOrderHandler,
-  updateOrderHandler,
-  deleteOrderHandler,
-} from "./httpHandlers.js";
+import { Router } from "express";
 
-export const createOrdersRoutes = ({ requireAuth }) => {
-  const ordersRoutes = router();
+export const createOrdersRoutes = ({ controller, requireAuth }) => {
+  const router = Router();
+  router.use(requireAuth); // all orders routes are protected
 
-  ordersRoutes.use(requireAuth);
-  ordersRoutes.get("/", getAllOrdersHandler);
-  ordersRoutes.get("/:id", getOrderByIdHandler);
-  ordersRoutes.post("/", addOrderHandler);
-  ordersRoutes.put("/:id", updateOrderHandler);
-  ordersRoutes.delete("/:id", deleteOrderHandler);
+  router.get("/",      controller.getAllOrders);
+  router.get("/:id",   controller.getOrderById);
+  router.post("/",     controller.addOrder);
+  router.put("/:id",   controller.updateOrder);
+  router.delete("/:id",controller.deleteOrder);
 
-  return ordersRoutes;
+  return router;
 };

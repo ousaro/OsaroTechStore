@@ -1,27 +1,9 @@
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
-import { assertCategoriesInputPort } from "../../../ports/input/categoriesInputPort.js";
 
-export const createCategoriesHttpController = ({ categoriesInputPort }) => {
-  assertCategoriesInputPort(categoriesInputPort);
-
-  const getAllCategoriesHandler = asyncHandler(async (req, res) => {
-    const payload = await categoriesInputPort.getAllCategories();
-    return res.status(200).json(payload);
-  });
-
-  const addNewCategoryHandler = asyncHandler(async (req, res) => {
-    const payload = await categoriesInputPort.addNewCategory(req.body);
-    return res.status(201).json(payload);
-  });
-
-  const deleteCategoryHandler = asyncHandler(async (req, res) => {
-    const payload = await categoriesInputPort.deleteCategory({ id: req.params.id });
-    return res.status(200).json(payload);
-  });
-
-  return {
-    getAllCategoriesHandler,
-    addNewCategoryHandler,
-    deleteCategoryHandler,
-  };
-};
+export const createCategoriesHttpController = ({ commandPort, queryPort }) => ({
+  getAllCategories:  asyncHandler(async (_req, res) => res.json(await queryPort.getAllCategories())),
+  getCategoryById:  asyncHandler(async (req, res)  => res.json(await queryPort.getCategoryById({ id: req.params.id }))),
+  addCategory:      asyncHandler(async (req, res)  => res.status(201).json(await commandPort.addCategory(req.body))),
+  updateCategory:   asyncHandler(async (req, res)  => res.json(await commandPort.updateCategory({ id: req.params.id, updates: req.body }))),
+  deleteCategory:   asyncHandler(async (req, res)  => res.json(await commandPort.deleteCategory({ id: req.params.id }))),
+});

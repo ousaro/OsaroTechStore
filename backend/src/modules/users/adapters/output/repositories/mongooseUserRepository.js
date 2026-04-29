@@ -1,59 +1,36 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import { toUserRecord } from "./userRecordMapper.js";
-import { createValidatedAuthAccountAccess } from "../../../ports/output/authAccountAccessPort.js";
+/**
+ * Mongoose User Repository (Users module).
+ * NOTE: Uses the same Mongoose model as the auth module (same collection).
+ * The auth module owns credentials; this module owns profile fields.
+ * Both access the same "User" document — splitting collections is a
+ * future refactor when the bounded contexts are fully separated.
+ */
+import { createUserModel } from "../../../../auth/adapters/output/persistence/userModel.js"
 
-export const createMongooseUserRepository = ({ authUserManagement }) => {
-  const validatedAuthUserManagement = createValidatedAuthAccountAccess(
-    authUserManagement
-  );
-
+const toRecord = (doc) => {
+  if (!doc) return null;
+  const obj = doc.toObject ? doc.toObject() : doc;
   return {
-    isValidId(id) {
-      return mongoose.Types.ObjectId.isValid(id);
-    },
+    _id:        obj._id?.toString(),
+    firstName:  obj.firstName,
+    lastName:   obj.lastName,
+    email:      obj.email,
+    phone:      obj.phone,
+    address:    obj.address,
+    city:       obj.city,
+    country:    obj.country,
+    state:      obj.state,
+    postalCode: obj.postalCode,
+    favorites:  obj.favorites,
+    cart:       obj.cart,
+    picture:    obj.picture,
+  };
+};
 
-    async findAllNonAdminSorted() {
-      const docs = await validatedAuthUserManagement.listManagedUserProfiles();
-      return docs.map(toUserRecord);
-    },
-
-    async findById(id) {
-      const doc = await validatedAuthUserManagement.getManagedUserProfile(id);
-      return doc ? toUserRecord(doc) : null;
-    },
-
-    async findByIdAndUpdate(id, patch) {
-      const doc = await validatedAuthUserManagement.updateManagedUserProfile(
-        id,
-        patch.toPrimitives()
-      );
-      return doc ? toUserRecord(doc) : null;
-    },
-
-    async findByIdAndDelete(id) {
-      const doc = await validatedAuthUserManagement.removeManagedUserProfile(id);
-      return doc ? toUserRecord(doc) : null;
-    },
-
-    async getCredentialsById(id) {
-      return validatedAuthUserManagement.getManagedUserCredentials(id);
-    },
-
-    async updateCredentialsById(id, updates) {
-      const doc = await validatedAuthUserManagement.updateManagedUserCredentials(
-        id,
-        updates
-      );
-      return doc ? toUserRecord(doc) : null;
-    },
-
-    comparePassword(plain, hash) {
-      return bcrypt.compare(plain, hash);
-    },
-
-    hashPassword(password) {
-      return bcrypt.hash(password, 10);
-    },
+export const createMongooseUserRepository = ({ dbClient }) => {
+  const UserModel = createUserModel(dbClient);
+  return {
+    async findById(id)            { return toRecord(await UserModel.findById(id)); },
+    async updateById(id, updates) { return toRecord(await UserModel.findByIdAndUpdate(id, updates, { new: true })); },
   };
 };

@@ -1,41 +1,21 @@
 import mongoose from "mongoose";
 
-const Schema = mongoose.Schema;
-
-const productSchema = new Schema(
+const productSchema = new mongoose.Schema(
   {
-    ownerId: { type: String, required: true },
-    name: { type: String, required: true, trim: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    raw_price: { type: Number, required: true },
-    discount: { type: Number, required: true },
-    image: { type: String, required: true },
-    otherImages: { type: Array, required: true },
-    categoryId: { type: String, required: true },
-    category: { type: String, required: true },
-    countInStock: { type: Number, required: true },
-    moreInformations: { type: String, required: true },
-    reviews: { type: Array, required: true, default: [] },
-    rating: { type: String, required: true, default: 0 },
-    isNewProduct: { type: Boolean, required: true, default: true },
-    salesCount: { type: Number, required: true, default: 0 },
-    lastSold: { type: Date, required: true, default: Date.now },
+    name:        { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+    price:       { type: Number, required: true },
+    currency:    { type: String, default: "USD" },
+    category:    { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    stock:       { type: Number, default: 0 },
+    images:      { type: [String], default: [] },
+    status:      { type: String, default: "new" },
   },
   { timestamps: true }
 );
 
-productSchema.statics.findRelated = async function (productId) {
-  const product = await this.findById(productId);
-  if (!product) throw new Error("Product not found");
+productSchema.index({ category: 1 });
+productSchema.index({ status: 1, createdAt: 1 });
 
-  const relatedProducts = await this.find({
-    _id: { $ne: productId },
-    category: product.category,
-  }).limit(10);
-
-  return relatedProducts;
-};
-
-const ProductModel = mongoose.model("Product", productSchema);
-export default ProductModel;
+export const createProductModel = (connection) =>
+  connection.models.Product ?? connection.model("Product", productSchema);

@@ -1,22 +1,26 @@
-export const createAuthInputPort = ({ registerUser, loginUser }) => {
-  return assertAuthInputPort({
-    registerUser,
-    loginUser,
-  });
-};
+/**
+ * Auth Input Port.
+ * Defines and validates the auth module's public interface.
+ */
+const REQUIRED_METHODS = [
+  "registerUser",
+  "loginUser",
+  "listUsers",
+  "getUser",
+  "updateUser",
+  "deleteUser",
+];
 
-export const assertAuthInputPort = (authInputPort) => {
-  if (!authInputPort || typeof authInputPort !== "object") {
+export const assertAuthInputPort = (port) => {
+  if (!port || typeof port !== "object") {
     throw new Error("authInputPort is required");
   }
-
-  const requiredMethods = ["registerUser", "loginUser"];
-
-  for (const methodName of requiredMethods) {
-    if (typeof authInputPort[methodName] !== "function") {
-      throw new Error(`authInputPort must implement ${methodName}`);
+  for (const method of REQUIRED_METHODS) {
+    if (typeof port[method] !== "function") {
+      throw new Error(`authInputPort must implement .${method}()`);
     }
   }
-
-  return authInputPort;
+  return port;
 };
+
+export const createAuthInputPort = (useCases) => assertAuthInputPort(useCases);

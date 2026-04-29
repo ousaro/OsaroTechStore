@@ -1,17 +1,10 @@
-import router from "express";
-import {
-  getAllCategoriesHandler,
-  addNewCategoryHandler,
-  deleteCategoryHandler,
-} from "./httpHandlers.js";
-
-export const createCategoriesRoutes = ({ requireAuth }) => {
-  const categoriesRoutes = router();
-
-  categoriesRoutes.use(requireAuth);
-  categoriesRoutes.get("/", getAllCategoriesHandler);
-  categoriesRoutes.post("/", addNewCategoryHandler);
-  categoriesRoutes.delete("/:id", deleteCategoryHandler);
-
-  return categoriesRoutes;
+import { Router } from "express";
+export const createCategoriesRoutes = ({ controller, requireAuth }) => {
+  const router = Router();
+  router.get("/",       controller.getAllCategories);
+  router.get("/:id",    controller.getCategoryById);
+  router.post("/",      requireAuth, controller.addCategory);
+  router.put("/:id",    requireAuth, controller.updateCategory);
+  router.delete("/:id", requireAuth, controller.deleteCategory);
+  return router;
 };

@@ -1,142 +1,145 @@
-import { createAddress } from "../value-objects/Address.js";
-import { createMoney } from "../value-objects/Money.js";
-import { createOrderLines } from "../value-objects/OrderLine.js";
-import { createOrderStatus } from "../value-objects/OrderStatus.js";
-import { createPaymentStatus } from "../../../payments/domain/value-objects/PaymentStatus.js";
-import { assertNonEmptyString } from "../../../../shared/infrastructure/assertions";
-import { OrderStatusTransactionNotAllowedError } from "../errors/OrderStatusTransactionNotAllowedError.js";
+/**
+ * Order Domain Entity.
+ *
+ * Fixed from original:
+ *  - No longer imports PaymentStatus from payments/domain (cross-domain violation).
+ *    Uses shared/domain/value-objects/PaymentStatus instead.
+ *  - Money value object now carries currency.
+ *  - Status transitions enforced via canTransitionTo() on the value object.
+ *  - Immutable fields after placement enforced in update().
+ *  - toPrimitives() returns a full flat projection (safe for read models).
+ */
+
+import { DomainValidationError }     from "../../../../shared/domain/errors/index.js";
+import { assertNonEmptyString, assertNonEmptyArray } from "../../../../shared/kernel/assertions/index.js";
+import { createOrderStatus, ORDER_STATUSES } from "../value-objects/OrderStatus.js";
+import { createOrderLine }            from "../value-objects/OrderLine.js";
+import { createAddress }              from "../value-objects/OrderLine.js";
+import { createMoney }                from "../value-objects/Money.js";
+import { createPaymentStatus, PAYMENT_STATUSES } from "../../../../shared/domain/value-objects/PaymentStatus.js";
+import {
+  OrderStatusTransitionNotAllowedError,
+  ImmutableFieldsAfterOrderPlacementError,
+} from "../errors/index.js";
+
+const IMMUTABLE_AFTER_PLACEMENT = new Set(["ownerId", "orderLines", "currency"]);
 
 export const createOrder = ({
+  _id,
   ownerId,
-  products,
-  totalPrice,
-  status,
-  address,
-  paymentMethod,
+  orderLines = [],
+  deliveryAddress,
+  currency = "USD",
+  orderStatus,
   paymentStatus,
-  paymentReference,
 }) => {
+  // ── Validate ───────────────────────────────────────────────────────────
   assertNonEmptyString(ownerId, "ownerId");
-  const orderLines = createOrderLines(products);
-  assertNonEmptyString(paymentMethod, "paymentMethod");
-  assertNonEmptyString(paymentReference, "paymentReference");
-  const orderAddress = createAddress(address);
-  const orderTotalPrice = createMoney(totalPrice);
-  const orderStatus = createOrderStatus(status);
-  const orderPaymentStatus = createPaymentStatus(paymentStatus);
+  assertNonEmptyArray(orderLines, "orderLines");
 
-  const props = {
+  const lines = orderLines.map((line) =>
+    line.unitPrice?.toPrimitives
+      ? line  // already a value object
+      : createOrderLine({
+          productId: line.productId,
+          name:      line.name,
+          price:     line.unitPrice?.amount ?? line.price,
+          currency:  line.unitPrice?.currency ?? currency,
+          quantity:  line.quantity,
+        })
+  );
+
+  const address = deliveryAddress?.toPrimitives
+    ? deliveryAddress
+    : createAddress(deliveryAddress);
+
+  const status = createOrderStatus(orderStatus ?? ORDER_STATUSES.PENDING);
+
+  const pymtStatus = createPaymentStatus(paymentStatus ?? PAYMENT_STATUSES.PENDING);
+
+  const total = lines.reduce(
+    (acc, line) => acc.add(line.subtotal),
+    createMoney({ amount: 0.01, currency })   // seed — will be replaced
+  );
+
+  // ── Re-compute total properly ──────────────────────────────────────────
+  const computedTotal = lines
+    .slice(1)
+    .reduce((acc, line) => acc.add(line.subtotal), lines[0].subtotal);
+
+  // ── Entity ────────────────────────────────────────────────────────────
+  return Object.freeze({
+    _id,
     ownerId,
-    products: orderLines,
-    totalPrice: orderTotalPrice,
-    status: orderStatus,
-    address: orderAddress,
-    // paymentMethod stays on the order as checkout intent; provider execution stays in payments.
-    paymentMethod,
-    paymentStatus: orderPaymentStatus,
-    paymentReference,
-  };
+    orderLines: lines,
+    deliveryAddress: address,
+    currency,
+    orderStatus: status,
+    paymentStatus: pymtStatus,
+    totalPrice: computedTotal,
 
-  return Object.freeze({
-    ...props,
-    toPrimitives() {
-      return {
-        ...props,
-        products: props.products.map((line) => line.toPrimitives()),
-        totalPrice: props.totalPrice.toPrimitives(),
-        status: props.status.toPrimitives(),
-        address: props.address.toPrimitives(),
-        paymentStatus: props.paymentStatus.toPrimitives(),
-      };
+    // ── Behavior ────────────────────────────────────────────────────────
+
+    updateStatus(nextStatus) {
+      if (!status.canTransitionTo(nextStatus)) {
+        throw new OrderStatusTransitionNotAllowedError(
+          `Cannot transition order from "${status.value}" to "${nextStatus}"`
+        );
+      }
+      return createOrder({
+        _id,
+        ownerId,
+        orderLines: lines.map((l) => l.toPrimitives()),
+        deliveryAddress: address.toPrimitives(),
+        currency,
+        orderStatus: nextStatus,
+        paymentStatus: pymtStatus.value,
+      });
     },
-  });
-};
 
-const ALLOWED_ORDER_STATUS_TRANSITIONS = {
-  pending: new Set(["paid", "cancelled"]),
-  paid: new Set(["processing", "cancelled"]),
-  processing: new Set(["shipped", "cancelled"]),
-  shipped: new Set(["delivered"]),
-  delivered: new Set([]),
-  cancelled: new Set([]),
-};
+    confirmPayment(newPaymentStatus) {
+      return createOrder({
+        _id,
+        ownerId,
+        orderLines: lines.map((l) => l.toPrimitives()),
+        deliveryAddress: address.toPrimitives(),
+        currency,
+        orderStatus: status.value,
+        paymentStatus: newPaymentStatus,
+      });
+    },
 
-export const transitionOrderStatus = (currentOrder, nextStatus) => {
-  const currentStatus = createOrderStatus(currentOrder.status).toPrimitives();
-  const targetStatus = createOrderStatus(nextStatus).toPrimitives();
+    update(fields) {
+      const immutableViolations = Object.keys(fields).filter((k) =>
+        IMMUTABLE_AFTER_PLACEMENT.has(k)
+      );
+      if (immutableViolations.length > 0 && status.value !== ORDER_STATUSES.PENDING) {
+        throw new ImmutableFieldsAfterOrderPlacementError(
+          `Cannot update immutable fields after order is placed: ${immutableViolations.join(", ")}`
+        );
+      }
+      return createOrder({
+        _id,
+        ownerId,
+        orderLines: lines.map((l) => l.toPrimitives()),
+        deliveryAddress: address.toPrimitives(),
+        currency,
+        orderStatus: status.value,
+        paymentStatus: pymtStatus.value,
+        ...fields,
+      });
+    },
 
-  if (currentStatus === targetStatus) {
-    return createOrderStatus(targetStatus);
-  }
-
-  const allowedNextStatuses = ALLOWED_ORDER_STATUS_TRANSITIONS[currentStatus] ?? new Set();
-
-  if (!allowedNextStatuses.has(targetStatus)) {
-    throw new OrderStatusTransactionNotAllowedError(
-      `Invalid order status transition from ${currentStatus} to ${targetStatus}`
-    );
-  }
-
-  return createOrderStatus(targetStatus);
-};
-
-export const markOrderAsPaid = (currentOrder) =>
-  transitionOrderStatus(currentOrder, "paid");
-
-export const startOrderProcessing = (currentOrder) =>
-  transitionOrderStatus(currentOrder, "processing");
-
-export const shipOrder = (currentOrder) =>
-  transitionOrderStatus(currentOrder, "shipped");
-
-export const deliverOrder = (currentOrder) =>
-  transitionOrderStatus(currentOrder, "delivered");
-
-export const cancelOrder = (currentOrder) =>
-  transitionOrderStatus(currentOrder, "cancelled");
-
-export const createOrderUpdatePatch = (updates) => {
-  const patch = { ...updates };
-
-  if (patch.totalPrice !== undefined) {
-    patch.totalPrice = createMoney(patch.totalPrice);
-  }
-
-  if (patch.status !== undefined) {
-    patch.status = createOrderStatus(patch.status);
-  }
-
-  if (patch.paymentMethod !== undefined) {
-    assertNonEmptyString(patch.paymentMethod, "paymentMethod");
-  }
-
-  if (patch.paymentReference !== undefined) {
-    assertNonEmptyString(patch.paymentReference, "paymentReference");
-  }
-
-  if (patch.paymentStatus !== undefined) {
-    patch.paymentStatus = createPaymentStatus(patch.paymentStatus);
-  }
-
-  if (patch.address !== undefined) {
-    patch.address = createAddress(patch.address);
-  }
-
-  if (patch.products !== undefined) {
-    patch.products = createOrderLines(patch.products);
-  }
-
-  return Object.freeze({
     toPrimitives() {
       return {
-        ...patch,
-        ...(patch.products
-          ? { products: patch.products.map((line) => line.toPrimitives()) }
-          : {}),
-        ...(patch.totalPrice ? { totalPrice: patch.totalPrice.toPrimitives() } : {}),
-        ...(patch.status ? { status: patch.status.toPrimitives() } : {}),
-        ...(patch.address ? { address: patch.address.toPrimitives() } : {}),
-        ...(patch.paymentStatus ? { paymentStatus: patch.paymentStatus.toPrimitives() } : {}),
+        _id,
+        ownerId,
+        orderLines:      lines.map((l) => l.toPrimitives()),
+        deliveryAddress: address.toPrimitives(),
+        currency,
+        orderStatus:     status.toPrimitives(),
+        paymentStatus:   pymtStatus.toPrimitives(),
+        totalPrice:      computedTotal.toPrimitives(),
       };
     },
   });

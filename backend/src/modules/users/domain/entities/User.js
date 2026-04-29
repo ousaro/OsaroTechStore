@@ -1,61 +1,16 @@
-import { DomainValidationError } from "../../../../shared/domain/errors/DomainValidationError.js";
+// User domain entity
+import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-const ALLOWED_USER_PROFILE_FIELDS = new Set([
-  "firstName",
-  "lastName",
-  "picture",
-  "phone",
-  "address",
-  "city",
-  "country",
-  "state",
-  "postalCode",
-  "favorites",
-  "cart",
-]);
-
-export const createUserProfileUpdatePatch = (updates) => {
-  if (!updates || typeof updates !== "object") {
-    throw new DomainValidationError("profile updates are required");
-  }
-
-  const patch = Object.fromEntries(
-    Object.entries(updates).filter(([fieldName]) =>
-      ALLOWED_USER_PROFILE_FIELDS.has(fieldName)
-    )
-  );
-
-  const unsupportedField = Object.keys(updates).find(
-    (fieldName) => !ALLOWED_USER_PROFILE_FIELDS.has(fieldName)
-  );
-
-  if (unsupportedField) {
-    throw new DomainValidationError(
-      `${unsupportedField} is not part of the user profile model`
-    );
-  }
-
+export const createUser = ({ _id, firstName, lastName, email, phone = "",
+  address = "", city = "", country = "", state = "", postalCode = 0,
+  favorites = [], cart = [], picture = "" }) => {
+  assertNonEmptyString(firstName, "firstName");
+  assertNonEmptyString(lastName,  "lastName");
+  assertNonEmptyString(email,     "email");
   return Object.freeze({
-    toPrimitives() {
-      return { ...patch };
-    },
-  });
-};
-
-export const createUserPasswordUpdateCommand = (updates) => {
-  const { currentPassword, newPassword, confirmPassword } = updates || {};
-
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    throw new DomainValidationError("All fields must be filled");
-  }
-
-  if (newPassword !== confirmPassword) {
-    throw new DomainValidationError("Password do not match");
-  }
-
-  return Object.freeze({
-    currentPassword,
-    newPassword,
-    confirmPassword,
+    _id, firstName, lastName, email, phone, address, city, country,
+    state, postalCode, favorites, cart, picture,
+    toPrimitives: () => ({ _id, firstName, lastName, email, phone, address,
+      city, country, state, postalCode, favorites, cart, picture }),
   });
 };

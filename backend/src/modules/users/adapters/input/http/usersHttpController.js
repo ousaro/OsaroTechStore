@@ -1,48 +1,21 @@
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
-import { assertUsersInputPort } from "../../../ports/input/usersInputPort.js";
 
-export const createUsersHttpController = ({ usersInputPort }) => {
-  assertUsersInputPort(usersInputPort);
-
-  const getAllUsersHandler = asyncHandler(async (req, res) => {
-    const users = await usersInputPort.getAllUsers();
-    return res.status(200).json(users);
-  });
-
-  const getUserByIdHandler = asyncHandler(async (req, res) => {
-    const payload = await usersInputPort.getUserById({ id: req.params.id });
-    return res.status(200).json(payload);
-  });
-
-  const updateUserHandler = asyncHandler(async (req, res) => {
-    const payload = await usersInputPort.updateUser({
-      id: req.params.id,
-      updates: req.body,
-    });
-    return res.status(200).json(payload);
-  });
-
-  const updateUserPasswordHandler = asyncHandler(async (req, res) => {
-    const payload = await usersInputPort.updateUserPassword({
-      id: req.params.id,
-      requesterId: req.user._id,
-      updates: req.body,
-    });
-    return res.status(200).json(payload);
-  });
-
-  const deleteUserHandler = asyncHandler(async (req, res) => {
-    const payload = await usersInputPort.deleteUser({
-      id: req.params.id,
-    });
-    return res.status(200).json(payload);
-  });
-
-  return {
-    getAllUsersHandler,
-    getUserByIdHandler,
-    updateUserHandler,
-    updateUserPasswordHandler,
-    deleteUserHandler,
-  };
-};
+export const createUsersHttpController = ({ commandPort, queryPort }) => ({
+  getMyProfile: asyncHandler(async (req, res) => {
+    res.json(await queryPort.getUserProfile({ requesterId: req.user._id }));
+  }),
+  getUserById: asyncHandler(async (req, res) => {
+    res.json(await queryPort.getUserProfile({ requesterId: req.user._id, targetId: req.params.id }));
+  }),
+  updateProfile: asyncHandler(async (req, res) => {
+    res.json(await commandPort.updateUserProfile({ requesterId: req.user._id, updates: req.body }));
+  }),
+  updateCart: asyncHandler(async (req, res) => {
+    res.json(await commandPort.updateUserCart({ userId: req.user._id, cart: req.body.cart }));
+  }),
+  updateFavorites: asyncHandler(async (req, res) => {
+    res.json(await commandPort.updateUserFavorites({
+      userId: req.user._id, productId: req.params.productId, action: req.body.action,
+    }));
+  }),
+});

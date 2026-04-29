@@ -1,43 +1,24 @@
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
-import { PaymentWebhookError } from "../../../application/errors/PaymentApplicationError.js";
-import { assertPaymentsCommandPort } from "../../../ports/input/paymentsCommandPort.js";
-import { assertPaymentsQueryPort } from "../../../ports/input/paymentsQueryPort.js";
 
-export const createPaymentsHttpController = ({
-  paymentsCommandPort,
-  paymentsQueryPort,
-}) => {
-  assertPaymentsCommandPort(paymentsCommandPort);
-  assertPaymentsQueryPort(paymentsQueryPort);
-
-  const createPaymentIntentHandler = asyncHandler(async (req, res) => {
-    const payload = await paymentsCommandPort.createPaymentIntent({ items: req.body.items });
-    return res.status(200).json(payload);
-  });
-
-  const stripeWebhookHandler = asyncHandler(async (req, res) => {
-    const signature = req.headers["stripe-signature"];
-    try {
-      const payload = await paymentsCommandPort.verifyWebhook({
-        payload: req.body,
-        signature,
-      });
-      return res.status(200).json(payload);
-    } catch (_error) {
-      throw new PaymentWebhookError("Webhook signature verification failed");
-    }
-  });
-
-  const getSessionDetailsHandler = asyncHandler(async (req, res) => {
-    const payload = await paymentsQueryPort.getSessionDetails({
-      sessionId: req.params.sessionId,
+export const createPaymentsHttpController = ({ commandPort, queryPort }) => ({
+  createPaymentIntent: asyncHandler(async (req, res) => {
+    const payment = await commandPort.createPaymentIntent({
+      orderId:    req.body.orderId,
+      items:      req.body.items,
+      currency:   req.body.currency ?? "USD",
     });
-    return res.status(200).json(payload);
-  });
+    res.status(201).json(payment);
+  }),
 
-  return {
-    createPaymentIntentHandler,
-    stripeWebhookHandler,
-    getSessionDetailsHandler,
-  };
-};
+  verifyWebhook: asyncHandler(async (req, res) => {
+    // req.rawBody is set by the express.raw() middleware on this route only
+    const signature = req.headers["stripe-signature"];
+    await commandPort.verifyWebhook({ rawBody: req.rawBody, signature });
+    res.status(200).json({ received: true });
+  }),
+
+  getPaymentByOrderId: asyncHandler(async (req, res) => {
+    const payment = await queryPort.getPaymentByOrderId({ orderId: req.params.orderId });
+    res.status(200).json(payment);
+  }),
+});
