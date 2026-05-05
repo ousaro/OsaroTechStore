@@ -38,6 +38,12 @@ export const assertFunction = (value, fieldName, message) => {
   }
 };
 
+export const assertBoolean = (value, fieldName, message) => {
+  if (typeof value !== "boolean") {
+    throw new Error(message || `${fieldName} must be a boolean`);
+  }
+};
+
 export const assertPositiveNumber = (value, fieldName, message) => {
   if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
     throw new Error(message || `${fieldName} must be a positive number`);

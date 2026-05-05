@@ -11,6 +11,7 @@
 
 import { createStripeGateway } from "./stripe/stripeGateway.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
+import { assertPaymentStrategyPort } from "../../../shared/application/ports/paymentStrategyPort.js";
 
 const DISABLED_GATEWAY = Object.freeze({
   provider: "disabled",
@@ -23,18 +24,19 @@ const DISABLED_GATEWAY = Object.freeze({
 export const resolvePaymentStrategy = ({ provider, env, logger }) => {
   switch (provider) {
     case "stripe": {
-      const gateway = createStripeGateway({
-        secretKey:     env.stripeSecretKey,
-        webhookSecret: env.stripeWebhookSecret,
-        logger,
-      });
-      return {
+      const gateway =createStripeGateway({
+          secretKey:     env.stripeSecretKey,
+          webhookSecret: env.stripeWebhookSecret,
+          logger,
+        });
+
+      return assertPaymentStrategyPort({
         provider: "stripe",
         label: "Stripe",
         paymentsEnabled: true,
         webhookEnabled: Boolean(env.stripeWebhookSecret),
         gateway,
-      };
+      }, "resolvePaymentStrategy");
     }
 
     case "paypal":
@@ -45,7 +47,7 @@ export const resolvePaymentStrategy = ({ provider, env, logger }) => {
       );
 
     case "disabled":
-      return DISABLED_GATEWAY;
+      return assertPaymentStrategyPort(DISABLED_GATEWAY, "resolvePaymentStrategy");
 
     default:
       throw new ServiceUnavailableError(

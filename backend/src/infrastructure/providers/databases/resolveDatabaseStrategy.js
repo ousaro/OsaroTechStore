@@ -12,11 +12,15 @@
 
 import { createMongoProvider } from "./mongo/mongoProvider.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
+import { assertDatabaseProviderPort } from "../../../shared/application/ports/databaseProviderPort.js";
 
 export const resolveDatabaseStrategy = ({ provider, logger, env }) => {
   switch (provider) {
     case "mongo":
-      return createMongoProvider({ uri: env.mongoUri, logger });
+      return assertDatabaseProviderPort(
+        createMongoProvider({ uri: env.mongoUri, logger }),
+        "resolveDatabaseStrategy"
+      );
 
     case "postgres":
       // Placeholder — implement createPostgresProvider when needed
