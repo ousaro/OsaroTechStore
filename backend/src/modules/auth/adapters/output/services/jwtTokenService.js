@@ -7,11 +7,10 @@
  */
 import jwt from "jsonwebtoken";
 import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
+import { assertNonEmptyString }  from "../../../../../shared/kernel/assertions/index.js";
 
 export const createJwtTokenService = ({ secret, expiresIn = "2d", logger }) => {
-  if (!secret) {
-    throw new Error("createJwtTokenService: secret is required");
-  }
+  assertNonEmptyString(secret, "secret", "createJwtTokenService: secret is required");
 
   return {
     signUserId(userId) {
@@ -23,7 +22,9 @@ export const createJwtTokenService = ({ secret, expiresIn = "2d", logger }) => {
      * Fixed: original verify() called extractUserId but discarded the return value.
      */
     verify(authorizationHeader) {
-      if (typeof authorizationHeader !== "string") {
+      try {
+        assertNonEmptyString(authorizationHeader, "authorizationHeader");
+      } catch (_err) {
         throw new AuthUnauthorizedError("Authorization header is missing");
       }
 

@@ -17,6 +17,7 @@ import {
 
 import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
 import { createPaymentsRoutes }         from "./adapters/input/http/paymentsRoutes.js";
+import { assertNonEmptyString }         from "../../shared/kernel/assertions/index.js";
 
 export const createPaymentsModule = ({
   paymentGateway,
@@ -27,9 +28,11 @@ export const createPaymentsModule = ({
   clientUrl,
   logger,
 }) => {
-  if (!clientUrl) {
-    throw new Error("createPaymentsModule: clientUrl is required. Set CLIENT_URL in .env");
-  }
+  assertNonEmptyString(
+    clientUrl,
+    "clientUrl",
+    "createPaymentsModule: clientUrl is required. Set CLIENT_URL in .env"
+  );
 
   // ── Use cases ─────────────────────────────────────────────────────────────
   const createPaymentIntent = buildCreatePaymentIntentUseCase({

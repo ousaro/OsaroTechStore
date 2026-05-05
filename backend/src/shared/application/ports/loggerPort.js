@@ -11,14 +11,13 @@
  *   - NoopLogger   (tests)
  */
 
+import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
+
 export const assertLoggerPort = (logger, context = "unknown") => {
-  if (!logger || typeof logger !== "object") {
-    throw new Error(`[${context}] logger port is required`);
-  }
+  assertObject(logger, "logger", `[${context}] logger port is required and must be an object`);
+
   for (const method of ["info", "warn", "error", "debug"]) {
-    if (typeof logger[method] !== "function") {
-      throw new Error(`[${context}] logger must implement .${method}()`);
-    }
+    assertFunction(logger[method], `logger.${method}`, `[${context}] logger must implement .${method}`);
   }
   return logger;
 };

@@ -1,14 +1,11 @@
 /**
  * Express Application Factory.
  *
- * Receives all route factories as parameters — it has ZERO knowledge of
+ * -Receives all route factories as parameters — it has ZERO knowledge of
  * modules, repositories, or domain logic. This is the HTTP adapter for
  * the entire application.
+ * -handle middleware that must be registered before routes (e.g. body parsing, CORS, auth) and after routes (error handling, 404)
  *
- *  - No imports from module public-apis (was creating implicit singleton coupling)
- *  - requireAuth created once here and injected into all routes
- *  - Error and 404 middleware registered correctly at the end
- *  - requestIdMiddleware added for distributed tracing
  */
 
 import express from "express";

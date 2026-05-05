@@ -3,23 +3,15 @@
  *
  * This is the ONLY file that knows the full dependency graph.
  * It wires infrastructure → modules and registers cross-module workflows.
- *
- * Architecture rules enforced here:
- *  1. Modules receive dependencies as parameters — they never import infra.
- *  2. All instances are local variables — NO global let singletons.
- *  3. The DB provider exposes a client only — repositories are wired here.
- *  4. Route factories receive injected handlers — createApp knows no modules.
- *  5. Event bus subscriptions (workflows) are registered after all modules are wired.
- *
- * To switch any provider: change env vars. The resolver picks the adapter.
- * No module code ever changes.
+ * 
  */
 
 import { resolveDatabaseStrategy }   from "../providers/databases/resolveDatabaseStrategy.js";
 import { resolvePaymentStrategy }     from "../providers/payments/resolvePaymentStrategy.js";
-import { resolveEventBus }            from "../../shared/infrastructure/events/resolveEventBus.js";
-import { createConsoleLogger }        from "../providers/logger/consoleLogger.js";
+import { resolveLogger }              from "../providers/logger/resolveLogger.js";
 import { createScopedLogger }         from "../../shared/application/ports/loggerPort.js";
+import { resolveEventBus }            from "../../shared/infrastructure/events/resolveEventBus.js";
+
 
 // ── Module factories ────────────────────────────────────────────────────────
 import { createAuthModule }           from "../../modules/auth/composition.js";
@@ -47,7 +39,10 @@ import { createPaymentConfirmedOrderSyncTranslator }        from "../../modules/
 
 export const configureApplicationModules = async ({ env }) => {
   // ── 1. Logger ─────────────────────────────────────────────────────────────
-  const logger = createConsoleLogger("app");
+  const logger = resolveLogger({
+    provider: env.loggerProvider,
+    scope: "app",
+  });
 
   // ── 2. Infrastructure providers ───────────────────────────────────────────
   const database = resolveDatabaseStrategy({
@@ -70,6 +65,7 @@ export const configureApplicationModules = async ({ env }) => {
     provider: env.eventBusProvider,
     logger: createScopedLogger(logger, "eventBus"),
   });
+
 
   // ── 3. Shared services ────────────────────────────────────────────────────
   const tokenService = createJwtTokenService({
@@ -95,7 +91,7 @@ export const configureApplicationModules = async ({ env }) => {
     logger: createScopedLogger(logger, "auth"),
   });
 
-  // TODO: authUserRepository is not used by teh userModule
+  // TODO: authUserRepository is not used by the userModule
   const usersModule = createUsersModule({
     userRepository,
     authUserRepository,   // Users delegates credential ops to auth repo
@@ -167,7 +163,6 @@ export const configureApplicationModules = async ({ env }) => {
   return {
     logger,
     tokenService,
-    paymentStrategy,
 
     // Route factories — each receives its pre-wired handlers
     authRoutes:       authModule.createRoutes,

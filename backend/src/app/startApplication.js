@@ -12,7 +12,7 @@
 import { createApp } from "./createApp.js";
 
 export const startApplication = async ({ port, env }) => {
-  // Step 1 — Wire everything (DB connect happens inside here)
+  // Wire everything
   const { configureApplicationModules } = await import(
     "../infrastructure/bootstrap/configureApplicationModules.js"
   );
@@ -20,7 +20,6 @@ export const startApplication = async ({ port, env }) => {
   const {
     logger,
     tokenService,
-    paymentStrategy,
     authRoutes,
     usersRoutes,
     productsRoutes,
@@ -31,12 +30,10 @@ export const startApplication = async ({ port, env }) => {
     shutdown,
   } = await configureApplicationModules({ env });
 
-  // Step 2 — Build Express app with injected dependencies
-  // TODO: the paymentStrategy is not used in the createApp
+  // Build Express app with injected dependencies
   const app = createApp({
     logger,
     tokenService,
-    paymentStrategy,
     authRoutes,
     usersRoutes,
     productsRoutes,
@@ -45,7 +42,7 @@ export const startApplication = async ({ port, env }) => {
     paymentsRoutes,
   });
 
-  // Step 3 — Start HTTP server
+  // Start HTTP server
   const server = app.listen(port, () => {
     logger.info({
       msg: `Server running`,
@@ -54,13 +51,13 @@ export const startApplication = async ({ port, env }) => {
     });
   });
 
-  // Step 4 — Start background schedulers (after server is ready)
+  // Start background schedulers (after server is ready)
   for (const scheduler of schedulers) {
     scheduler.start();
     logger.info({ msg: "Scheduler started", name: scheduler.name ?? "unnamed" });
   }
 
-  // Step 5 — Graceful shutdown on SIGTERM/SIGINT (Docker, k8s, Ctrl+C)
+  // Graceful shutdown on SIGTERM/SIGINT (Docker, k8s, Ctrl+C)
   const handleShutdown = async (signal) => {
     logger.info({ msg: `Received ${signal}, shutting down gracefully` });
     server.close(async () => {

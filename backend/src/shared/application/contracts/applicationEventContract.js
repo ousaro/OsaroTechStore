@@ -8,14 +8,11 @@
  * This is the Anti-Corruption Layer guard for the event bus.
  */
 
-export const assertApplicationEvent = (event, { expectedType } = {}) => {
-  if (!event || typeof event !== "object") {
-    throw new Error("event must be a non-null object");
-  }
+import { assertNonEmptyString, assertObject } from "../../kernel/assertions/index.js";
 
-  if (typeof event.type !== "string" || event.type.trim() === "") {
-    throw new Error("event.type must be a non-empty string");
-  }
+export const assertApplicationEvent = (event, { expectedType } = {}) => {
+  assertObject(event, "event", "event must be a non-null object");
+  assertNonEmptyString(event.type, "event.type", "event.type must be a non-empty string");
 
   if (expectedType && event.type !== expectedType) {
     throw new Error(
@@ -23,9 +20,7 @@ export const assertApplicationEvent = (event, { expectedType } = {}) => {
     );
   }
 
-  if (!event.payload || typeof event.payload !== "object") {
-    throw new Error("event.payload must be a non-null object");
-  }
+  assertObject(event.payload, "event.payload", "event.payload must be a non-null object");
 
   // Events created via createDomainEvent() always have id + occurredAt.
   // Log a warning (not a throw) if missing — backwards compatibility.

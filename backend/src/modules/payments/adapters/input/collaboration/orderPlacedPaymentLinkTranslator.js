@@ -6,13 +6,14 @@
  * Anti-Corruption Layer: Payments module never imports from Orders.
  */
 import { assertApplicationEvent } from "../../../../../shared/application/contracts/applicationEventContract.js";
+import { assertFunction }         from "../../../../../shared/kernel/assertions/index.js";
 
 export const createOrderPlacedPaymentLinkTranslator = ({ linkPaymentToOrder }) => {
-  if (typeof linkPaymentToOrder !== "function") {
-    throw new Error(
-      "createOrderPlacedPaymentLinkTranslator: linkPaymentToOrder must be a function"
-    );
-  }
+  assertFunction(
+    linkPaymentToOrder,
+    "linkPaymentToOrder",
+    "createOrderPlacedPaymentLinkTranslator: linkPaymentToOrder must be a function"
+  );
 
   return {
     async publish(event) {

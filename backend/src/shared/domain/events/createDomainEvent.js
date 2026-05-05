@@ -11,14 +11,11 @@
  */
 
 import { randomUUID } from "crypto";
+import { assertNonEmptyString, assertObject } from "../../kernel/assertions/index.js";
 
 export const createDomainEvent = (type, payload, meta = {}) => {
-  if (typeof type !== "string" || type.trim() === "") {
-    throw new Error("Domain event type must be a non-empty string");
-  }
-  if (!payload || typeof payload !== "object") {
-    throw new Error("Domain event payload must be an object");
-  }
+  assertNonEmptyString(type, "type", "Domain event type must be a non-empty string");
+  assertObject(payload, "payload", "Domain event payload must be an object");
 
   return Object.freeze({
     id: meta.id ?? randomUUID(),       // unique event ID — used for idempotency

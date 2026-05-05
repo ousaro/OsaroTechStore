@@ -15,13 +15,15 @@
  *  - Event ID deduplication via processedWebhookEventIds pattern
  */
 
+import { assertObject } from "../../../kernel/assertions/index.js";
+
 export const createRedisStreamEventBus = ({ redisClient, logger }) => {
-  if (!redisClient) {
-    throw new Error(
-      "RedisStreamEventBus requires a connected ioredis client. " +
-        "Check REDIS_URL in your environment."
-    );
-  }
+  assertObject(
+    redisClient,
+    "redisClient",
+    "RedisStreamEventBus requires a connected ioredis client. " +
+      "Check REDIS_URL in your environment."
+  );
 
   // Stubbed — implement with ioredis XADD/XREADGROUP when needed
   const publish = async (event) => {

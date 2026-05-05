@@ -4,23 +4,21 @@
  * Single source of truth for all environment variables.
  * Fails fast at startup if required vars are missing.
  *
- * Providers switched via these keys:
- *   DATABASE_PROVIDER  = "mongo" | "postgres"
- *   PAYMENT_PROVIDER   = "stripe" | "paypal" | "disabled"
- *   EVENT_BUS_PROVIDER = "inprocess" | "redis"
  */
 
 import dotenv from "dotenv";
+import { assertNonEmptyString } from "../../shared/kernel/assertions/index.js";
+
 dotenv.config();
 
 const required = (key) => {
   const val = process.env[key];
-  if (!val) {
-    throw new Error(
-      `[Config] Missing required environment variable: ${key}\n` +
-        `Copy .env.example to .env and fill in all required values.`
-    );
-  }
+  assertNonEmptyString(
+    val,
+    key,
+    `[Config] Missing required environment variable: ${key}\n` +
+      "Copy .env.example to .env and fill in all required values."
+  );
   return val;
 };
 
@@ -39,6 +37,10 @@ const buildGoogleOAuthConfig = () => {
 export const env = Object.freeze({
   nodeEnv: optional("NODE_ENV", "development"),
   port: parseInt(optional("PORT", "5000"), 10),
+
+  // ── Logger ─────────────────────────────────────────────────────────────
+  // Switch logger: set LOGGER_PROVIDER=console | pino | noop
+  loggerProvider: optional("LOGGER_PROVIDER", "console"),
 
   // ── Auth ───────────────────────────────────────────────────────────────
   tokenSecret: required("TOKEN_SECRET"),

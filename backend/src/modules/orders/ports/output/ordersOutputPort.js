@@ -2,6 +2,8 @@
  * Orders Output Ports.
  * Validated at wiring time in composition.js.
  */
+import { assertFunction, assertObject } from "../../../../shared/kernel/assertions/index.js";
+
 const REPO_METHODS = [
   "findAll",
   "findById",
@@ -14,10 +16,9 @@ const REPO_METHODS = [
 const EVENT_PUBLISHER_METHODS = ["publish"];
 
 const assertMethods = (obj, methods, label) => {
-  if (!obj || typeof obj !== "object") throw new Error(`${label} is required`);
+  assertObject(obj, label, `${label} is required`);
   for (const m of methods) {
-    if (typeof obj[m] !== "function")
-      throw new Error(`${label} must implement .${m}()`);
+    assertFunction(obj[m], `${label}.${m}`, `${label} must implement .${m}()`);
   }
   return obj;
 };

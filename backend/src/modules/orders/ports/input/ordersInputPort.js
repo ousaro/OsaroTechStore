@@ -2,14 +2,15 @@
  * Orders Input Port.
  * Defines the public interface exposed to HTTP controllers.
  */
+import { assertFunction, assertObject } from "../../../../shared/kernel/assertions/index.js";
+
 const COMMAND_METHODS = ["addOrder", "updateOrder", "deleteOrder", "confirmOrderPayment"];
 const QUERY_METHODS   = ["getAllOrders", "getOrderById"];
 
 const assertMethods = (obj, methods, label) => {
-  if (!obj || typeof obj !== "object") throw new Error(`${label} is required`);
+  assertObject(obj, label, `${label} is required`);
   for (const m of methods) {
-    if (typeof obj[m] !== "function")
-      throw new Error(`${label} must implement .${m}()`);
+    assertFunction(obj[m], `${label}.${m}`, `${label} must implement .${m}()`);
   }
   return obj;
 };

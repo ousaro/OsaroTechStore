@@ -1,7 +1,7 @@
 {
   "name": "osaro-tech-store-backend",
   "version": "2.0.0",
-  "description": "DDD + Modular Hexagonal Architecture reference implementation",
+  "description": "DDD + Modular Hexagonal Architecture",
   "type": "module",
   "main": "src/server.js",
   "scripts": {

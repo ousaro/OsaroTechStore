@@ -10,6 +10,7 @@
  */
 import { assertApplicationEvent } from "../../../../../shared/application/contracts/applicationEventContract.js";
 import { PAYMENT_STATUSES }       from "../../../../../shared/domain/value-objects/PaymentStatus.js";
+import { assertFunction }         from "../../../../../shared/kernel/assertions/index.js";
 
 const EVENT_TO_PAYMENT_STATUS = Object.freeze({
   PaymentConfirmed: PAYMENT_STATUSES.PAID,
@@ -18,11 +19,11 @@ const EVENT_TO_PAYMENT_STATUS = Object.freeze({
 });
 
 export const createPaymentConfirmedOrderSyncTranslator = ({ confirmOrderPayment }) => {
-  if (typeof confirmOrderPayment !== "function") {
-    throw new Error(
-      "createPaymentConfirmedOrderSyncTranslator: confirmOrderPayment must be a function"
-    );
-  }
+  assertFunction(
+    confirmOrderPayment,
+    "confirmOrderPayment",
+    "createPaymentConfirmedOrderSyncTranslator: confirmOrderPayment must be a function"
+  );
 
   return {
     async publish(event) {

@@ -7,14 +7,16 @@
  * On success: sets req.user = { id: string } and calls next().
  * On failure: throws ApplicationUnauthorizedError → 401 via errorMiddleware.
  */
-import { ApplicationUnauthorizedError } from "../../application/errors/index.js";
+import { ApplicationUnauthorizedError } from "../../../application/errors/index.js";
+import { assertFunction, assertObject } from "../../../kernel/assertions/index.js";
 
 export const createRequireAuthMiddleware = ({ tokenService }) => {
-  if (typeof tokenService?.verify !== "function") {
-    throw new Error(
-      "createRequireAuthMiddleware: tokenService must implement .verify()"
-    );
-  }
+  assertObject(tokenService, "tokenService", "createRequireAuthMiddleware: tokenService is required");
+  assertFunction(
+    tokenService.verify,
+    "tokenService.verify",
+    "createRequireAuthMiddleware: tokenService must implement .verify()"
+  );
 
   return async (req, _res, next) => {
     try {
@@ -23,6 +25,9 @@ export const createRequireAuthMiddleware = ({ tokenService }) => {
         throw new ApplicationUnauthorizedError("Authorization header is missing");
       }
       req.user = await tokenService.verify(authHeader);
+      if (!req.user || !req.user.id) {
+        throw new ApplicationUnauthorizedError("Invalid token payload");
+      }
       return next();
     } catch (error) {
       return next(error);

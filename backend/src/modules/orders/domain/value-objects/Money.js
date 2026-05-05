@@ -14,14 +14,20 @@
  */
 
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
-import { assertPositiveNumber }   from "../../../../shared/kernel/assertions/index.js";
+import {
+  assertNonEmptyString,
+  assertNonNegativeNumber,
+  assertPositiveNumber,
+} from "../../../../shared/kernel/assertions/index.js";
 
 const ALLOWED_CURRENCIES = new Set(["USD", "EUR", "MAD", "GBP", "CAD", "AED"]);
 
 export const createMoney = ({ amount, currency }) => {
   assertPositiveNumber(amount, "amount");
 
-  if (typeof currency !== "string" || currency.trim() === "") {
+  try {
+    assertNonEmptyString(currency, "currency");
+  } catch (_err) {
     throw new DomainValidationError("currency must be a non-empty string");
   }
 
@@ -52,9 +58,12 @@ export const createMoney = ({ amount, currency }) => {
     },
 
     multiply(factor) {
-      if (typeof factor !== "number" || factor < 0) {
+      try {
+        assertNonNegativeNumber(factor, "factor");
+      } catch (_err) {
         throw new DomainValidationError("factor must be a non-negative number");
       }
+
       return createMoney({
         amount: Math.round(amount * factor * 100) / 100,
         currency: normalizedCurrency,

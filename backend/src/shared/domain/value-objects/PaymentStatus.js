@@ -10,6 +10,7 @@
  */
 
 import { DomainValidationError } from "../errors/index.js";
+import { assertNonEmptyString } from "../../kernel/assertions/index.js";
 
 export const PAYMENT_STATUSES = Object.freeze({
   PENDING: "pending",
@@ -22,7 +23,9 @@ export const PAYMENT_STATUSES = Object.freeze({
 const ALLOWED = new Set(Object.values(PAYMENT_STATUSES));
 
 export const createPaymentStatus = (value = PAYMENT_STATUSES.PENDING) => {
-  if (typeof value !== "string" || value.trim() === "") {
+  try {
+    assertNonEmptyString(value, "paymentStatus");
+  } catch (_err) {
     throw new DomainValidationError("paymentStatus must be a non-empty string");
   }
 

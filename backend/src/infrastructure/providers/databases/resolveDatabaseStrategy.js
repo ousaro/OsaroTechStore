@@ -8,9 +8,6 @@
  *   1. Create infrastructure/providers/databases/<name>/<name>Provider.js
  *   2. Add a case here — nothing else changes.
  *
- * CRITICAL FIX: Previously exported as "resolveDatabaseProvider" but imported
- * everywhere as "resolveDatabaseStrategy" — crash on startup. Name is now
- * consistent across all files.
  */
 
 import { createMongoProvider } from "./mongo/mongoProvider.js";

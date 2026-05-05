@@ -2,6 +2,8 @@
  * Auth Input Port.
  * Defines and validates the auth module's public interface.
  */
+import { assertFunction, assertObject } from "../../../../shared/kernel/assertions/index.js";
+
 const REQUIRED_METHODS = [
   "registerUser",
   "loginUser",
@@ -12,13 +14,14 @@ const REQUIRED_METHODS = [
 ];
 
 export const assertAuthInputPort = (port) => {
-  if (!port || typeof port !== "object") {
-    throw new Error("authInputPort is required");
-  }
+  assertObject(port, "authInputPort", "authInputPort is required");
+
   for (const method of REQUIRED_METHODS) {
-    if (typeof port[method] !== "function") {
-      throw new Error(`authInputPort must implement .${method}()`);
-    }
+    assertFunction(
+      port[method],
+      `authInputPort.${method}`,
+      `authInputPort must implement .${method}()`
+    );
   }
   return port;
 };
