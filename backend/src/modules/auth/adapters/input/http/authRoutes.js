@@ -12,13 +12,11 @@ export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clie
   router.post("/register", controller.registerUser);
   router.post("/login",    controller.loginUser);
 
-  // Admin routes (protected) 
-  // TODO : if should be admin-only, add roles and permissions to the auth system and check them in requireAuth middleware
-  router.use(requireAuth);
-  router.get("/users",          controller.listUsers);
-  router.get("/users/:id",      controller.getUser);
-  router.put("/users/:id",      controller.updateUser);
-  router.delete("/users/:id",   controller.deleteUser);
+  // Admin routes
+  router.get("/users",        requireAuth, requireAuth.requireAdmin, controller.listUsers);
+  router.get("/users/:id",    requireAuth, requireAuth.requireAdmin, controller.getUser);
+  router.put("/users/:id",    requireAuth, requireAuth.requireAdmin, controller.updateUser);
+  router.delete("/users/:id", requireAuth, requireAuth.requireAdmin, controller.deleteUser);
 
   // OAuth routes
   const oauthStrategies = resolveOAuthStrategies({

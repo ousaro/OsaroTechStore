@@ -161,6 +161,7 @@ export const configureApplicationModules = async ({ env }) => {
   return {
     logger,
     tokenService,
+    authUserRepository,
 
     // Route factories — each receives its pre-wired handlers
     authRoutes:       authModule.createRoutes,

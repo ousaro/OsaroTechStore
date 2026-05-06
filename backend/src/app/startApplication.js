@@ -20,6 +20,7 @@ export const startApplication = async ({ port, env }) => {
   const {
     logger,
     tokenService,
+    authUserRepository,
     authRoutes,
     usersRoutes,
     productsRoutes,
@@ -34,6 +35,7 @@ export const startApplication = async ({ port, env }) => {
   const app = createApp({
     logger,
     tokenService,
+    authUserRepository,
     authRoutes,
     usersRoutes,
     productsRoutes,

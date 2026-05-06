@@ -2,8 +2,7 @@
  * Express Application Factory.
  *
  * -Receives all route factories as parameters — it has ZERO knowledge of
- * modules, repositories, or domain logic. This is the HTTP adapter for
- * the entire application.
+ * modules or domain logic. This is the HTTP adapter for the entire application.
  * -handle middleware that must be registered before routes (e.g. body parsing, CORS, auth) and after routes (error handling, 404)
  *
  */
@@ -20,6 +19,7 @@ import { notFoundMiddleware }          from "../shared/infrastructure/http/middl
 export const createApp = ({
   logger,
   tokenService,
+  authUserRepository,
   authRoutes,
   usersRoutes,
   productsRoutes,
@@ -44,7 +44,7 @@ export const createApp = ({
   });
 
   // ── Auth middleware (shared across all protected routes) ─────────────────
-  const requireAuth = createRequireAuthMiddleware({ tokenService });
+  const requireAuth = createRequireAuthMiddleware({ tokenService, authUserRepository });
 
   // ── Routes ───────────────────────────────────────────────────────────────
   // Route factories receive requireAuth — they decide which routes are protected.
