@@ -9,8 +9,8 @@
 import { resolveDatabaseStrategy }   from "../providers/databases/resolveDatabaseStrategy.js";
 import { resolvePaymentStrategy }     from "../providers/payments/resolvePaymentStrategy.js";
 import { resolveLogger }              from "../providers/logger/resolveLogger.js";
+import { resolveEventBus }            from "../providers/events/resolveEventBus.js";
 import { createScopedLogger }         from "../../shared/application/ports/loggerPort.js";
-import { resolveEventBus }            from "../../shared/infrastructure/events/resolveEventBus.js";
 
 
 // ── Module factories ────────────────────────────────────────────────────────

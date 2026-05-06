@@ -4,10 +4,8 @@
  * Pure factory — no global let singletons, no env imports.
  * The composition root calls createAuthModule() and holds the instance.
  *
- *  - Auth-specific admin operations (listManagedUserProfiles etc.) are now
- *    proper use cases in application/queries and application/commands —
- *    not inline logic inside the composition.
- *  - Returns createRoutes factory and public use cases as a plain object.
+ * Returns createRoutes factory and public use cases as a plain object.
+ * 
  */
 
 import { buildRegisterUserUseCase }  from "./application/commands/registerUserUseCase.js";

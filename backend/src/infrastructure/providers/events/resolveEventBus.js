@@ -6,14 +6,13 @@
  *
  */
 
-import { createInProcessEventBus } from "./adapters/inProcessEventBus.js";
-import { createRedisStreamEventBus } from "./adapters/redisStreamEventBus.js";
-import { ServiceUnavailableError } from "../../application/errors/index.js";
-import { assertEventBusPort } from "../../application/ports/eventBusPort.js";
+import { createInProcessEventBus } from "./inProcess/inProcessEventBus.js";
+import { createRedisStreamEventBus } from "./redis/redisStreamEventBus.js";
+import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
+import { assertEventBusPort } from "../../../shared/application/ports/eventBusPort.js";
 
 export const resolveEventBus = ({ provider = "inprocess", logger, redisClient } = {}) => {
   switch (provider) {
-
     case "inprocess":
       return assertEventBusPort(createInProcessEventBus({ logger }), "resolveEventBus");
 

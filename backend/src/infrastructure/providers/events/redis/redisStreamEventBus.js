@@ -15,7 +15,7 @@
  *  - Event ID deduplication via processedWebhookEventIds pattern
  */
 
-import { assertObject } from "../../../kernel/assertions/index.js";
+import { assertObject } from "../../../../shared/kernel/assertions/index.js";
 
 export const createRedisStreamEventBus = ({ redisClient, logger }) => {
   assertObject(

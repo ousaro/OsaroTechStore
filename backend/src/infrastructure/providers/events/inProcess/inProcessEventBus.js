@@ -12,7 +12,7 @@ import {
   assertFunction,
   assertNonEmptyString,
   assertObject,
-} from "../../../kernel/assertions/index.js";
+} from "../../../../shared/kernel/assertions/index.js";
 
 export const createInProcessEventBus = ({ logger }) => {
   /** @type {Map<string, Set<Function>>} */
