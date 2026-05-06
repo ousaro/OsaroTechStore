@@ -22,7 +22,7 @@ export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clie
   const oauthStrategies = resolveOAuthStrategies({
     oauthProviders,
     clientUrl,
-    callbackHandler: controller.googleCallbackHandler,
+    callbackHandler: controller.oauthCallback,
   });
 
   for (const strategy of oauthStrategies) {

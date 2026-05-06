@@ -35,8 +35,7 @@ export const createAuthHttpController = ({ authInputPort }) => {
       res.status(200).json(user);
     }),
 
-    // OAuth callback handlers can be added here as well
-    googleCallbackHandler: (req, res) => {
+    oauthCallback: (req, res) => {
       if (req.isAuthenticated()) {
         const userData = encodeURIComponent(JSON.stringify(req.user));
         return res.redirect(`${req.app.locals.clientUrl}/SetPassword?user=${userData}`);
