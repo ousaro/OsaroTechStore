@@ -8,8 +8,11 @@ import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPayme
 import { buildGetPaymentByOrderIdUseCase } from "./application/queries/getPaymentByOrderIdUseCase.js";
 
 import { createPaymentsInputPort }       from "./ports/input/paymentsInputPort.js";
+import { assertPaymentRepositoryPort, assertPaymentEventPublisherPort }
+  from "./ports/output/paymentsOutputPort.js";
 import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
 import { createPaymentsRoutes }         from "./adapters/input/http/paymentsRoutes.js";
+import { assertPaymentGatewayPort }     from "../../shared/application/ports/paymentGatewayPort.js";
 import { assertNonEmptyString }         from "../../shared/kernel/assertions/index.js";
 
 export const createPaymentsModule = ({
@@ -27,7 +30,14 @@ export const createPaymentsModule = ({
     "createPaymentsModule: clientUrl is required. Set CLIENT_URL in .env"
   );
 
-  // ── Use cases ─────────────────────────────────────────────────────────────
+  // ── Validate output ports ────────────────────────────────────────────────
+  if (paymentsEnabled || webhookEnabled) {
+    assertPaymentGatewayPort(paymentGateway, "createPaymentsModule");
+  }
+  assertPaymentRepositoryPort(paymentRepository);
+  assertPaymentEventPublisherPort(paymentEventPublisher);
+
+  // ── Use cases ────────────────────────────────────────────────────────────
   const createPaymentIntent = buildCreatePaymentIntentUseCase({
     paymentGateway, paymentRepository, paymentsEnabled, clientUrl, logger,
   });
@@ -42,7 +52,7 @@ export const createPaymentsModule = ({
 
   const getPaymentByOrderId = buildGetPaymentByOrderIdUseCase({ paymentRepository });
 
-  // ── Input port ────────────────────────────────────────────────────────────
+  // ── Input port ───────────────────────────────────────────────────────────
   const paymentsInputPort = createPaymentsInputPort({
     createPaymentIntent,
     verifyWebhook,
@@ -50,12 +60,13 @@ export const createPaymentsModule = ({
     getPaymentByOrderId,
   });
 
-  // ── HTTP adapter ──────────────────────────────────────────────────────────
+  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createPaymentsHttpController({ paymentsInputPort });
 
   const createRoutes = ({ requireAuth } = {}) =>
     createPaymentsRoutes({ controller, requireAuth, webhookEnabled });
 
+  // ── Public surface ───────────────────────────────────────────────────────
   return {
     createRoutes,
     linkPaymentToOrder: paymentsInputPort.linkPaymentToOrder,

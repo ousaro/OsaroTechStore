@@ -16,6 +16,8 @@ import { buildUpdateUserUseCase }    from "./application/commands/updateManagedU
 import { buildDeleteUserUseCase }    from "./application/commands/deleteManagedUserUseCase.js";
 
 import { createAuthInputPort }       from "./ports/input/authInputPort.js";
+import { assertAuthUserRepositoryPort, assertTokenServicePort }
+  from "./ports/output/authOutputPort.js";
 import { createAuthHttpController }  from "./adapters/input/http/authHttpController.js";
 import { createAuthRoutes }          from "./adapters/input/http/authRoutes.js";
 
@@ -26,7 +28,11 @@ export const createAuthModule = ({
   clientUrl,
   logger,
 }) => {
-  // ── Use cases ─────────────────────────────────────────────────────────────
+  // ── Validate output ports ────────────────────────────────────────────────
+  assertAuthUserRepositoryPort(authUserRepository);
+  assertTokenServicePort(tokenService);
+
+  // ── Use cases ────────────────────────────────────────────────────────────
   const registerUser  = buildRegisterUserUseCase({ authUserRepository, tokenService, logger });
   const loginUser     = buildLoginUserUseCase({ authUserRepository, tokenService, logger });
   const listUsers     = buildListUsersUseCase({ authUserRepository });
@@ -34,7 +40,7 @@ export const createAuthModule = ({
   const updateUser    = buildUpdateUserUseCase({ authUserRepository });
   const deleteUser    = buildDeleteUserUseCase({ authUserRepository });
 
-  // ── Input port ────────────────────────────────────────────────────────────
+  // ── Input port ───────────────────────────────────────────────────────────
   const authInputPort = createAuthInputPort({
     registerUser,
     loginUser,
@@ -44,10 +50,9 @@ export const createAuthModule = ({
     deleteUser,
   });
 
-  // ── HTTP controller ───────────────────────────────────────────────────────
+  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createAuthHttpController({ authInputPort });
 
-  // ── Route factory (receives requireAuth at registration time) ─────────────
   const createRoutes = ({ requireAuth } = {}) =>
     createAuthRoutes({
       controller,
@@ -56,5 +61,8 @@ export const createAuthModule = ({
       clientUrl,
     });
 
-  return { createRoutes };
+  // ── Public surface ───────────────────────────────────────────────────────
+  return {
+    createRoutes,
+  };
 };

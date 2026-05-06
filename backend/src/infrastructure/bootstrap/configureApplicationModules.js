@@ -22,6 +22,7 @@ import { createOrdersModule }         from "../../modules/orders/composition.js"
 import { createPaymentsModule }       from "../../modules/payments/composition.js";
 
 // ── Repository factories ────────────────────────────────────────────────────
+// TODO: make a repository factory that takes a DB client and returns all repositories to avoid repeating the dbClient param
 import { createMongooseAuthUserRepository }     from "../../modules/auth/adapters/output/repositories/mongo/mongooseAuthUserRepository.js";
 import { createMongooseUserRepository }         from "../../modules/users/adapters/output/repositories/mongo/mongooseUserRepository.js";
 import { createMongooseProductRepository }      from "../../modules/products/adapters/output/repositories/mongo/mongooseProductRepository.js";
@@ -91,11 +92,8 @@ export const configureApplicationModules = async ({ env }) => {
     logger: createScopedLogger(logger, "auth"),
   });
 
-  // TODO: authUserRepository is not used by the userModule
   const usersModule = createUsersModule({
     userRepository,
-    authUserRepository,   // Users delegates credential ops to auth repo
-    logger: createScopedLogger(logger, "users"),
   });
 
   const productsModule = createProductsModule({

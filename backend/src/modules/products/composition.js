@@ -11,10 +11,15 @@ import { buildGetAllProductsUseCase } from "./application/queries/getAllProducts
 import { buildGetProductByIdUseCase } from "./application/queries/getProductByIdUseCase.js";
 
 import { createProductsInputPort }      from "./ports/input/productsInputPort.js";
+import { assertProductRepositoryPort }  from "./ports/output/productsOutputPort.js";
 import { createProductsHttpController } from "./adapters/input/http/productsHttpController.js";
 import { createProductsRoutes }         from "./adapters/input/http/productsRoutes.js";
 
 export const createProductsModule = ({ productRepository, logger }) => {
+  // ── Validate output ports ────────────────────────────────────────────────
+  assertProductRepositoryPort(productRepository);
+
+  // ── Use cases ────────────────────────────────────────────────────────────
   const addProduct               = buildAddProductUseCase({ productRepository, logger });
   const updateProduct            = buildUpdateProductUseCase({ productRepository });
   const deleteProduct            = buildDeleteProductUseCase({ productRepository });
@@ -22,6 +27,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
   const getAllProducts            = buildGetAllProductsUseCase({ productRepository });
   const getProductById           = buildGetProductByIdUseCase({ productRepository });
 
+  // ── Input port ───────────────────────────────────────────────────────────
   const productsInputPort = createProductsInputPort({
     addProduct,
     updateProduct,
@@ -31,6 +37,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
     getProductById,
   });
 
+  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller  = createProductsHttpController({ productsInputPort });
   const createRoutes = ({ requireAuth } = {}) =>
     createProductsRoutes({ controller, requireAuth });
@@ -38,6 +45,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
   const createNewProductStatusScheduler = () =>
     buildNewProductStatusScheduler({ productRepository, logger });
 
+  // ── Public surface ───────────────────────────────────────────────────────
   return {
     createRoutes,
     removeProductsByCategory: productsInputPort.removeProductsByCategory,
