@@ -2,8 +2,6 @@
  * JWT Token Service Adapter.
  *
  * Implements the tokenServicePort.
- * Fixed: no longer imports env directly — secret and expiresIn are injected.
- * Fixed: verify() now returns the user object, not void.
  */
 import jwt from "jsonwebtoken";
 import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
@@ -19,7 +17,6 @@ export const createJwtTokenService = ({ secret, expiresIn = "2d", logger }) => {
 
     /**
      * Verifies an Authorization header ("Bearer <token>") and returns { _id }.
-     * Fixed: original verify() called extractUserId but discarded the return value.
      */
     verify(authorizationHeader) {
       try {

@@ -1,11 +1,6 @@
 /**
  * PaymentWorkflow Domain Entity.
  *
- * Fixed from original:
- *  - No longer accepts snake_case fields (payment_status). All normalization
- *    happens in the record mapper before reaching the domain.
- *  - Uses shared/domain/value-objects/PaymentStatus — not its own copy.
- *  - Immutable via Object.freeze().
  */
 import { createPaymentStatus, PAYMENT_STATUSES }
   from "../../../../shared/domain/value-objects/PaymentStatus.js";
