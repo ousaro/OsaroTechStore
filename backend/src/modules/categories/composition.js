@@ -1,7 +1,9 @@
-import {
-  buildAddCategoryUseCase, buildUpdateCategoryUseCase, buildDeleteCategoryUseCase,
-  buildGetAllCategoriesUseCase, buildGetCategoryByIdUseCase,
-} from "./application/useCases.js";
+import { buildAddCategoryUseCase } from "./application/commands/addCategoryUseCase.js";
+import { buildUpdateCategoryUseCase } from "./application/commands/updateCategoryUseCase.js";
+import { buildDeleteCategoryUseCase } from "./application/commands/deleteCategoryUseCase.js";
+import { buildGetAllCategoriesUseCase } from "./application/queries/getAllCategoriesUseCase.js";
+import { buildGetCategoryByIdUseCase } from "./application/queries/getCategoryByIdUseCase.js";
+import { createCategoriesInputPort } from "./ports/input/categoriesInputPort.js";
 import { createCategoriesHttpController } from "./adapters/input/http/categoriesHttpController.js";
 import { createCategoriesRoutes }         from "./adapters/input/http/categoriesRoutes.js";
 
@@ -12,9 +14,15 @@ export const createCategoriesModule = ({ categoryRepository, categoryEventPublis
   const getAllCategories = buildGetAllCategoriesUseCase({ categoryRepository });
   const getCategoryById = buildGetCategoryByIdUseCase({ categoryRepository });
 
-  const commandPort = { addCategory, updateCategory, deleteCategory };
-  const queryPort   = { getAllCategories, getCategoryById };
-  const controller  = createCategoriesHttpController({ commandPort, queryPort });
+  const categoriesInputPort = createCategoriesInputPort({
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    getAllCategories,
+    getCategoryById,
+  });
+
+  const controller = createCategoriesHttpController({ categoriesInputPort });
 
   return {
     createRoutes: ({ requireAuth } = {}) => createCategoriesRoutes({ controller, requireAuth }),

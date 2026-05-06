@@ -1,5 +1,7 @@
 import { setupGooglePassport } from "./googlePassport.js";
 
+// TODO: this registry is currently hardcoded and only supports Google OAuth, but it can be extended to support multiple providers and dynamic configuration in the future.
+
 const LABELS = Object.freeze({ google: "Google", github: "GitHub", linkedin: "LinkedIn" });
 
 const unavailableHandler = (label) => (_req, res) =>

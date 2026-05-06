@@ -1,20 +1,13 @@
 /**
  * Payments Module Composition.
  *
- * Fixed from original:
- *  - No env import (was importing env.clientUrl directly — infra in app layer).
- *  - clientUrl is now a required parameter — fails loudly if missing.
- *  - paymentsEnabled / webhookEnabled injected from resolvePaymentStrategy result.
- *  - createRoutes factory receives requireAuth at registration time.
- *  - linkPaymentToOrder exposed as collaboration method for event translator.
  */
-import {
-  buildCreatePaymentIntentUseCase,
-  buildVerifyWebhookUseCase,
-  buildLinkPaymentToOrderUseCase,
-  buildGetPaymentByOrderIdUseCase,
-} from "./application/useCases.js";
+import { buildCreatePaymentIntentUseCase } from "./application/commands/createPaymentIntentUseCase.js";
+import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookUseCase.js";
+import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPaymentToOrderUseCase.js";
+import { buildGetPaymentByOrderIdUseCase } from "./application/queries/getPaymentByOrderIdUseCase.js";
 
+import { createPaymentsInputPort }       from "./ports/input/paymentsInputPort.js";
 import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
 import { createPaymentsRoutes }         from "./adapters/input/http/paymentsRoutes.js";
 import { assertNonEmptyString }         from "../../shared/kernel/assertions/index.js";
@@ -49,18 +42,22 @@ export const createPaymentsModule = ({
 
   const getPaymentByOrderId = buildGetPaymentByOrderIdUseCase({ paymentRepository });
 
-  // ── Ports ─────────────────────────────────────────────────────────────────
-  const commandPort = { createPaymentIntent, verifyWebhook };
-  const queryPort   = { getPaymentByOrderId };
+  // ── Input port ────────────────────────────────────────────────────────────
+  const paymentsInputPort = createPaymentsInputPort({
+    createPaymentIntent,
+    verifyWebhook,
+    linkPaymentToOrder,
+    getPaymentByOrderId,
+  });
 
   // ── HTTP adapter ──────────────────────────────────────────────────────────
-  const controller = createPaymentsHttpController({ commandPort, queryPort });
+  const controller = createPaymentsHttpController({ paymentsInputPort });
 
   const createRoutes = ({ requireAuth } = {}) =>
     createPaymentsRoutes({ controller, requireAuth, webhookEnabled });
 
   return {
     createRoutes,
-    linkPaymentToOrder,  // consumed by orderPlacedPaymentLinkTranslator
+    linkPaymentToOrder: paymentsInputPort.linkPaymentToOrder,
   };
 };

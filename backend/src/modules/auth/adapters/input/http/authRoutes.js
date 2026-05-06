@@ -1,6 +1,5 @@
 /**
  * Auth Routes Factory.
- * Fixed: no longer exports a default pre-built router (was causing singleton coupling).
  * The composition root calls createRoutes({ requireAuth }) explicitly.
  */
 import { Router } from "express";
@@ -13,11 +12,13 @@ export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clie
   router.post("/register", controller.registerUser);
   router.post("/login",    controller.loginUser);
 
-  // Admin routes (protected)
-  router.get("/users",         requireAuth, controller.listUsers);
-  router.get("/users/:id",     requireAuth, controller.getUser);
-  router.put("/users/:id",     requireAuth, controller.updateUser);
-  router.delete("/users/:id",  requireAuth, controller.deleteUser);
+  // Admin routes (protected) 
+  // TODO : if should be admin-only, add roles and permissions to the auth system and check them in requireAuth middleware
+  router.use(requireAuth);
+  router.get("/users",          controller.listUsers);
+  router.get("/users/:id",      controller.getUser);
+  router.put("/users/:id",      controller.updateUser);
+  router.delete("/users/:id",   controller.deleteUser);
 
   // OAuth routes
   const oauthStrategies = resolveOAuthStrategies({

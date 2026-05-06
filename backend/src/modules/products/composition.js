@@ -1,23 +1,16 @@
 /**
  * Products Module Composition.
  *
- * Fixed from original:
- *  - productService singleton was a no-op bug (new ProductService() was
- *    overwritten to undefined by destructuring). Removed entirely.
- *  - Scheduler is now a proper use case builder, not a side-effect.
- *  - removeProductsByCategory exposed for CategoryDeleted translator.
- *  - No module-level let singletons.
  */
-import {
-  buildAddProductUseCase,
-  buildUpdateProductUseCase,
-  buildDeleteProductUseCase,
-  buildRemoveProductsByCategoryUseCase,
-  buildGetAllProductsUseCase,
-  buildGetProductByIdUseCase,
-  buildNewProductStatusScheduler,
-} from "./application/useCases.js";
+import { buildAddProductUseCase } from "./application/commands/addProductUseCase.js";
+import { buildUpdateProductUseCase } from "./application/commands/updateProductUseCase.js";
+import { buildDeleteProductUseCase } from "./application/commands/deleteProductUseCase.js";
+import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
+import { buildNewProductStatusScheduler } from "./application/commands/newProductStatusScheduler.js";
+import { buildGetAllProductsUseCase } from "./application/queries/getAllProductsUseCase.js";
+import { buildGetProductByIdUseCase } from "./application/queries/getProductByIdUseCase.js";
 
+import { createProductsInputPort }      from "./ports/input/productsInputPort.js";
 import { createProductsHttpController } from "./adapters/input/http/productsHttpController.js";
 import { createProductsRoutes }         from "./adapters/input/http/productsRoutes.js";
 
@@ -29,10 +22,16 @@ export const createProductsModule = ({ productRepository, logger }) => {
   const getAllProducts            = buildGetAllProductsUseCase({ productRepository });
   const getProductById           = buildGetProductByIdUseCase({ productRepository });
 
-  const commandPort = { addProduct, updateProduct, deleteProduct, removeProductsByCategory };
-  const queryPort   = { getAllProducts, getProductById };
+  const productsInputPort = createProductsInputPort({
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    removeProductsByCategory,
+    getAllProducts,
+    getProductById,
+  });
 
-  const controller  = createProductsHttpController({ commandPort, queryPort });
+  const controller  = createProductsHttpController({ productsInputPort });
   const createRoutes = ({ requireAuth } = {}) =>
     createProductsRoutes({ controller, requireAuth });
 
@@ -41,7 +40,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
 
   return {
     createRoutes,
-    removeProductsByCategory,   // consumed by categoryDeletedProductCleanupTranslator
+    removeProductsByCategory: productsInputPort.removeProductsByCategory,
     createNewProductStatusScheduler,
   };
 };

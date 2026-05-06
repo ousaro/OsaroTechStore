@@ -4,38 +4,43 @@
  * Zero domain logic lives here.
  */
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
+import { assertOrdersInputPort } from "../../../ports/input/ordersInputPort.js";
 
-export const createOrdersHttpController = ({ commandPort, queryPort }) => ({
-  getAllOrders: asyncHandler(async (req, res) => {
-    const orders = await queryPort.getAllOrders({ ownerId: req.query.ownerId });
-    res.status(200).json(orders);
-  }),
+export const createOrdersHttpController = ({ ordersInputPort }) => {
+  assertOrdersInputPort(ordersInputPort);
 
-  getOrderById: asyncHandler(async (req, res) => {
-    const order = await queryPort.getOrderById({ id: req.params.id });
-    res.status(200).json(order);
-  }),
+  return {
+    getAllOrders: asyncHandler(async (req, res) => {
+      const orders = await ordersInputPort.getAllOrders({ ownerId: req.query.ownerId });
+      res.status(200).json(orders);
+    }),
 
-  addOrder: asyncHandler(async (req, res) => {
-    const order = await commandPort.addOrder({
-      ownerId:         req.user._id,
-      orderLines:      req.body.orderLines,
-      deliveryAddress: req.body.deliveryAddress,
-      currency:        req.body.currency ?? "USD",
-    });
-    res.status(201).json(order);
-  }),
+    getOrderById: asyncHandler(async (req, res) => {
+      const order = await ordersInputPort.getOrderById({ id: req.params.id });
+      res.status(200).json(order);
+    }),
 
-  updateOrder: asyncHandler(async (req, res) => {
-    const order = await commandPort.updateOrder({
-      id:      req.params.id,
-      updates: req.body,
-    });
-    res.status(200).json(order);
-  }),
+    addOrder: asyncHandler(async (req, res) => {
+      const order = await ordersInputPort.addOrder({
+        ownerId:         req.user._id,
+        orderLines:      req.body.orderLines,
+        deliveryAddress: req.body.deliveryAddress,
+        currency:        req.body.currency ?? "USD",
+      });
+      res.status(201).json(order);
+    }),
 
-  deleteOrder: asyncHandler(async (req, res) => {
-    const order = await commandPort.deleteOrder({ id: req.params.id });
-    res.status(200).json(order);
-  }),
-});
+    updateOrder: asyncHandler(async (req, res) => {
+      const order = await ordersInputPort.updateOrder({
+        id:      req.params.id,
+        updates: req.body,
+      });
+      res.status(200).json(order);
+    }),
+
+    deleteOrder: asyncHandler(async (req, res) => {
+      const order = await ordersInputPort.deleteOrder({ id: req.params.id });
+      res.status(200).json(order);
+    }),
+  };
+};

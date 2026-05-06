@@ -4,23 +4,15 @@
  * Pure factory function. The composition root calls this once and holds
  * the returned instance. No module-level let singletons. No env imports.
  *
- * Fixed from original:
- *  - Removed all module-level `export let handler` declarations (crash bug).
- *  - configureOrdersModule / createOrdersModule duality eliminated.
- *  - confirmOrderPayment exposed as a collaboration method for translators.
- *  - createRoutes is a factory that receives requireAuth at registration time.
  */
-import {
-  buildAddOrderUseCase,
-  buildUpdateOrderUseCase,
-  buildDeleteOrderUseCase,
-  buildConfirmOrderPaymentUseCase,
-  buildGetAllOrdersUseCase,
-  buildGetOrderByIdUseCase,
-} from "./application/useCases.js";
+import { buildAddOrderUseCase } from "./application/commands/addOrderUseCase.js";
+import { buildUpdateOrderUseCase } from "./application/commands/updateOrderUseCase.js";
+import { buildDeleteOrderUseCase } from "./application/commands/deleteOrderUseCase.js";
+import { buildConfirmOrderPaymentUseCase } from "./application/commands/confirmOrderPaymentUseCase.js";
+import { buildGetAllOrdersUseCase } from "./application/queries/getAllOrdersUseCase.js";
+import { buildGetOrderByIdUseCase } from "./application/queries/getOrderByIdUseCase.js";
 
-import { createOrdersCommandPort, createOrdersQueryPort }
-  from "./ports/input/ordersInputPort.js";
+import { createOrdersInputPort } from "./ports/input/ordersInputPort.js";
 import { assertOrderRepositoryPort, assertOrderEventPublisherPort }
   from "./ports/output/ordersOutputPort.js";
 
@@ -44,15 +36,18 @@ export const createOrdersModule = ({
   const getAllOrders         = buildGetAllOrdersUseCase({ orderRepository });
   const getOrderById        = buildGetOrderByIdUseCase({ orderRepository });
 
-  // ── Input ports ──────────────────────────────────────────────────────────
-  const commandPort = createOrdersCommandPort({
-    addOrder, updateOrder, deleteOrder, confirmOrderPayment,
+  // ── Input port ───────────────────────────────────────────────────────────
+  const ordersInputPort = createOrdersInputPort({
+    addOrder,
+    updateOrder,
+    deleteOrder,
+    confirmOrderPayment,
+    getAllOrders,
+    getOrderById,
   });
 
-  const queryPort = createOrdersQueryPort({ getAllOrders, getOrderById });
-
   // ── HTTP adapter ─────────────────────────────────────────────────────────
-  const controller = createOrdersHttpController({ commandPort, queryPort });
+  const controller = createOrdersHttpController({ ordersInputPort });
 
   const createRoutes = ({ requireAuth } = {}) =>
     createOrdersRoutes({ controller, requireAuth });
@@ -62,6 +57,6 @@ export const createOrdersModule = ({
   // wired in the composition root — not called directly by other modules.
   return {
     createRoutes,
-    confirmOrderPayment,  // consumed by paymentConfirmedOrderSyncTranslator
+    confirmOrderPayment: ordersInputPort.confirmOrderPayment,
   };
 };
