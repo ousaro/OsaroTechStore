@@ -22,13 +22,7 @@ import { createOrdersModule }         from "../../modules/orders/composition.js"
 import { createPaymentsModule }       from "../../modules/payments/composition.js";
 
 // ── Repository factories ────────────────────────────────────────────────────
-// TODO: make a repository factory that takes a DB client and returns all repositories to avoid repeating the dbClient param
-import { createMongooseAuthUserRepository }     from "../../modules/auth/adapters/output/repositories/mongo/mongooseAuthUserRepository.js";
-import { createMongooseUserRepository }         from "../../modules/users/adapters/output/repositories/mongo/mongooseUserRepository.js";
-import { createMongooseProductRepository }      from "../../modules/products/adapters/output/repositories/mongo/mongooseProductRepository.js";
-import { createMongooseCategoryRepository }     from "../../modules/categories/adapters/output/repositories/mongo/mongooseCategoryRepository.js";
-import { createMongooseOrderRepository }        from "../../modules/orders/adapters/output/repositories/mongo/mongooseOrderRepository.js";
-import { createMongoosePaymentRepository }      from "../../modules/payments/adapters/output/repositories/mongo/mongoosePaymentRepository.js";
+import { createMongooseRepositories } from "../providers/repositories/createMongooseRepositories.js";
 
 // ── JWT Token Service ───────────────────────────────────────────────────────
 import { createJwtTokenService }      from "../../modules/auth/adapters/output/services/jwtTokenService.js";
@@ -76,12 +70,14 @@ export const configureApplicationModules = async ({ env }) => {
   });
 
   // ── 4. Repositories (composition root wires them — NOT the DB provider) ───
-  const authUserRepository  = createMongooseAuthUserRepository({ dbClient });
-  const userRepository      = createMongooseUserRepository({ dbClient });
-  const productRepository   = createMongooseProductRepository({ dbClient });
-  const categoryRepository  = createMongooseCategoryRepository({ dbClient });
-  const orderRepository     = createMongooseOrderRepository({ dbClient });
-  const paymentRepository   = createMongoosePaymentRepository({ dbClient });
+  const {
+    authUserRepository,
+    userRepository,
+    productRepository,
+    categoryRepository,
+    orderRepository,
+    paymentRepository,
+  } = createMongooseRepositories({ dbClient });
 
   // ── 5. Modules (each is a pure factory — no singletons, no globals) ───────
   const authModule = createAuthModule({
