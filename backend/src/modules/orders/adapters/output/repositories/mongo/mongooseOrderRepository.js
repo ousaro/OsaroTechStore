@@ -6,8 +6,8 @@
  *  - Creates its own model from the connection — no global OrderModel import.
  *  - All methods return plain records via toOrderRecord() mapper.
  */
-import { createOrderModel }  from "../persistence/mongo/orderModel.js";
-import { toOrderRecord }     from "../persistence/mongo/orderRecordMapper.js";
+import { createOrderModel }  from "../../persistence/mongo/orderModel.js";
+import { toOrderRecord }     from "../../persistence/mongo/orderRecordMapper.js";
 
 export const createMongooseOrderRepository = ({ dbClient }) => {
   const OrderModel = createOrderModel(dbClient);

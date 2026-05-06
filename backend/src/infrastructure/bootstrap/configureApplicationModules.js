@@ -22,12 +22,12 @@ import { createOrdersModule }         from "../../modules/orders/composition.js"
 import { createPaymentsModule }       from "../../modules/payments/composition.js";
 
 // ── Repository factories ────────────────────────────────────────────────────
-import { createMongooseAuthUserRepository }     from "../../modules/auth/adapters/output/repositories/mongooseAuthUserRepository.js";
-import { createMongooseUserRepository }         from "../../modules/users/adapters/output/repositories/mongooseUserRepository.js";
-import { createMongooseProductRepository }      from "../../modules/products/adapters/output/repositories/mongooseProductRepository.js";
-import { createMongooseCategoryRepository }     from "../../modules/categories/adapters/output/repositories/mongooseCategoryRepository.js";
+import { createMongooseAuthUserRepository }     from "../../modules/auth/adapters/output/repositories/mongo/mongooseAuthUserRepository.js";
+import { createMongooseUserRepository }         from "../../modules/users/adapters/output/repositories/mongo/mongooseUserRepository.js";
+import { createMongooseProductRepository }      from "../../modules/products/adapters/output/repositories/mongo/mongooseProductRepository.js";
+import { createMongooseCategoryRepository }     from "../../modules/categories/adapters/output/repositories/mongo/mongooseCategoryRepository.js";
 import { createMongooseOrderRepository }        from "../../modules/orders/adapters/output/repositories/mongo/mongooseOrderRepository.js";
-import { createMongoosePaymentRepository }      from "../../modules/payments/adapters/output/repositories/mongoosePaymentRepository.js";
+import { createMongoosePaymentRepository }      from "../../modules/payments/adapters/output/repositories/mongo/mongoosePaymentRepository.js";
 
 // ── JWT Token Service ───────────────────────────────────────────────────────
 import { createJwtTokenService }      from "../../modules/auth/adapters/output/services/jwtTokenService.js";

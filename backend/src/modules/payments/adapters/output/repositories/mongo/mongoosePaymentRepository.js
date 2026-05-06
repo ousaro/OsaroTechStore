@@ -1,5 +1,5 @@
-import { createPaymentModel } from "../persistence/paymentModel.js";
-import { toPaymentRecord }    from "./paymentRecordMapper.js";
+import { createPaymentModel } from "../../persistence/mongo/paymentModel.js";
+import { toPaymentRecord }    from "../../persistence/mongo/paymentRecordMapper.js";
 
 export const createMongoosePaymentRepository = ({ dbClient }) => {
   const PaymentModel = createPaymentModel(dbClient);

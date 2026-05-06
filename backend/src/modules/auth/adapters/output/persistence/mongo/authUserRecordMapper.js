@@ -1,6 +1,6 @@
 /**
  * Auth User Record Mapper.
- * Maps raw Mongoose document → internal record shape.
+ * Maps raw Mongoose documents to the internal auth user record shape.
  * Password is excluded by default — use findByIdWithPassword when needed.
  */
 export const toAuthUserRecord = (doc) => {

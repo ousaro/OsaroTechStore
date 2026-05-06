@@ -7,8 +7,8 @@
  *  - findManagedAccountsSorted returns raw records (mapper normalizes).
  */
 import bcrypt from "bcrypt";
-import { createUserModel } from "../persistence/userModel.js";
-import { toAuthUserRecord } from "./authUserRecordMapper.js";
+import { createUserModel } from "../../persistence/mongo/userModel.js";
+import { toAuthUserRecord } from "../../persistence/mongo/authUserRecordMapper.js";
 
 export const createMongooseAuthUserRepository = ({ dbClient }) => {
   const UserModel = createUserModel(dbClient);
