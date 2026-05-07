@@ -10,7 +10,7 @@ export const buildCreatePaymentIntentUseCase = ({
   clientUrl,
   logger,
 }) =>
-  async ({ orderId, items, currency }) => {
+  async ({ orderId, items }) => {
     if (!paymentsEnabled) throw new PaymentsDisabledError();
     assertNonEmptyString(orderId, "orderId");
 

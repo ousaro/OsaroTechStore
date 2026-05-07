@@ -6,8 +6,6 @@ import { createPaymentStatus, PAYMENT_STATUSES }
   from "../../../../shared/domain/value-objects/PaymentStatus.js";
 import { assertNonEmptyString }
   from "../../../../shared/kernel/assertions/index.js";
-import { DomainValidationError }
-  from "../../../../shared/domain/errors/index.js";
 
 export const createPaymentWorkflow = ({
   _id,

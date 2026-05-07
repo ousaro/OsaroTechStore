@@ -8,7 +8,7 @@ export const buildLinkPaymentToOrderUseCase = ({
   clientUrl,
   logger,
 }) =>
-  async ({ orderId, orderLines, currency }) => {
+  async ({ orderId, orderLines }) => {
     if (!paymentsEnabled) return null;
 
     const items = orderLines.map((line) => ({

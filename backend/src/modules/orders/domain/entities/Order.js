@@ -15,7 +15,6 @@ import { assertNonEmptyString, assertNonEmptyArray } from "../../../../shared/ke
 import { createOrderStatus, ORDER_STATUSES } from "../value-objects/OrderStatus.js";
 import { createOrderLine }            from "../value-objects/OrderLine.js";
 import { createAddress }              from "../value-objects/OrderLine.js";
-import { createMoney }                from "../value-objects/Money.js";
 import { createPaymentStatus, PAYMENT_STATUSES } from "../../../../shared/domain/value-objects/PaymentStatus.js";
 import {
   OrderStatusTransitionNotAllowedError,
@@ -60,11 +59,6 @@ export const createOrder = ({
   const status = createOrderStatus(orderStatus ?? ORDER_STATUSES.PENDING);
 
   const pymtStatus = createPaymentStatus(paymentStatus ?? PAYMENT_STATUSES.PENDING);
-
-  const total = lines.reduce(
-    (acc, line) => acc.add(line.subtotal),
-    createMoney({ amount: 0.01, currency })   // seed — will be replaced
-  );
 
   // ── Re-compute total properly ──────────────────────────────────────────
   const computedTotal = lines
