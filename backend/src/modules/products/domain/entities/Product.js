@@ -26,10 +26,14 @@ export const createProduct = ({
   images     = [],
   status     = PRODUCT_STATUSES.NEW,
 }) => {
-  assertNonEmptyString(name,     "name");
-  assertNonEmptyString(category, "category");
-  assertPositiveNumber(price,    "price");
-  assertNonNegativeNumber(stock, "stock");
+  try {
+    assertNonEmptyString(name,     "name");
+    assertNonEmptyString(category, "category");
+    assertPositiveNumber(price,    "price");
+    assertNonNegativeNumber(stock, "stock");
+  } catch (error) {
+    throw new DomainValidationError(error.message);
+  }
 
   if (!ALLOWED_STATUSES.has(status)) {
     throw new DomainValidationError(

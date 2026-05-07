@@ -8,9 +8,37 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "lint": "eslint src --ext .js",
-    "test": "node --test test",
-    "coverage": "c8 node --test",
-    "coverage:html": "c8 --reporter=html node --test"
+    "test": "node --test tests/unit tests/integration",
+    "test:unit": "node --test tests/unit",
+    "test:integration": "node --test tests/integration",
+    "test:e2e": "cucumber-js --config cucumber.js",
+    "test:cucumber": "cucumber-js --config cucumber.js",
+    "coverage": "c8 npm test",
+    "coverage:unit:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/unit/html npm run test:unit",
+    "coverage:integration:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/integration/html npm run test:integration",
+    "coverage:html": "c8 --reporter=html --report-dir=tests/coverage/global/html npm test",
+    "coverage:e2e": "c8 --all=false --reporter=text --reporter=html --report-dir=tests/coverage/e2e npm run test:e2e"
+  },
+  "c8": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "src/server.js",
+      "tests/**",
+      "coverage/**"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "reports-dir": "tests/coverage/global/html",
+    "check-coverage": true,
+    "branches": 70,
+    "functions": 70,
+    "lines": 75,
+    "statements": 75
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -26,7 +54,11 @@
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.8.2",
     "c8": "^11.0.0",
-    "eslint": "^9.2.0"
+    "eslint": "^9.2.0",
+    "mongodb-memory-server": "^11.1.0",
+    "playwright": "^1.59.1",
+    "supertest": "^7.2.2"
   }
 }

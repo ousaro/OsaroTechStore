@@ -14,6 +14,14 @@ export const buildCreatePaymentIntentUseCase = ({
     if (!paymentsEnabled) throw new PaymentsDisabledError();
     assertNonEmptyString(orderId, "orderId");
 
+    if (typeof paymentRepository.findByOrderId === "function") {
+      const existing = await paymentRepository.findByOrderId(orderId);
+      if (existing) {
+        logger?.debug({ msg: "Payment intent already exists", orderId, sessionId: existing.sessionId });
+        return toPaymentReadModel(existing);
+      }
+    }
+
     const successUrl = `${clientUrl}/payment-success?orderId=${orderId}`;
     const cancelUrl  = `${clientUrl}/payment-cancelled?orderId=${orderId}`;
 

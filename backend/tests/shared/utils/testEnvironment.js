@@ -1,0 +1,32 @@
+export const buildTestEnv = (overrides = {}) =>
+  Object.freeze({
+    nodeEnv: "test",
+    port: 0,
+    loggerProvider: "console",
+    no_color: true,
+    loggerTimestampFormat: "iso",
+    loggerTimestampEnabled: false,
+    tokenSecret: "integration-test-token-secret",
+    tokenExpiresIn: "15m",
+    databaseProvider: "mongo",
+    mongoUri: undefined,
+    postgresUrl: undefined,
+    paymentProvider: "disabled",
+    stripeSecretKey: "sk_test_mock",
+    stripeWebhookSecret: "whsec_test",
+    paypalClientId: undefined,
+    paypalClientSecret: undefined,
+    eventBusProvider: "inprocess",
+    redisUrl: undefined,
+    clientUrl: "http://localhost:3000",
+    oauthProviders: {
+      google: {
+        clientId: undefined,
+        clientSecret: undefined,
+        callbackUrl: undefined,
+        configured: false,
+        enabled: false,
+      },
+    },
+    ...overrides,
+  });
