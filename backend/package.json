@@ -55,6 +55,7 @@
     "mongoose": "^8.3.4",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "redis": "^5.12.1",
     "stripe": "^15.7.0",
     "validator": "^13.12.0"
   },

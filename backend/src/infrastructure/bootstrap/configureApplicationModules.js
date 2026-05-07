@@ -76,7 +76,7 @@ export const configureApplicationModules = async ({ env }) => {
   const eventBus = resolveEventBus({
     provider: env.eventBusProvider,
     logger: createScopedLogger(logger, "eventBus"),
-    redisClient,
+    options: { redisClient },
   });
 
   // ── 3. Shared services ────────────────────────────────────────────────────

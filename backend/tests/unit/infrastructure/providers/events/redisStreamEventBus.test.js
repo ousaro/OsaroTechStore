@@ -11,8 +11,8 @@ test("Redis stream event bus publishes events to a typed stream", async () => {
   const commands = [];
   const bus = createRedisStreamEventBus({
     redisClient: {
-      xadd: async (...parts) => commands.push(parts),
-      xread: async () => null,
+      xAdd: async (...parts) => commands.push(parts),
+      xRead: async () => null,
     },
     logger: {
       debug: () => {},
@@ -26,8 +26,9 @@ test("Redis stream event bus publishes events to a typed stream", async () => {
     [
       "events:OrderPlaced",
       "*",
-      "data",
-      JSON.stringify({ id: "evt_1", type: "OrderPlaced", payload: { orderId: "order_1" } }),
+      {
+        data: JSON.stringify({ id: "evt_1", type: "OrderPlaced", payload: { orderId: "order_1" } }),
+      },
     ],
   ]);
 });
@@ -40,24 +41,27 @@ test("Redis stream event bus subscribes with XREAD and dispatches stream events"
 
   const bus = createRedisStreamEventBus({
     redisClient: {
-      xadd: async () => "1-0",
-      xread: async (...parts) => {
+      xAdd: async () => "1-0",
+      xRead: async (...parts) => {
         reads += 1;
         if (reads > 1) return new Promise(() => {});
-        assert.deepEqual(parts, ["BLOCK", "1000", "STREAMS", "events:OrderPlaced", "$"]);
+        assert.deepEqual(parts, [{ key: "events:OrderPlaced", id: "$" }, { BLOCK: 1000 }]);
         return [
-          [
-            "events:OrderPlaced",
-            [
-              [
-                "1-0",
-                [
-                  "data",
-                  JSON.stringify({ id: "evt_1", type: "OrderPlaced", payload: { orderId: "o1" } }),
-                ],
-              ],
+          {
+            name: "events:OrderPlaced",
+            messages: [
+              {
+                id: "1-0",
+                message: {
+                  data: JSON.stringify({
+                    id: "evt_1",
+                    type: "OrderPlaced",
+                    payload: { orderId: "o1" },
+                  }),
+                },
+              },
             ],
-          ],
+          },
         ];
       },
     },

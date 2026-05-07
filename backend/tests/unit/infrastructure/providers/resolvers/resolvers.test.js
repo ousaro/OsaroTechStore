@@ -17,6 +17,22 @@ test("resolveEventBus returns in-process event bus and rejects unknown providers
   assert.throws(() => resolveEventBus({ provider: "unknown", logger }), ServiceUnavailableError);
 });
 
+test("resolveEventBus wires redis event bus from options", () => {
+  const bus = resolveEventBus({
+    provider: "redis",
+    logger,
+    options: {
+      redisClient: {
+        xAdd: async () => "1-0",
+        xRead: async () => null,
+      },
+    },
+  });
+
+  assert.equal(typeof bus.publish, "function");
+  assert.equal(typeof bus.subscribe, "function");
+});
+
 test("resolvePaymentStrategy returns disabled strategy and rejects unsupported providers", () => {
   const strategy = resolvePaymentStrategy({
     provider: "disabled",

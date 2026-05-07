@@ -10,15 +10,17 @@ import { createInProcessEventBus } from "./inProcess/inProcessEventBus.js";
 import { createRedisStreamEventBus } from "./redis/redisStreamEventBus.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
 import { assertEventBusPort } from "../../../shared/application/ports/eventBusPort.js";
+import { assertObject } from "../../../shared/kernel/assertions/index.js";
 
-export const resolveEventBus = ({ provider = "inprocess", logger, redisClient } = {}) => {
+export const resolveEventBus = ({ provider = "inprocess", logger, options = {} } = {}) => {
   switch (provider) {
     case "inprocess":
       return assertEventBusPort(createInProcessEventBus({ logger }), "resolveEventBus");
 
     case "redis":
+      assertObject(options.redisClient, "options.redisClient");
       return assertEventBusPort(
-        createRedisStreamEventBus({ redisClient, logger }),
+        createRedisStreamEventBus({ redisClient: options.redisClient, logger }),
         "resolveEventBus"
       );
 
