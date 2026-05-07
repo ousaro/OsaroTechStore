@@ -9,11 +9,6 @@
 
 const defaultTimestampFormat = "YYYY-MM-DD HH:mm:ss.SSS";
 
-const parseBoolean = (value, fallback) => {
-  if (value === undefined) return fallback;
-  return !["false", "0", "no", "off"].includes(String(value).toLowerCase());
-};
-
 const colors = {
   reset: "\x1b[0m",
   dim: "\x1b[2m",
@@ -60,9 +55,34 @@ const formatTimestamp = (date, format) => {
   return format.replace(/YYYY|MM|DD|HH|mm|ss|SSS/g, (token) => tokens[token]);
 };
 
+const normalizeForJson = (value) => {
+  if (value instanceof Error) {
+    return {
+      name: value.name,
+      message: value.message,
+      stack: value.stack,
+    };
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(normalizeForJson);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entryValue]) => [
+        key,
+        normalizeForJson(entryValue),
+      ])
+    );
+  }
+
+  return value;
+};
+
 const safeStringify = (value) => {
   try {
-    return JSON.stringify(value);
+    return JSON.stringify(normalizeForJson(value));
   } catch {
     return JSON.stringify({ serializationError: "Unable to serialize log context" });
   }
@@ -115,7 +135,7 @@ const createScopedMethods = (scope, options) => ({
 
 export const createConsoleLogger = (scope = "app", options = {}) => {
   const loggerOptions = {
-    timestampEnabled: options.timestampEnabled,
+    timestampEnabled: options.timestampEnabled ?? true,
     timestampFormat: options.timestampFormat ?? defaultTimestampFormat,
     colorize: options.colorize ?? true,
   };

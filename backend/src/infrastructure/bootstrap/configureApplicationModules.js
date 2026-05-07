@@ -37,11 +37,11 @@ export const configureApplicationModules = async ({ env }) => {
   const logger = resolveLogger({
     provider: env.loggerProvider,
     scope: "app",
-    options:{
+    options: {
       colorize: !env.no_color,
       timestampFormat: env.loggerTimestampFormat,
       timestampEnabled: env.loggerTimestampEnabled,
-    }
+    },
   });
 
   // ── 2. Infrastructure providers ───────────────────────────────────────────
