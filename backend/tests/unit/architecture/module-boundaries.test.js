@@ -27,7 +27,9 @@ const resolveImport = (fromFile, specifier) => {
   if (!specifier.startsWith(".")) return null;
 
   const resolved = path.resolve(path.dirname(fromFile), specifier);
-  return path.extname(resolved) ? resolved : `${resolved}.js`;
+  if (path.extname(resolved)) return resolved;
+  if (fs.existsSync(`${resolved}.js`)) return `${resolved}.js`;
+  return path.join(resolved, "index.js");
 };
 
 const moduleNameFor = (filePath) => {
@@ -43,10 +45,13 @@ test("feature modules do not import each other's internals directly", () => {
 
     for (const specifier of findImports(filePath)) {
       const resolved = resolveImport(filePath, specifier);
-      if (!resolved || !resolved.startsWith(modulesRoot)) continue;
+      if (!resolved?.startsWith(modulesRoot)) continue;
 
       const targetModule = moduleNameFor(resolved);
       if (targetModule !== sourceModule) {
+        const targetPublicApi = path.join(modulesRoot, targetModule, "index.js");
+        if (resolved === targetPublicApi) continue;
+
         violations.push(
           `${path.relative(backendRoot, filePath)} imports ${specifier} from ${targetModule}`
         );
