@@ -41,8 +41,9 @@ export const createMongooseAuthUserRepository = ({ dbClient }) => {
       return toAuthUserRecord(doc);
     },
 
-    async findByIdAndUpdate(id, updates, options = { new: true }) {
-      const doc = await UserModel.findByIdAndUpdate(id, updates, options);
+    async findByIdAndUpdate(id, updates, options) {
+      const finalOptions = options ?? { new: true };
+      const doc = await UserModel.findByIdAndUpdate(id, updates, finalOptions);
       return doc ? toAuthUserRecord(doc) : null;
     },
 
