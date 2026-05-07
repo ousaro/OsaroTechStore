@@ -94,7 +94,10 @@ export const createRedisStreamEventBus = ({ redisClient, logger }) => {
 
       while (active) {
         try {
-          const reply = await subscriptionClient.xRead({ key: stream, id: lastId }, { BLOCK: 1000 });
+          const reply = await subscriptionClient.xRead(
+            { key: stream, id: lastId },
+            { BLOCK: 1000 }
+          );
           for (const entry of normalizeStreamEntries(reply)) {
             lastId = entry.id;
             const event = JSON.parse(entry.fields.data);

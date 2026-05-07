@@ -7,9 +7,10 @@ Usage: ./scripts/local-pipeline.sh [--skip-install] [--ci-install]
 
 Runs the local backend verification pipeline:
   1. npm install
-  2. npm run format:check
-  3. npm run lint
-  4. npm run coverage:sonar
+  2. npm run format
+  3. npm run format:check
+  4. npm run lint
+  5. npm run coverage:sonar
 
 Options:
   --skip-install   Reuse existing backend/node_modules instead of installing.
@@ -114,6 +115,10 @@ else
 fi
 
 ensure_pipeline_binaries
+
+echo
+echo "==> Checking formatting and applying fixes"
+npm run format
 
 echo
 echo "==> Checking formatting"
