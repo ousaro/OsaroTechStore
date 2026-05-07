@@ -40,6 +40,24 @@ test("resolvePaymentStrategy returns disabled strategy and rejects unsupported p
   );
 });
 
+test("resolvePaymentStrategy returns Stripe strategy when configured", () => {
+  const strategy = resolvePaymentStrategy({
+    provider: "stripe",
+    env: {
+      stripeSecretKey: "sk_test_123",
+      stripeWebhookSecret: "whsec_123",
+    },
+    logger,
+  });
+
+  assert.equal(strategy.provider, "stripe");
+  assert.equal(strategy.label, "Stripe");
+  assert.equal(strategy.paymentsEnabled, true);
+  assert.equal(strategy.webhookEnabled, true);
+  assert.equal(typeof strategy.gateway.createRedirectPayment, "function");
+  assert.equal(typeof strategy.gateway.verifyWebhook, "function");
+});
+
 test("resolveDatabaseStrategy rejects unsupported providers", () => {
   assert.throws(
     () => resolveDatabaseStrategy({ provider: "postgres", logger, env: {} }),

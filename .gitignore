@@ -20,3 +20,5 @@ client/.parcel-cache
 context.md
 guide.md
 .agents/
+
+/backend/coverage/

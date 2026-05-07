@@ -144,6 +144,51 @@ test("linkPaymentToOrder returns null when payments are disabled", async () => {
   );
 });
 
+test("linkPaymentToOrder creates payment session and persists workflow when enabled", async () => {
+  const created = [];
+  const logger = createLogger();
+  const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
+    paymentsEnabled: true,
+    clientUrl: "http://localhost:3000",
+    paymentGateway: {
+      createRedirectPayment: async (payload) => {
+        assert.deepEqual(payload.items, [
+          { name: "Keyboard", price: 50, quantity: 2 },
+          { name: "Mouse", price: 20, quantity: 1 },
+        ]);
+        assert.equal(payload.successUrl, "http://localhost:3000/payment-success?orderId=o1");
+        assert.equal(payload.cancelUrl, "http://localhost:3000/payment-cancelled?orderId=o1");
+        return session;
+      },
+    },
+    paymentRepository: {
+      create: async (record) => {
+        created.push(record);
+        return { ...record, _id: "pay1" };
+      },
+    },
+    logger,
+  });
+
+  const result = await linkPaymentToOrder({
+    orderId: "o1",
+    currency: "USD",
+    orderLines: [
+      { name: "Keyboard", unitPrice: { amount: 50 }, quantity: 2 },
+      { name: "Mouse", price: 20, quantity: 1 },
+    ],
+  });
+
+  assert.equal(created[0].orderId, "o1");
+  assert.equal(created[0].sessionId, "sess_1");
+  assert.equal(result._id, "pay1");
+  assert.deepEqual(logger.entries[0], {
+    msg: "Payment linked to order",
+    orderId: "o1",
+    sessionId: "sess_1",
+  });
+});
+
 test("verifyWebhook updates existing payment and publishes terminal event", async () => {
   const published = [];
   const logger = createLogger();
