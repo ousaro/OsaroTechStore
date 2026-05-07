@@ -4,10 +4,12 @@ import tls from "node:tls";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
 const encodeCommand = (parts) =>
-  `*${parts.length}\r\n${parts.map((part) => {
-    const value = String(part);
-    return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
-  }).join("")}`;
+  `*${parts.length}\r\n${parts
+    .map((part) => {
+      const value = String(part);
+      return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
+    })
+    .join("")}`;
 
 const parseLine = (buffer, offset) => {
   const end = buffer.indexOf("\r\n", offset);
@@ -16,6 +18,36 @@ const parseLine = (buffer, offset) => {
     line: buffer.slice(offset, end),
     offset: end + 2,
   };
+};
+
+const parseBulkString = (buffer, line) => {
+  const size = Number(line.line);
+  if (size === -1) return { value: null, offset: line.offset };
+
+  const end = line.offset + size;
+  if (buffer.length < end + 2) return null;
+
+  return {
+    value: buffer.slice(line.offset, end),
+    offset: end + 2,
+  };
+};
+
+const parseArray = (buffer, line) => {
+  const count = Number(line.line);
+  if (count === -1) return { value: null, offset: line.offset };
+
+  const values = [];
+  let nextOffset = line.offset;
+
+  for (let index = 0; index < count; index += 1) {
+    const reply = parseReplyAt(buffer, nextOffset);
+    if (!reply) return null;
+    values.push(reply.value);
+    nextOffset = reply.offset;
+  }
+
+  return { value: values, offset: nextOffset };
 };
 
 const parseReplyAt = (buffer, offset = 0) => {
@@ -28,34 +60,10 @@ const parseReplyAt = (buffer, offset = 0) => {
   if (type === 43) return { value: line.line, offset: line.offset };
   if (type === 45) throw new Error(line.line);
   if (type === 58) return { value: Number(line.line), offset: line.offset };
+  if (type === 36) return parseBulkString(buffer, line);
+  if (type === 42) return parseArray(buffer, line);
 
-  if (type === 36) {
-    const size = Number(line.line);
-    if (size === -1) return { value: null, offset: line.offset };
-    const end = line.offset + size;
-    if (buffer.length < end + 2) return null;
-    return {
-      value: buffer.slice(line.offset, end),
-      offset: end + 2,
-    };
-  }
-
-  if (type === 42) {
-    const count = Number(line.line);
-    if (count === -1) return { value: null, offset: line.offset };
-
-    const values = [];
-    let nextOffset = line.offset;
-    for (let index = 0; index < count; index += 1) {
-      const reply = parseReplyAt(buffer, nextOffset);
-      if (!reply) return null;
-      values.push(reply.value);
-      nextOffset = reply.offset;
-    }
-    return { value: values, offset: nextOffset };
-  }
-
-  throw new Error(`Unsupported Redis response type: ${String.fromCharCode(type)}`);
+  throw new Error(`Unsupported Redis response type: ${String.fromCodePoint(type)}`);
 };
 
 const decodeRedisValue = (value) => {
@@ -65,11 +73,7 @@ const decodeRedisValue = (value) => {
 };
 
 export const createRedisClient = ({ url, logger }) => {
-  assertNonEmptyString(
-    url,
-    "url",
-    "[Redis] REDIS_URL is required when EVENT_BUS_PROVIDER=redis"
-  );
+  assertNonEmptyString(url, "url", "[Redis] REDIS_URL is required when EVENT_BUS_PROVIDER=redis");
 
   const redisUrl = new URL(url);
   let socket;
