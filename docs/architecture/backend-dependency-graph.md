@@ -54,6 +54,7 @@ flowchart TD
   Configure --> CategoriesRoutes
   Configure --> OrdersRoutes
   Configure --> PaymentsRoutes
+  Configure --> HealthChecks["health check callbacks"]
   Configure --> Schedulers["product schedulers"]
   Configure --> Shutdown["shutdown hook"]
 
@@ -65,8 +66,11 @@ flowchart TD
   CategoriesRoutes --> App
   OrdersRoutes --> App
   PaymentsRoutes --> App
+  HealthChecks --> App
 
   App --> RequireAuth["createRequireAuthMiddleware"]
+  App --> OpenApiDocs["registerOpenApiDocs"]
+  App --> HealthRoutes["createHealthRoutes"]
   App --> ExpressRoutes["Express route registration"]
 ```
 
@@ -158,6 +162,8 @@ flowchart TD
   App --> CategoriesRoutes["/api/categories"]
   App --> OrdersRoutes["/api/orders"]
   App --> PaymentsRoutes["/api/payments"]
+  App --> HealthRoutes["/health, /ready"]
+  App --> OpenApiDocs["/api-docs, /api-docs/openapi.yaml"]
 
   AuthRoutes --> AuthController["authHttpController"]
   UsersRoutes --> UsersController["usersHttpController"]
@@ -165,4 +171,14 @@ flowchart TD
   CategoriesRoutes --> CategoriesController["categoriesHttpController"]
   OrdersRoutes --> OrdersController["ordersHttpController"]
   PaymentsRoutes --> PaymentsController["paymentsHttpController"]
+  HealthRoutes --> HealthChecks["database, payments, event bus checks"]
 ```
+
+## Documentation and Operations Surface
+
+Swagger UI is served from `backend/src/shared/infrastructure/http/openApiDocs.js`.
+The raw OpenAPI contract lives at `backend/docs/openapi.yaml` and documents the
+same `/api/*` routes mounted by `createApp.js`, plus the root-level `/health`
+and `/ready` endpoints. Readiness checks are built by the composition root after
+provider resolution so they report the configured database, payment, and event
+bus adapters.

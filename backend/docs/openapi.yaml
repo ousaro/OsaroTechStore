@@ -15,6 +15,7 @@ tags:
   - name: Categories
   - name: Orders
   - name: Payments
+  - name: Operations
 components:
   securitySchemes:
     BearerAuth:
@@ -40,16 +41,43 @@ components:
             type: string
     Address:
       type: object
-      required: [city, addressLine, postalCode, country]
+      required: [street, city, country]
       properties:
+        street:
+          type: string
         city:
           type: string
-        addressLine:
+        state:
           type: string
         postalCode:
           type: string
         country:
           type: string
+    Money:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+          example: USD
+    OrderLine:
+      type: object
+      required: [productId, name, price, quantity]
+      properties:
+        productId:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          description: Input unit price used when creating an order.
+        quantity:
+          type: number
+        unitPrice:
+          $ref: "#/components/schemas/Money"
+        subtotal:
+          $ref: "#/components/schemas/Money"
     UserPublic:
       type: object
       properties:
@@ -180,46 +208,26 @@ components:
       properties:
         _id:
           type: string
-        ownerId:
-          type: string
         name:
           type: string
         description:
           type: string
         price:
           type: number
-        raw_price:
-          type: number
-        discount:
-          type: number
-        image:
+        currency:
           type: string
-        otherImages:
+          example: USD
+        category:
+          type: string
+        stock:
+          type: number
+        images:
           type: array
           items:
             type: string
-        categoryId:
+        status:
           type: string
-        category:
-          type: string
-        countInStock:
-          type: number
-        moreInformations:
-          type: string
-        reviews:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        rating:
-          type: string
-        isNewProduct:
-          type: boolean
-        salesCount:
-          type: number
-        lastSold:
-          type: string
-          format: date-time
+          enum: [new, active, inactive, deprecated]
         createdAt:
           type: string
           format: date-time
@@ -228,40 +236,30 @@ components:
           format: date-time
     ProductCreateRequest:
       type: object
-      required:
-        - name
-        - description
-        - raw_price
-        - discount
-        - image
-        - otherImages
-        - categoryId
-        - category
-        - countInStock
-        - moreInformations
+      required: [name, price, category]
       properties:
         name:
           type: string
         description:
           type: string
-        raw_price:
+        price:
           type: number
-        discount:
-          type: number
-        image:
+        currency:
           type: string
-        otherImages:
+          default: USD
+        category:
+          type: string
+        stock:
+          type: number
+          default: 0
+        images:
           type: array
           items:
             type: string
-        categoryId:
+        status:
           type: string
-        category:
-          type: string
-        countInStock:
-          type: number
-        moreInformations:
-          type: string
+          enum: [new, active, inactive, deprecated]
+          default: new
     ProductUpdateRequest:
       type: object
       properties:
@@ -271,38 +269,19 @@ components:
           type: string
         price:
           type: number
-        raw_price:
-          type: number
-        discount:
-          type: number
-        image:
-          type: string
-        otherImages:
-          type: array
-          items:
-            type: string
-        categoryId:
+        currency:
           type: string
         category:
           type: string
-        countInStock:
+        stock:
           type: number
-        moreInformations:
+        images:
+          type: array
+          items:
+            type: string
+        status:
           type: string
-        reviews:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-    ProductDetailsResponse:
-      type: object
-      properties:
-        product:
-          $ref: "#/components/schemas/Product"
-        relatedProducts:
-          type: array
-          items:
-            $ref: "#/components/schemas/Product"
+          enum: [new, active, inactive, deprecated]
     Category:
       type: object
       properties:
@@ -312,8 +291,6 @@ components:
           type: string
         description:
           type: string
-        image:
-          type: string
         createdAt:
           type: string
           format: date-time
@@ -322,13 +299,11 @@ components:
           format: date-time
     CategoryCreateRequest:
       type: object
-      required: [name, description, image]
+      required: [name]
       properties:
         name:
           type: string
         description:
-          type: string
-        image:
           type: string
     Order:
       type: object
@@ -337,23 +312,23 @@ components:
           type: string
         ownerId:
           type: string
-        products:
+        orderLines:
           type: array
           items:
-            type: object
-            additionalProperties: true
-        totalPrice:
-          type: number
-        status:
-          type: string
-        address:
+            $ref: "#/components/schemas/OrderLine"
+        deliveryAddress:
           $ref: "#/components/schemas/Address"
-        paymentMethod:
+        currency:
           type: string
+          example: USD
+        orderStatus:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
         paymentStatus:
           type: string
-        paymentReference:
-          type: string
+          enum: [pending, paid, failed, expired, refunded]
+        totalPrice:
+          $ref: "#/components/schemas/Money"
         createdAt:
           type: string
           format: date-time
@@ -363,53 +338,34 @@ components:
     OrderCreateRequest:
       type: object
       required:
-        - ownerId
-        - products
-        - totalPrice
-        - status
-        - address
-        - paymentMethod
-        - paymentStatus
-        - paymentReference
+        - orderLines
+        - deliveryAddress
       properties:
-        ownerId:
-          type: string
-        products:
+        orderLines:
           type: array
           items:
-            type: object
-            additionalProperties: true
-        totalPrice:
-          type: number
-        status:
-          type: string
-        address:
+            $ref: "#/components/schemas/OrderLine"
+        deliveryAddress:
           $ref: "#/components/schemas/Address"
-        paymentMethod:
+        currency:
           type: string
-        paymentStatus:
-          type: string
-        paymentReference:
-          type: string
+          default: USD
     OrderUpdateRequest:
       type: object
       properties:
-        products:
+        orderLines:
           type: array
           items:
-            type: object
-            additionalProperties: true
-        totalPrice:
-          type: number
-        status:
-          type: string
-        address:
+            $ref: "#/components/schemas/OrderLine"
+        deliveryAddress:
           $ref: "#/components/schemas/Address"
-        paymentMethod:
+        orderStatus:
           type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
         paymentStatus:
           type: string
-        paymentReference:
+          enum: [pending, paid, failed, expired, refunded]
+        currency:
           type: string
     PaymentIntentItem:
       type: object
@@ -423,18 +379,56 @@ components:
           type: integer
     CreatePaymentIntentRequest:
       type: object
-      required: [items]
+      required: [orderId, items]
       properties:
+        orderId:
+          type: string
         items:
           type: array
           items:
             $ref: "#/components/schemas/PaymentIntentItem"
-    CreatePaymentIntentResponse:
+        currency:
+          type: string
+          default: USD
+    HealthResponse:
       type: object
       properties:
-        url:
+        status:
           type: string
-          format: uri
+          enum: [ok]
+        service:
+          type: string
+        version:
+          type: string
+        uptimeSeconds:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+    ReadinessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, fail]
+        service:
+          type: string
+        version:
+          type: string
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+                enum: [ok, fail]
+            additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
     Payment:
       type: object
       properties:
@@ -465,6 +459,43 @@ components:
           type: string
           format: date-time
 paths:
+  /health:
+    servers:
+      - url: http://localhost:5000
+        description: Local development server
+    get:
+      tags: [Operations]
+      summary: Liveness check
+      responses:
+        "200":
+          description: Backend process is running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /ready:
+    servers:
+      - url: http://localhost:5000
+        description: Local development server
+    get:
+      tags: [Operations]
+      summary: Readiness check
+      description: Runs configured database, payment, and event bus checks.
+      responses:
+        "200":
+          description: All configured dependencies are ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadinessResponse"
+        "503":
+          description: At least one configured dependency failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadinessResponse"
+
   /auth/register:
     post:
       tags: [Authentication]
@@ -788,6 +819,16 @@ paths:
     get:
       tags: [Products]
       summary: Get all products
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [new, active, inactive, deprecated]
       responses:
         "200":
           description: Product list
@@ -837,11 +878,11 @@ paths:
             type: string
       responses:
         "200":
-          description: Product details and related products
+          description: Product details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductDetailsResponse"
+                $ref: "#/components/schemas/Product"
         "404":
           description: Product not found
           content:
@@ -1050,6 +1091,11 @@ paths:
       summary: Get all orders
       security:
         - BearerAuth: []
+      parameters:
+        - in: query
+          name: ownerId
+          schema:
+            type: string
       responses:
         "200":
           description: Order list
@@ -1183,12 +1229,12 @@ paths:
             schema:
               $ref: "#/components/schemas/CreatePaymentIntentRequest"
       responses:
-        "200":
-          description: Stripe checkout URL
+        "201":
+          description: Payment workflow with provider redirect URL
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreatePaymentIntentResponse"
+                $ref: "#/components/schemas/Payment"
         "500":
           description: Stripe session creation failed
           content:

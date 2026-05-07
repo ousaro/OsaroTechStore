@@ -7,19 +7,19 @@ runtime wiring.
 
 ## Current Implementation Status
 
-| Choice | Status | Code location |
-| --- | --- | --- |
-| Modular hexagonal backend | Implemented | `backend/src/modules/*` |
-| Single composition root | Implemented | `backend/src/infrastructure/bootstrap/configureApplicationModules.js` |
-| Provider-based infrastructure selection | Implemented for Mongo, Stripe, disabled payments, console logger, in-process event bus, Redis event bus | `backend/src/infrastructure/providers/*` |
-| Cross-module workflows via events | Implemented | `backend/src/modules/*/adapters/input/collaboration` |
-| HTTP as an input adapter | Implemented | `backend/src/modules/*/adapters/input/http` |
-| Repository ports and Mongoose adapters | Implemented | `backend/src/modules/*/ports/output`, `backend/src/modules/*/adapters/output/repositories/mongo` |
-| OpenAPI documentation endpoint | Implemented | `backend/src/shared/infrastructure/http/openApiDocs.js` |
-| Health and readiness endpoints | Implemented | `backend/src/shared/infrastructure/http/healthRoutes.js` |
-| Redis event bus wiring | Implemented startup lifecycle; needs production delivery hardening | `redisStreamEventBus.js`, `redisClient.js` |
-| Production-safe request logging | Implemented | `requestLoggingMiddleware.js` |
-| Architecture boundary guard tests | Implemented | `backend/tests/unit/architecture/module-boundaries.test.js` |
+| Choice                                  | Status                                                                                                  | Code location                                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Modular hexagonal backend               | Implemented                                                                                             | `backend/src/modules/*`                                                                          |
+| Single composition root                 | Implemented                                                                                             | `backend/src/infrastructure/bootstrap/configureApplicationModules.js`                            |
+| Provider-based infrastructure selection | Implemented for Mongo, Stripe, disabled payments, console logger, in-process event bus, Redis event bus | `backend/src/infrastructure/providers/*`                                                         |
+| Cross-module workflows via events       | Implemented                                                                                             | `backend/src/modules/*/adapters/input/collaboration`                                             |
+| HTTP as an input adapter                | Implemented                                                                                             | `backend/src/modules/*/adapters/input/http`                                                      |
+| Repository ports and Mongoose adapters  | Implemented                                                                                             | `backend/src/modules/*/ports/output`, `backend/src/modules/*/adapters/output/repositories/mongo` |
+| OpenAPI documentation endpoint          | Implemented                                                                                             | `backend/src/shared/infrastructure/http/openApiDocs.js`                                          |
+| Health and readiness endpoints          | Implemented                                                                                             | `backend/src/shared/infrastructure/http/healthRoutes.js`                                         |
+| Redis event bus wiring                  | Implemented startup lifecycle; needs production delivery hardening                                      | `redisStreamEventBus.js`, `redisClient.js`                                                       |
+| Production-safe request logging         | Implemented                                                                                             | `requestLoggingMiddleware.js`                                                                    |
+| Architecture boundary guard tests       | Implemented                                                                                             | `backend/tests/unit/architecture/module-boundaries.test.js`                                      |
 
 ## 1. Architecture Style: Modular Hexagonal
 
@@ -58,7 +58,8 @@ It is responsible for:
 - Creating repositories.
 - Creating module instances.
 - Registering cross-module event workflows.
-- Returning route factories and shutdown hooks to the app bootstrap.
+- Returning route factories, health check callbacks, schedulers, and shutdown
+  hooks to the app bootstrap.
 
 This keeps `createApp.js` focused on Express concerns only. The Express app gets
 pre-wired route factories and shared middleware dependencies; it does not know
@@ -140,10 +141,26 @@ Implemented global HTTP concerns:
 - CORS and cookies.
 - JSON body parsing, with a raw-body exception for Stripe webhooks.
 - Auth middleware shared across protected routes.
-- OpenAPI docs registration.
+- OpenAPI docs registration at `/api-docs` and `/api-docs/openapi.yaml`.
+- Liveness and readiness routes at `/health` and `/ready`.
 - 404 and error middleware registered last.
 
 Controllers should not reach into repositories or infrastructure directly.
+
+The raw OpenAPI contract in `backend/docs/openapi.yaml` should mirror controller
+request and response shapes, especially the module read models. Current notable
+contracts are:
+
+- Products use `price`, `currency`, `category`, `stock`, `images`, and `status`;
+  older `raw_price`, `discount`, `categoryId`, and `countInStock` fields are not
+  part of the backend read model.
+- Orders are created from authenticated `req.user._id` plus `orderLines`,
+  `deliveryAddress`, and optional `currency`; clients do not submit `ownerId`,
+  `totalPrice`, or payment fields when placing an order.
+- Payment intent creation returns the persisted payment workflow with provider
+  redirect `url` and a `201` status.
+- The Stripe webhook route is unauthenticated, uses raw body parsing, and is
+  mounted only when the selected payment strategy enables webhooks.
 
 ## 8. Error and Validation Boundaries
 
