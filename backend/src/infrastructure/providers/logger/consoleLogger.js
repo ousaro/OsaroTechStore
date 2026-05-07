@@ -7,18 +7,44 @@
  * To switch loggers: change resolveLogger.js — no module code changes needed.
  */
 
-const formatCtx = (ctx) => (ctx ? ` ${JSON.stringify(ctx)}` : "");
+const safeStringify = (value) => {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return JSON.stringify({ serializationError: "Unable to serialize log context" });
+  }
+};
+
+const formatCtx = (ctx) =>
+  ctx && Object.keys(ctx).length ? ` ${safeStringify(ctx)}` : "";
+
+const normalizeLogArgs = (entry, ctx = {}) => {
+  if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+    const { msg, message, ...entryCtx } = entry;
+    return {
+      msg: msg ?? message ?? "",
+      ctx: { ...entryCtx, ...ctx },
+    };
+  }
+
+  return { msg: entry, ctx };
+};
+
+const logToConsole = (level, consoleMethod, scope, entry, ctx) => {
+  const normalized = normalizeLogArgs(entry, ctx);
+  consoleMethod(`[${level}] [${scope}] ${normalized.msg}${formatCtx(normalized.ctx)}`);
+};
 
 const createScopedMethods = (scope) => ({
-  info: (msg, ctx) =>
-    console.info(`[INFO]  [${scope}] ${msg}${formatCtx(ctx)}`),
-  warn: (msg, ctx) =>
-    console.warn(`[WARN]  [${scope}] ${msg}${formatCtx(ctx)}`),
-  error: (msg, ctx) =>
-    console.error(`[ERROR] [${scope}] ${msg}${formatCtx(ctx)}`),
+  info: (entry, ctx) =>
+    logToConsole("INFO", console.info, scope, entry, ctx),
+  warn: (entry, ctx) =>
+    logToConsole("WARN", console.warn, scope, entry, ctx),
+  error: (entry, ctx) =>
+    logToConsole("ERROR", console.error, scope, entry, ctx),
   debug: (msg, ctx) =>
     process.env.NODE_ENV !== "production" &&
-    console.debug(`[DEBUG] [${scope}] ${msg}${formatCtx(ctx)}`),
+    logToConsole("DEBUG", console.debug, scope, msg, ctx),
 });
 
 export const createConsoleLogger = (scope = "app") => {

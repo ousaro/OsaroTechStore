@@ -5,7 +5,7 @@
  * Both access the same "User" document — splitting collections is a
  * future refactor when the bounded contexts are fully separated.
  */
-import { createUserModel } from "../../../../auth/adapters/output/persistence/mongo/userModel.js";
+import { createUserModel } from "../../../../../auth/adapters/output/persistence/mongo/userModel.js";
 import { toUserRecord } from "../../persistence/mongo/userRecordMapper.js";
 
 export const createMongooseUserRepository = ({ dbClient }) => {

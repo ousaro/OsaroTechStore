@@ -30,11 +30,20 @@ export const createScopedLogger = (logger, scope) => {
   if (typeof logger.child === "function") {
     return logger.child({ scope });
   }
+
+  const withScope = (entry) => {
+    if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+      const msg = entry.msg ?? entry.message ?? "";
+      return { ...entry, msg: `[${scope}] ${msg}` };
+    }
+    return `[${scope}] ${entry}`;
+  };
+
   // Fallback: prefix every message with [scope]
   return {
-    info: (msg, ctx) => logger.info(`[${scope}] ${msg}`, ctx),
-    warn: (msg, ctx) => logger.warn(`[${scope}] ${msg}`, ctx),
-    error: (msg, ctx) => logger.error(`[${scope}] ${msg}`, ctx),
-    debug: (msg, ctx) => logger.debug(`[${scope}] ${msg}`, ctx),
+    info: (msg, ctx) => logger.info(withScope(msg), ctx),
+    warn: (msg, ctx) => logger.warn(withScope(msg), ctx),
+    error: (msg, ctx) => logger.error(withScope(msg), ctx),
+    debug: (msg, ctx) => logger.debug(withScope(msg), ctx),
   };
 };

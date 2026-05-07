@@ -4,7 +4,7 @@
  * Implements the tokenServicePort.
  */
 import jwt from "jsonwebtoken";
-import { AuthUnauthorizedError } from "../../application/errors/AuthApplicationError.js";
+import { AuthUnauthorizedError } from "../../../application/errors/AuthApplicationError.js";
 import { assertNonEmptyString }  from "../../../../../shared/kernel/assertions/index.js";
 
 export const createJwtTokenService = ({ secret, expiresIn = "2d", logger }) => {

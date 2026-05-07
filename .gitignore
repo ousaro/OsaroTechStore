@@ -6,6 +6,7 @@ npm-debug.log
 /public
 
 .env*
+!.env.example
 .passport.js
 .DS_Store
 
@@ -18,3 +19,4 @@ client/.parcel-cache
 .codex
 context.md
 guide.md
+.agents/

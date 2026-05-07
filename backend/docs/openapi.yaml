@@ -1,4 +1,3 @@
-# TODO: Needs UPDATE
 openapi: 3.0.3
 info:
   title: OsaroTechStore API
@@ -436,8 +435,37 @@ components:
         url:
           type: string
           format: uri
+    Payment:
+      type: object
+      properties:
+        _id:
+          type: string
+        orderId:
+          type: string
+        provider:
+          type: string
+        workflowType:
+          type: string
+        paymentStatus:
+          type: string
+        sessionId:
+          type: string
+        providerPaymentId:
+          type: string
+        url:
+          type: string
+          format: uri
+        occurredAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 paths:
-  /users/auth/register:
+  /auth/register:
     post:
       tags: [Authentication]
       summary: Register a new user
@@ -448,7 +476,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
-        '200':
+        '201':
           description: Registration succeeded
           content:
             application/json:
@@ -460,7 +488,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/auth/login:
+  /auth/login:
     post:
       tags: [Authentication]
       summary: Authenticate user with email and password
@@ -483,14 +511,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/auth/google:
+  /auth/google:
     get:
       tags: [Authentication]
       summary: Start Google OAuth flow
       responses:
         '302':
           description: Redirect to Google authentication page
-  /users/auth/google/callback:
+  /auth/google/callback:
     get:
       tags: [Authentication]
       summary: Google OAuth callback endpoint
@@ -498,10 +526,11 @@ paths:
         '302':
           description: Redirect to frontend success or login page
 
-  /users:
+  /auth/users:
     get:
-      tags: [Users]
-      summary: Get all non-admin users
+      tags: [Authentication]
+      summary: List all non-admin users
+      description: Admin-only route.
       security:
         - BearerAuth: []
       responses:
@@ -519,11 +548,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Admin privileges are required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /users/{id}:
+  /auth/users/{id}:
     get:
-      tags: [Users]
-      summary: Get user by id (current implementation returns a message)
+      tags: [Authentication]
+      summary: Get user by id
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -534,14 +570,17 @@ paths:
             type: string
       responses:
         '200':
-          description: Operation succeeded
+          description: User record
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                $ref: '#/components/schemas/UserPublic'
+        '403':
+          description: Admin privileges are required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Invalid id
           content:
@@ -549,8 +588,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      tags: [Users]
-      summary: Update user profile fields
+      tags: [Authentication]
+      summary: Update managed user fields
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -585,8 +625,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      tags: [Users]
+      tags: [Authentication]
       summary: Delete user by id
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -609,13 +650,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /users/passUpdate/{id}:
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get my profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     put:
       tags: [Users]
-      summary: Update user password
-      description: |
-        Requires currentPassword/newPassword/confirmPassword in request body.
-        The backend handles own-password change and admin reset paths.
+      summary: Update my profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by id
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -624,25 +701,76 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '403':
+          description: Admin privileges are required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/me/cart:
+    put:
+      tags: [Users]
+      summary: Replace my cart
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PasswordUpdateRequest'
+              type: object
+              properties:
+                cart:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
       responses:
         '200':
-          description: Updated user document
+          description: Updated user profile
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPublic'
-        '400':
-          description: Invalid current password or missing fields
+
+  /users/me/favorites/{productId}:
+    put:
+      tags: [Users]
+      summary: Add or remove a product from my favorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [add, remove]
+      responses:
+        '200':
+          description: Updated user profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/UserPublic'
         '404':
           description: Invalid id or user not found
           content:
@@ -660,8 +788,6 @@ paths:
     get:
       tags: [Products]
       summary: Get all products
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Product list
@@ -674,6 +800,7 @@ paths:
     post:
       tags: [Products]
       summary: Create a new product
+      description: Admin-only route.
       security:
         - BearerAuth: []
       requestBody:
@@ -701,9 +828,7 @@ paths:
   /products/{id}:
     get:
       tags: [Products]
-      summary: Get product and related products by id
-      security:
-        - BearerAuth: []
+      summary: Get product by id
       parameters:
         - in: path
           name: id
@@ -732,6 +857,7 @@ paths:
     put:
       tags: [Products]
       summary: Update a product
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -768,6 +894,7 @@ paths:
     delete:
       tags: [Products]
       summary: Delete product by id
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -794,8 +921,6 @@ paths:
     get:
       tags: [Categories]
       summary: Get all categories
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Category list
@@ -808,6 +933,7 @@ paths:
     post:
       tags: [Categories]
       summary: Create a category
+      description: Admin-only route.
       security:
         - BearerAuth: []
       requestBody:
@@ -833,9 +959,63 @@ paths:
                   - $ref: '#/components/schemas/EmptyFieldsError'
 
   /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Get category by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Categories]
+      summary: Update category
+      description: Admin-only route.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreateRequest'
+      responses:
+        '200':
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       tags: [Categories]
       summary: Delete category by id and cascade-delete products in that category
+      description: Admin-only route.
       security:
         - BearerAuth: []
       parameters:
@@ -913,7 +1093,7 @@ paths:
   /orders/{id}:
     get:
       tags: [Orders]
-      summary: Get order by id (current implementation returns a message)
+      summary: Get order by id
       security:
         - BearerAuth: []
       parameters:
@@ -924,14 +1104,11 @@ paths:
             type: string
       responses:
         '200':
-          description: Operation succeeded
+          description: Order details
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                $ref: '#/components/schemas/Order'
     put:
       tags: [Orders]
       summary: Update order
@@ -993,10 +1170,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /create-payment-intent:
+  /payments/intent:
     post:
       tags: [Payments]
-      summary: Create Stripe Checkout Session and return session URL
+      summary: Create payment intent
       security:
         - BearerAuth: []
       requestBody:
@@ -1019,15 +1196,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /webhook:
+  /payments/webhook:
     post:
       tags: [Payments]
-      summary: Stripe webhook endpoint
+      summary: Payment provider webhook endpoint
       description: |
-        Current implementation still applies JWT auth middleware globally on payment routes.
-        In production, Stripe webhook integrations commonly bypass user JWT auth and rely on Stripe signature verification only.
-      security:
-        - BearerAuth: []
+        Raw-body webhook endpoint. Availability depends on the configured payment provider.
+        User JWT auth is not required; provider signature verification is handled by the payment gateway.
       requestBody:
         required: true
         content:
@@ -1048,28 +1223,27 @@ paths:
         '400':
           description: Signature verification failed
 
-  /session-details/{sessionId}:
+  /payments/order/{orderId}:
     get:
       tags: [Payments]
-      summary: Retrieve Stripe checkout session details
+      summary: Get payment by order id
       security:
         - BearerAuth: []
       parameters:
         - in: path
-          name: sessionId
+          name: orderId
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Checkout session payload from Stripe
+          description: Payment record
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-        '500':
-          description: Failed to retrieve session details
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Payment not found
           content:
             application/json:
               schema:
