@@ -73,6 +73,60 @@ test("GET /api/auth/users requires a valid admin token", async () => {
   assert.equal(Array.isArray(response.body), true);
 });
 
+test("admin can manage user accounts without exposing password hashes", async () => {
+  const admin = await persistAdminUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+  });
+  const user = await persistUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+    overrides: { firstName: "Grace", lastName: "Hopper", email: "grace@example.test" },
+  });
+  const adminToken = ctx.application.tokenService.signUserId(admin._id);
+
+  const listResponse = await ctx.client.agent
+    .get("/api/auth/users")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .expect(200);
+
+  assert.deepEqual(
+    listResponse.body.map((listedUser) => listedUser.email),
+    ["grace@example.test"]
+  );
+  assert.equal("password" in listResponse.body[0], false);
+
+  const getResponse = await ctx.client.agent
+    .get(`/api/auth/users/${user._id}`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .expect(200);
+
+  assert.equal(getResponse.body.email, "grace@example.test");
+  assert.equal("password" in getResponse.body, false);
+
+  const updateResponse = await ctx.client.agent
+    .put(`/api/auth/users/${user._id}`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({ firstName: "Amazing", lastName: "Admiral" })
+    .expect(200);
+
+  assert.equal(updateResponse.body.firstName, "Amazing");
+  assert.equal(updateResponse.body.lastName, "Admiral");
+
+  await ctx.client.agent
+    .delete(`/api/auth/users/${user._id}`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .expect(200);
+
+  const listAfterDeleteResponse = await ctx.client.agent
+    .get("/api/auth/users")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .expect(200);
+
+  assert.equal(
+    listAfterDeleteResponse.body.some((listedUser) => listedUser.email === "grace@example.test"),
+    false
+  );
+});
+
 test("protected routes reject malformed, missing, and expired tokens", async () => {
   await ctx.client.agent
     .post("/api/orders")

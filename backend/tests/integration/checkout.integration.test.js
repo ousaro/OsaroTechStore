@@ -59,6 +59,19 @@ test("authenticated user can place an order and create a payment intent", async 
   assert.equal(paymentResponse.body.provider, "stripe");
   assert.equal(paymentResponse.body.paymentStatus, "pending");
   assert.match(paymentResponse.body.url, /^https:\/\/checkout\.stripe\.test/);
+
+  const duplicatePaymentResponse = await ctx.client.agent
+    .post("/api/payments/intent")
+    .set("Authorization", `Bearer ${tokenFor(user)}`)
+    .send({
+      orderId: orderResponse.body._id,
+      items: [{ name: product.name, price: product.price, quantity: 2 }],
+      currency: "USD",
+    })
+    .expect(201);
+
+  assert.equal(duplicatePaymentResponse.body._id, paymentResponse.body._id);
+  assert.equal(stripeGateway.calls.createRedirectPayment.length, 1);
 });
 
 test("Stripe webhook updates payment state and synchronizes order payment status", async () => {
