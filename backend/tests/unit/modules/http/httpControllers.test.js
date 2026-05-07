@@ -7,6 +7,7 @@ import { createCategoriesHttpController } from "../../../../src/modules/categori
 import { createOrdersHttpController } from "../../../../src/modules/orders/adapters/input/http/ordersHttpController.js";
 import { createUsersHttpController } from "../../../../src/modules/users/adapters/input/http/usersHttpController.js";
 import { createPaymentsHttpController } from "../../../../src/modules/payments/adapters/input/http/paymentsHttpController.js";
+import { ApplicationValidationError } from "../../../../src/shared/application/errors/index.js";
 
 const createResponse = () => ({
   statusCode: 200,
@@ -40,6 +41,30 @@ const runHandler = async (handler, req = {}) => {
 };
 
 const fn = (returnValue) => async () => returnValue;
+
+test("async controllers forward thrown application errors to the error chain", async () => {
+  const controller = createProductsHttpController({
+    productsInputPort: {
+      getAllProducts: fn([]),
+      getProductById: async () => {
+        throw new ApplicationValidationError("Product id is invalid");
+      },
+      addProduct: fn({}),
+      updateProduct: fn({}),
+      deleteProduct: fn({}),
+      removeProductsByCategory: fn(0),
+    },
+  });
+
+  await assert.rejects(
+    () => runHandler(controller.getProductById, { params: { id: "" } }),
+    {
+      name: "ApplicationValidationError",
+      message: "Product id is invalid",
+      code: "VALIDATION",
+    }
+  );
+});
 
 test("auth controller maps public and admin handlers to input port calls", async () => {
   const calls = [];

@@ -12,7 +12,9 @@ export const createIntegrationTestContext = ({ paymentGateway } = {}) => {
     state.mongo = createMongoMemoryTestServer();
     const dbClient = await state.mongo.connect();
     state.application = createTestApplication({ dbClient, paymentGateway });
-    state.client = createRequestClient(state.application.app);
+    state.client = createRequestClient(state.application.app, {
+      tokenForUser: (user) => state.application.tokenService.signUserId(user._id),
+    });
   });
 
   beforeEach(async () => {

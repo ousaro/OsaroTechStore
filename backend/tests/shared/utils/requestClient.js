@@ -1,14 +1,34 @@
 import request from "supertest";
 import { bearer } from "../builders/authHeaders.js";
 
-export const createRequestClient = (app) => {
-  const agent = request(app);
+const METHODS = ["get", "post", "put", "delete"];
+
+export const createRequestClient = (app, { tokenForUser, requestFactory = request } = {}) => {
+  const agent = requestFactory(app);
+  const withToken = (method, url, token) =>
+    agent[method](url).set(token ? bearer(token) : {});
+
+  const authenticatedClient = (user) => {
+    if (!tokenForUser) {
+      throw new Error("requestClient.as(user) requires a tokenForUser option");
+    }
+
+    const token = tokenForUser(user);
+    return METHODS.reduce(
+      (client, method) => ({
+        ...client,
+        [method]: (url) => withToken(method, url, token),
+      }),
+      { token }
+    );
+  };
 
   return {
     agent,
-    get: (url, token) => agent.get(url).set(token ? bearer(token) : {}),
-    post: (url, token) => agent.post(url).set(token ? bearer(token) : {}),
-    put: (url, token) => agent.put(url).set(token ? bearer(token) : {}),
-    delete: (url, token) => agent.delete(url).set(token ? bearer(token) : {}),
+    as: authenticatedClient,
+    get: (url, token) => withToken("get", url, token),
+    post: (url, token) => withToken("post", url, token),
+    put: (url, token) => withToken("put", url, token),
+    delete: (url, token) => withToken("delete", url, token),
   };
 };

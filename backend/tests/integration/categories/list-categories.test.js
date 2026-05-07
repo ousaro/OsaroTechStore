@@ -30,3 +30,12 @@ test("public category routes list and read categories", async () => {
 
   assert.equal(categoryResponse.body.name, "Peripherals");
 });
+
+test("public category read returns a structured error when the use case throws", async () => {
+  const response = await ctx.client
+    .get("/api/categories/000000000000000000000000")
+    .expect(404);
+
+  assert.equal(response.body.error.code, "NOT_FOUND");
+  assert.match(response.body.error.message, /Category .* not found/);
+});
