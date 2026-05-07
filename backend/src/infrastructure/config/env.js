@@ -41,6 +41,8 @@ const buildGoogleOAuthConfig = () => {
 };
 
 export const env = Object.freeze({
+  serviceName: optional("SERVICE_NAME", "osaro-tech-store-backend"),
+  appVersion: optional("APP_VERSION", "2.0.0"),
   nodeEnv: optional("NODE_ENV", "development"),
   port: parseInt(optional("PORT", "5000"), 10),
 
@@ -57,13 +59,13 @@ export const env = Object.freeze({
   tokenExpiresIn: optional("TOKEN_EXPIRES_IN", "2d"),
 
   // ── Database ───────────────────────────────────────────────────────────
-  // Switch DB: set DATABASE_PROVIDER=mongo or DATABASE_PROVIDER=postgres
+  // Switch DB: currently supported DATABASE_PROVIDER=mongo
   databaseProvider: optional("DATABASE_PROVIDER", "mongo"),
   mongoUri: optional("MONGO_URI"),
   postgresUrl: optional("POSTGRES_URL"),
 
   // ── Payment ────────────────────────────────────────────────────────────
-  // Switch provider: set PAYMENT_PROVIDER=stripe | paypal | disabled
+  // Switch provider: currently supported PAYMENT_PROVIDER=stripe | disabled
   paymentProvider: optional("PAYMENT_PROVIDER", "disabled"),
   stripeSecretKey: optional("STRIPE_SECRET_KEY"),
   stripeWebhookSecret: optional("STRIPE_WEBHOOK_SECRET"),

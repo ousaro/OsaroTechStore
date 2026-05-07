@@ -4,8 +4,8 @@
  * Returns the correct payment gateway adapter based on config.
  * All adapters satisfy the paymentGatewayPort interface.
  *
- * To add a new provider (e.g. PayPal):
- *   1. Create infrastructure/providers/payments/paypal/paypalGateway.js
+ * To add a new provider:
+ *   1. Create infrastructure/providers/payments/<name>/<name>Gateway.js
  *   2. Add a case below — no module code changes needed.
  */
 
@@ -42,20 +42,13 @@ export const resolvePaymentStrategy = ({ provider, env, logger }) => {
       );
     }
 
-    case "paypal":
-      // Placeholder — implement createPaypalGateway when needed
-      throw new ServiceUnavailableError(
-        "PayPal gateway is not yet implemented. " +
-          "Set PAYMENT_PROVIDER=stripe or implement createPaypalGateway."
-      );
-
     case "disabled":
       return assertPaymentStrategyPort(DISABLED_GATEWAY, "resolvePaymentStrategy");
 
     default:
       throw new ServiceUnavailableError(
         `Unknown payment provider: "${provider}". ` +
-          `Supported: "stripe", "paypal", "disabled". Check PAYMENT_PROVIDER in .env`
+          `Supported: "stripe", "disabled". Check PAYMENT_PROVIDER in .env`
       );
   }
 };

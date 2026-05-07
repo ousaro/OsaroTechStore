@@ -10,6 +10,7 @@ import { resolveDatabaseStrategy } from "../providers/databases/resolveDatabaseS
 import { resolvePaymentStrategy } from "../providers/payments/resolvePaymentStrategy.js";
 import { resolveLogger } from "../providers/logger/resolveLogger.js";
 import { resolveEventBus } from "../providers/events/resolveEventBus.js";
+import { createRedisClient } from "../providers/events/redis/redisClient.js";
 import { createScopedLogger } from "../../shared/application/ports/loggerPort.js";
 
 // ── Module factories ────────────────────────────────────────────────────────
@@ -60,9 +61,22 @@ export const configureApplicationModules = async ({ env }) => {
     logger: createScopedLogger(logger, "payments"),
   });
 
+  const redisClient =
+    env.eventBusProvider === "redis"
+      ? createRedisClient({
+          url: env.redisUrl,
+          logger: createScopedLogger(logger, "redis"),
+        })
+      : null;
+
+  if (redisClient) {
+    await redisClient.connect();
+  }
+
   const eventBus = resolveEventBus({
     provider: env.eventBusProvider,
     logger: createScopedLogger(logger, "eventBus"),
+    redisClient,
   });
 
   // ── 3. Shared services ────────────────────────────────────────────────────
@@ -154,6 +168,33 @@ export const configureApplicationModules = async ({ env }) => {
     eventBus: env.eventBusProvider,
   });
 
+  const healthChecks = [
+    {
+      name: "database",
+      check: async () => {
+        database.getConnection();
+        return { provider: env.databaseProvider };
+      },
+    },
+    {
+      name: "payments",
+      check: async () => ({
+        provider: paymentStrategy.provider,
+        enabled: paymentStrategy.paymentsEnabled,
+        webhookEnabled: paymentStrategy.webhookEnabled,
+      }),
+    },
+    {
+      name: "eventBus",
+      check: async () => {
+        if (redisClient) {
+          await redisClient.ping();
+        }
+        return { provider: env.eventBusProvider };
+      },
+    },
+  ];
+
   // ── 7. Return route handlers to createApp — no module refs escape ─────────
   // createApp receives only the pre-built route factories and shared middleware.
   // It has zero knowledge of modules, use cases, or infrastructure.
@@ -169,6 +210,9 @@ export const configureApplicationModules = async ({ env }) => {
     categoriesRoutes: categoriesModule.createRoutes,
     ordersRoutes: ordersModule.createRoutes,
     paymentsRoutes: paymentsModule.createRoutes,
+    healthChecks,
+    serviceName: env.serviceName,
+    version: env.appVersion,
 
     // Schedulers — started by startApplication after the HTTP server is up
     schedulers: [productsModule.createNewProductStatusScheduler()],
@@ -176,6 +220,7 @@ export const configureApplicationModules = async ({ env }) => {
     // Graceful shutdown
     shutdown: async () => {
       logger.info({ msg: "Shutting down..." });
+      await redisClient?.close();
       await database.disconnect();
     },
   };

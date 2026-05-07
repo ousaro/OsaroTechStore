@@ -12,10 +12,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { requestIdMiddleware } from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
+import { createRequestLoggingMiddleware } from "../shared/infrastructure/http/middleware/requestLoggingMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/middleware/createRequireAuthMiddleware.js";
 import { createErrorMiddleware } from "../shared/infrastructure/http/middleware/errorMiddleware.js";
 import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
 import { registerOpenApiDocs } from "../shared/infrastructure/http/openApiDocs.js";
+import { createHealthRoutes } from "../shared/infrastructure/http/healthRoutes.js";
 
 export const createApp = ({
   logger,
@@ -27,11 +29,15 @@ export const createApp = ({
   categoriesRoutes,
   ordersRoutes,
   paymentsRoutes,
+  healthChecks,
+  serviceName,
+  version,
 }) => {
   const app = express();
 
   // ── Global middleware ────────────────────────────────────────────────────
   app.use(requestIdMiddleware);
+  app.use(createRequestLoggingMiddleware(logger));
   app.use(cors({ origin: true, credentials: true }));
   app.use(cookieParser());
 
@@ -54,6 +60,8 @@ export const createApp = ({
     docsUrl: "/api-docs",
     specUrl: "/api-docs/openapi.yaml",
   });
+
+  app.use(createHealthRoutes({ healthChecks, serviceName, version }));
 
   // Route factories receive requireAuth — they decide which routes are protected.
   app.use("/api/auth", authRoutes({ requireAuth }));

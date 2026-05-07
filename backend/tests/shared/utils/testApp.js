@@ -100,6 +100,22 @@ export const createTestApplication = ({
     categoriesRoutes: categoriesModule.createRoutes,
     ordersRoutes: ordersModule.createRoutes,
     paymentsRoutes: paymentsModule.createRoutes,
+    healthChecks: [
+      {
+        name: "database",
+        check: async () => ({ provider: env.databaseProvider }),
+      },
+      {
+        name: "payments",
+        check: async () => ({ enabled: paymentsEnabled }),
+      },
+      {
+        name: "eventBus",
+        check: async () => ({ provider: env.eventBusProvider }),
+      },
+    ],
+    serviceName: env.serviceName,
+    version: env.appVersion,
   });
 
   return {

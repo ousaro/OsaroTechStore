@@ -4,11 +4,13 @@ import assert from "node:assert/strict";
 import { createErrorMiddleware } from "../../../../../src/shared/infrastructure/http/middleware/errorMiddleware.js";
 import { notFoundMiddleware } from "../../../../../src/shared/infrastructure/http/middleware/notFoundMiddleware.js";
 import { requestIdMiddleware } from "../../../../../src/shared/infrastructure/http/middleware/requestIdMiddleware.js";
+import { createRequestLoggingMiddleware } from "../../../../../src/shared/infrastructure/http/middleware/requestLoggingMiddleware.js";
 
 const createResponse = () => ({
   statusCode: undefined,
   body: undefined,
   headers: {},
+  listeners: {},
   status(code) {
     this.statusCode = code;
     return this;
@@ -19,6 +21,9 @@ const createResponse = () => ({
   },
   setHeader(key, value) {
     this.headers[key] = value;
+  },
+  on(eventName, handler) {
+    this.listeners[eventName] = handler;
   },
 });
 
@@ -77,4 +82,37 @@ test("error middleware delegates to HTTP error resolver", () => {
 
   assert.equal(res.statusCode, 400);
   assert.equal(logs[0].msg, "Client error");
+});
+
+test("request logging middleware logs safe request completion metadata", () => {
+  const logs = [];
+  const middleware = createRequestLoggingMiddleware({
+    info: (entry) => logs.push({ level: "info", ...entry }),
+    warn: (entry) => logs.push({ level: "warn", ...entry }),
+    error: (entry) => logs.push({ level: "error", ...entry }),
+  });
+  const req = {
+    requestId: "req-1",
+    method: "GET",
+    path: "/api/products",
+    originalUrl: "/api/products?token=secret",
+  };
+  const res = createResponse();
+  res.statusCode = 200;
+  let nextCalled = false;
+
+  middleware(req, res, () => {
+    nextCalled = true;
+  });
+  res.listeners.finish();
+
+  assert.equal(nextCalled, true);
+  assert.equal(logs[0].level, "info");
+  assert.equal(logs[0].msg, "HTTP request completed");
+  assert.equal(logs[0].requestId, "req-1");
+  assert.equal(logs[0].method, "GET");
+  assert.equal(logs[0].route, "/api/products");
+  assert.equal(logs[0].statusCode, 200);
+  assert.equal(typeof logs[0].latencyMs, "number");
+  assert.equal(Object.hasOwn(logs[0], "originalUrl"), false);
 });

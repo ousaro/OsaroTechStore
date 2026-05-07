@@ -1,6 +1,8 @@
 export const buildTestEnv = (overrides = {}) =>
   Object.freeze({
     nodeEnv: "test",
+    serviceName: "osaro-tech-store-backend-test",
+    appVersion: "test",
     port: 0,
     loggerProvider: "console",
     no_color: true,

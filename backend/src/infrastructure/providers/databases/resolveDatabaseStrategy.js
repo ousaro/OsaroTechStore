@@ -22,17 +22,10 @@ export const resolveDatabaseStrategy = ({ provider, logger, env }) => {
         "resolveDatabaseStrategy"
       );
 
-    case "postgres":
-      // Placeholder — implement createPostgresProvider when needed
-      throw new ServiceUnavailableError(
-        "PostgreSQL provider is not yet implemented. " +
-          "Set DATABASE_PROVIDER=mongo or implement createPostgresProvider."
-      );
-
     default:
       throw new ServiceUnavailableError(
         `Unknown database provider: "${provider}". ` +
-          `Supported: "mongo", "postgres". Check DATABASE_PROVIDER in .env`
+          `Supported: "mongo". Check DATABASE_PROVIDER in .env`
       );
   }
 };

@@ -28,10 +28,6 @@ test("resolvePaymentStrategy returns disabled strategy and rejects unsupported p
   assert.equal(strategy.paymentsEnabled, false);
   assert.equal(strategy.gateway, null);
   assert.throws(
-    () => resolvePaymentStrategy({ provider: "paypal", env: {}, logger }),
-    ServiceUnavailableError
-  );
-  assert.throws(
     () => resolvePaymentStrategy({ provider: "unknown", env: {}, logger }),
     ServiceUnavailableError
   );
@@ -56,10 +52,6 @@ test("resolvePaymentStrategy returns Stripe strategy when configured", () => {
 });
 
 test("resolveDatabaseStrategy rejects unsupported providers", () => {
-  assert.throws(
-    () => resolveDatabaseStrategy({ provider: "postgres", logger, env: {} }),
-    ServiceUnavailableError
-  );
   assert.throws(
     () => resolveDatabaseStrategy({ provider: "unknown", logger, env: {} }),
     ServiceUnavailableError

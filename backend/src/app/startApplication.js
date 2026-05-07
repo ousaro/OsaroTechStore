@@ -26,6 +26,9 @@ export const startApplication = async ({ port, env }) => {
     categoriesRoutes,
     ordersRoutes,
     paymentsRoutes,
+    healthChecks,
+    serviceName,
+    version,
     schedulers,
     shutdown,
   } = await configureApplicationModules({ env });
@@ -41,6 +44,9 @@ export const startApplication = async ({ port, env }) => {
     categoriesRoutes,
     ordersRoutes,
     paymentsRoutes,
+    healthChecks,
+    serviceName,
+    version,
   });
 
   // Start HTTP server
