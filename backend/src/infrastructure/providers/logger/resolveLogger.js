@@ -10,10 +10,10 @@ import { createConsoleLogger } from "./consoleLogger.js";
 import { assertLoggerPort } from "../../../shared/application/ports/loggerPort.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
 
-export const resolveLogger = ({ provider = "console", scope = "app" } = {}) => {
+export const resolveLogger = ({ provider = "console", scope = "app", options = {} } = {}) => {
   switch (provider) {
     case "console":
-      return assertLoggerPort(createConsoleLogger(scope), "resolveLogger");
+      return assertLoggerPort(createConsoleLogger(scope,options), "resolveLogger");
 
     case "pino":
       // Placeholder — implement createPinoLogger when needed

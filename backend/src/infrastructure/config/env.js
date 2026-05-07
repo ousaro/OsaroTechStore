@@ -24,6 +24,12 @@ const required = (key) => {
 
 const optional = (key, fallback = undefined) => process.env[key] ?? fallback;
 
+const optionalBoolean = (key, fallback = false) => {
+  const value = process.env[key];
+  if (value === undefined) return fallback;
+  return !["false", "0", "no", "off"].includes(String(value).toLowerCase());
+}
+
 const buildGoogleOAuthConfig = () => {
   const clientId = optional("GOOGLE_CLIENT_ID");
   const clientSecret = optional("GOOGLE_CLIENT_SECRET");
@@ -41,6 +47,10 @@ export const env = Object.freeze({
   // ── Logger ─────────────────────────────────────────────────────────────
   // Switch logger: set LOGGER_PROVIDER=console | pino | noop
   loggerProvider: optional("LOGGER_PROVIDER", "console"),
+
+  no_color: optionalBoolean("NO_COLOR", "true"),
+  loggerTimestampFormat: optional("LOGGER_TIMESTAMP_FORMAT", "YYYY-MM-DD HH:mm:ss.SSS"),
+  loggerTimestampEnabled: optionalBoolean("LOGGER_TIMESTAMP_ENABLED", "true"),
 
   // ── Auth ───────────────────────────────────────────────────────────────
   tokenSecret: required("TOKEN_SECRET"),

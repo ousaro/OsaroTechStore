@@ -15,6 +15,7 @@ import { requestIdMiddleware }         from "../shared/infrastructure/http/middl
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/middleware/createRequireAuthMiddleware.js";
 import { createErrorMiddleware }       from "../shared/infrastructure/http/middleware/errorMiddleware.js";
 import { notFoundMiddleware }          from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
+import { registerOpenApiDocs }         from "../shared/infrastructure/http/openApiDocs.js";
 
 export const createApp = ({
   logger,
@@ -47,6 +48,13 @@ export const createApp = ({
   const requireAuth = createRequireAuthMiddleware({ tokenService, authUserRepository });
 
   // ── Routes ───────────────────────────────────────────────────────────────
+  registerOpenApiDocs(app);
+  logger.info({
+    msg: "Swagger docs enabled",
+    docsUrl: "/api-docs",
+    specUrl: "/api-docs/openapi.yaml",
+  });
+
   // Route factories receive requireAuth — they decide which routes are protected.
   app.use("/api/auth",       authRoutes({ requireAuth }));
   app.use("/api/users",      usersRoutes({ requireAuth }));
