@@ -32,10 +32,7 @@ test("getUserProfile throws when user is missing", async () => {
     userRepository: { findById: async () => null },
   });
 
-  await assert.rejects(
-    () => getUserProfile({ requesterId: "missing" }),
-    ApplicationNotFoundError
-  );
+  await assert.rejects(() => getUserProfile({ requesterId: "missing" }), ApplicationNotFoundError);
 });
 
 test("updateUserProfile updates target and returns read model", async () => {
@@ -87,10 +84,10 @@ test("updateUserFavorites adds unique favorites and removes by id", async () => 
 
   assert.deepEqual(addResult.favorites, ["p1", "p2"]);
   assert.deepEqual(removeResult.favorites, ["p2"]);
-  assert.deepEqual(updates.map((item) => item.update), [
-    { favorites: ["p1", "p2"] },
-    { favorites: ["p2"] },
-  ]);
+  assert.deepEqual(
+    updates.map((item) => item.update),
+    [{ favorites: ["p1", "p2"] }, { favorites: ["p2"] }]
+  );
 });
 
 test("updateUserFavorites throws when user is missing", async () => {

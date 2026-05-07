@@ -71,8 +71,5 @@ test("deleteCategory throws CategoryNotFoundError when missing", async () => {
     logger: createLogger(),
   });
 
-  await assert.rejects(
-    () => deleteCategory({ id: "missing" }),
-    CategoryNotFoundError
-  );
+  await assert.rejects(() => deleteCategory({ id: "missing" }), CategoryNotFoundError);
 });

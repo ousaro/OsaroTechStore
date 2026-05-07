@@ -138,10 +138,7 @@ test("linkPaymentToOrder returns null when payments are disabled", async () => {
     logger: createLogger(),
   });
 
-  assert.equal(
-    await linkPaymentToOrder({ orderId: "o1", orderLines: [], currency: "USD" }),
-    null
-  );
+  assert.equal(await linkPaymentToOrder({ orderId: "o1", orderLines: [], currency: "USD" }), null);
 });
 
 test("linkPaymentToOrder creates payment session and persists workflow when enabled", async () => {
@@ -268,8 +265,5 @@ test("getPaymentByOrderId returns read model or throws when missing", async () =
     paymentRepository: { findByOrderId: async () => null },
   });
 
-  await assert.rejects(
-    () => getMissingPayment({ orderId: "missing" }),
-    PaymentNotFoundError
-  );
+  await assert.rejects(() => getMissingPayment({ orderId: "missing" }), PaymentNotFoundError);
 });

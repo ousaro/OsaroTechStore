@@ -32,5 +32,7 @@ export class OrderStatusNotAllowedError extends DomainValidationError {
 }
 
 export class OrderDomainNotFoundError extends DomainNotFoundError {
-  constructor(message) { super(message); }
+  constructor(message) {
+    super(message);
+  }
 }

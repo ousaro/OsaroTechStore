@@ -14,7 +14,11 @@ import {
 import { assertFunction, assertObject } from "../../../kernel/assertions/index.js";
 
 export const createRequireAuthMiddleware = ({ tokenService, authUserRepository }) => {
-  assertObject(tokenService, "tokenService", "createRequireAuthMiddleware: tokenService is required");
+  assertObject(
+    tokenService,
+    "tokenService",
+    "createRequireAuthMiddleware: tokenService is required"
+  );
   assertFunction(
     tokenService.verify,
     "tokenService.verify",

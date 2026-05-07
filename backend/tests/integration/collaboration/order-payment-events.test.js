@@ -22,9 +22,11 @@ test("OrderPlaced event links a payment workflow without an explicit payments re
   const orderResponse = await ctx.client.agent
     .post("/api/orders")
     .set("Authorization", `Bearer ${tokenFor(user)}`)
-    .send(buildOrderPayload({
-      orderLine: { productId: "monitor-1", name: "Monitor", price: 300, quantity: 2 },
-    }))
+    .send(
+      buildOrderPayload({
+        orderLine: { productId: "monitor-1", name: "Monitor", price: 300, quantity: 2 },
+      })
+    )
     .expect(201);
 
   assert.equal(stripeGateway.calls.createRedirectPayment.length, gatewayCallCount + 1);

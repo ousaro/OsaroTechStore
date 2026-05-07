@@ -62,7 +62,7 @@ test("translators validate expected event types", async () => {
     linkPaymentToOrder: async () => {},
   });
 
-  await assert.rejects(
-    () => translator.publish(createDomainEvent("WrongEvent", { orderId: "o1" }))
+  await assert.rejects(() =>
+    translator.publish(createDomainEvent("WrongEvent", { orderId: "o1" }))
   );
 });

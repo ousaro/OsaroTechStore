@@ -8,16 +8,21 @@
     "backend": "node src/server.js",
     "dev": "node --watch src/server.js",
     "lint": "eslint src --ext .js",
+    "format": "prettier --write \"**/*.{js,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md,yml,yaml}\"",
     "test": "node --test tests/unit tests/integration",
     "test:unit": "node --test tests/unit",
     "test:integration": "node --test tests/integration",
     "test:e2e": "cucumber-js --config cucumber.js",
     "test:cucumber": "cucumber-js --config cucumber.js",
     "coverage": "c8 npm test",
+    "coverage:sonar": "c8 --reporter=lcov --report-dir=coverage npm test",
     "coverage:unit:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/unit/html npm run test:unit",
     "coverage:integration:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/integration/html npm run test:integration",
     "coverage:html": "c8 --reporter=html --report-dir=tests/coverage/global/html npm test",
-    "coverage:e2e": "c8 --all=false --reporter=text --reporter=html --report-dir=tests/coverage/e2e npm run test:e2e"
+    "coverage:e2e": "c8 --all=false --reporter=text --reporter=html --report-dir=tests/coverage/e2e npm run test:e2e",
+    "sonar": "npx @sonar/scan",
+    "sonar:local": "set -a; . ./.env.sonar; set +a; npx @sonar/scan -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.organization=$SONAR_ORGANIZATION"
   },
   "c8": {
     "all": true,
@@ -59,6 +64,7 @@
     "eslint": "^9.39.4",
     "mongodb-memory-server": "^11.1.0",
     "playwright": "^1.59.1",
+    "prettier": "^3.8.3",
     "supertest": "^7.2.2"
   }
 }

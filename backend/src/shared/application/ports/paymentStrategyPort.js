@@ -13,11 +13,7 @@ import {
 import { assertPaymentGatewayPort } from "./paymentGatewayPort.js";
 
 export const assertPaymentStrategyPort = (strategy, context = "unknown") => {
-  assertObject(
-    strategy,
-    "paymentStrategy",
-    `[${context}] payment strategy is required`
-  );
+  assertObject(strategy, "paymentStrategy", `[${context}] payment strategy is required`);
 
   assertNonEmptyString(
     strategy.provider,

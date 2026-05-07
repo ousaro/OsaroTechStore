@@ -5,8 +5,7 @@ const METHODS = ["get", "post", "put", "delete"];
 
 export const createRequestClient = (app, { tokenForUser, requestFactory = request } = {}) => {
   const agent = requestFactory(app);
-  const withToken = (method, url, token) =>
-    agent[method](url).set(token ? bearer(token) : {});
+  const withToken = (method, url, token) => agent[method](url).set(token ? bearer(token) : {});
 
   const authenticatedClient = (user) => {
     if (!tokenForUser) {

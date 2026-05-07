@@ -62,8 +62,5 @@ test("getProductById throws ProductNotFoundError when missing", async () => {
     productRepository: { findById: async () => null },
   });
 
-  await assert.rejects(
-    () => getProductById({ id: "missing" }),
-    ProductNotFoundError
-  );
+  await assert.rejects(() => getProductById({ id: "missing" }), ProductNotFoundError);
 });

@@ -6,7 +6,7 @@
  * Anti-Corruption Layer: Payments module never imports from Orders.
  */
 import { assertApplicationEvent } from "../../../../../shared/application/contracts/applicationEventContract.js";
-import { assertFunction }         from "../../../../../shared/kernel/assertions/index.js";
+import { assertFunction } from "../../../../../shared/kernel/assertions/index.js";
 
 export const createOrderPlacedPaymentLinkTranslator = ({ linkPaymentToOrder }) => {
   assertFunction(

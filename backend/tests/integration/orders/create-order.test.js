@@ -11,10 +11,12 @@ test("authenticated user can create an order through HTTP and persistence", asyn
   const response = await ctx.client.agent
     .post("/api/orders")
     .set(ctx.authHeadersFor(owner))
-    .send(buildOrderPayload({
-      orderLine: { productId: "keyboard-1", name: "Keyboard", price: 120, quantity: 2 },
-      deliveryAddress: { city: "Casablanca" },
-    }))
+    .send(
+      buildOrderPayload({
+        orderLine: { productId: "keyboard-1", name: "Keyboard", price: 120, quantity: 2 },
+        deliveryAddress: { city: "Casablanca" },
+      })
+    )
     .expect(201);
 
   assert.equal(response.body.ownerId, owner._id.toString());
@@ -28,10 +30,7 @@ test("authenticated user can create an order through HTTP and persistence", asyn
 test("order creation enforces authentication and validation", async () => {
   const owner = await ctx.createUser();
 
-  await ctx.client.agent
-    .post("/api/orders")
-    .send(buildOrderPayload())
-    .expect(401);
+  await ctx.client.agent.post("/api/orders").send(buildOrderPayload()).expect(401);
 
   const invalidResponse = await ctx.client.agent
     .post("/api/orders")

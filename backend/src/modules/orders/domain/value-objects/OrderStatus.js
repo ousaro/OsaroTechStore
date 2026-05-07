@@ -6,20 +6,20 @@
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 
 export const ORDER_STATUSES = Object.freeze({
-  PENDING:    "pending",
+  PENDING: "pending",
   PROCESSING: "processing",
-  SHIPPED:    "shipped",
-  DELIVERED:  "delivered",
-  CANCELLED:  "cancelled",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
 });
 
 // Adjacency map: from → Set of allowed tos
 export const ALLOWED_ORDER_STATUS_TRANSITIONS = Object.freeze({
-  [ORDER_STATUSES.PENDING]:    new Set([ORDER_STATUSES.PROCESSING, ORDER_STATUSES.CANCELLED]),
-  [ORDER_STATUSES.PROCESSING]: new Set([ORDER_STATUSES.SHIPPED,    ORDER_STATUSES.CANCELLED]),
-  [ORDER_STATUSES.SHIPPED]:    new Set([ORDER_STATUSES.DELIVERED]),
-  [ORDER_STATUSES.DELIVERED]:  new Set(),
-  [ORDER_STATUSES.CANCELLED]:  new Set(),
+  [ORDER_STATUSES.PENDING]: new Set([ORDER_STATUSES.PROCESSING, ORDER_STATUSES.CANCELLED]),
+  [ORDER_STATUSES.PROCESSING]: new Set([ORDER_STATUSES.SHIPPED, ORDER_STATUSES.CANCELLED]),
+  [ORDER_STATUSES.SHIPPED]: new Set([ORDER_STATUSES.DELIVERED]),
+  [ORDER_STATUSES.DELIVERED]: new Set(),
+  [ORDER_STATUSES.CANCELLED]: new Set(),
 });
 
 const ALLOWED = new Set(Object.values(ORDER_STATUSES));

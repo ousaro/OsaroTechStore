@@ -9,18 +9,26 @@ export const createUsersHttpController = ({ usersInputPort }) => {
       res.json(await usersInputPort.getUserProfile({ requesterId: req.user._id }));
     }),
     getUserById: asyncHandler(async (req, res) => {
-      res.json(await usersInputPort.getUserProfile({ requesterId: req.user._id, targetId: req.params.id }));
+      res.json(
+        await usersInputPort.getUserProfile({ requesterId: req.user._id, targetId: req.params.id })
+      );
     }),
     updateProfile: asyncHandler(async (req, res) => {
-      res.json(await usersInputPort.updateUserProfile({ requesterId: req.user._id, updates: req.body }));
+      res.json(
+        await usersInputPort.updateUserProfile({ requesterId: req.user._id, updates: req.body })
+      );
     }),
     updateCart: asyncHandler(async (req, res) => {
       res.json(await usersInputPort.updateUserCart({ userId: req.user._id, cart: req.body.cart }));
     }),
     updateFavorites: asyncHandler(async (req, res) => {
-      res.json(await usersInputPort.updateUserFavorites({
-        userId: req.user._id, productId: req.params.productId, action: req.body.action,
-      }));
+      res.json(
+        await usersInputPort.updateUserFavorites({
+          userId: req.user._id,
+          productId: req.params.productId,
+          action: req.body.action,
+        })
+      );
     }),
   };
 };

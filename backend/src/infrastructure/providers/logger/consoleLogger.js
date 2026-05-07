@@ -70,10 +70,7 @@ const normalizeForJson = (value) => {
 
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, entryValue]) => [
-        key,
-        normalizeForJson(entryValue),
-      ])
+      Object.entries(value).map(([key, entryValue]) => [key, normalizeForJson(entryValue)])
     );
   }
 
@@ -113,7 +110,11 @@ const logToConsole = (level, consoleMethod, scope, options, entry, ctx) => {
     options.colorize
   );
   const timeBadge = options.timestampEnabled ? `${timestamp} ` : "";
-  const levelBadge = colorize(level.padEnd(5), `${levelStyles[level]}${colors.bold}`, options.colorize);
+  const levelBadge = colorize(
+    level.padEnd(5),
+    `${levelStyles[level]}${colors.bold}`,
+    options.colorize
+  );
   const scopedLabel = colorize(`[${scope}]`, colors.cyan, options.colorize);
 
   consoleMethod(
@@ -122,12 +123,9 @@ const logToConsole = (level, consoleMethod, scope, options, entry, ctx) => {
 };
 
 const createScopedMethods = (scope, options) => ({
-  info: (entry, ctx) =>
-    logToConsole("INFO", console.info, scope, options, entry, ctx),
-  warn: (entry, ctx) =>
-    logToConsole("WARN", console.warn, scope, options, entry, ctx),
-  error: (entry, ctx) =>
-    logToConsole("ERROR", console.error, scope, options, entry, ctx),
+  info: (entry, ctx) => logToConsole("INFO", console.info, scope, options, entry, ctx),
+  warn: (entry, ctx) => logToConsole("WARN", console.warn, scope, options, entry, ctx),
+  error: (entry, ctx) => logToConsole("ERROR", console.error, scope, options, entry, ctx),
   debug: (msg, ctx) =>
     process.env.NODE_ENV !== "production" &&
     logToConsole("DEBUG", console.debug, scope, options, msg, ctx),
@@ -143,9 +141,7 @@ export const createConsoleLogger = (scope = "app", options = {}) => {
   return {
     ...methods,
     child: (meta = {}) => {
-      const childScope = meta.scope
-        ? `${scope}:${meta.scope}`
-        : scope;
+      const childScope = meta.scope ? `${scope}:${meta.scope}` : scope;
       return createConsoleLogger(childScope, loggerOptions);
     },
   };

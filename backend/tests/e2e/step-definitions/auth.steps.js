@@ -8,10 +8,13 @@ import {
 } from "../../shared/factories/userFactory.js";
 
 Given("a visitor named {word}", function (name) {
-  this.users.set(name, buildUserPayload({
-    firstName: name,
-    email: `${name.toLowerCase()}@example.test`,
-  }));
+  this.users.set(
+    name,
+    buildUserPayload({
+      firstName: name,
+      email: `${name.toLowerCase()}@example.test`,
+    })
+  );
   this.setActor(name);
 });
 
@@ -74,11 +77,9 @@ When("{word} requests the managed user list", async function (name) {
 When("{word} places an order with an expired token", async function (name) {
   this.setActor(name);
   const user = this.users.get(name);
-  const expiredToken = jwt.sign(
-    { _id: user._id },
-    this.application.env.tokenSecret,
-    { expiresIn: "-1s" }
-  );
+  const expiredToken = jwt.sign({ _id: user._id }, this.application.env.tokenSecret, {
+    expiresIn: "-1s",
+  });
   await this.apiPost("/api/orders", {}, expiredToken);
 });
 

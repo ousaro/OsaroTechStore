@@ -6,23 +6,23 @@ import { createDomainEvent } from "../../../../shared/domain/events/createDomain
 
 export const createOrderPlacedEvent = (order) =>
   createDomainEvent("OrderPlaced", {
-    orderId:       order._id,
-    ownerId:       order.ownerId,
-    orderLines:    order.orderLines.map((l) => l.toPrimitives()),
-    totalPrice:    order.totalPrice.toPrimitives(),
-    currency:      order.currency,
+    orderId: order._id,
+    ownerId: order.ownerId,
+    orderLines: order.orderLines.map((l) => l.toPrimitives()),
+    totalPrice: order.totalPrice.toPrimitives(),
+    currency: order.currency,
   });
 
 export const createOrderUpdatedEvent = (order) =>
   createDomainEvent("OrderUpdated", {
-    orderId:      order._id,
-    orderStatus:  order.orderStatus.toPrimitives(),
+    orderId: order._id,
+    orderStatus: order.orderStatus.toPrimitives(),
     paymentStatus: order.paymentStatus.toPrimitives(),
   });
 
 export const createOrderCancelledEvent = (order) =>
   createDomainEvent("OrderCancelled", {
-    orderId:  order._id,
-    ownerId:  order.ownerId,
+    orderId: order._id,
+    ownerId: order.ownerId,
     currency: order.currency,
   });

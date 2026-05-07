@@ -1,8 +1,9 @@
 import { ProductNotFoundError } from "../errors/ProductApplicationError.js";
-import { toProductReadModel }   from "../read-models/productReadModel.js";
+import { toProductReadModel } from "../read-models/productReadModel.js";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const buildGetProductByIdUseCase = ({ productRepository }) =>
+export const buildGetProductByIdUseCase =
+  ({ productRepository }) =>
   async ({ id }) => {
     assertNonEmptyString(id, "id");
     const record = await productRepository.findById(id);

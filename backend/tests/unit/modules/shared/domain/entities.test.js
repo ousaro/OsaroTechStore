@@ -63,12 +63,13 @@ test("createProduct applies defaults and returns primitives", () => {
 
 test("createProduct rejects invalid status", () => {
   assert.throws(
-    () => createProduct({
-      name: "Keyboard",
-      price: 49.99,
-      category: "accessories",
-      status: "archived",
-    }),
+    () =>
+      createProduct({
+        name: "Keyboard",
+        price: 49.99,
+        category: "accessories",
+        status: "archived",
+      }),
     DomainValidationError
   );
 });

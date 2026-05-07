@@ -6,11 +6,7 @@ import { createIntegrationTestContext } from "../../shared/utils/integrationTest
 const ctx = createIntegrationTestContext();
 
 test("protected routes reject malformed, missing, and expired tokens", async () => {
-  await ctx.client.agent
-    .post("/api/orders")
-    .set("Authorization", "Token abc")
-    .send({})
-    .expect(401);
+  await ctx.client.agent.post("/api/orders").set("Authorization", "Token abc").send({}).expect(401);
 
   const expiredToken = jwt.sign(
     { _id: "507f1f77bcf86cd799439011" },

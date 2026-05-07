@@ -2,7 +2,7 @@
  * Event Bus Port — Shared Application Layer.
  *
  * Defines the interface that every event bus adapter must implement.
- * 
+ *
  */
 
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";

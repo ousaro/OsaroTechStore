@@ -14,10 +14,7 @@ test("resolveEventBus returns in-process event bus and rejects unknown providers
 
   assert.equal(typeof bus.publish, "function");
   assert.equal(typeof bus.subscribe, "function");
-  assert.throws(
-    () => resolveEventBus({ provider: "unknown", logger }),
-    ServiceUnavailableError
-  );
+  assert.throws(() => resolveEventBus({ provider: "unknown", logger }), ServiceUnavailableError);
 });
 
 test("resolvePaymentStrategy returns disabled strategy and rejects unsupported providers", () => {

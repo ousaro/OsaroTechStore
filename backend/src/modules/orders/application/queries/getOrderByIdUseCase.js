@@ -1,8 +1,9 @@
-import { OrderNotFoundError }   from "../errors/OrderApplicationError.js";
-import { toOrderReadModel }     from "../read-models/orderReadModel.js";
+import { OrderNotFoundError } from "../errors/OrderApplicationError.js";
+import { toOrderReadModel } from "../read-models/orderReadModel.js";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const buildGetOrderByIdUseCase = ({ orderRepository }) =>
+export const buildGetOrderByIdUseCase =
+  ({ orderRepository }) =>
   async ({ id }) => {
     assertNonEmptyString(id, "id");
     const record = await orderRepository.findById(id);

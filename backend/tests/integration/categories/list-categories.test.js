@@ -15,14 +15,12 @@ test("public category routes list and read categories", async () => {
     overrides: { name: "Consoles" },
   });
 
-  const categoriesResponse = await ctx.client.agent
-    .get("/api/categories")
-    .expect(200);
+  const categoriesResponse = await ctx.client.agent.get("/api/categories").expect(200);
 
-  assert.deepEqual(
-    categoriesResponse.body.map((listedCategory) => listedCategory.name).sort(),
-    ["Consoles", "Peripherals"]
-  );
+  assert.deepEqual(categoriesResponse.body.map((listedCategory) => listedCategory.name).sort(), [
+    "Consoles",
+    "Peripherals",
+  ]);
 
   const categoryResponse = await ctx.client.agent
     .get(`/api/categories/${category._id}`)
@@ -32,9 +30,7 @@ test("public category routes list and read categories", async () => {
 });
 
 test("public category read returns a structured error when the use case throws", async () => {
-  const response = await ctx.client
-    .get("/api/categories/000000000000000000000000")
-    .expect(404);
+  const response = await ctx.client.get("/api/categories/000000000000000000000000").expect(404);
 
   assert.equal(response.body.error.code, "NOT_FOUND");
   assert.match(response.body.error.message, /Category .* not found/);

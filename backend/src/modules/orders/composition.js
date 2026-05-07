@@ -13,28 +13,26 @@ import { buildGetAllOrdersUseCase } from "./application/queries/getAllOrdersUseC
 import { buildGetOrderByIdUseCase } from "./application/queries/getOrderByIdUseCase.js";
 
 import { createOrdersInputPort } from "./ports/input/ordersInputPort.js";
-import { assertOrderRepositoryPort, assertOrderEventPublisherPort }
-  from "./ports/output/ordersOutputPort.js";
+import {
+  assertOrderRepositoryPort,
+  assertOrderEventPublisherPort,
+} from "./ports/output/ordersOutputPort.js";
 
 import { createOrdersHttpController } from "./adapters/input/http/ordersHttpController.js";
-import { createOrdersRoutes }         from "./adapters/input/http/ordersRoutes.js";
+import { createOrdersRoutes } from "./adapters/input/http/ordersRoutes.js";
 
-export const createOrdersModule = ({
-  orderRepository,
-  orderEventPublisher,
-  logger,
-}) => {
+export const createOrdersModule = ({ orderRepository, orderEventPublisher, logger }) => {
   // ── Validate output ports ────────────────────────────────────────────────
   assertOrderRepositoryPort(orderRepository);
   assertOrderEventPublisherPort(orderEventPublisher);
 
   // ── Use cases ────────────────────────────────────────────────────────────
-  const addOrder            = buildAddOrderUseCase({ orderRepository, orderEventPublisher, logger });
-  const updateOrder         = buildUpdateOrderUseCase({ orderRepository, orderEventPublisher, logger });
-  const deleteOrder         = buildDeleteOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const addOrder = buildAddOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const updateOrder = buildUpdateOrderUseCase({ orderRepository, orderEventPublisher, logger });
+  const deleteOrder = buildDeleteOrderUseCase({ orderRepository, orderEventPublisher, logger });
   const confirmOrderPayment = buildConfirmOrderPaymentUseCase({ orderRepository, logger });
-  const getAllOrders         = buildGetAllOrdersUseCase({ orderRepository });
-  const getOrderById        = buildGetOrderByIdUseCase({ orderRepository });
+  const getAllOrders = buildGetAllOrdersUseCase({ orderRepository });
+  const getOrderById = buildGetOrderByIdUseCase({ orderRepository });
 
   // ── Input port ───────────────────────────────────────────────────────────
   const ordersInputPort = createOrdersInputPort({
@@ -49,8 +47,7 @@ export const createOrdersModule = ({
   // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createOrdersHttpController({ ordersInputPort });
 
-  const createRoutes = ({ requireAuth } = {}) =>
-    createOrdersRoutes({ controller, requireAuth });
+  const createRoutes = ({ requireAuth } = {}) => createOrdersRoutes({ controller, requireAuth });
 
   // ── Public surface ───────────────────────────────────────────────────────
   // confirmOrderPayment is exposed for the collaboration translator

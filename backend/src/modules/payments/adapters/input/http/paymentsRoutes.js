@@ -1,5 +1,5 @@
-import { Router }  from "express";
-import express      from "express";
+import { Router } from "express";
+import express from "express";
 
 export const createPaymentsRoutes = ({ controller, requireAuth, webhookEnabled }) => {
   const router = Router();
@@ -19,8 +19,8 @@ export const createPaymentsRoutes = ({ controller, requireAuth, webhookEnabled }
   }
 
   // Protected routes
-  router.post("/intent",          requireAuth, controller.createPaymentIntent);
-  router.get("/order/:orderId",   requireAuth, controller.getPaymentByOrderId);
+  router.post("/intent", requireAuth, controller.createPaymentIntent);
+  router.get("/order/:orderId", requireAuth, controller.getPaymentByOrderId);
 
   return router;
 };

@@ -20,17 +20,21 @@ test("admin can create products through route, middleware, controller, use case,
   const response = await ctx.client.agent
     .post("/api/products")
     .set("Authorization", `Bearer ${tokenFor(admin)}`)
-    .send(buildProductPayload({
-      category: category._id.toString(),
-      name: "ThinkPad X1",
-      price: 1299,
-    }))
+    .send(
+      buildProductPayload({
+        category: category._id.toString(),
+        name: "ThinkPad X1",
+        price: 1299,
+      })
+    )
     .expect(201);
 
   assert.equal(response.body.name, "ThinkPad X1");
   assert.equal(response.body.category, category._id.toString());
 
-  const persisted = await ctx.application.repositories.productRepository.findById(response.body._id);
+  const persisted = await ctx.application.repositories.productRepository.findById(
+    response.body._id
+  );
   assert.equal(persisted.name, "ThinkPad X1");
 });
 

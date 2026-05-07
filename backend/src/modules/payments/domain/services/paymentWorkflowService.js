@@ -12,9 +12,9 @@ export const applyWebhookStateChange = (paymentWorkflow, stateChange) => {
   if (!stateChange) return paymentWorkflow;
 
   return paymentWorkflow.applyStateChange({
-    paymentStatus:     stateChange.paymentStatus,
+    paymentStatus: stateChange.paymentStatus,
     providerPaymentId: stateChange.providerPaymentId,
-    providerStatus:    stateChange.providerStatus,
+    providerStatus: stateChange.providerStatus,
   });
 };
 

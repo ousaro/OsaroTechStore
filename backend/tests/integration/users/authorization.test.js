@@ -8,8 +8,5 @@ test("users routes require authentication and admin-only profile lookups", async
 
   await ctx.client.agent.get("/api/users/me").expect(401);
 
-  await ctx.client.agent
-    .get(`/api/users/${user._id}`)
-    .set(ctx.authHeadersFor(user))
-    .expect(403);
+  await ctx.client.agent.get(`/api/users/${user._id}`).set(ctx.authHeadersFor(user)).expect(403);
 });

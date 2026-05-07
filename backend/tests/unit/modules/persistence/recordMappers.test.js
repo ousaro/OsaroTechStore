@@ -52,21 +52,25 @@ test("auth and user record mappers normalize user-shaped documents", () => {
 });
 
 test("product and category record mappers normalize object ids", () => {
-  const product = toProductRecord(doc({
-    _id: objectIdLike("p1"),
-    name: "Keyboard",
-    price: 50,
-    currency: "USD",
-    category: objectIdLike("c1"),
-    stock: 2,
-    images: [],
-    status: "active",
-  }));
-  const category = toCategoryRecord(doc({
-    _id: objectIdLike("c1"),
-    name: "Accessories",
-    description: "Gear",
-  }));
+  const product = toProductRecord(
+    doc({
+      _id: objectIdLike("p1"),
+      name: "Keyboard",
+      price: 50,
+      currency: "USD",
+      category: objectIdLike("c1"),
+      stock: 2,
+      images: [],
+      status: "active",
+    })
+  );
+  const category = toCategoryRecord(
+    doc({
+      _id: objectIdLike("c1"),
+      name: "Accessories",
+      description: "Gear",
+    })
+  );
 
   assert.equal(product._id, "p1");
   assert.equal(product.category, "c1");
@@ -75,22 +79,26 @@ test("product and category record mappers normalize object ids", () => {
 });
 
 test("order record mapper preserves order lines and money fields", () => {
-  const order = toOrderRecord(doc({
-    _id: objectIdLike("o1"),
-    ownerId: objectIdLike("u1"),
-    orderLines: [{
-      productId: "p1",
-      name: "Keyboard",
-      quantity: 2,
-      unitPrice: { amount: 50, currency: "USD" },
-      subtotal: { amount: 100, currency: "USD" },
-    }],
-    deliveryAddress: { city: "Casablanca" },
-    currency: "USD",
-    orderStatus: "pending",
-    paymentStatus: "pending",
-    totalPrice: { amount: 100, currency: "USD" },
-  }));
+  const order = toOrderRecord(
+    doc({
+      _id: objectIdLike("o1"),
+      ownerId: objectIdLike("u1"),
+      orderLines: [
+        {
+          productId: "p1",
+          name: "Keyboard",
+          quantity: 2,
+          unitPrice: { amount: 50, currency: "USD" },
+          subtotal: { amount: 100, currency: "USD" },
+        },
+      ],
+      deliveryAddress: { city: "Casablanca" },
+      currency: "USD",
+      orderStatus: "pending",
+      paymentStatus: "pending",
+      totalPrice: { amount: 100, currency: "USD" },
+    })
+  );
 
   assert.equal(order._id, "o1");
   assert.equal(order.ownerId, "u1");
@@ -98,14 +106,16 @@ test("order record mapper preserves order lines and money fields", () => {
 });
 
 test("payment record mapper normalizes ids and legacy payment status field", () => {
-  const payment = toPaymentRecord(doc({
-    _id: objectIdLike("pay1"),
-    orderId: objectIdLike("o1"),
-    provider: "stripe",
-    workflowType: "checkout",
-    payment_status: "paid",
-    sessionId: "sess_1",
-  }));
+  const payment = toPaymentRecord(
+    doc({
+      _id: objectIdLike("pay1"),
+      orderId: objectIdLike("o1"),
+      provider: "stripe",
+      workflowType: "checkout",
+      payment_status: "paid",
+      sessionId: "sess_1",
+    })
+  );
 
   assert.equal(payment._id, "pay1");
   assert.equal(payment.orderId, "o1");

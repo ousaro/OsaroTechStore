@@ -21,10 +21,7 @@ test("createEmail normalizes valid emails", () => {
 });
 
 test("createEmail rejects invalid emails", () => {
-  assert.throws(
-    () => createEmail("not-an-email"),
-    DomainValidationError
-  );
+  assert.throws(() => createEmail("not-an-email"), DomainValidationError);
 });
 
 test("createMoney normalizes currency and adds same-currency amounts", () => {
@@ -38,15 +35,13 @@ test("createMoney normalizes currency and adds same-currency amounts", () => {
 });
 
 test("createMoney rejects unsupported currencies and cross-currency add", () => {
-  assert.throws(
-    () => createMoney({ amount: 10, currency: "JPY" }),
-    DomainValidationError
-  );
+  assert.throws(() => createMoney({ amount: 10, currency: "JPY" }), DomainValidationError);
 
   assert.throws(
-    () => createMoney({ amount: 10, currency: "USD" }).add(
-      createMoney({ amount: 10, currency: "EUR" })
-    ),
+    () =>
+      createMoney({ amount: 10, currency: "USD" }).add(
+        createMoney({ amount: 10, currency: "EUR" })
+      ),
     DomainValidationError
   );
 });
@@ -63,8 +58,5 @@ test("createOrderStatus validates transition graph", () => {
 test("createPaymentStatus normalizes valid values and rejects invalid values", () => {
   assert.equal(createPaymentStatus(" PAID ").value, PAYMENT_STATUSES.PAID);
 
-  assert.throws(
-    () => createPaymentStatus("unknown"),
-    DomainValidationError
-  );
+  assert.throws(() => createPaymentStatus("unknown"), DomainValidationError);
 });

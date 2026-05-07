@@ -95,7 +95,7 @@ components:
           format: date-time
     UserWithToken:
       allOf:
-        - $ref: '#/components/schemas/UserPublic'
+        - $ref: "#/components/schemas/UserPublic"
         - type: object
           properties:
             token:
@@ -298,11 +298,11 @@ components:
       type: object
       properties:
         product:
-          $ref: '#/components/schemas/Product'
+          $ref: "#/components/schemas/Product"
         relatedProducts:
           type: array
           items:
-            $ref: '#/components/schemas/Product'
+            $ref: "#/components/schemas/Product"
     Category:
       type: object
       properties:
@@ -347,7 +347,7 @@ components:
         status:
           type: string
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         paymentMethod:
           type: string
         paymentStatus:
@@ -384,7 +384,7 @@ components:
         status:
           type: string
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         paymentMethod:
           type: string
         paymentStatus:
@@ -404,7 +404,7 @@ components:
         status:
           type: string
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         paymentMethod:
           type: string
         paymentStatus:
@@ -428,7 +428,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/PaymentIntentItem'
+            $ref: "#/components/schemas/PaymentIntentItem"
     CreatePaymentIntentResponse:
       type: object
       properties:
@@ -474,20 +474,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '201':
+        "201":
           description: Registration succeeded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserWithToken'
-        '400':
+                $ref: "#/components/schemas/UserWithToken"
+        "400":
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /auth/login:
     post:
       tags: [Authentication]
@@ -497,33 +497,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Login succeeded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserWithToken'
-        '400':
+                $ref: "#/components/schemas/UserWithToken"
+        "400":
           description: Invalid credentials or malformed request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /auth/google:
     get:
       tags: [Authentication]
       summary: Start Google OAuth flow
       responses:
-        '302':
+        "302":
           description: Redirect to Google authentication page
   /auth/google/callback:
     get:
       tags: [Authentication]
       summary: Google OAuth callback endpoint
       responses:
-        '302':
+        "302":
           description: Redirect to frontend success or login page
 
   /auth/users:
@@ -534,26 +534,26 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserPublic'
-        '401':
+                  $ref: "#/components/schemas/UserPublic"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Admin privileges are required
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/users/{id}:
     get:
@@ -569,24 +569,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '403':
+                $ref: "#/components/schemas/UserPublic"
+        "403":
           description: Admin privileges are required
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Invalid id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags: [Authentication]
       summary: Update managed user fields
@@ -604,26 +604,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: "#/components/schemas/UserUpdateRequest"
       responses:
-        '200':
+        "200":
           description: Updated user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '404':
+                $ref: "#/components/schemas/UserPublic"
+        "404":
           description: Invalid id or user not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags: [Authentication]
       summary: Delete user by id
@@ -637,18 +637,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Deleted user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '404':
+                $ref: "#/components/schemas/UserPublic"
+        "404":
           description: Invalid id or not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/me:
     get:
@@ -657,18 +657,18 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Current user profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '401':
+                $ref: "#/components/schemas/UserPublic"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags: [Users]
       summary: Update my profile
@@ -679,14 +679,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: "#/components/schemas/UserUpdateRequest"
       responses:
-        '200':
+        "200":
           description: Updated user profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
+                $ref: "#/components/schemas/UserPublic"
 
   /users/{id}:
     get:
@@ -702,18 +702,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '403':
+                $ref: "#/components/schemas/UserPublic"
+        "403":
           description: Admin privileges are required
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/me/cart:
     put:
@@ -734,12 +734,12 @@ paths:
                     type: object
                     additionalProperties: true
       responses:
-        '200':
+        "200":
           description: Updated user profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
+                $ref: "#/components/schemas/UserPublic"
 
   /users/me/favorites/{productId}:
     put:
@@ -765,38 +765,38 @@ paths:
                   type: string
                   enum: [add, remove]
       responses:
-        '200':
+        "200":
           description: Updated user profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPublic'
-        '404':
+                $ref: "#/components/schemas/UserPublic"
+        "404":
           description: Invalid id or user not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /products:
     get:
       tags: [Products]
       summary: Get all products
       responses:
-        '200':
+        "200":
           description: Product list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: "#/components/schemas/Product"
     post:
       tags: [Products]
       summary: Create a new product
@@ -808,22 +808,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductCreateRequest'
+              $ref: "#/components/schemas/ProductCreateRequest"
       responses:
-        '201':
+        "201":
           description: Product created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '400':
+                $ref: "#/components/schemas/Product"
+        "400":
           description: Validation error
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/ErrorResponse'
-                  - $ref: '#/components/schemas/EmptyFieldsError'
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/EmptyFieldsError"
 
   /products/{id}:
     get:
@@ -836,24 +836,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Product details and related products
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductDetailsResponse'
-        '404':
+                $ref: "#/components/schemas/ProductDetailsResponse"
+        "404":
           description: Product not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Failed to fetch product
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags: [Products]
       summary: Update a product
@@ -871,26 +871,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductUpdateRequest'
+              $ref: "#/components/schemas/ProductUpdateRequest"
       responses:
-        '200':
+        "200":
           description: Updated product
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '400':
+                $ref: "#/components/schemas/Product"
+        "400":
           description: Validation failure
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Invalid id or not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags: [Products]
       summary: Delete product by id
@@ -904,32 +904,32 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Deleted product
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '404':
+                $ref: "#/components/schemas/Product"
+        "404":
           description: Invalid id or not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /categories:
     get:
       tags: [Categories]
       summary: Get all categories
       responses:
-        '200':
+        "200":
           description: Category list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Category'
+                  $ref: "#/components/schemas/Category"
     post:
       tags: [Categories]
       summary: Create a category
@@ -941,22 +941,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryCreateRequest'
+              $ref: "#/components/schemas/CategoryCreateRequest"
       responses:
-        '201':
+        "201":
           description: Category created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
-        '400':
+                $ref: "#/components/schemas/Category"
+        "400":
           description: Validation error
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/ErrorResponse'
-                  - $ref: '#/components/schemas/EmptyFieldsError'
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/EmptyFieldsError"
 
   /categories/{id}:
     get:
@@ -969,18 +969,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Category details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
-        '404':
+                $ref: "#/components/schemas/Category"
+        "404":
           description: Category not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags: [Categories]
       summary: Update category
@@ -998,20 +998,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryCreateRequest'
+              $ref: "#/components/schemas/CategoryCreateRequest"
       responses:
-        '200':
+        "200":
           description: Updated category
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
-        '404':
+                $ref: "#/components/schemas/Category"
+        "404":
           description: Category not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags: [Categories]
       summary: Delete category by id and cascade-delete products in that category
@@ -1025,24 +1025,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Deleted category
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
-        '400':
+                $ref: "#/components/schemas/Category"
+        "400":
           description: Missing category id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Category not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /orders:
     get:
@@ -1051,14 +1051,14 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Order list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Order'
+                  $ref: "#/components/schemas/Order"
     post:
       tags: [Orders]
       summary: Create a new order
@@ -1069,26 +1069,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderCreateRequest'
+              $ref: "#/components/schemas/OrderCreateRequest"
       responses:
-        '201':
+        "201":
           description: Order created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
+                $ref: "#/components/schemas/Order"
+        "400":
           description: Invalid address format
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Creation failed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /orders/{id}:
     get:
@@ -1103,12 +1103,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: "#/components/schemas/Order"
     put:
       tags: [Orders]
       summary: Update order
@@ -1125,26 +1125,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderUpdateRequest'
+              $ref: "#/components/schemas/OrderUpdateRequest"
       responses:
-        '200':
+        "200":
           description: Updated order
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
+                $ref: "#/components/schemas/Order"
+        "400":
           description: Validation failure
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Invalid id or not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags: [Orders]
       summary: Delete order by id
@@ -1157,18 +1157,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Deleted order
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '404':
+                $ref: "#/components/schemas/Order"
+        "404":
           description: Invalid id or not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /payments/intent:
     post:
@@ -1181,20 +1181,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePaymentIntentRequest'
+              $ref: "#/components/schemas/CreatePaymentIntentRequest"
       responses:
-        '200':
+        "200":
           description: Stripe checkout URL
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatePaymentIntentResponse'
-        '500':
+                $ref: "#/components/schemas/CreatePaymentIntentResponse"
+        "500":
           description: Stripe session creation failed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /payments/webhook:
     post:
@@ -1211,7 +1211,7 @@ paths:
               type: object
               additionalProperties: true
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
@@ -1220,7 +1220,7 @@ paths:
                 properties:
                   received:
                     type: boolean
-        '400':
+        "400":
           description: Signature verification failed
 
   /payments/order/{orderId}:
@@ -1236,15 +1236,15 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Payment record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Payment'
-        '404':
+                $ref: "#/components/schemas/Payment"
+        "404":
           description: Payment not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"

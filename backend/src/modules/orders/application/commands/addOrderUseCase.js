@@ -1,9 +1,10 @@
-import { createOrder }            from "../../domain/entities/Order.js";
+import { createOrder } from "../../domain/entities/Order.js";
 import { createOrderPlacedEvent } from "../../domain/events/index.js";
-import { toOrderReadModel }       from "../read-models/orderReadModel.js";
-import { assertNonEmptyString }   from "../../../../shared/kernel/assertions/index.js";
+import { toOrderReadModel } from "../read-models/orderReadModel.js";
+import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const buildAddOrderUseCase = ({ orderRepository, orderEventPublisher, logger }) =>
+export const buildAddOrderUseCase =
+  ({ orderRepository, orderEventPublisher, logger }) =>
   async ({ ownerId, orderLines, deliveryAddress, currency }) => {
     assertNonEmptyString(ownerId, "ownerId");
 

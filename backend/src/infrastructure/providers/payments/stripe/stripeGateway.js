@@ -7,7 +7,10 @@
  */
 
 import Stripe from "stripe";
-import { toStripeCheckoutSessionDto, toStripeWebhookStateChange } from "./stripePayloadTranslator.js";
+import {
+  toStripeCheckoutSessionDto,
+  toStripeWebhookStateChange,
+} from "./stripePayloadTranslator.js";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
 export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {

@@ -8,7 +8,7 @@ export const createMongooseProductRepository = ({ dbClient }) => {
     async findAll({ category, status } = {}) {
       const filter = {};
       if (category) filter.category = category;
-      if (status)   filter.status   = status;
+      if (status) filter.status = status;
       const docs = await ProductModel.find(filter).sort({ createdAt: -1 });
       return docs.map(toProductRecord);
     },

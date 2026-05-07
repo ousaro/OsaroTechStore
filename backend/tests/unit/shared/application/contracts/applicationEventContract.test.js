@@ -13,7 +13,10 @@ test("application event contract rejects invalid shape or unexpected type", () =
   assert.throws(() => assertApplicationEvent(null));
   assert.throws(() => assertApplicationEvent({ type: "", payload: {} }));
   assert.throws(() =>
-    assertApplicationEvent({ type: "PaymentConfirmed", payload: {} }, { expectedType: "OrderPlaced" })
+    assertApplicationEvent(
+      { type: "PaymentConfirmed", payload: {} },
+      { expectedType: "OrderPlaced" }
+    )
   );
   assert.throws(() => assertApplicationEvent({ type: "OrderPlaced" }));
 });

@@ -11,7 +11,11 @@ import { toUserRecord } from "../../persistence/mongo/userRecordMapper.js";
 export const createMongooseUserRepository = ({ dbClient }) => {
   const UserModel = createUserModel(dbClient);
   return {
-    async findById(id)            { return toUserRecord(await UserModel.findById(id)); },
-    async updateById(id, updates) { return toUserRecord(await UserModel.findByIdAndUpdate(id, updates, { new: true })); },
+    async findById(id) {
+      return toUserRecord(await UserModel.findById(id));
+    },
+    async updateById(id, updates) {
+      return toUserRecord(await UserModel.findByIdAndUpdate(id, updates, { new: true }));
+    },
   };
 };

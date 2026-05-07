@@ -14,12 +14,15 @@ node_modules/
 **/.env.*
 !.env.example
 !**/.env.example
+!**/.env.sonar.example
 .passport.js
 
 # Test and coverage output
 coverage/
 **/coverage/
 .nyc_output/
+.scannerwork/
+**/.scannerwork/
 
 # Build output and bundler caches
 build/
@@ -50,6 +53,12 @@ Thumbs.db
 .agents/
 context.md
 guide.md
+
+# Sonar Qube reports
+sonar-reports/
+**/sonar-reports/
+.scannerwork/
+**/.scannerwork/
 
 # Generated bundles
 bundle.js

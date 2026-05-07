@@ -65,9 +65,7 @@ export const createInProcessEventBus = ({ logger }) => {
     });
 
     // CRITICAL: allSettled — every handler runs, failures are isolated
-    const results = await Promise.allSettled(
-      [...eventHandlers].map((handler) => handler(event))
-    );
+    const results = await Promise.allSettled([...eventHandlers].map((handler) => handler(event)));
 
     results.forEach((result, index) => {
       if (result.status === "rejected") {

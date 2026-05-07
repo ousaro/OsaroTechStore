@@ -58,9 +58,7 @@ export const assertNonNegativeNumber = (value, fieldName, message) => {
 
 export const assertRequiredFields = (obj, fields, label = "object", message) => {
   assertObject(obj, label);
-  const missing = fields.filter(
-    (f) => obj[f] === undefined || obj[f] === null || obj[f] === ""
-  );
+  const missing = fields.filter((f) => obj[f] === undefined || obj[f] === null || obj[f] === "");
   if (missing.length > 0) {
     throw new Error(message || `${label}: missing required fields: ${missing.join(", ")}`);
   }

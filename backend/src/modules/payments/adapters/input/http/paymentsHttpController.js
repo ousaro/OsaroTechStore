@@ -7,9 +7,9 @@ export const createPaymentsHttpController = ({ paymentsInputPort }) => {
   return {
     createPaymentIntent: asyncHandler(async (req, res) => {
       const payment = await paymentsInputPort.createPaymentIntent({
-        orderId:    req.body.orderId,
-        items:      req.body.items,
-        currency:   req.body.currency ?? "USD",
+        orderId: req.body.orderId,
+        items: req.body.items,
+        currency: req.body.currency ?? "USD",
       });
       res.status(201).json(payment);
     }),

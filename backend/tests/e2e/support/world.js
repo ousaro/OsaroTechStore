@@ -46,9 +46,7 @@ class ApiWorld extends World {
   }
 
   requestOptions(token) {
-    return token
-      ? { headers: { Authorization: `Bearer ${token}` } }
-      : {};
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
   }
 
   async responseJson() {

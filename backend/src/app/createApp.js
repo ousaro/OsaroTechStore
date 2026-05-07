@@ -11,11 +11,11 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import { requestIdMiddleware }         from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
+import { requestIdMiddleware } from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
 import { createRequireAuthMiddleware } from "../shared/infrastructure/http/middleware/createRequireAuthMiddleware.js";
-import { createErrorMiddleware }       from "../shared/infrastructure/http/middleware/errorMiddleware.js";
-import { notFoundMiddleware }          from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
-import { registerOpenApiDocs }         from "../shared/infrastructure/http/openApiDocs.js";
+import { createErrorMiddleware } from "../shared/infrastructure/http/middleware/errorMiddleware.js";
+import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
+import { registerOpenApiDocs } from "../shared/infrastructure/http/openApiDocs.js";
 
 export const createApp = ({
   logger,
@@ -56,12 +56,12 @@ export const createApp = ({
   });
 
   // Route factories receive requireAuth — they decide which routes are protected.
-  app.use("/api/auth",       authRoutes({ requireAuth }));
-  app.use("/api/users",      usersRoutes({ requireAuth }));
-  app.use("/api/products",   productsRoutes({ requireAuth }));
+  app.use("/api/auth", authRoutes({ requireAuth }));
+  app.use("/api/users", usersRoutes({ requireAuth }));
+  app.use("/api/products", productsRoutes({ requireAuth }));
   app.use("/api/categories", categoriesRoutes({ requireAuth }));
-  app.use("/api/orders",     ordersRoutes({ requireAuth }));
-  app.use("/api/payments",   paymentsRoutes({ requireAuth }));
+  app.use("/api/orders", ordersRoutes({ requireAuth }));
+  app.use("/api/payments", paymentsRoutes({ requireAuth }));
 
   // ── Error handling (MUST be last) ────────────────────────────────────────
   app.use(notFoundMiddleware);

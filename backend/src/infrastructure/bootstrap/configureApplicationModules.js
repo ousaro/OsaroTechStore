@@ -3,34 +3,33 @@
  *
  * This is the ONLY file that knows the full dependency graph.
  * It wires infrastructure → modules and registers cross-module workflows.
- * 
+ *
  */
 
-import { resolveDatabaseStrategy }   from "../providers/databases/resolveDatabaseStrategy.js";
-import { resolvePaymentStrategy }     from "../providers/payments/resolvePaymentStrategy.js";
-import { resolveLogger }              from "../providers/logger/resolveLogger.js";
-import { resolveEventBus }            from "../providers/events/resolveEventBus.js";
-import { createScopedLogger }         from "../../shared/application/ports/loggerPort.js";
-
+import { resolveDatabaseStrategy } from "../providers/databases/resolveDatabaseStrategy.js";
+import { resolvePaymentStrategy } from "../providers/payments/resolvePaymentStrategy.js";
+import { resolveLogger } from "../providers/logger/resolveLogger.js";
+import { resolveEventBus } from "../providers/events/resolveEventBus.js";
+import { createScopedLogger } from "../../shared/application/ports/loggerPort.js";
 
 // ── Module factories ────────────────────────────────────────────────────────
-import { createAuthModule }           from "../../modules/auth/composition.js";
-import { createUsersModule }          from "../../modules/users/composition.js";
-import { createProductsModule }       from "../../modules/products/composition.js";
-import { createCategoriesModule }     from "../../modules/categories/composition.js";
-import { createOrdersModule }         from "../../modules/orders/composition.js";
-import { createPaymentsModule }       from "../../modules/payments/composition.js";
+import { createAuthModule } from "../../modules/auth/composition.js";
+import { createUsersModule } from "../../modules/users/composition.js";
+import { createProductsModule } from "../../modules/products/composition.js";
+import { createCategoriesModule } from "../../modules/categories/composition.js";
+import { createOrdersModule } from "../../modules/orders/composition.js";
+import { createPaymentsModule } from "../../modules/payments/composition.js";
 
 // ── Repository factories ────────────────────────────────────────────────────
 import { createMongooseRepositories } from "../providers/repositories/createMongooseRepositories.js";
 
 // ── JWT Token Service ───────────────────────────────────────────────────────
-import { createJwtTokenService }      from "../../modules/auth/adapters/output/services/jwtTokenService.js";
+import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
 
 // ── Cross-module collaboration translators ──────────────────────────────────
-import { createOrderPlacedPaymentLinkTranslator }           from "../../modules/payments/adapters/input/collaboration/orderPlacedPaymentLinkTranslator.js";
-import { createCategoryDeletedProductCleanupTranslator }    from "../../modules/categories/adapters/input/collaboration/categoryDeletedProductCleanupTranslator.js";
-import { createPaymentConfirmedOrderSyncTranslator }        from "../../modules/orders/adapters/input/collaboration/paymentConfirmedOrderSyncTranslator.js";
+import { createOrderPlacedPaymentLinkTranslator } from "../../modules/payments/adapters/input/collaboration/orderPlacedPaymentLinkTranslator.js";
+import { createCategoryDeletedProductCleanupTranslator } from "../../modules/categories/adapters/input/collaboration/categoryDeletedProductCleanupTranslator.js";
+import { createPaymentConfirmedOrderSyncTranslator } from "../../modules/orders/adapters/input/collaboration/paymentConfirmedOrderSyncTranslator.js";
 
 export const configureApplicationModules = async ({ env }) => {
   // ── 1. Logger ─────────────────────────────────────────────────────────────
@@ -65,7 +64,6 @@ export const configureApplicationModules = async ({ env }) => {
     provider: env.eventBusProvider,
     logger: createScopedLogger(logger, "eventBus"),
   });
-
 
   // ── 3. Shared services ────────────────────────────────────────────────────
   const tokenService = createJwtTokenService({
@@ -115,12 +113,12 @@ export const configureApplicationModules = async ({ env }) => {
   });
 
   const paymentsModule = createPaymentsModule({
-    paymentGateway:        paymentStrategy.gateway,
+    paymentGateway: paymentStrategy.gateway,
     paymentRepository,
     paymentEventPublisher: eventBus,
-    paymentsEnabled:       paymentStrategy.paymentsEnabled,
-    webhookEnabled:        paymentStrategy.webhookEnabled,
-    clientUrl:             env.clientUrl,
+    paymentsEnabled: paymentStrategy.paymentsEnabled,
+    webhookEnabled: paymentStrategy.webhookEnabled,
+    clientUrl: env.clientUrl,
     logger: createScopedLogger(logger, "payments"),
   });
 
@@ -146,14 +144,14 @@ export const configureApplicationModules = async ({ env }) => {
     confirmOrderPayment: ordersModule.confirmOrderPayment,
   });
   eventBus.subscribe("PaymentConfirmed", (event) => paymentConfirmedTranslator.publish(event));
-  eventBus.subscribe("PaymentFailed",    (event) => paymentConfirmedTranslator.publish(event));
-  eventBus.subscribe("PaymentExpired",   (event) => paymentConfirmedTranslator.publish(event));
+  eventBus.subscribe("PaymentFailed", (event) => paymentConfirmedTranslator.publish(event));
+  eventBus.subscribe("PaymentExpired", (event) => paymentConfirmedTranslator.publish(event));
 
   logger.info({
     msg: "All modules configured",
-    database:  env.databaseProvider,
-    payments:  env.paymentProvider,
-    eventBus:  env.eventBusProvider,
+    database: env.databaseProvider,
+    payments: env.paymentProvider,
+    eventBus: env.eventBusProvider,
   });
 
   // ── 7. Return route handlers to createApp — no module refs escape ─────────
@@ -165,17 +163,15 @@ export const configureApplicationModules = async ({ env }) => {
     authUserRepository,
 
     // Route factories — each receives its pre-wired handlers
-    authRoutes:       authModule.createRoutes,
-    usersRoutes:      usersModule.createRoutes,
-    productsRoutes:   productsModule.createRoutes,
+    authRoutes: authModule.createRoutes,
+    usersRoutes: usersModule.createRoutes,
+    productsRoutes: productsModule.createRoutes,
     categoriesRoutes: categoriesModule.createRoutes,
-    ordersRoutes:     ordersModule.createRoutes,
-    paymentsRoutes:   paymentsModule.createRoutes,
+    ordersRoutes: ordersModule.createRoutes,
+    paymentsRoutes: paymentsModule.createRoutes,
 
     // Schedulers — started by startApplication after the HTTP server is up
-    schedulers: [
-      productsModule.createNewProductStatusScheduler(),
-    ],
+    schedulers: [productsModule.createNewProductStatusScheduler()],
 
     // Graceful shutdown
     shutdown: async () => {

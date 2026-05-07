@@ -27,14 +27,16 @@ test("authenticated user can create an idempotent payment intent for an order", 
   const orderResponse = await ctx.client.agent
     .post("/api/orders")
     .set("Authorization", `Bearer ${tokenFor(user)}`)
-    .send(buildOrderPayload({
-      orderLine: {
-        productId: product._id.toString(),
-        name: product.name,
-        price: product.price,
-        quantity: 2,
-      },
-    }))
+    .send(
+      buildOrderPayload({
+        orderLine: {
+          productId: product._id.toString(),
+          name: product.name,
+          price: product.price,
+          quantity: 2,
+        },
+      })
+    )
     .expect(201);
 
   assert.equal(orderResponse.body.ownerId, user._id.toString());

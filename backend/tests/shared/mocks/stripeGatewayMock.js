@@ -41,7 +41,8 @@ export const createStripeGatewayMock = () => {
     createCheckoutSession(...args) {
       return this.createRedirectPayment(...args);
     },
-    getRedirectPayment: async (sessionId) => sessions.get(sessionId) ?? createSession({ id: sessionId }),
+    getRedirectPayment: async (sessionId) =>
+      sessions.get(sessionId) ?? createSession({ id: sessionId }),
     getCheckoutSession(sessionId) {
       return this.getRedirectPayment(sessionId);
     },

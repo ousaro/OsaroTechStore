@@ -50,9 +50,7 @@ export const createMoney = ({ amount, currency }) => {
 
     add(other) {
       if (other.currency !== normalizedCurrency) {
-        throw new DomainValidationError(
-          `Cannot add ${other.currency} to ${normalizedCurrency}`
-        );
+        throw new DomainValidationError(`Cannot add ${other.currency} to ${normalizedCurrency}`);
       }
       // Round to 2 decimal places to avoid floating-point drift
       return createMoney({

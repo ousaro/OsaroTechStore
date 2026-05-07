@@ -4,27 +4,30 @@ import assert from "node:assert/strict";
 import { createRequestClient } from "../../../shared/utils/requestClient.js";
 
 const createFakeRequestFactory = (requests) => () =>
-  ["get", "post", "put", "delete"].reduce((agent, method) => ({
-    ...agent,
-    [method]: (url) => {
-      const request = {
-        method,
-        url,
-        headers: {},
-        body: undefined,
-        set(headers) {
-          this.headers = { ...this.headers, ...headers };
-          return this;
-        },
-        send(body) {
-          this.body = body;
-          return this;
-        },
-      };
-      requests.push(request);
-      return request;
-    },
-  }), {});
+  ["get", "post", "put", "delete"].reduce(
+    (agent, method) => ({
+      ...agent,
+      [method]: (url) => {
+        const request = {
+          method,
+          url,
+          headers: {},
+          body: undefined,
+          set(headers) {
+            this.headers = { ...this.headers, ...headers };
+            return this;
+          },
+          send(body) {
+            this.body = body;
+            return this;
+          },
+        };
+        requests.push(request);
+        return request;
+      },
+    }),
+    {}
+  );
 
 test("requestClient.as(user) creates token-authenticated request methods", async () => {
   const requests = [];
@@ -54,8 +57,5 @@ test("requestClient.as(user) throws when no token signer is configured", () => {
     requestFactory: createFakeRequestFactory([]),
   });
 
-  assert.throws(
-    () => client.as({ _id: "user-1" }),
-    /requires a tokenForUser option/
-  );
+  assert.throws(() => client.as({ _id: "user-1" }), /requires a tokenForUser option/);
 });

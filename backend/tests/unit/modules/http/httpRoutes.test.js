@@ -65,20 +65,26 @@ test("products and categories routes expose public reads and protected writes", 
     deleteCategory: handler,
   };
 
-  assert.deepEqual(routeSummary(createProductsRoutes({ controller: productController, requireAuth })), [
-    { path: "/", methods: ["get"], handlerCount: 1 },
-    { path: "/:id", methods: ["get"], handlerCount: 1 },
-    { path: "/", methods: ["post"], handlerCount: 3 },
-    { path: "/:id", methods: ["put"], handlerCount: 3 },
-    { path: "/:id", methods: ["delete"], handlerCount: 3 },
-  ]);
-  assert.deepEqual(routeSummary(createCategoriesRoutes({ controller: categoryController, requireAuth })), [
-    { path: "/", methods: ["get"], handlerCount: 1 },
-    { path: "/:id", methods: ["get"], handlerCount: 1 },
-    { path: "/", methods: ["post"], handlerCount: 3 },
-    { path: "/:id", methods: ["put"], handlerCount: 3 },
-    { path: "/:id", methods: ["delete"], handlerCount: 3 },
-  ]);
+  assert.deepEqual(
+    routeSummary(createProductsRoutes({ controller: productController, requireAuth })),
+    [
+      { path: "/", methods: ["get"], handlerCount: 1 },
+      { path: "/:id", methods: ["get"], handlerCount: 1 },
+      { path: "/", methods: ["post"], handlerCount: 3 },
+      { path: "/:id", methods: ["put"], handlerCount: 3 },
+      { path: "/:id", methods: ["delete"], handlerCount: 3 },
+    ]
+  );
+  assert.deepEqual(
+    routeSummary(createCategoriesRoutes({ controller: categoryController, requireAuth })),
+    [
+      { path: "/", methods: ["get"], handlerCount: 1 },
+      { path: "/:id", methods: ["get"], handlerCount: 1 },
+      { path: "/", methods: ["post"], handlerCount: 3 },
+      { path: "/:id", methods: ["put"], handlerCount: 3 },
+      { path: "/:id", methods: ["delete"], handlerCount: 3 },
+    ]
+  );
 });
 
 test("orders and users routes mount router-level auth and expected handlers", () => {
@@ -125,22 +131,32 @@ test("payments routes expose webhook only when enabled and protect user routes",
     getPaymentByOrderId: handler,
   };
 
-  assert.deepEqual(routeSummary(createPaymentsRoutes({
-    controller,
-    requireAuth,
-    webhookEnabled: false,
-  })), [
-    { path: "/intent", methods: ["post"], handlerCount: 2 },
-    { path: "/order/:orderId", methods: ["get"], handlerCount: 2 },
-  ]);
+  assert.deepEqual(
+    routeSummary(
+      createPaymentsRoutes({
+        controller,
+        requireAuth,
+        webhookEnabled: false,
+      })
+    ),
+    [
+      { path: "/intent", methods: ["post"], handlerCount: 2 },
+      { path: "/order/:orderId", methods: ["get"], handlerCount: 2 },
+    ]
+  );
 
-  assert.deepEqual(routeSummary(createPaymentsRoutes({
-    controller,
-    requireAuth,
-    webhookEnabled: true,
-  })), [
-    { path: "/webhook", methods: ["post"], handlerCount: 3 },
-    { path: "/intent", methods: ["post"], handlerCount: 2 },
-    { path: "/order/:orderId", methods: ["get"], handlerCount: 2 },
-  ]);
+  assert.deepEqual(
+    routeSummary(
+      createPaymentsRoutes({
+        controller,
+        requireAuth,
+        webhookEnabled: true,
+      })
+    ),
+    [
+      { path: "/webhook", methods: ["post"], handlerCount: 3 },
+      { path: "/intent", methods: ["post"], handlerCount: 2 },
+      { path: "/order/:orderId", methods: ["get"], handlerCount: 2 },
+    ]
+  );
 });

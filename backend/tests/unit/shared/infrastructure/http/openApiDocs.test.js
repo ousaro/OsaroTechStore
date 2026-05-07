@@ -52,10 +52,10 @@ test("OpenAPI docs handlers serve HTML and YAML responses", async () => {
   registerOpenApiDocs(app);
 
   const routes = app._router.stack.filter((layer) => layer.route);
-  const yamlHandler = routes.find((layer) => layer.route.path === "/api-docs/openapi.yaml")
-    .route.stack[0].handle;
-  const htmlHandler = routes.find((layer) => layer.route.path === "/api-docs")
-    .route.stack[0].handle;
+  const yamlHandler = routes.find((layer) => layer.route.path === "/api-docs/openapi.yaml").route
+    .stack[0].handle;
+  const htmlHandler = routes.find((layer) => layer.route.path === "/api-docs").route.stack[0]
+    .handle;
 
   const yamlResponse = {
     contentType: undefined,

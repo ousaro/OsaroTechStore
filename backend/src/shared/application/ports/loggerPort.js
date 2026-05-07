@@ -17,7 +17,11 @@ export const assertLoggerPort = (logger, context = "unknown") => {
   assertObject(logger, "logger", `[${context}] logger port is required and must be an object`);
 
   for (const method of ["info", "warn", "error", "debug"]) {
-    assertFunction(logger[method], `logger.${method}`, `[${context}] logger must implement .${method}`);
+    assertFunction(
+      logger[method],
+      `logger.${method}`,
+      `[${context}] logger must implement .${method}`
+    );
   }
   return logger;
 };

@@ -24,19 +24,22 @@ const DISABLED_GATEWAY = Object.freeze({
 export const resolvePaymentStrategy = ({ provider, env, logger }) => {
   switch (provider) {
     case "stripe": {
-      const gateway =createStripeGateway({
-          secretKey:     env.stripeSecretKey,
-          webhookSecret: env.stripeWebhookSecret,
-          logger,
-        });
+      const gateway = createStripeGateway({
+        secretKey: env.stripeSecretKey,
+        webhookSecret: env.stripeWebhookSecret,
+        logger,
+      });
 
-      return assertPaymentStrategyPort({
-        provider: "stripe",
-        label: "Stripe",
-        paymentsEnabled: true,
-        webhookEnabled: Boolean(env.stripeWebhookSecret),
-        gateway,
-      }, "resolvePaymentStrategy");
+      return assertPaymentStrategyPort(
+        {
+          provider: "stripe",
+          label: "Stripe",
+          paymentsEnabled: true,
+          webhookEnabled: Boolean(env.stripeWebhookSecret),
+          gateway,
+        },
+        "resolvePaymentStrategy"
+      );
     }
 
     case "paypal":

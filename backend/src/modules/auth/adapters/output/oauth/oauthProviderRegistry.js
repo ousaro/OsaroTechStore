@@ -9,8 +9,7 @@ const unavailableHandler = (label) => (_req, res) =>
 
 const normalizeProviderName = (name) => name.trim().toLowerCase();
 
-const getProviderLabel = (name, config) =>
-  config?.label ?? LABELS[name] ?? name;
+const getProviderLabel = (name, config) => config?.label ?? LABELS[name] ?? name;
 
 const createGoogleStrategy = ({ config, clientUrl, callbackHandler }) => {
   const label = getProviderLabel("google", config);
@@ -24,9 +23,9 @@ const createGoogleStrategy = ({ config, clientUrl, callbackHandler }) => {
   }
 
   const passport = setupGooglePassport({
-    clientId:     config.clientId,
+    clientId: config.clientId,
     clientSecret: config.clientSecret,
-    callbackUrl:  config.callbackUrl,
+    callbackUrl: config.callbackUrl,
   });
 
   return {

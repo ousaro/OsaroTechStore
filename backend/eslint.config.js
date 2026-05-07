@@ -20,11 +20,7 @@ const nodeGlobals = {
 
 export default [
   {
-    ignores: [
-      "coverage/**",
-      "node_modules/**",
-      "tests/coverage/**",
-    ],
+    ignores: ["coverage/**", "node_modules/**", "tests/coverage/**"],
   },
   js.configs.recommended,
   {
@@ -36,10 +32,13 @@ export default [
     },
     rules: {
       "no-console": "off",
-      "no-unused-vars": ["error", {
-        argsIgnorePattern: "^_",
-        caughtErrorsIgnorePattern: "^_",
-      }],
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ];

@@ -6,14 +6,19 @@ export const createCategoriesHttpController = ({ categoriesInputPort }) => {
 
   return {
     getAllCategories: asyncHandler(async (_req, res) =>
-      res.json(await categoriesInputPort.getAllCategories())),
+      res.json(await categoriesInputPort.getAllCategories())
+    ),
     getCategoryById: asyncHandler(async (req, res) =>
-      res.json(await categoriesInputPort.getCategoryById({ id: req.params.id }))),
+      res.json(await categoriesInputPort.getCategoryById({ id: req.params.id }))
+    ),
     addCategory: asyncHandler(async (req, res) =>
-      res.status(201).json(await categoriesInputPort.addCategory(req.body))),
+      res.status(201).json(await categoriesInputPort.addCategory(req.body))
+    ),
     updateCategory: asyncHandler(async (req, res) =>
-      res.json(await categoriesInputPort.updateCategory({ id: req.params.id, updates: req.body }))),
+      res.json(await categoriesInputPort.updateCategory({ id: req.params.id, updates: req.body }))
+    ),
     deleteCategory: asyncHandler(async (req, res) =>
-      res.json(await categoriesInputPort.deleteCategory({ id: req.params.id }))),
+      res.json(await categoriesInputPort.deleteCategory({ id: req.params.id }))
+    ),
   };
 };

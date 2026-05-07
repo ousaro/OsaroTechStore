@@ -15,8 +15,5 @@ test("Mongo provider refuses to expose connection before connect", () => {
     logger,
   });
 
-  assert.throws(
-    () => provider.getConnection(),
-    /Connection is not open/
-  );
+  assert.throws(() => provider.getConnection(), /Connection is not open/);
 });

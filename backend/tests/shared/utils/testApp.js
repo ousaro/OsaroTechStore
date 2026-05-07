@@ -15,7 +15,11 @@ import { createPaymentConfirmedOrderSyncTranslator } from "../../../src/modules/
 import { buildTestEnv } from "./testEnvironment.js";
 import { noopLogger } from "./noopLogger.js";
 
-export const createTestApplication = ({ dbClient, env: envOverrides = {}, paymentGateway } = {}) => {
+export const createTestApplication = ({
+  dbClient,
+  env: envOverrides = {},
+  paymentGateway,
+} = {}) => {
   const env = buildTestEnv(envOverrides);
   const logger = noopLogger;
   const eventBus = createInProcessEventBus({ logger: createScopedLogger(logger, "eventBus") });

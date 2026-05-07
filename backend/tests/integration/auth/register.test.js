@@ -8,17 +8,16 @@ const ctx = createIntegrationTestContext();
 test("POST /api/auth/register creates a user and returns a JWT session", async () => {
   const payload = buildUserPayload();
 
-  const response = await ctx.client.agent
-    .post("/api/auth/register")
-    .send(payload)
-    .expect(201);
+  const response = await ctx.client.agent.post("/api/auth/register").send(payload).expect(201);
 
   assert.equal(response.body.email, payload.email.toLowerCase());
   assert.equal(response.body.firstName, payload.firstName);
   assert.equal(typeof response.body.token, "string");
   assert.ok(response.body._id);
 
-  const persisted = await ctx.application.repositories.authUserRepository.findByEmail(payload.email);
+  const persisted = await ctx.application.repositories.authUserRepository.findByEmail(
+    payload.email
+  );
   assert.equal(persisted.email, payload.email.toLowerCase());
 });
 

@@ -4,7 +4,11 @@ import { createEmail } from "../../domain/value-objects/Email.js";
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 
 export const assertValidRegistrationData = ({
-  firstName, lastName, email, password, confirmPassword,
+  firstName,
+  lastName,
+  email,
+  password,
+  confirmPassword,
 }) => {
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
     throw new AuthValidationError("All fields must be filled");

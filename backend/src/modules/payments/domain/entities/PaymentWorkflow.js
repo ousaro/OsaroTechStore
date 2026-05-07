@@ -2,10 +2,11 @@
  * PaymentWorkflow Domain Entity.
  *
  */
-import { createPaymentStatus, PAYMENT_STATUSES }
-  from "../../../../shared/domain/value-objects/PaymentStatus.js";
-import { assertNonEmptyString }
-  from "../../../../shared/kernel/assertions/index.js";
+import {
+  createPaymentStatus,
+  PAYMENT_STATUSES,
+} from "../../../../shared/domain/value-objects/PaymentStatus.js";
+import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
 export const createPaymentWorkflow = ({
   _id,
@@ -19,8 +20,8 @@ export const createPaymentWorkflow = ({
   url,
   occurredAt,
 }) => {
-  assertNonEmptyString(orderId,      "orderId");
-  assertNonEmptyString(provider,     "provider");
+  assertNonEmptyString(orderId, "orderId");
+  assertNonEmptyString(provider, "provider");
   assertNonEmptyString(workflowType, "workflowType");
 
   const status = createPaymentStatus(paymentStatus ?? PAYMENT_STATUSES.PENDING);
@@ -31,22 +32,26 @@ export const createPaymentWorkflow = ({
     provider,
     workflowType,
     paymentStatus: status,
-    sessionId:         sessionId         ?? null,
+    sessionId: sessionId ?? null,
     providerPaymentId: providerPaymentId ?? null,
-    providerStatus:    providerStatus    ?? null,
-    url:               url               ?? null,
-    occurredAt:        occurredAt        ?? new Date().toISOString(),
+    providerStatus: providerStatus ?? null,
+    url: url ?? null,
+    occurredAt: occurredAt ?? new Date().toISOString(),
 
-    applyStateChange({ paymentStatus: nextStatus, providerPaymentId: nextProviderPaymentId, providerStatus: nextProviderStatus }) {
+    applyStateChange({
+      paymentStatus: nextStatus,
+      providerPaymentId: nextProviderPaymentId,
+      providerStatus: nextProviderStatus,
+    }) {
       return createPaymentWorkflow({
         _id,
         orderId,
         provider,
         workflowType,
-        paymentStatus:     nextStatus ?? status.value,
+        paymentStatus: nextStatus ?? status.value,
         sessionId,
         providerPaymentId: nextProviderPaymentId ?? providerPaymentId,
-        providerStatus:    nextProviderStatus    ?? providerStatus,
+        providerStatus: nextProviderStatus ?? providerStatus,
         url,
         occurredAt: new Date().toISOString(),
       });
@@ -58,7 +63,7 @@ export const createPaymentWorkflow = ({
         orderId,
         provider,
         workflowType,
-        paymentStatus:     status.toPrimitives(),
+        paymentStatus: status.toPrimitives(),
         sessionId,
         providerPaymentId,
         providerStatus,

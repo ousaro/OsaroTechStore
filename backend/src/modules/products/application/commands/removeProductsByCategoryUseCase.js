@@ -1,6 +1,7 @@
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const buildRemoveProductsByCategoryUseCase = ({ productRepository, logger }) =>
+export const buildRemoveProductsByCategoryUseCase =
+  ({ productRepository, logger }) =>
   async ({ categoryId }) => {
     assertNonEmptyString(categoryId, "categoryId");
     const count = await productRepository.deleteByCategoryId(categoryId);

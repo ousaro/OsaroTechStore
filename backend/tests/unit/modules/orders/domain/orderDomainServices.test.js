@@ -49,9 +49,7 @@ test("applyPaymentOutcomeToOrder rejects cancellation when current status cannot
 });
 
 test("assertOrderUpdateAllowed allows pending updates and rejects placed core updates", () => {
-  assert.doesNotThrow(() =>
-    assertOrderUpdateAllowed(createOrder(orderInput), { ownerId: "u2" })
-  );
+  assert.doesNotThrow(() => assertOrderUpdateAllowed(createOrder(orderInput), { ownerId: "u2" }));
 
   const processing = createOrder(orderInput).updateStatus(ORDER_STATUSES.PROCESSING);
   assert.throws(

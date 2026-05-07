@@ -1,15 +1,17 @@
 /**
  * Product Domain Entity.
  */
-import { assertNonEmptyString, assertPositiveNumber, assertNonNegativeNumber }
-  from "../../../../shared/kernel/assertions/index.js";
-import { DomainValidationError }
-  from "../../../../shared/domain/errors/index.js";
+import {
+  assertNonEmptyString,
+  assertPositiveNumber,
+  assertNonNegativeNumber,
+} from "../../../../shared/kernel/assertions/index.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 
 export const PRODUCT_STATUSES = Object.freeze({
-  NEW:        "new",
-  ACTIVE:     "active",
-  INACTIVE:   "inactive",
+  NEW: "new",
+  ACTIVE: "active",
+  INACTIVE: "inactive",
   DEPRECATED: "deprecated",
 });
 
@@ -22,14 +24,14 @@ export const createProduct = ({
   price,
   currency = "USD",
   category,
-  stock      = 0,
-  images     = [],
-  status     = PRODUCT_STATUSES.NEW,
+  stock = 0,
+  images = [],
+  status = PRODUCT_STATUSES.NEW,
 }) => {
   try {
-    assertNonEmptyString(name,     "name");
+    assertNonEmptyString(name, "name");
     assertNonEmptyString(category, "category");
-    assertPositiveNumber(price,    "price");
+    assertPositiveNumber(price, "price");
     assertNonNegativeNumber(stock, "stock");
   } catch (error) {
     throw new DomainValidationError(error.message);

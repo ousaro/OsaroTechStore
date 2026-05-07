@@ -18,10 +18,10 @@ export const createDomainEvent = (type, payload, meta = {}) => {
   assertObject(payload, "payload", "Domain event payload must be an object");
 
   return Object.freeze({
-    id: meta.id ?? randomUUID(),       // unique event ID — used for idempotency
+    id: meta.id ?? randomUUID(), // unique event ID — used for idempotency
     type,
     occurredAt: meta.occurredAt ?? new Date().toISOString(),
-    version: meta.version ?? 1,        // schema version — bump when payload shape changes
+    version: meta.version ?? 1, // schema version — bump when payload shape changes
     correlationId: meta.correlationId ?? null, // for distributed tracing
     payload: Object.freeze({ ...payload }),
   });

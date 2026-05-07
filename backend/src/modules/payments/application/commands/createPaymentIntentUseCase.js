@@ -1,15 +1,10 @@
 import { createPaymentWorkflow } from "../../domain/entities/PaymentWorkflow.js";
 import { PaymentsDisabledError } from "../errors/PaymentApplicationError.js";
-import { toPaymentReadModel }    from "../read-models/paymentReadModel.js";
-import { assertNonEmptyString }  from "../../../../shared/kernel/assertions/index.js";
+import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
+import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const buildCreatePaymentIntentUseCase = ({
-  paymentGateway,
-  paymentRepository,
-  paymentsEnabled,
-  clientUrl,
-  logger,
-}) =>
+export const buildCreatePaymentIntentUseCase =
+  ({ paymentGateway, paymentRepository, paymentsEnabled, clientUrl, logger }) =>
   async ({ orderId, items }) => {
     if (!paymentsEnabled) throw new PaymentsDisabledError();
     assertNonEmptyString(orderId, "orderId");
@@ -17,13 +12,17 @@ export const buildCreatePaymentIntentUseCase = ({
     if (typeof paymentRepository.findByOrderId === "function") {
       const existing = await paymentRepository.findByOrderId(orderId);
       if (existing) {
-        logger?.debug({ msg: "Payment intent already exists", orderId, sessionId: existing.sessionId });
+        logger?.debug({
+          msg: "Payment intent already exists",
+          orderId,
+          sessionId: existing.sessionId,
+        });
         return toPaymentReadModel(existing);
       }
     }
 
     const successUrl = `${clientUrl}/payment-success?orderId=${orderId}`;
-    const cancelUrl  = `${clientUrl}/payment-cancelled?orderId=${orderId}`;
+    const cancelUrl = `${clientUrl}/payment-cancelled?orderId=${orderId}`;
 
     const session = await paymentGateway.createRedirectPayment({
       items,
@@ -33,10 +32,10 @@ export const buildCreatePaymentIntentUseCase = ({
 
     const workflow = createPaymentWorkflow({
       orderId,
-      provider:     session.provider,
+      provider: session.provider,
       workflowType: session.workflowType,
-      sessionId:    session.id,
-      url:          session.url,
+      sessionId: session.id,
+      url: session.url,
     });
 
     const saved = await paymentRepository.create(workflow.toPrimitives());

@@ -3,7 +3,8 @@
  */
 import { AuthUnauthorizedError } from "../errors/AuthApplicationError.js";
 
-export const buildDeleteUserUseCase = ({ authUserRepository }) =>
+export const buildDeleteUserUseCase =
+  ({ authUserRepository }) =>
   async ({ id }) => {
     const deleted = await authUserRepository.findByIdAndDelete(id);
     if (!deleted) throw new AuthUnauthorizedError("User not found");

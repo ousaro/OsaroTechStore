@@ -34,7 +34,5 @@ test("admin can update and delete products through HTTP and DB", async () => {
     .set("Authorization", `Bearer ${tokenFor(admin)}`)
     .expect(200);
 
-  await ctx.client.agent
-    .get(`/api/products/${product._id}`)
-    .expect(404);
+  await ctx.client.agent.get(`/api/products/${product._id}`).expect(404);
 });

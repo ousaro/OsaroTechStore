@@ -11,8 +11,7 @@
 import { HTTP_STATUS_BY_ERROR_CODE, DEFAULT_HTTP_STATUS } from "./httpErrorCodes.js";
 
 export const resolveHttpError = (error, req, res, logger) => {
-  const status =
-    HTTP_STATUS_BY_ERROR_CODE[error.code] ?? DEFAULT_HTTP_STATUS;
+  const status = HTTP_STATUS_BY_ERROR_CODE[error.code] ?? DEFAULT_HTTP_STATUS;
 
   // Log server errors with full stack; client errors at warn level
   if (status >= 500) {

@@ -3,8 +3,8 @@
  * Domain service that orchestrates multi-step domain operations
  * that don't belong on a single entity.
  */
-import { ORDER_STATUSES }    from "../value-objects/OrderStatus.js";
-import { PAYMENT_STATUSES }  from "../../../../shared/domain/value-objects/PaymentStatus.js";
+import { ORDER_STATUSES } from "../value-objects/OrderStatus.js";
+import { PAYMENT_STATUSES } from "../../../../shared/domain/value-objects/PaymentStatus.js";
 import { OrderStatusTransitionNotAllowedError } from "../errors/index.js";
 
 /**

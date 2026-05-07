@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    name:        { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
-    price:       { type: Number, required: true },
-    currency:    { type: String, default: "USD" },
-    category:    { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-    stock:       { type: Number, default: 0 },
-    images:      { type: [String], default: [] },
-    status:      { type: String, default: "new" },
+    price: { type: Number, required: true },
+    currency: { type: String, default: "USD" },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    stock: { type: Number, default: 0 },
+    images: { type: [String], default: [] },
+    status: { type: String, default: "new" },
   },
   { timestamps: true }
 );

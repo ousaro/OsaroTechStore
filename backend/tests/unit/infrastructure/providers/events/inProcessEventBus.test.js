@@ -51,7 +51,10 @@ test("in-process event bus isolates handler failures and logs them", async () =>
   await bus.publish({ id: "evt1", type: "OrderPlaced", payload: {} });
 
   assert.equal(successfulHandlerRan, true);
-  assert.equal(logger.entries.some((entry) => entry.msg === "EventBus: handler failed"), true);
+  assert.equal(
+    logger.entries.some((entry) => entry.msg === "EventBus: handler failed"),
+    true
+  );
 });
 
 test("in-process event bus validates subscribe and publish inputs", async () => {

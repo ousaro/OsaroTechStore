@@ -13,9 +13,8 @@ import { createApp } from "./createApp.js";
 
 export const startApplication = async ({ port, env }) => {
   // Wire everything
-  const { configureApplicationModules } = await import(
-    "../infrastructure/bootstrap/configureApplicationModules.js"
-  );
+  const { configureApplicationModules } =
+    await import("../infrastructure/bootstrap/configureApplicationModules.js");
 
   const {
     logger,
@@ -74,7 +73,7 @@ export const startApplication = async ({ port, env }) => {
   };
 
   process.on("SIGTERM", () => handleShutdown("SIGTERM"));
-  process.on("SIGINT",  () => handleShutdown("SIGINT"));
+  process.on("SIGINT", () => handleShutdown("SIGINT"));
 
   return server;
 };

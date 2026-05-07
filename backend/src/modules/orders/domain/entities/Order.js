@@ -10,12 +10,18 @@
  *  - toPrimitives() returns a full flat projection (safe for read models).
  */
 
-import { DomainValidationError }     from "../../../../shared/domain/errors/index.js";
-import { assertNonEmptyString, assertNonEmptyArray } from "../../../../shared/kernel/assertions/index.js";
+import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
+import {
+  assertNonEmptyString,
+  assertNonEmptyArray,
+} from "../../../../shared/kernel/assertions/index.js";
 import { createOrderStatus, ORDER_STATUSES } from "../value-objects/OrderStatus.js";
-import { createOrderLine }            from "../value-objects/OrderLine.js";
-import { createAddress }              from "../value-objects/OrderLine.js";
-import { createPaymentStatus, PAYMENT_STATUSES } from "../../../../shared/domain/value-objects/PaymentStatus.js";
+import { createOrderLine } from "../value-objects/OrderLine.js";
+import { createAddress } from "../value-objects/OrderLine.js";
+import {
+  createPaymentStatus,
+  PAYMENT_STATUSES,
+} from "../../../../shared/domain/value-objects/PaymentStatus.js";
 import {
   OrderStatusTransitionNotAllowedError,
   ImmutableFieldsAfterOrderPlacementError,
@@ -42,19 +48,17 @@ export const createOrder = ({
 
   const lines = orderLines.map((line) =>
     line.unitPrice?.toPrimitives
-      ? line  // already a value object
+      ? line // already a value object
       : createOrderLine({
           productId: line.productId,
-          name:      line.name,
-          price:     line.unitPrice?.amount ?? line.price,
-          currency:  line.unitPrice?.currency ?? currency,
-          quantity:  line.quantity,
+          name: line.name,
+          price: line.unitPrice?.amount ?? line.price,
+          currency: line.unitPrice?.currency ?? currency,
+          quantity: line.quantity,
         })
   );
 
-  const address = deliveryAddress?.toPrimitives
-    ? deliveryAddress
-    : createAddress(deliveryAddress);
+  const address = deliveryAddress?.toPrimitives ? deliveryAddress : createAddress(deliveryAddress);
 
   const status = createOrderStatus(orderStatus ?? ORDER_STATUSES.PENDING);
 
@@ -132,12 +136,12 @@ export const createOrder = ({
       return {
         _id,
         ownerId,
-        orderLines:      lines.map((l) => l.toPrimitives()),
+        orderLines: lines.map((l) => l.toPrimitives()),
         deliveryAddress: address.toPrimitives(),
         currency,
-        orderStatus:     status.toPrimitives(),
-        paymentStatus:   pymtStatus.toPrimitives(),
-        totalPrice:      computedTotal.toPrimitives(),
+        orderStatus: status.toPrimitives(),
+        paymentStatus: pymtStatus.toPrimitives(),
+        totalPrice: computedTotal.toPrimitives(),
       };
     },
   });

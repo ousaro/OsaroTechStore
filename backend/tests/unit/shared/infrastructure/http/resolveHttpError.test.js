@@ -47,12 +47,10 @@ test("resolveHttpError includes validation metadata", () => {
   error.meta = { field: "email" };
   const res = createResponse();
 
-  resolveHttpError(
-    error,
-    { requestId: "req1", method: "POST", path: "/api/auth/register" },
-    res,
-    { warn: () => {}, error: () => {} }
-  );
+  resolveHttpError(error, { requestId: "req1", method: "POST", path: "/api/auth/register" }, res, {
+    warn: () => {},
+    error: () => {},
+  });
 
   assert.equal(res.statusCode, 400);
   assert.deepEqual(res.body.error.meta, { field: "email" });

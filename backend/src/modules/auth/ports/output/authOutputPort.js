@@ -21,11 +21,7 @@ const REPO_METHODS = [
   "comparePassword",
 ];
 
-const TOKEN_SERVICE_METHODS = [
-  "signUserId",
-  "verify",
-  "extractUserId",
-];
+const TOKEN_SERVICE_METHODS = ["signUserId", "verify", "extractUserId"];
 
 export const assertAuthUserRepositoryPort = (repo) =>
   assertRepositoryPort(repo, REPO_METHODS, "authUserRepository");

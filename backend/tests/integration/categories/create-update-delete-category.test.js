@@ -41,7 +41,5 @@ test("admin can create, read, update, and delete categories through HTTP and DB"
     .set("Authorization", `Bearer ${token}`)
     .expect(200);
 
-  await ctx.client.agent
-    .get(`/api/categories/${createResponse.body._id}`)
-    .expect(404);
+  await ctx.client.agent.get(`/api/categories/${createResponse.body._id}`).expect(404);
 });

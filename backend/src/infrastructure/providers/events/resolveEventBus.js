@@ -17,7 +17,10 @@ export const resolveEventBus = ({ provider = "inprocess", logger, redisClient } 
       return assertEventBusPort(createInProcessEventBus({ logger }), "resolveEventBus");
 
     case "redis":
-      return assertEventBusPort(createRedisStreamEventBus({ redisClient, logger }), "resolveEventBus");
+      return assertEventBusPort(
+        createRedisStreamEventBus({ redisClient, logger }),
+        "resolveEventBus"
+      );
 
     default:
       throw new ServiceUnavailableError(

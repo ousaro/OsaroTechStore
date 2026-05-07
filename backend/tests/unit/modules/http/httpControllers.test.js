@@ -30,10 +30,8 @@ const createResponse = () => ({
 const runHandler = async (handler, req = {}) => {
   const res = createResponse();
   const errors = [];
-  handler(
-    { params: {}, query: {}, body: {}, headers: {}, ...req },
-    res,
-    (error) => errors.push(error)
+  handler({ params: {}, query: {}, body: {}, headers: {}, ...req }, res, (error) =>
+    errors.push(error)
   );
   await new Promise((resolve) => setImmediate(resolve));
   if (errors[0]) throw errors[0];
@@ -56,14 +54,11 @@ test("async controllers forward thrown application errors to the error chain", a
     },
   });
 
-  await assert.rejects(
-    () => runHandler(controller.getProductById, { params: { id: "" } }),
-    {
-      name: "ApplicationValidationError",
-      message: "Product id is invalid",
-      code: "VALIDATION",
-    }
-  );
+  await assert.rejects(() => runHandler(controller.getProductById, { params: { id: "" } }), {
+    name: "ApplicationValidationError",
+    message: "Product id is invalid",
+    code: "VALIDATION",
+  });
 });
 
 test("auth controller maps public and admin handlers to input port calls", async () => {
@@ -94,19 +89,30 @@ test("auth controller maps public and admin handlers to input port calls", async
     },
   });
 
-  assert.equal((await runHandler(controller.registerUser, { body: { email: "a@test.com" } })).statusCode, 201);
-  assert.equal((await runHandler(controller.loginUser, { body: { email: "a@test.com" } })).statusCode, 200);
+  assert.equal(
+    (await runHandler(controller.registerUser, { body: { email: "a@test.com" } })).statusCode,
+    201
+  );
+  assert.equal(
+    (await runHandler(controller.loginUser, { body: { email: "a@test.com" } })).statusCode,
+    200
+  );
   assert.deepEqual((await runHandler(controller.listUsers)).body, [{ _id: "u1" }]);
-  assert.deepEqual((await runHandler(controller.getUser, { params: { id: "u1" } })).body, { _id: "u1" });
-  assert.deepEqual((await runHandler(controller.updateUser, { params: { id: "u1" }, body: { city: "Casa" } })).body, { _id: "u1", city: "Casa" });
-  assert.deepEqual((await runHandler(controller.deleteUser, { params: { id: "u1" } })).body, { _id: "u1" });
-  assert.deepEqual(calls.map(([name]) => name), [
-    "registerUser",
-    "loginUser",
-    "getUser",
-    "updateUser",
-    "deleteUser",
-  ]);
+  assert.deepEqual((await runHandler(controller.getUser, { params: { id: "u1" } })).body, {
+    _id: "u1",
+  });
+  assert.deepEqual(
+    (await runHandler(controller.updateUser, { params: { id: "u1" }, body: { city: "Casa" } }))
+      .body,
+    { _id: "u1", city: "Casa" }
+  );
+  assert.deepEqual((await runHandler(controller.deleteUser, { params: { id: "u1" } })).body, {
+    _id: "u1",
+  });
+  assert.deepEqual(
+    calls.map(([name]) => name),
+    ["registerUser", "loginUser", "getUser", "updateUser", "deleteUser"]
+  );
 });
 
 test("auth oauthCallback redirects authenticated and unauthenticated requests", () => {
@@ -122,18 +128,24 @@ test("auth oauthCallback redirects authenticated and unauthenticated requests", 
   });
 
   const authenticated = createResponse();
-  controller.oauthCallback({
-    isAuthenticated: () => true,
-    user: { _id: "u1" },
-    app: { locals: { clientUrl: "http://client.test" } },
-  }, authenticated);
+  controller.oauthCallback(
+    {
+      isAuthenticated: () => true,
+      user: { _id: "u1" },
+      app: { locals: { clientUrl: "http://client.test" } },
+    },
+    authenticated
+  );
   assert.match(authenticated.redirectUrl, /^http:\/\/client\.test\/SetPassword\?user=/);
 
   const anonymous = createResponse();
-  controller.oauthCallback({
-    isAuthenticated: () => false,
-    app: { locals: { clientUrl: "http://client.test" } },
-  }, anonymous);
+  controller.oauthCallback(
+    {
+      isAuthenticated: () => false,
+      app: { locals: { clientUrl: "http://client.test" } },
+    },
+    anonymous
+  );
   assert.equal(anonymous.redirectUrl, "http://client.test/login");
 });
 
@@ -165,11 +177,25 @@ test("products controller maps params, query, body, and status codes", async () 
     },
   });
 
-  assert.deepEqual((await runHandler(controller.getAllProducts, { query: { category: "c1", status: "active" } })).body, ["p1"]);
-  assert.deepEqual((await runHandler(controller.getProductById, { params: { id: "p1" } })).body, { _id: "p1" });
-  assert.equal((await runHandler(controller.addProduct, { body: { name: "Keyboard" } })).statusCode, 201);
-  assert.deepEqual((await runHandler(controller.updateProduct, { params: { id: "p1" }, body: { stock: 2 } })).body, { _id: "p1", stock: 2 });
-  assert.deepEqual((await runHandler(controller.deleteProduct, { params: { id: "p1" } })).body, { _id: "p1" });
+  assert.deepEqual(
+    (await runHandler(controller.getAllProducts, { query: { category: "c1", status: "active" } }))
+      .body,
+    ["p1"]
+  );
+  assert.deepEqual((await runHandler(controller.getProductById, { params: { id: "p1" } })).body, {
+    _id: "p1",
+  });
+  assert.equal(
+    (await runHandler(controller.addProduct, { body: { name: "Keyboard" } })).statusCode,
+    201
+  );
+  assert.deepEqual(
+    (await runHandler(controller.updateProduct, { params: { id: "p1" }, body: { stock: 2 } })).body,
+    { _id: "p1", stock: 2 }
+  );
+  assert.deepEqual((await runHandler(controller.deleteProduct, { params: { id: "p1" } })).body, {
+    _id: "p1",
+  });
   assert.deepEqual(calls[0], ["getAllProducts", { category: "c1", status: "active" }]);
 });
 
@@ -185,10 +211,21 @@ test("categories controller maps CRUD handlers", async () => {
   });
 
   assert.deepEqual((await runHandler(controller.getAllCategories)).body, ["c1"]);
-  assert.deepEqual((await runHandler(controller.getCategoryById, { params: { id: "c1" } })).body, { _id: "c1" });
-  assert.equal((await runHandler(controller.addCategory, { body: { name: "Accessories" } })).statusCode, 201);
-  assert.deepEqual((await runHandler(controller.updateCategory, { params: { id: "c1" }, body: { name: "Tech" } })).body, { _id: "c1", name: "Tech" });
-  assert.deepEqual((await runHandler(controller.deleteCategory, { params: { id: "c1" } })).body, { _id: "c1" });
+  assert.deepEqual((await runHandler(controller.getCategoryById, { params: { id: "c1" } })).body, {
+    _id: "c1",
+  });
+  assert.equal(
+    (await runHandler(controller.addCategory, { body: { name: "Accessories" } })).statusCode,
+    201
+  );
+  assert.deepEqual(
+    (await runHandler(controller.updateCategory, { params: { id: "c1" }, body: { name: "Tech" } }))
+      .body,
+    { _id: "c1", name: "Tech" }
+  );
+  assert.deepEqual((await runHandler(controller.deleteCategory, { params: { id: "c1" } })).body, {
+    _id: "c1",
+  });
 });
 
 test("orders controller maps user, params, query, body, and default currency", async () => {
@@ -210,12 +247,37 @@ test("orders controller maps user, params, query, body, and default currency", a
     },
   });
 
-  assert.deepEqual((await runHandler(controller.getAllOrders, { query: { ownerId: "u1" } })).body, ["o1"]);
-  assert.deepEqual((await runHandler(controller.getOrderById, { params: { id: "o1" } })).body, { _id: "o1" });
-  assert.equal((await runHandler(controller.addOrder, { user: { _id: "u1" }, body: { orderLines: [], deliveryAddress: {} } })).statusCode, 201);
-  assert.deepEqual(calls[1], ["addOrder", { ownerId: "u1", orderLines: [], deliveryAddress: {}, currency: "USD" }]);
-  assert.deepEqual((await runHandler(controller.updateOrder, { params: { id: "o1" }, body: { orderStatus: "shipped" } })).body, { _id: "o1", orderStatus: "shipped" });
-  assert.deepEqual((await runHandler(controller.deleteOrder, { params: { id: "o1" } })).body, { _id: "o1" });
+  assert.deepEqual((await runHandler(controller.getAllOrders, { query: { ownerId: "u1" } })).body, [
+    "o1",
+  ]);
+  assert.deepEqual((await runHandler(controller.getOrderById, { params: { id: "o1" } })).body, {
+    _id: "o1",
+  });
+  assert.equal(
+    (
+      await runHandler(controller.addOrder, {
+        user: { _id: "u1" },
+        body: { orderLines: [], deliveryAddress: {} },
+      })
+    ).statusCode,
+    201
+  );
+  assert.deepEqual(calls[1], [
+    "addOrder",
+    { ownerId: "u1", orderLines: [], deliveryAddress: {}, currency: "USD" },
+  ]);
+  assert.deepEqual(
+    (
+      await runHandler(controller.updateOrder, {
+        params: { id: "o1" },
+        body: { orderStatus: "shipped" },
+      })
+    ).body,
+    { _id: "o1", orderStatus: "shipped" }
+  );
+  assert.deepEqual((await runHandler(controller.deleteOrder, { params: { id: "o1" } })).body, {
+    _id: "o1",
+  });
 });
 
 test("users controller maps authenticated user actions", async () => {
@@ -241,12 +303,42 @@ test("users controller maps authenticated user actions", async () => {
     },
   });
 
-  assert.deepEqual((await runHandler(controller.getMyProfile, { user: { _id: "u1" } })).body, { _id: "u1" });
-  assert.deepEqual((await runHandler(controller.getUserById, { user: { _id: "admin" }, params: { id: "u2" } })).body, { _id: "u2" });
-  assert.deepEqual((await runHandler(controller.updateProfile, { user: { _id: "u1" }, body: { city: "Casa" } })).body, { _id: "u1", city: "Casa" });
-  assert.deepEqual((await runHandler(controller.updateCart, { user: { _id: "u1" }, body: { cart: [{ productId: "p1" }] } })).body, { cart: [{ productId: "p1" }] });
-  assert.deepEqual((await runHandler(controller.updateFavorites, { user: { _id: "u1" }, params: { productId: "p1" }, body: { action: "add" } })).body, { favorites: ["p1"] });
-  assert.deepEqual(calls.at(-1), ["updateUserFavorites", { userId: "u1", productId: "p1", action: "add" }]);
+  assert.deepEqual((await runHandler(controller.getMyProfile, { user: { _id: "u1" } })).body, {
+    _id: "u1",
+  });
+  assert.deepEqual(
+    (await runHandler(controller.getUserById, { user: { _id: "admin" }, params: { id: "u2" } }))
+      .body,
+    { _id: "u2" }
+  );
+  assert.deepEqual(
+    (await runHandler(controller.updateProfile, { user: { _id: "u1" }, body: { city: "Casa" } }))
+      .body,
+    { _id: "u1", city: "Casa" }
+  );
+  assert.deepEqual(
+    (
+      await runHandler(controller.updateCart, {
+        user: { _id: "u1" },
+        body: { cart: [{ productId: "p1" }] },
+      })
+    ).body,
+    { cart: [{ productId: "p1" }] }
+  );
+  assert.deepEqual(
+    (
+      await runHandler(controller.updateFavorites, {
+        user: { _id: "u1" },
+        params: { productId: "p1" },
+        body: { action: "add" },
+      })
+    ).body,
+    { favorites: ["p1"] }
+  );
+  assert.deepEqual(calls.at(-1), [
+    "updateUserFavorites",
+    { userId: "u1", productId: "p1", action: "add" },
+  ]);
 });
 
 test("payments controller maps intent, webhook, and order lookup handlers", async () => {
@@ -269,10 +361,28 @@ test("payments controller maps intent, webhook, and order lookup handlers", asyn
     },
   });
 
-  assert.equal((await runHandler(controller.createPaymentIntent, { body: { orderId: "o1", items: [] } })).statusCode, 201);
+  assert.equal(
+    (await runHandler(controller.createPaymentIntent, { body: { orderId: "o1", items: [] } }))
+      .statusCode,
+    201
+  );
   const rawBody = Buffer.from("{}");
-  assert.deepEqual((await runHandler(controller.verifyWebhook, { rawBody, headers: { "stripe-signature": "sig" } })).body, { received: true });
-  assert.deepEqual((await runHandler(controller.getPaymentByOrderId, { params: { orderId: "o1" } })).body, { orderId: "o1" });
-  assert.deepEqual(calls[0], ["createPaymentIntent", { orderId: "o1", items: [], currency: "USD" }]);
+  assert.deepEqual(
+    (
+      await runHandler(controller.verifyWebhook, {
+        rawBody,
+        headers: { "stripe-signature": "sig" },
+      })
+    ).body,
+    { received: true }
+  );
+  assert.deepEqual(
+    (await runHandler(controller.getPaymentByOrderId, { params: { orderId: "o1" } })).body,
+    { orderId: "o1" }
+  );
+  assert.deepEqual(calls[0], [
+    "createPaymentIntent",
+    { orderId: "o1", items: [], currency: "USD" },
+  ]);
   assert.deepEqual(calls[1], ["verifyWebhook", { rawBody, signature: "sig" }]);
 });

@@ -7,10 +7,10 @@ export const toCategoryRecord = (doc) => {
 
   const obj = doc.toObject ? doc.toObject() : doc;
   return {
-    _id:         obj._id?.toString(),
-    name:        obj.name,
+    _id: obj._id?.toString(),
+    name: obj.name,
     description: obj.description,
-    createdAt:   obj.createdAt,
-    updatedAt:   obj.updatedAt,
+    createdAt: obj.createdAt,
+    updatedAt: obj.updatedAt,
   };
 };

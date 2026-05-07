@@ -8,21 +8,21 @@ export const toOrderRecord = (doc) => {
 
   const obj = doc.toObject ? doc.toObject() : doc;
   return {
-    _id:             obj._id?.toString(),
-    ownerId:         obj.ownerId?.toString(),
-    orderLines:      (obj.orderLines ?? []).map((line) => ({
+    _id: obj._id?.toString(),
+    ownerId: obj.ownerId?.toString(),
+    orderLines: (obj.orderLines ?? []).map((line) => ({
       productId: line.productId,
-      name:      line.name,
-      quantity:  line.quantity,
+      name: line.name,
+      quantity: line.quantity,
       unitPrice: line.unitPrice,
-      subtotal:  line.subtotal,
+      subtotal: line.subtotal,
     })),
     deliveryAddress: obj.deliveryAddress ?? {},
-    currency:        obj.currency,
-    orderStatus:     obj.orderStatus,
-    paymentStatus:   obj.paymentStatus,
-    totalPrice:      obj.totalPrice,
-    createdAt:       obj.createdAt,
-    updatedAt:       obj.updatedAt,
+    currency: obj.currency,
+    orderStatus: obj.orderStatus,
+    paymentStatus: obj.paymentStatus,
+    totalPrice: obj.totalPrice,
+    createdAt: obj.createdAt,
+    updatedAt: obj.updatedAt,
   };
 };

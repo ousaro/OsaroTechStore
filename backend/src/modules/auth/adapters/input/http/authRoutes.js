@@ -10,12 +10,12 @@ export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clie
 
   // Public routes
   router.post("/register", controller.registerUser);
-  router.post("/login",    controller.loginUser);
+  router.post("/login", controller.loginUser);
 
   // Admin routes
-  router.get("/users",        requireAuth, requireAuth.requireAdmin, controller.listUsers);
-  router.get("/users/:id",    requireAuth, requireAuth.requireAdmin, controller.getUser);
-  router.put("/users/:id",    requireAuth, requireAuth.requireAdmin, controller.updateUser);
+  router.get("/users", requireAuth, requireAuth.requireAdmin, controller.listUsers);
+  router.get("/users/:id", requireAuth, requireAuth.requireAdmin, controller.getUser);
+  router.put("/users/:id", requireAuth, requireAuth.requireAdmin, controller.updateUser);
   router.delete("/users/:id", requireAuth, requireAuth.requireAdmin, controller.deleteUser);
 
   // OAuth routes

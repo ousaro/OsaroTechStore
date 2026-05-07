@@ -73,13 +73,14 @@ test("registerUser rejects duplicate email", async () => {
   });
 
   await assert.rejects(
-    () => registerUser({
-      firstName: "Ada",
-      lastName: "Lovelace",
-      email: "ada@example.com",
-      password: validPassword,
-      confirmPassword: validPassword,
-    }),
+    () =>
+      registerUser({
+        firstName: "Ada",
+        lastName: "Lovelace",
+        email: "ada@example.com",
+        password: validPassword,
+        confirmPassword: validPassword,
+      }),
     AuthConflictError
   );
 });
@@ -96,13 +97,14 @@ test("registerUser rejects weak passwords", async () => {
   });
 
   await assert.rejects(
-    () => registerUser({
-      firstName: "Ada",
-      lastName: "Lovelace",
-      email: "ada@example.com",
-      password: "weak",
-      confirmPassword: "weak",
-    }),
+    () =>
+      registerUser({
+        firstName: "Ada",
+        lastName: "Lovelace",
+        email: "ada@example.com",
+        password: "weak",
+        confirmPassword: "weak",
+      }),
     AuthValidationError
   );
 });

@@ -15,9 +15,7 @@ export const assertApplicationEvent = (event, { expectedType } = {}) => {
   assertNonEmptyString(event.type, "event.type", "event.type must be a non-empty string");
 
   if (expectedType && event.type !== expectedType) {
-    throw new Error(
-      `Expected event type "${expectedType}" but received "${event.type}"`
-    );
+    throw new Error(`Expected event type "${expectedType}" but received "${event.type}"`);
   }
 
   assertObject(event.payload, "event.payload", "event.payload must be a non-null object");

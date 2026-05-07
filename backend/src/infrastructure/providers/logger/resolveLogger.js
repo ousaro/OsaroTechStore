@@ -13,7 +13,7 @@ import { ServiceUnavailableError } from "../../../shared/application/errors/inde
 export const resolveLogger = ({ provider = "console", scope = "app", options = {} } = {}) => {
   switch (provider) {
     case "console":
-      return assertLoggerPort(createConsoleLogger(scope,options), "resolveLogger");
+      return assertLoggerPort(createConsoleLogger(scope, options), "resolveLogger");
 
     case "pino":
       // Placeholder — implement createPinoLogger when needed

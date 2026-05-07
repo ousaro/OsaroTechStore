@@ -7,13 +7,15 @@ import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookU
 import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPaymentToOrderUseCase.js";
 import { buildGetPaymentByOrderIdUseCase } from "./application/queries/getPaymentByOrderIdUseCase.js";
 
-import { createPaymentsInputPort }       from "./ports/input/paymentsInputPort.js";
-import { assertPaymentRepositoryPort, assertPaymentEventPublisherPort }
-  from "./ports/output/paymentsOutputPort.js";
+import { createPaymentsInputPort } from "./ports/input/paymentsInputPort.js";
+import {
+  assertPaymentRepositoryPort,
+  assertPaymentEventPublisherPort,
+} from "./ports/output/paymentsOutputPort.js";
 import { createPaymentsHttpController } from "./adapters/input/http/paymentsHttpController.js";
-import { createPaymentsRoutes }         from "./adapters/input/http/paymentsRoutes.js";
-import { assertPaymentGatewayPort }     from "../../shared/application/ports/paymentGatewayPort.js";
-import { assertNonEmptyString }         from "../../shared/kernel/assertions/index.js";
+import { createPaymentsRoutes } from "./adapters/input/http/paymentsRoutes.js";
+import { assertPaymentGatewayPort } from "../../shared/application/ports/paymentGatewayPort.js";
+import { assertNonEmptyString } from "../../shared/kernel/assertions/index.js";
 
 export const createPaymentsModule = ({
   paymentGateway,
@@ -39,15 +41,27 @@ export const createPaymentsModule = ({
 
   // ── Use cases ────────────────────────────────────────────────────────────
   const createPaymentIntent = buildCreatePaymentIntentUseCase({
-    paymentGateway, paymentRepository, paymentsEnabled, clientUrl, logger,
+    paymentGateway,
+    paymentRepository,
+    paymentsEnabled,
+    clientUrl,
+    logger,
   });
 
   const verifyWebhook = buildVerifyWebhookUseCase({
-    paymentGateway, paymentRepository, paymentEventPublisher, webhookEnabled, logger,
+    paymentGateway,
+    paymentRepository,
+    paymentEventPublisher,
+    webhookEnabled,
+    logger,
   });
 
   const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
-    paymentGateway, paymentRepository, paymentsEnabled, clientUrl, logger,
+    paymentGateway,
+    paymentRepository,
+    paymentsEnabled,
+    clientUrl,
+    logger,
   });
 
   const getPaymentByOrderId = buildGetPaymentByOrderIdUseCase({ paymentRepository });

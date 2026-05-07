@@ -3,7 +3,10 @@ import assert from "node:assert/strict";
 
 import { assertDatabaseProviderPort } from "../../../../../src/shared/application/ports/databaseProviderPort.js";
 import { assertEventBusPort } from "../../../../../src/shared/application/ports/eventBusPort.js";
-import { assertLoggerPort, createScopedLogger } from "../../../../../src/shared/application/ports/loggerPort.js";
+import {
+  assertLoggerPort,
+  createScopedLogger,
+} from "../../../../../src/shared/application/ports/loggerPort.js";
 import { assertPaymentGatewayPort } from "../../../../../src/shared/application/ports/paymentGatewayPort.js";
 import { assertPaymentStrategyPort } from "../../../../../src/shared/application/ports/paymentStrategyPort.js";
 import { assertRepositoryPort } from "../../../../../src/shared/application/ports/repositoryPort.js";
@@ -47,12 +50,15 @@ test("payment strategy port allows disabled gateway and requires gateway when en
 
 test("createScopedLogger delegates to child when available", () => {
   const childCalls = [];
-  const scoped = createScopedLogger({
-    child: (meta) => {
-      childCalls.push(meta);
-      return { info: () => {}, warn: () => {}, error: () => {}, debug: () => {} };
+  const scoped = createScopedLogger(
+    {
+      child: (meta) => {
+        childCalls.push(meta);
+        return { info: () => {}, warn: () => {}, error: () => {}, debug: () => {} };
+      },
     },
-  }, "orders");
+    "orders"
+  );
 
   assert.equal(typeof scoped.info, "function");
   assert.deepEqual(childCalls, [{ scope: "orders" }]);
@@ -60,12 +66,15 @@ test("createScopedLogger delegates to child when available", () => {
 
 test("createScopedLogger prefixes object-shaped logs without child support", () => {
   const calls = [];
-  const scoped = createScopedLogger({
-    info: (entry) => calls.push(entry),
-    warn: () => {},
-    error: () => {},
-    debug: () => {},
-  }, "orders");
+  const scoped = createScopedLogger(
+    {
+      info: (entry) => calls.push(entry),
+      warn: () => {},
+      error: () => {},
+      debug: () => {},
+    },
+    "orders"
+  );
 
   scoped.info({ msg: "Order placed", orderId: "o1" });
 
