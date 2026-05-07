@@ -23,7 +23,11 @@ import {
 const ALLOWED_CURRENCIES = new Set(["USD", "EUR", "MAD", "GBP", "CAD", "AED"]);
 
 export const createMoney = ({ amount, currency }) => {
-  assertPositiveNumber(amount, "amount");
+  try {
+    assertPositiveNumber(amount, "amount");
+  } catch (error) {
+    throw new DomainValidationError(error.message);
+  }
 
   try {
     assertNonEmptyString(currency, "currency");

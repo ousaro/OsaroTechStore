@@ -14,6 +14,9 @@ export const createMongoMemoryTestServer = () => {
   };
 
   const cleanup = async () => {
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error("Cannot cleanup Mongo memory server before a connection is ready");
+    }
     const { collections } = mongoose.connection;
     await Promise.all(
       Object.values(collections).map((collection) => collection.deleteMany({}))

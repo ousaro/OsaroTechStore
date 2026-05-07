@@ -34,8 +34,12 @@ export const createOrder = ({
   paymentStatus,
 }) => {
   // ── Validate ───────────────────────────────────────────────────────────
-  assertNonEmptyString(ownerId, "ownerId");
-  assertNonEmptyArray(orderLines, "orderLines");
+  try {
+    assertNonEmptyString(ownerId, "ownerId");
+    assertNonEmptyArray(orderLines, "orderLines");
+  } catch (error) {
+    throw new DomainValidationError(error.message);
+  }
 
   const lines = orderLines.map((line) =>
     line.unitPrice?.toPrimitives

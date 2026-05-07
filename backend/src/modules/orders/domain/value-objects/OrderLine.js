@@ -8,9 +8,13 @@ import { assertNonEmptyString, assertPositiveNumber } from "../../../../shared/k
 import { createMoney }            from "./Money.js";
 
 export const createOrderLine = ({ productId, name, price, currency, quantity }) => {
-  assertNonEmptyString(productId, "productId");
-  assertNonEmptyString(name,      "name");
-  assertPositiveNumber(quantity,  "quantity");
+  try {
+    assertNonEmptyString(productId, "productId");
+    assertNonEmptyString(name,      "name");
+    assertPositiveNumber(quantity,  "quantity");
+  } catch (error) {
+    throw new DomainValidationError(error.message);
+  }
 
   const unitPrice = createMoney({ amount: price, currency });
   const subtotal  = unitPrice.multiply(quantity);
@@ -40,9 +44,13 @@ export const createOrderLine = ({ productId, name, price, currency, quantity }) 
  * Address Value Object.
  */
 export const createAddress = ({ street, city, state, postalCode, country }) => {
-  assertNonEmptyString(street,     "street");
-  assertNonEmptyString(city,       "city");
-  assertNonEmptyString(country,    "country");
+  try {
+    assertNonEmptyString(street,     "street");
+    assertNonEmptyString(city,       "city");
+    assertNonEmptyString(country,    "country");
+  } catch (error) {
+    throw new DomainValidationError(error.message);
+  }
 
   return Object.freeze({
     street,

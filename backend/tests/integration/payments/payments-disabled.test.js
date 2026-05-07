@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createIntegrationTestContext } from "../shared/utils/integrationTestContext.js";
-import { persistUser } from "../shared/factories/userFactory.js";
+import { createIntegrationTestContext } from "../../shared/utils/integrationTestContext.js";
+import { persistUser } from "../../shared/factories/userFactory.js";
 
 const ctx = createIntegrationTestContext();
 

@@ -20,6 +20,12 @@ export const createStripeGatewayMock = () => {
 
   return {
     calls,
+    reset() {
+      calls.createRedirectPayment.length = 0;
+      calls.verifyWebhook.length = 0;
+      sessions.clear();
+      nextPaymentResult = "success";
+    },
     setNextPaymentResult(result) {
       nextPaymentResult = result;
     },
