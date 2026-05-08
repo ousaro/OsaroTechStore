@@ -70,7 +70,11 @@ test("resolvePaymentStrategy returns Stripe strategy when configured", () => {
 });
 
 test("resolveDatabaseStrategy returns mongo strategy", () => {
-  const strategy = resolveDatabaseStrategy({ provider: "mongo", logger, env: {mongoUri: "mongodb://localhost:27017/test"} });
+  const strategy = resolveDatabaseStrategy({
+    provider: "mongo",
+    logger,
+    env: { mongoUri: "mongodb://localhost:27017/test" },
+  });
   assert.equal(strategy.getName(), "mongo");
 });
 
