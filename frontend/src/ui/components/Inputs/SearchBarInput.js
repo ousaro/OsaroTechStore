@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback  } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
-import { useProductsContext } from '../../../hooks/useProductsContext';
+import { useCategoriesContext } from '../../../core/app-context/useCategoriesContext';
+import { useProductsContext } from '../../../core/app-context/useProductsContext';
 import debounce from 'lodash.debounce';
 
 const SearchBarInput = () => {

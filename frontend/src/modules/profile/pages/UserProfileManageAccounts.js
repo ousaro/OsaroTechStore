@@ -2,9 +2,9 @@ import ProfileMenu from "../../../ui/components/Menus/ProfileMenu";
 import MenuDotsIcon from "../../../assets/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuthContext } from "../../../hooks/useAuthContext";
-import {useUsersContext} from "../../../hooks/useUsersContext"
-import {  updateUser, deleteUser, updateUserPassword } from "../../../api/users";
+import { useAuthContext } from "../../../core/auth/useAuthContext";
+import {useUsersContext} from "../../../core/app-context/useUsersContext"
+import {  updateUser, deleteUser, updateUserPassword } from "../../../infrastructure/api/users";
 import {toast} from "react-hot-toast"
 import LoadingOverlay from "../../../ui/components/OtherComponents/LoadingOverlay";
 

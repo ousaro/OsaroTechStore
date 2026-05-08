@@ -4,7 +4,7 @@ import Logo3 from "../../../assets/logo/OsaroTechStoreLogoWhite2.svg"
 import PasswordInput from '../../../ui/components/Inputs/PasswordInput';
 import EmailInput from '../../../ui/components/Inputs/EmailInput';
 import { useEffect, useState } from 'react';
-import { useLogIn } from '../../../hooks/useLogIn';
+import { useLogIn } from '../../../core/auth/useLogIn';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -96,7 +96,7 @@ const LogIn = () => {
 
                            {/* Use an icon for Google login */}
                             <div className="flex items-center mb-1 mt-4">
-                                <button className="bg-[url('./assets/icons/googleIcon.png')] bg-cover bg-center w-8 h-8 rounded-full md:mt-3 xl:w-12 xl:h-12 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-slate-400 hover:shadow-lg active:scale-95 active:shadow-md"
+                                <button className="bg-[url('../../assets/icons/googleIcon.png')] bg-cover bg-center w-8 h-8 rounded-full md:mt-3 xl:w-12 xl:h-12 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-slate-400 hover:shadow-lg active:scale-95 active:shadow-md"
                                     aria-label="Button with background image" 
                                     onClick={(e) => {
                                         e.preventDefault();

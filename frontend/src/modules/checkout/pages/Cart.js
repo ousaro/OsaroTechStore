@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import {useProductsContext} from "../../../hooks/useProductsContext"
-import { updateUser } from '../../../api/users';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
+import {useProductsContext} from "../../../core/app-context/useProductsContext"
+import { updateUser } from '../../../infrastructure/api/users';
 import {toast} from "react-hot-toast"
 import { updateLocalStorage } from '../../../shared/utils/utils';
 import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';

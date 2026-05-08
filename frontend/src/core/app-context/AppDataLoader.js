@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-import { getAllCategories } from "../../api/categories";
-import { getAllOrders } from "../../api/orders";
-import { getAllProducts } from "../../api/products";
-import { getAllUsers } from "../../api/users";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useCategoriesContext } from "../../hooks/useCategoriesContext";
-import { useOrdersContext } from "../../hooks/useOrdersContext";
-import { useProductsContext } from "../../hooks/useProductsContext";
-import { useUsersContext } from "../../hooks/useUsersContext";
+import { getAllCategories } from "../../infrastructure/api/categories";
+import { getAllOrders } from "../../infrastructure/api/orders";
+import { getAllProducts } from "../../infrastructure/api/products";
+import { getAllUsers } from "../../infrastructure/api/users";
+import { useAuthContext } from "../auth/useAuthContext";
+import { useCategoriesContext } from "./useCategoriesContext";
+import { useOrdersContext } from "./useOrdersContext";
+import { useProductsContext } from "./useProductsContext";
+import { useUsersContext } from "./useUsersContext";
 
 const showApiError = (json, fallback) => {
   toast.error(json?.error || json?.message || fallback);

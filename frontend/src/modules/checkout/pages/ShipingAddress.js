@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import ShippingAddress from '../../../ui/components/PlaceOrderComponents/ShippingAddress';
 import { useEffect } from 'react';
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import {useProductsContext} from "../../../hooks/useProductsContext"
-import { addNewOrder } from '../../../api/orders';
-import { updateProduct } from '../../../api/products';
-import { updateUser } from '../../../api/users';
-import { addNewPayment } from '../../../api/payment';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
+import {useProductsContext} from "../../../core/app-context/useProductsContext"
+import { addNewOrder } from '../../../infrastructure/api/orders';
+import { updateProduct } from '../../../infrastructure/api/products';
+import { updateUser } from '../../../infrastructure/api/users';
+import { addNewPayment } from '../../../infrastructure/api/payment';
 import { updateLocalStorage } from '../../../shared/utils/utils';
 import {toast} from "react-hot-toast"
 import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';

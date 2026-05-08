@@ -17,7 +17,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import LoadingPage from "../../core/loading/LoadingPage";
 import AppDataLoader from "../../core/app-context/AppDataLoader";
-import { useAuthContext } from "../../hooks/useAuthContext";
+import { useAuthContext } from "../../core/auth/useAuthContext";
 
 const AppRouter = () => {
   const { user, loading } = useAuthContext();

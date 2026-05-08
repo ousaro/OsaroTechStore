@@ -2,8 +2,8 @@ import ProfileMenu from "../../../ui/components/Menus/ProfileMenu";
 import MenuDotsIcon from "../../../assets/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuthContext } from "../../../hooks/useAuthContext";
-import { updateUser } from "../../../api/users";
+import { useAuthContext } from "../../../core/auth/useAuthContext";
+import { updateUser } from "../../../infrastructure/api/users";
 import { updateLocalStorage } from "../../../shared/utils/utils";
 import {toast} from "react-hot-toast"
 

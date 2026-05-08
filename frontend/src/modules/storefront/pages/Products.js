@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ProductsGrid from '../../../ui/components/Sections/ProductsGrid';
 import FilterComponent from "../../../ui/components/OtherComponents/FilterComponent";
 import PriceSlider from '../../../ui/components/OtherComponents/PriceSlider';
-import { useProductsContext } from '../../../hooks/useProductsContext';
-import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
-import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useProductsContext } from '../../../core/app-context/useProductsContext';
+import { useCategoriesContext } from '../../../core/app-context/useCategoriesContext';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
 import { categorizeProducts } from '../../../shared/utils/utils';
 
 

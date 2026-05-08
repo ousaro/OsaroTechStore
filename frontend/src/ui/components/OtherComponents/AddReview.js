@@ -1,6 +1,6 @@
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useProductsContext} from "../../../hooks/useProductsContext"
-import { updateProduct } from '../../../api/products';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
+import { useProductsContext} from "../../../core/app-context/useProductsContext"
+import { updateProduct } from '../../../infrastructure/api/products';
 import { useState } from 'react';
 import {toast} from "react-hot-toast"
 

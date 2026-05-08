@@ -8,7 +8,7 @@ import YearlySalesCurve from "../../../ui/components/Dashboard/YearlySalesCurve"
 import SalesByCategory from "../../../ui/components/Dashboard/SalesByCategory";
 import SalesOverYears from "../../../ui/components/Dashboard/SalesOverYears";
 import RecentOrders from "../../../ui/components/Dashboard/RecentOrders";
-import {useOrdersContext} from "../../../hooks/useOrdersContext";
+import {useOrdersContext} from "../../../core/app-context/useOrdersContext";
 import { useState, useEffect } from "react";
 
 

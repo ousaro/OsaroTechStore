@@ -10,7 +10,7 @@ const EmailInput = ({ name, value, onChange }) => {
       <input
         type="email"
         placeholder="exemple.com"
-        className="bg-[url('./assets/icons/emailIcon.svg')] input-icons  w-48 h-8 rounded-md p-2 mb-2 border hover:ring-2 hover:ring-slate-700 focus:outline-none focus:ring-2 focus:ring-primary2 outline outline-1 transition duration-300 ease-in-out transform focus:scale-105 md:w-full md:h-8 xl:h-12"
+        className="bg-[url('../../assets/icons/emailIcon.svg')] input-icons  w-48 h-8 rounded-md p-2 mb-2 border hover:ring-2 hover:ring-slate-700 focus:outline-none focus:ring-2 focus:ring-primary2 outline outline-1 transition duration-300 ease-in-out transform focus:scale-105 md:w-full md:h-8 xl:h-12"
         name={name}
         value={value}
         onChange={onChange}

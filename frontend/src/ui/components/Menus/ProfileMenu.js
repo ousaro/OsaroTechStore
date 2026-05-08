@@ -8,8 +8,8 @@ import manageProfileIcon from "../../../assets/icons/manageProfileIcon.svg"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
-import {useLogOut} from "../../../hooks/useLogOut";
-import { useAuthContext } from "../../../hooks/useAuthContext"
+import {useLogOut} from "../../../core/auth/useLogOut";
+import { useAuthContext } from "../../../core/auth/useAuthContext"
 import {toast} from "react-hot-toast"
 
 

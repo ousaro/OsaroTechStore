@@ -12,7 +12,7 @@ import MenuLg from '../Menus/MenuLg';
 import SearchBarInput from '../Inputs/SearchBarInput';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
 import { format } from 'date-fns';
 
 

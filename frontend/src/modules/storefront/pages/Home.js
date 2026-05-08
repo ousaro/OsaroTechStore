@@ -5,9 +5,9 @@ import ProductsList from '../../../ui/components/Sections/ProductsList';
 import CategoriesSection from '../../../ui/components/Sections/CategoriesSection';
 import ReviewsSection from '../../../ui/components/Sections/ReviewsSection';
 import HotDealSection from '../../../ui/components/Sections/HotDealSection';
-import { useProductsContext } from '../../../hooks/useProductsContext';
-import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
-import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useProductsContext } from '../../../core/app-context/useProductsContext';
+import { useCategoriesContext } from '../../../core/app-context/useCategoriesContext';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
 import { handleAutomaticScroll } from '../../../shared/utils/utils';
 
 const Home = () => {

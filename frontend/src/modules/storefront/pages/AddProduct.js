@@ -4,10 +4,10 @@ import { ReactComponent as PriceIcon } from "../../../assets/icons/price.svg";
 import { ReactComponent as ImageIcon } from "../../../assets/icons/image.svg";
 import { ReactComponent as CategoryIcon } from "../../../assets/icons/category.svg";
 import { ReactComponent as InfoIcon } from "../../../assets/icons/info.svg";
-import { useProductsContext } from '../../../hooks/useProductsContext';
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
-import { addNewProduct } from '../../../api/products';
+import { useProductsContext } from '../../../core/app-context/useProductsContext';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
+import { useCategoriesContext } from '../../../core/app-context/useCategoriesContext';
+import { addNewProduct } from '../../../infrastructure/api/products';
 import AddCategory from "../../../ui/components/OtherComponents/AddCategory"
 import {toast} from "react-hot-toast"
 import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';

@@ -6,8 +6,8 @@ import AdressIcon from "../../../assets/icons/locationIcon.svg"
 import facebookIcon from "../../../assets/icons/facebookIcon.svg"
 import instagramIcon from "../../../assets/icons/instagramIcon.svg"
 import pinterestIcon from "../../../assets/icons/pinterestIcon.svg"
-import { useAuthContext } from "../../../hooks/useAuthContext";
-import { useCategoriesContext } from "../../../hooks/useCategoriesContext";
+import { useAuthContext } from "../../../core/auth/useAuthContext";
+import { useCategoriesContext } from "../../../core/app-context/useCategoriesContext";
 
 
 

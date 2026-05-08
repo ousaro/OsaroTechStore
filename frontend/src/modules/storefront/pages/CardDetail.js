@@ -6,9 +6,9 @@ import ProductsList from '../../../ui/components/Sections/ProductsList';
 import ReviewsSection from '../../../ui/components/Sections/ReviewsSection';
 import { useEffect, useRef } from 'react';
 import Modal from "react-modal";
-import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useAuthContext } from '../../../core/auth/useAuthContext';
 import {toast} from "react-hot-toast"
-import { getProductById } from '../../../api/products';
+import { getProductById } from '../../../infrastructure/api/products';
 import AddReview from '../../../ui/components/OtherComponents/AddReview';
 import AddToCart from '../../../ui/components/OtherComponents/AddToCart';
 import {handleAutomaticScroll, openModal, closeModal } from '../../../shared/utils/utils';

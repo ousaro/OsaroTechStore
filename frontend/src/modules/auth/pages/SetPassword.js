@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useRegister} from "../../../hooks/useRegister"
+import { useRegister} from "../../../core/auth/useRegister"
 import { toast } from 'react-hot-toast';
 
 import Logo from '../../../assets/logo/OsaroTechStoreLogo.svg';
