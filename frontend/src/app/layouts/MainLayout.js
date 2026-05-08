@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
-import NavBar from "./components/Sections/NavBar";
-import Footer from "./components/Sections/Footer";
+import NavBar from "../../components/Sections/NavBar";
+import Footer from "../../components/Sections/Footer";
 
 const Layout = () => {
  
@@ -10,7 +10,7 @@ const Layout = () => {
   const showNavAndFooter = !['/LogIn', '/SetPassword'].includes(location.pathname);
 
   return (
-    <div>
+    <div className="min-h-screen bg-white">
       {showNavAndFooter && <NavBar  />}
       <Outlet />
       {showNavAndFooter && <Footer />}
