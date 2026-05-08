@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ProductsGrid from '../../components/Sections/ProductsGrid';
-import FilterComponent from "../../components/OtherComponents/FilterComponent";
-import PriceSlider from '../../components/OtherComponents/PriceSlider';
-import { useProductsContext } from '../../hooks/useProductsContext';
-import { useCategoriesContext } from '../../hooks/useCategoriesContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { categorizeProducts } from '../../utils/utils';
+import ProductsGrid from '../../../components/Sections/ProductsGrid';
+import FilterComponent from "../../../components/OtherComponents/FilterComponent";
+import PriceSlider from '../../../components/OtherComponents/PriceSlider';
+import { useProductsContext } from '../../../hooks/useProductsContext';
+import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { categorizeProducts } from '../../../shared/utils/utils';
 
 
 

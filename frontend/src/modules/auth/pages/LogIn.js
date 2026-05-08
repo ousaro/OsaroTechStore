@@ -1,10 +1,10 @@
-import Logo from '../../img/logo/OsaroTechStoreLogo.svg';
-import Logo2 from '../../img/logo/OsaroTechStoreLogo4.svg';
-import Logo3 from "../../img/logo/OsaroTechStoreLogoWhite2.svg"
-import PasswordInput from '../../components/Inputs/PasswordInput';
-import EmailInput from '../../components/Inputs/EmailInput';
+import Logo from '../../../img/logo/OsaroTechStoreLogo.svg';
+import Logo2 from '../../../img/logo/OsaroTechStoreLogo4.svg';
+import Logo3 from "../../../img/logo/OsaroTechStoreLogoWhite2.svg"
+import PasswordInput from '../../../components/Inputs/PasswordInput';
+import EmailInput from '../../../components/Inputs/EmailInput';
 import { useEffect, useState } from 'react';
-import { useLogIn } from '../../hooks/useLogIn';
+import { useLogIn } from '../../../hooks/useLogIn';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import ShippingAddress from '../../components/PlaceOrderComponents/ShippingAddress';
+import ShippingAddress from '../../../components/PlaceOrderComponents/ShippingAddress';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import {useProductsContext} from "../../hooks/useProductsContext"
-import { addNewOrder } from '../../api/orders';
-import { updateProduct } from '../../api/products';
-import { updateUser } from '../../api/users';
-import { getSessionById } from '../../api/sessions';
-import { updateLocalStorage } from '../../utils/utils';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import {useProductsContext} from "../../../hooks/useProductsContext"
+import { addNewOrder } from '../../../api/orders';
+import { updateProduct } from '../../../api/products';
+import { updateUser } from '../../../api/users';
+import { getSessionById } from '../../../api/sessions';
+import { updateLocalStorage } from '../../../shared/utils/utils';
 import {toast} from "react-hot-toast"
-import LoadingOverlay from '../../components/OtherComponents/LoadingOverlay';
+import LoadingOverlay from '../../../components/OtherComponents/LoadingOverlay';
 
 
 const ShippingAddressForm = () => {

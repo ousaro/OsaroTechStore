@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import {useProductsContext} from "../../hooks/useProductsContext"
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import {useProductsContext} from "../../../hooks/useProductsContext"
 import {loadStripe} from "@stripe/stripe-js"
-import { updateUser } from '../../api/users';
-import { addNewPayment } from '../../api/payment';
+import { updateUser } from '../../../api/users';
+import { addNewPayment } from '../../../api/payment';
 import {toast} from "react-hot-toast"
-import { updateLocalStorage } from '../../utils/utils';
-import LoadingOverlay from '../../components/OtherComponents/LoadingOverlay';
+import { updateLocalStorage } from '../../../shared/utils/utils';
+import LoadingOverlay from '../../../components/OtherComponents/LoadingOverlay';
 
 
 const Cart = () => {

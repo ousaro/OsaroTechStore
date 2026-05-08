@@ -1,13 +1,13 @@
-import ProfileMenu from "../../components/Menus/ProfileMenu";
-import MenuDotsIcon from "../../img/icons/menuDotsIcon.svg";
+import ProfileMenu from "../../../components/Menus/ProfileMenu";
+import MenuDotsIcon from "../../../img/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import ConfimPasswordInput from "../../components/Inputs/ConfimPasswordInput";
-import PasswordInput from "../../components/Inputs/PasswordInput";
-import { updateUserPassword } from "../../api/users";
+import { useAuthContext } from "../../../hooks/useAuthContext";
+import ConfimPasswordInput from "../../../components/Inputs/ConfimPasswordInput";
+import PasswordInput from "../../../components/Inputs/PasswordInput";
+import { updateUserPassword } from "../../../api/users";
 import {toast} from "react-hot-toast"
-import LoadingOverlay from "../../components/OtherComponents/LoadingOverlay";
+import LoadingOverlay from "../../../components/OtherComponents/LoadingOverlay";
 
 
 const UserProfileChangePassword = () => {

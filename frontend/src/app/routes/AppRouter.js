@@ -2,22 +2,18 @@ import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-d
 import { Toaster } from "react-hot-toast";
 
 import ScrollToTop from "../../components/OtherComponents/ScrollToTop";
-import LogIn from "../../pages/Authentication/LogIn";
-import SetPassword from "../../pages/Authentication/SetPassword";
-import Home from "../../pages/HomePage/Home";
-import UserProfile from "../../pages/ProfilePages/UserProfile";
-import UserProfileAddress from "../../pages/ProfilePages/UserProfileAddress";
-import UserProfieChangePassword from "../../pages/ProfilePages/UserProfileChangePassword";
-import UserProfileDeleteAccount from "../../pages/ProfilePages/UserProfileDeleteAccount";
-import UserProfileOrders from "../../pages/ProfilePages/UserProfileOrders";
-import UserProfileManageAccounts from "../../pages/ProfilePages/UserProfileManageAccounts";
-import Products from "../../pages/HomePage/Products";
-import About from "../../pages/HomePage/About";
-import Cart from "../../pages/HomePage/Cart";
-import CardDetail from "../../pages/HomePage/CardDetail";
-import DashBoard from "../../pages/HomePage/DashBoard";
-import AddProduct from "../../pages/HomePage/AddProduct";
-import ShippingAddressForm from "../../pages/HomePage/ShipingAddress";
+import { LogIn, SetPassword } from "../../modules/auth";
+import { AddProduct, About, CardDetail, Home, Products } from "../../modules/storefront";
+import { Cart, ShippingAddressForm } from "../../modules/checkout";
+import { DashBoard } from "../../modules/dashboard";
+import {
+  UserProfile,
+  UserProfileAddress,
+  UserProfieChangePassword,
+  UserProfileDeleteAccount,
+  UserProfileManageAccounts,
+  UserProfileOrders,
+} from "../../modules/profile";
 import MainLayout from "../layouts/MainLayout";
 import LoadingPage from "../../core/loading/LoadingPage";
 import AppDataLoader from "../../core/app-context/AppDataLoader";

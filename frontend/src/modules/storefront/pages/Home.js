@@ -1,14 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import { useState } from 'react';
-import HeroSection from '../../components/Sections/HeroSection';
-import ProductsList from '../../components/Sections/ProductsList';
-import CategoriesSection from '../../components/Sections/CategoriesSection';
-import ReviewsSection from '../../components/Sections/ReviewsSection';
-import HotDealSection from '../../components/Sections/HotDealSection';
-import { useProductsContext } from '../../hooks/useProductsContext';
-import { useCategoriesContext } from '../../hooks/useCategoriesContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { handleAutomaticScroll } from '../../utils/utils';
+import HeroSection from '../../../components/Sections/HeroSection';
+import ProductsList from '../../../components/Sections/ProductsList';
+import CategoriesSection from '../../../components/Sections/CategoriesSection';
+import ReviewsSection from '../../../components/Sections/ReviewsSection';
+import HotDealSection from '../../../components/Sections/HotDealSection';
+import { useProductsContext } from '../../../hooks/useProductsContext';
+import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { handleAutomaticScroll } from '../../../shared/utils/utils';
 
 const Home = () => {
 
