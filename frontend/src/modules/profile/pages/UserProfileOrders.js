@@ -1,10 +1,10 @@
 
-import ProfileMenu from "../../../components/Menus/ProfileMenu";
-import MenuDotsIcon from "../../../img/icons/menuDotsIcon.svg";
+import ProfileMenu from "../../../ui/components/Menus/ProfileMenu";
+import MenuDotsIcon from "../../../assets/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import OrderTable from "../../../components/OtherComponents/OrderTable";
-import LoadingOverlay from "../../../components/OtherComponents/LoadingOverlay";
+import OrderTable from "../../../ui/components/OtherComponents/OrderTable";
+import LoadingOverlay from "../../../ui/components/OtherComponents/LoadingOverlay";
 
 
 const UserProfileOrders = () => {

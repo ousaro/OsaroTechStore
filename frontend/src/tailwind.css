@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-slate-50 text-primary1 antialiased;
+    }
+
+    ::selection {
+        @apply bg-primary2 text-white;
+    }
+}
+
+@layer components {
+    .surface-panel {
+        @apply rounded-lg border border-slate-200 bg-white shadow-sm;
+    }
+
+    .interactive-card {
+        @apply transition duration-300 ease-in-out hover:-translate-y-1 hover:border-primary2 hover:shadow-lg;
+    }
+
+    .form-control {
+        @apply rounded-md border border-slate-300 bg-white px-3 py-2 outline-none transition duration-200 focus:border-primary2 focus:ring-2 focus:ring-primary4;
+    }
+
+    .primary-action {
+        @apply rounded-md bg-primary2 px-4 py-2 font-semibold text-white shadow-sm transition duration-200 hover:bg-primary2dark focus:outline-none focus:ring-2 focus:ring-primary4 active:translate-y-px;
+    }
+}

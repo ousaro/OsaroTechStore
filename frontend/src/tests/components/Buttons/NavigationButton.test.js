@@ -1,15 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import NavigationButton from '../../../components/Buttons/NavigationButton';
+import NavigationButton from '../../../ui/components/Buttons/NavigationButton';
 
 // Mock the utility functions
-jest.mock('../../../utils/utils', () => ({
+jest.mock('../../../shared/utils/utils', () => ({
   scrollLeft: jest.fn(),
   scrollRight: jest.fn(),
 }));
 
 // Import the mocked functions
-import { scrollLeft, scrollRight } from '../../../utils/utils';
+import { scrollLeft, scrollRight } from '../../../shared/utils/utils';
 
 describe('NavigationButton Component', () => {
   const mockSetCanScrollAutomatic = jest.fn();

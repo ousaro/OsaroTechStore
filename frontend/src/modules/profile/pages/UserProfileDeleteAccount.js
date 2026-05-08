@@ -1,13 +1,13 @@
 
 import { useNavigate } from "react-router-dom";
-import ProfileMenu from "../../../components/Menus/ProfileMenu";
-import MenuDotsIcon from "../../../img/icons/menuDotsIcon.svg";
+import ProfileMenu from "../../../ui/components/Menus/ProfileMenu";
+import MenuDotsIcon from "../../../assets/icons/menuDotsIcon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { deleteUser } from "../../../api/users";
 import {toast} from "react-hot-toast"
-import LoadingOverlay from "../../../components/OtherComponents/LoadingOverlay";
+import LoadingOverlay from "../../../ui/components/OtherComponents/LoadingOverlay";
 
 const UserProfileDeletePassword = () => {
 

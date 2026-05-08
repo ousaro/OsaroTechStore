@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { useState } from 'react';
-import HeroSection from '../../../components/Sections/HeroSection';
-import ProductsList from '../../../components/Sections/ProductsList';
-import CategoriesSection from '../../../components/Sections/CategoriesSection';
-import ReviewsSection from '../../../components/Sections/ReviewsSection';
-import HotDealSection from '../../../components/Sections/HotDealSection';
+import HeroSection from '../../../ui/components/Sections/HeroSection';
+import ProductsList from '../../../ui/components/Sections/ProductsList';
+import CategoriesSection from '../../../ui/components/Sections/CategoriesSection';
+import ReviewsSection from '../../../ui/components/Sections/ReviewsSection';
+import HotDealSection from '../../../ui/components/Sections/HotDealSection';
 import { useProductsContext } from '../../../hooks/useProductsContext';
 import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';

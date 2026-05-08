@@ -3,11 +3,11 @@ import StarRating from "../OtherComponents/StarRating"
 import WishlistButton from "../Buttons/WishlistButton"
 import AddToCartButton from "../Buttons/AddToCartButton"
 import NavigationButton from "../Buttons/NavigationButton"
-import OpenEye from "../../img/icons/openEyeIcon.svg"
+import OpenEye from "../../../assets/icons/openEyeIcon.svg"
 import { Link } from "react-router-dom"
 import { useState } from "react"
 import Modal from "react-modal"
-import { openModal, closeModal } from "../../utils/utils"
+import { openModal, closeModal } from "../../../shared/utils/utils"
 import { FaShoppingCart } from 'react-icons/fa';
 
 const ProductsList = ({admin,sectionId,products,name,productContainerRef, setCanScrollAutomaticProducts}) => {

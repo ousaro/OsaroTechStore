@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { ReactComponent as DescriptionIcon } from "../../../img/icons/description.svg";
-import { ReactComponent as PriceIcon } from "../../../img/icons/price.svg";
-import { ReactComponent as ImageIcon } from "../../../img/icons/image.svg";
-import { ReactComponent as CategoryIcon } from "../../../img/icons/category.svg";
-import { ReactComponent as InfoIcon } from "../../../img/icons/info.svg";
+import { ReactComponent as DescriptionIcon } from "../../../assets/icons/description.svg";
+import { ReactComponent as PriceIcon } from "../../../assets/icons/price.svg";
+import { ReactComponent as ImageIcon } from "../../../assets/icons/image.svg";
+import { ReactComponent as CategoryIcon } from "../../../assets/icons/category.svg";
+import { ReactComponent as InfoIcon } from "../../../assets/icons/info.svg";
 import { useProductsContext } from '../../../hooks/useProductsContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
 import { addNewProduct } from '../../../api/products';
-import AddCategory from "../../../components/OtherComponents/AddCategory"
+import AddCategory from "../../../ui/components/OtherComponents/AddCategory"
 import {toast} from "react-hot-toast"
-import LoadingOverlay from '../../../components/OtherComponents/LoadingOverlay';
+import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';
 
 
 const AddProduct = () => {

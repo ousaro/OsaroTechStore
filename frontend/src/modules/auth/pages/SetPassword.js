@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { useRegister} from "../../../hooks/useRegister"
 import { toast } from 'react-hot-toast';
 
-import Logo from '../../../img/logo/OsaroTechStoreLogo.svg';
-import Logo2 from '../../../img/logo/OsaroTechStoreLogo4.svg';
-import Logo3 from "../../../img/logo/OsaroTechStoreLogoWhite2.svg"
-import PasswordInput from '../../../components/Inputs/PasswordInput';
-import ConfimPasswordInput from '../../../components/Inputs/ConfimPasswordInput';
+import Logo from '../../../assets/logo/OsaroTechStoreLogo.svg';
+import Logo2 from '../../../assets/logo/OsaroTechStoreLogo4.svg';
+import Logo3 from "../../../assets/logo/OsaroTechStoreLogoWhite2.svg"
+import PasswordInput from '../../../ui/components/Inputs/PasswordInput';
+import ConfimPasswordInput from '../../../ui/components/Inputs/ConfimPasswordInput';
 
 
 

@@ -1,4 +1,4 @@
-import { scrollLeft, scrollRight } from "../../utils/utils";
+import { scrollLeft, scrollRight } from "../../../shared/utils/utils";
 
 const NavigationButton = ({setCanScrollAutomatic, containerRef}) => {
     return ( 

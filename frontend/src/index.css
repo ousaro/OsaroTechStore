@@ -1,6 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 @import "tailwind.css";
 
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
 
 .input-icons{
     background-repeat: no-repeat;
@@ -17,7 +31,7 @@ input[type="Password"]:focus ~ .focusInput{
   }
 
 .Button{
-    @apply bg-primary2 w-48 h-8 rounded-md text-white mt-5 mb-5 font-roboto font-bold md:w-2/3 md:h-9 md:text-xl xl:w-3/6 xl:h-11 xl:mt-8 transition duration-300 ease-in-out transform hover:bg-primary2dark hover:-translate-y-1 hover:shadow-slate-300 hover:shadow-lg active:translate-y-0 active:shadow-md;
+    @apply w-48 h-9 mt-5 mb-5 rounded-md bg-primary2 font-roboto font-semibold text-white shadow-sm transition duration-200 hover:bg-primary2dark focus:outline-none focus:ring-2 focus:ring-primary4 active:translate-y-px md:w-2/3 md:h-10 md:text-lg xl:w-3/6 xl:h-11 xl:mt-8;
 }
 
 .MenuSelected img{
@@ -51,7 +65,7 @@ input[type="Password"]:focus ~ .focusInput{
 
 .hero{
     height: 80svh;
-    @apply  bg-gradient-to-l from-primary2 to-primary5 flex flex-col justify-center text-white text-center py-20 mb-8 px-2;
+    @apply  bg-gradient-to-br from-primary1 via-primary5 to-primary2 flex flex-col justify-center text-white text-center py-20 mb-8 px-4 shadow-inner;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -81,7 +95,7 @@ input[type="Password"]:focus ~ .focusInput{
 .product-container-grid{
     position: relative;
     height: 26rem; 
-    @apply  bg-white z-20  m-auto w-64 lg:w-64
+    @apply  z-20 m-auto w-64 rounded-lg border border-slate-200 bg-white shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:border-primary2 hover:shadow-lg lg:w-64
 }
 
 @media screen and (min-width: 640px) {
@@ -97,7 +111,7 @@ input[type="Password"]:focus ~ .focusInput{
 
 
 .product-card-grid{
-    @apply  bg-white ring-1 ring-primary1light z-20 flex-none w-full h-96
+    @apply  rounded-lg border border-slate-200 bg-white shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:border-primary2 hover:shadow-lg ring-1 ring-primary1light z-20 flex-none w-full h-96
      m-auto
 }
 .product-actions-grid {
@@ -110,7 +124,7 @@ input[type="Password"]:focus ~ .focusInput{
 
 
 .product-card{
-    @apply  bg-white ring-1 ring-primary1light z-20 flex-none w-52 lg:w-64 lg:min-h-96
+    @apply  rounded-lg border border-slate-200 bg-white shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:border-primary2 hover:shadow-lg ring-1 ring-primary1light z-20 flex-none w-52 lg:w-64 lg:min-h-96
 }       
 
 
@@ -135,7 +149,7 @@ input[type="Password"]:focus ~ .focusInput{
 }
 
 .cartButton {
-    @apply  text-sm text-white font-semibold py-2 px-4 rounded-full shadow-md flex gap-2
+    @apply  text-sm text-white font-semibold py-2 px-4 rounded-md shadow-sm flex gap-2
 }
 
 .cartButtonHover {
@@ -176,8 +190,7 @@ input[type="Password"]:focus ~ .focusInput{
 }
 
 .category-card {
-    border-radius: 100em;
-    @apply max-h-72 relative overflow-hidden flex justify-center items-center bg-gradient-to-l from-primary2 to-primary1 shadow-lg border border-gray-200 transform transition-transform duration-300 hover:scale-105
+    @apply max-h-72 rounded-lg relative overflow-hidden flex justify-center items-center bg-gradient-to-br from-primary2 to-primary1 shadow-sm border border-slate-200 transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg
 }
 
 .category-card img {
@@ -199,7 +212,7 @@ input[type="Password"]:focus ~ .focusInput{
 
 
 .hotDeal-container{
-    @apply flex items-center justify-center lg:justify-between font-bold  w-full mb-5 p-10 gap-4 bg-gradient-to-l from-primary2 to-primary5 text-white
+    @apply flex items-center justify-center lg:justify-between font-bold  w-full mb-5 p-10 gap-4 bg-gradient-to-br from-primary1 via-primary5 to-primary2 text-white shadow-inner
 }
 
 @media screen and (min-width: 1024px) {

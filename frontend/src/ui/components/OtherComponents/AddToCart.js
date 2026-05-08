@@ -1,6 +1,6 @@
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { updateUser } from '../../api/users';
-import { updateLocalStorage } from '../../utils/utils';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { updateUser } from '../../../api/users';
+import { updateLocalStorage } from '../../../shared/utils/utils';
 import {toast} from "react-hot-toast"
 
 

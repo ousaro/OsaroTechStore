@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Logo from '../../../img/logo/OsaroTechStoreLogo4.svg';
-import PhoneIcon from "../../../img/icons/phoneIcon.svg"
-import EmailIcon from "../../../img/icons/emailIconWhite.svg"
-import AdressIcon from "../../../img/icons/locationIcon.svg"
-import facebookIcon from "../../../img/icons/facebookIcon.svg"
-import instagramIcon from "../../../img/icons/instagramIcon.svg"
-import pinterestIcon from "../../../img/icons/pinterestIcon.svg"
+import Logo from '../../../assets/logo/OsaroTechStoreLogo4.svg';
+import PhoneIcon from "../../../assets/icons/phoneIcon.svg"
+import EmailIcon from "../../../assets/icons/emailIconWhite.svg"
+import AdressIcon from "../../../assets/icons/locationIcon.svg"
+import facebookIcon from "../../../assets/icons/facebookIcon.svg"
+import instagramIcon from "../../../assets/icons/instagramIcon.svg"
+import pinterestIcon from "../../../assets/icons/pinterestIcon.svg"
 
 
 const About = () => {

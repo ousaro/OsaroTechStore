@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { act } from 'react';
-import ShippingAddress from '../../../components/PlaceOrderComponents/ShippingAddress';
+import ShippingAddress from '../../../ui/components/PlaceOrderComponents/ShippingAddress';
 
 describe('ShippingAddress Component', () => {
   const mockSetShippingAddress = jest.fn();

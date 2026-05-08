@@ -1,15 +1,15 @@
-import profileIconBlack from "../../img/icons/profileIconBlack.svg"
-import addressIcon from "../../img/icons/addressIcon.svg"
-import ordersIcon from "../../img/icons/ordersIcon.svg"
-import changePassIcon from "../../img/icons/changePassIcon.svg"
-import deleteAccountIcon from "../../img/icons/deleteIcon.svg"
-import logoutIcon from "../../img/icons/logoutIcon.svg"
-import manageProfileIcon from "../../img/icons/manageProfileIcon.svg"
+import profileIconBlack from "../../../assets/icons/profileIconBlack.svg"
+import addressIcon from "../../../assets/icons/addressIcon.svg"
+import ordersIcon from "../../../assets/icons/ordersIcon.svg"
+import changePassIcon from "../../../assets/icons/changePassIcon.svg"
+import deleteAccountIcon from "../../../assets/icons/deleteIcon.svg"
+import logoutIcon from "../../../assets/icons/logoutIcon.svg"
+import manageProfileIcon from "../../../assets/icons/manageProfileIcon.svg"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
-import {useLogOut} from "../../hooks/useLogOut";
-import { useAuthContext } from "../../hooks/useAuthContext"
+import {useLogOut} from "../../../hooks/useLogOut";
+import { useAuthContext } from "../../../hooks/useAuthContext"
 import {toast} from "react-hot-toast"
 
 

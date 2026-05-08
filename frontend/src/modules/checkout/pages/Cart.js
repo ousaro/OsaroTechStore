@@ -7,7 +7,7 @@ import { updateUser } from '../../../api/users';
 import { addNewPayment } from '../../../api/payment';
 import {toast} from "react-hot-toast"
 import { updateLocalStorage } from '../../../shared/utils/utils';
-import LoadingOverlay from '../../../components/OtherComponents/LoadingOverlay';
+import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';
 
 
 const Cart = () => {

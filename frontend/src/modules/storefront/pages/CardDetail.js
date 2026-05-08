@@ -1,16 +1,16 @@
 // CardDetail.js
 import React, { useState } from 'react';
 import {  useParams } from 'react-router-dom';
-import StarRating from '../../../components/OtherComponents/StarRating';
-import ProductsList from '../../../components/Sections/ProductsList';
-import ReviewsSection from '../../../components/Sections/ReviewsSection';
+import StarRating from '../../../ui/components/OtherComponents/StarRating';
+import ProductsList from '../../../ui/components/Sections/ProductsList';
+import ReviewsSection from '../../../ui/components/Sections/ReviewsSection';
 import { useEffect, useRef } from 'react';
 import Modal from "react-modal";
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import {toast} from "react-hot-toast"
 import { getProductById } from '../../../api/products';
-import AddReview from '../../../components/OtherComponents/AddReview';
-import AddToCart from '../../../components/OtherComponents/AddToCart';
+import AddReview from '../../../ui/components/OtherComponents/AddReview';
+import AddToCart from '../../../ui/components/OtherComponents/AddToCart';
 import {handleAutomaticScroll, openModal, closeModal } from '../../../shared/utils/utils';
 
 const CardDetail = () => {

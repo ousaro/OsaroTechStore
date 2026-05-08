@@ -1,8 +1,8 @@
 import Select from 'react-select';
-import { useOrdersContext } from '../../hooks/useOrdersContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import { useOrdersContext } from '../../../hooks/useOrdersContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 import { format } from 'date-fns';
-import { updateOrder, deleteOrder } from '../../api/orders';
+import { updateOrder, deleteOrder } from '../../../api/orders';
 import {toast} from "react-hot-toast"
 import { useEffect, useState } from 'react';
 

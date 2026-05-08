@@ -1,18 +1,18 @@
-import Logo from '../../img/logo/logoWhite.svg';
-import PhoneIcon from "../../img/icons/phoneIcon.svg"
-import EmailIcon from "../../img/icons/emailIconWhite.svg"
-import AdressIcon from "../../img/icons/locationIcon.svg"
-import CurrencyIcon from "../../img/icons/dollarIcon.svg"
-import DateIcon from "../../img/icons/dateIcon.svg"
-import MenuIcon from "../../img/icons/menuIcon.svg"
-import CartIcon from "../../img/icons/cartIcon.svg"
-import WishlistIcon from "../../img/icons/heartIcon.svg"
+import Logo from '../../../assets/logo/logoWhite.svg';
+import PhoneIcon from "../../../assets/icons/phoneIcon.svg"
+import EmailIcon from "../../../assets/icons/emailIconWhite.svg"
+import AdressIcon from "../../../assets/icons/locationIcon.svg"
+import CurrencyIcon from "../../../assets/icons/dollarIcon.svg"
+import DateIcon from "../../../assets/icons/dateIcon.svg"
+import MenuIcon from "../../../assets/icons/menuIcon.svg"
+import CartIcon from "../../../assets/icons/cartIcon.svg"
+import WishlistIcon from "../../../assets/icons/heartIcon.svg"
 import Menu from '../Menus/Menu';
 import MenuLg from '../Menus/MenuLg';
 import SearchBarInput from '../Inputs/SearchBarInput';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 import { format } from 'date-fns';
 
 

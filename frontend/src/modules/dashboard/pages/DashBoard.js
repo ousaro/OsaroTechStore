@@ -1,13 +1,13 @@
 import React from "react";
-import SalesSummary from "../../../components/Dashboard/SalesSummary";
-import OrdersSummary from "../../../components/Dashboard/OrdersSummary";
-import ProductsSummary from "../../../components/Dashboard/ProductsSummary";
-import CustomersSummary from "../../../components/Dashboard/CustomersSummary";
-import MonthlySalesCurve from "../../../components/Dashboard/MonthlySalesCurve";
-import YearlySalesCurve from "../../../components/Dashboard/YearlySalesCurve";
-import SalesByCategory from "../../../components/Dashboard/SalesByCategory";
-import SalesOverYears from "../../../components/Dashboard/SalesOverYears";
-import RecentOrders from "../../../components/Dashboard/RecentOrders";
+import SalesSummary from "../../../ui/components/Dashboard/SalesSummary";
+import OrdersSummary from "../../../ui/components/Dashboard/OrdersSummary";
+import ProductsSummary from "../../../ui/components/Dashboard/ProductsSummary";
+import CustomersSummary from "../../../ui/components/Dashboard/CustomersSummary";
+import MonthlySalesCurve from "../../../ui/components/Dashboard/MonthlySalesCurve";
+import YearlySalesCurve from "../../../ui/components/Dashboard/YearlySalesCurve";
+import SalesByCategory from "../../../ui/components/Dashboard/SalesByCategory";
+import SalesOverYears from "../../../ui/components/Dashboard/SalesOverYears";
+import RecentOrders from "../../../ui/components/Dashboard/RecentOrders";
 import {useOrdersContext} from "../../../hooks/useOrdersContext";
 import { useState, useEffect } from "react";
 

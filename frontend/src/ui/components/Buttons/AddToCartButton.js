@@ -1,9 +1,9 @@
-import { useAuthContext } from "../../hooks/useAuthContext"
-import CartIcon from "../../img/icons/cartIconPrimary2.svg"
-import { updateUser } from "../../api/users";
+import { useAuthContext } from "../../../hooks/useAuthContext"
+import CartIcon from "../../../assets/icons/cartIconPrimary2.svg"
+import { updateUser } from "../../../api/users";
 import { useState, useEffect } from "react";
-import { updateLocalStorage } from "../../utils/utils";
-import { useProductsContext } from "../../hooks/useProductsContext"; 
+import { updateLocalStorage } from "../../../shared/utils/utils";
+import { useProductsContext } from "../../../hooks/useProductsContext"; 
 import {toast} from "react-hot-toast"
 
 const AddToCartButton = ({isGrid, productId, dataProductId, handleHover, handleMouseLeave}) => {

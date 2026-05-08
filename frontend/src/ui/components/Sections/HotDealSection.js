@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import hotdeal1 from "../../img/imgs/HotDeal1.png"
-import hotdeal2 from "../../img/imgs/HotDeal2.png"
+import hotdeal1 from "../../../assets/imgs/HotDeal1.png"
+import hotdeal2 from "../../../assets/imgs/HotDeal2.png"
 import CountdownTimer from '../OtherComponents/CountdownTimer';
 
 

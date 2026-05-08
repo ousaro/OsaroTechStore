@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ProductsGrid from '../../../components/Sections/ProductsGrid';
-import FilterComponent from "../../../components/OtherComponents/FilterComponent";
-import PriceSlider from '../../../components/OtherComponents/PriceSlider';
+import ProductsGrid from '../../../ui/components/Sections/ProductsGrid';
+import FilterComponent from "../../../ui/components/OtherComponents/FilterComponent";
+import PriceSlider from '../../../ui/components/OtherComponents/PriceSlider';
 import { useProductsContext } from '../../../hooks/useProductsContext';
 import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';

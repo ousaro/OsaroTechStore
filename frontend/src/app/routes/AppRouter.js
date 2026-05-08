@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-import ScrollToTop from "../../components/OtherComponents/ScrollToTop";
+import ScrollToTop from "../../ui/components/OtherComponents/ScrollToTop";
 import { LogIn, SetPassword } from "../../modules/auth";
 import { AddProduct, About, CardDetail, Home, Products } from "../../modules/storefront";
 import { Cart, ShippingAddressForm } from "../../modules/checkout";

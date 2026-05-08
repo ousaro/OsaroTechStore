@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { deleteCategory, addNewCategory } from '../../api/categories';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useCategoriesContext } from '../../hooks/useCategoriesContext';
+import { deleteCategory, addNewCategory } from '../../../api/categories';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useCategoriesContext } from '../../../hooks/useCategoriesContext';
 import {toast} from "react-hot-toast"
 import LoadingOverlay from './LoadingOverlay';
 

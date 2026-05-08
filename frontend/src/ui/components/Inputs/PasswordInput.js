@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import openEyeIcon from "../../img/icons/openEyeIcon.svg"
-import closedEyeIcon from "../../img/icons/closedEyeIcon.svg"
+import openEyeIcon from "../../../assets/icons/openEyeIcon.svg"
+import closedEyeIcon from "../../../assets/icons/closedEyeIcon.svg"
 
 
 
@@ -21,7 +21,7 @@ const PasswordInput = ({labelName,name, value, onChange}) => {
         <input
           type={showPassword ? "text" : "password"}
           placeholder="Password"
-          className="passInput bg-[url('./img/icons/passwordIcon.svg')] input-icons w-48 h-8 rounded-md p-2 pl-8 focus:pl-10 mb-2 border hover:ring-2 hover:ring-slate-700 focus:outline-none focus:ring-2 focus:ring-primary2 outline outline-1 transition duration-300 ease-in-out transform focus:scale-105  active:scale-100 md:w-full md:h-8 xl:h-12 xl:pl-9"
+          className="passInput bg-[url('./assets/icons/passwordIcon.svg')] input-icons w-48 h-8 rounded-md p-2 pl-8 focus:pl-10 mb-2 border hover:ring-2 hover:ring-slate-700 focus:outline-none focus:ring-2 focus:ring-primary2 outline outline-1 transition duration-300 ease-in-out transform focus:scale-105  active:scale-100 md:w-full md:h-8 xl:h-12 xl:pl-9"
           name={name}
           value={value}
           onChange={onChange}
