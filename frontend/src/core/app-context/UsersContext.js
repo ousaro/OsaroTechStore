@@ -1,4 +1,5 @@
-import React , {createContext, useReducer} from 'react';
+import React , {createContext, useMemo, useReducer} from 'react';
+import PropTypes from 'prop-types';
 
 
 export const UsersContext = createContext();
@@ -46,14 +47,18 @@ export const UsersReducer = (state, action) =>{
     }
 }
 
-export const UsersProvider = (props)=>{
+export const UsersProvider = ({ children })=>{
     
     const [state, dispatch] = useReducer(UsersReducer, initialState)
+    const value = useMemo(() => ({...state, dispatch}), [state, dispatch]);
 
     return (
-        <UsersContext.Provider value={{...state,dispatch}}>
-            {props.children}
+        <UsersContext.Provider value={value}>
+            {children}
         </UsersContext.Provider>
     )
 }
 
+UsersProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};

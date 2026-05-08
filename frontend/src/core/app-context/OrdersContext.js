@@ -1,4 +1,5 @@
-import React , {createContext, useReducer} from 'react';
+import React , {createContext, useMemo, useReducer} from 'react';
+import PropTypes from 'prop-types';
 
 
 export const OrdersContext = createContext();
@@ -45,14 +46,18 @@ export const OrdersReducer = (state, action) =>{
     }
 }
 
-export const OrdersProvider = (props)=>{
+export const OrdersProvider = ({ children })=>{
     
     const [state, dispatch] = useReducer(OrdersReducer, initialState)
+    const value = useMemo(() => ({...state, dispatch}), [state, dispatch]);
 
     return (
-        <OrdersContext.Provider value={{...state,dispatch}}>
-            {props.children}
+        <OrdersContext.Provider value={value}>
+            {children}
         </OrdersContext.Provider>
     )
 }
 
+OrdersProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};

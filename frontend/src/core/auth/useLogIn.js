@@ -44,6 +44,9 @@ export const useLogIn = () =>{
             return user; // Resolve the promise with user data
 
         } catch (error) {
+            setIsLoading(false);
+            setError(error.message);
+            setNext(false);
             throw error; // Propagate the error to be caught in toast.promise
         }
 
@@ -63,5 +66,4 @@ export const useLogIn = () =>{
         next}
 
 }
-
 

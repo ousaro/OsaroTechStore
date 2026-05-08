@@ -51,13 +51,13 @@ const About = () => {
 
                     <h2 className="text-2xl font-semibold mt-10 mb-4">Follow Us</h2>
                     <div className="flex gap-5">
-                        <Link to="https://facebook.com" target="_blank"  className="hover:opacity-80">
+                        <Link to="https://facebook.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                             <img src={facebookIcon} alt="facebook icon" className="w-6 h-6"/>
                         </Link>
-                        <Link to="https://instagram.com" target="_blank" className="hover:opacity-80">
+                        <Link to="https://instagram.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                             <img src={instagramIcon} alt="instagram icon" className="w-6 h-6"/>
                         </Link>
-                        <Link to="https://pinterest.com" target="_blank" className="hover:opacity-80">
+                        <Link to="https://pinterest.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                             <img src={pinterestIcon} alt="pinterest icon" className="w-6 h-6"/>
                         </Link>
                     </div>

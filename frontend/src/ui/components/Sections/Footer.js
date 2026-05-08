@@ -84,13 +84,13 @@ const Footer = () => {
                             <li><Link className="hover:text-primary2">Contact Us</Link></li>
                             <figure className='flex gap-5 pt-3'>
 
-                                <Link to="https://facebook.com" target="_blank" className="hover:opacity-80">
+                                <Link to="https://facebook.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                                     <img src={facebookIcon} alt="facebook icon" className="w-6 h-6"/>
                                 </Link>
-                                <Link to="https://instagram.com" target="_blank" className="hover:opacity-80">
+                                <Link to="https://instagram.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                                     <img src={instagramIcon} alt="instagram icon" className="w-6 h-6"/>
                                 </Link>
-                                <Link to="https://pinterest.com" target="_blank" className="hover:opacity-80">
+                                <Link to="https://pinterest.com" target="_blank" rel="noreferrer" className="hover:opacity-80">
                                     <img src={pinterestIcon} alt="pinterest icon" className="w-6 h-6"/>
                                 </Link>
                                

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import NavigationButton from '../../../ui/components/Buttons/NavigationButton';
+import { scrollLeft, scrollRight } from '../../../shared/utils/utils';
 
 // Mock the utility functions
 jest.mock('../../../shared/utils/utils', () => ({
@@ -8,28 +9,29 @@ jest.mock('../../../shared/utils/utils', () => ({
   scrollRight: jest.fn(),
 }));
 
-// Import the mocked functions
-import { scrollLeft, scrollRight } from '../../../shared/utils/utils';
-
 describe('NavigationButton Component', () => {
   const mockSetCanScrollAutomatic = jest.fn();
   const mockContainerRef = { current: null };
 
-  beforeEach(() => {
+  const renderNavigationButton = () => {
     render(
       <NavigationButton
         setCanScrollAutomatic={mockSetCanScrollAutomatic}
         containerRef={mockContainerRef}
       />
     );
-  });
+  };
 
   test('renders navigation buttons', () => {
+    renderNavigationButton();
+
     expect(screen.getByText('<')).toBeInTheDocument();
     expect(screen.getByText('>')).toBeInTheDocument();
   });
 
   test('calls scrollLeft and setCanScrollAutomatic on left button click', () => {
+    renderNavigationButton();
+
     const leftButton = screen.getByText('<');
     fireEvent.click(leftButton);
     expect(scrollLeft).toHaveBeenCalledWith(mockContainerRef);
@@ -37,6 +39,8 @@ describe('NavigationButton Component', () => {
   });
 
   test('calls scrollRight and setCanScrollAutomatic on right button click', () => {
+    renderNavigationButton();
+
     const rightButton = screen.getByText('>');
     fireEvent.click(rightButton);
     expect(scrollRight).toHaveBeenCalledWith(mockContainerRef);

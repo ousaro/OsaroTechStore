@@ -1,6 +1,6 @@
 describe('App Component', () => {
 
-    test('renders App ', () => {
+    test('renders App', () => {
         expect(true).toBe(true);
       });
     

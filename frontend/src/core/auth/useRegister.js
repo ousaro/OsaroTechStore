@@ -47,6 +47,9 @@ export const useRegister = () =>{
                 setNext(true)
             }
         }catch (error) {
+            setIsLoading(false);
+            setError(error.message);
+            setNext(false);
             throw error; // Propagate the error to be caught in toast.promise
         }
 

@@ -4,6 +4,7 @@ import { useAuthContext } from '../../../core/auth/useAuthContext';
 import { useCategoriesContext } from '../../../core/app-context/useCategoriesContext';
 import {toast} from "react-hot-toast"
 import LoadingOverlay from './LoadingOverlay';
+import PropTypes from 'prop-types';
 
 const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModalDeleteOpen}) => {
 
@@ -46,18 +47,16 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
         const {json, ok, emptyFields: categoryEmptyFields} = await addNewCategory(user, newCategory)
        
 
-        if (!ok) {
-            toast.error(json.error)
-            setEmptyFieldsCategory(categoryEmptyFields || json.emptyFields || []);
-        }
-
-        else {  
+        if (ok) {  
             setEmptyFieldsCategory([]);
             setNewCategory(initialCategoryState);
            
             dispatchCategories({ type: "CREATE_CATEGORY", payload: json });
             setIsModalOpen(false); // Close the modal after category is added
             toast.success(`${json.name} category added successfully!`)
+        } else {
+            toast.error(json.error)
+            setEmptyFieldsCategory(categoryEmptyFields || json.emptyFields || []);
         }
 
         setIsSubmiting(false)
@@ -68,13 +67,11 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
         setIsDeleting(true)
         const {json, ok} = await deleteCategory(user, categoryId);
         
-        if(!ok){
-            toast.error(json.error)
-          
-        }
-        else{
+        if(ok){
             dispatchCategories({ type: "DELETE_CATEGORY", payload: json });
             toast.success(`${json.name} category deleted successfully!`)
+        } else {
+            toast.error(json.error)
         }
         setIsDeleting(false)
     };
@@ -192,5 +189,12 @@ const AddCategory = ({isModalOpen, isModalDeleteOpen, setIsModalOpen, setIsModal
         </div>
     );
 }
+
+AddCategory.propTypes = {
+    isModalOpen: PropTypes.bool.isRequired,
+    isModalDeleteOpen: PropTypes.bool.isRequired,
+    setIsModalOpen: PropTypes.func.isRequired,
+    setIsModalDeleteOpen: PropTypes.func.isRequired,
+};
  
 export default AddCategory;

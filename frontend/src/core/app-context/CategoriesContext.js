@@ -1,4 +1,5 @@
-import React , {createContext, useReducer} from 'react';
+import React , {createContext, useMemo, useReducer} from 'react';
+import PropTypes from 'prop-types';
 
 
 export const CategoriesContext = createContext();
@@ -38,14 +39,18 @@ export const CategoriesReducer = (state, action) =>{
     }
 }
 
-export const CategoriesProvider = (props)=>{
+export const CategoriesProvider = ({ children })=>{
     
     const [state, dispatch] = useReducer(CategoriesReducer, initialCategoryState)
+    const value = useMemo(() => ({...state, dispatch}), [state, dispatch]);
 
     return (
-        <CategoriesContext.Provider value={{...state,dispatch}}>
-            {props.children}
+        <CategoriesContext.Provider value={value}>
+            {children}
         </CategoriesContext.Provider>
     )
 }
 
+CategoriesProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};

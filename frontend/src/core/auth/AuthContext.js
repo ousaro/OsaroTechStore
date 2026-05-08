@@ -1,4 +1,5 @@
-import {createContext, useReducer, useEffect} from 'react';
+import {createContext, useReducer, useEffect, useMemo} from 'react';
+import PropTypes from 'prop-types';
 
 
 export const AuthContext = createContext();
@@ -24,9 +25,10 @@ const initialState = {
 };
 
 
-export const AuthContextProvider = (props) => {
+export const AuthContextProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(AuthReducer, initialState);
+    const value = useMemo(() => ({...state, dispatch}), [state, dispatch]);
 
     // we use this to make the front end knows if the loaclestorage is empty or not every time we refresh
     useEffect(() => {
@@ -48,9 +50,13 @@ export const AuthContextProvider = (props) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{...state, dispatch}}> {/* ...state its means user and loading in this case */}
-            {props.children}
+        <AuthContext.Provider value={value}> {/* ...state its means user and loading in this case */}
+            {children}
         </AuthContext.Provider>
     )
 
 }
+
+AuthContextProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};

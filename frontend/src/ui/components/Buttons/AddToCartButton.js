@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { updateLocalStorage } from "../../../shared/utils/utils";
 import { useProductsContext } from "../../../core/app-context/useProductsContext"; 
 import {toast} from "react-hot-toast"
+import PropTypes from "prop-types";
 
 const AddToCartButton = ({isGrid, productId, dataProductId, handleHover, handleMouseLeave}) => {
 
@@ -45,12 +46,12 @@ const AddToCartButton = ({isGrid, productId, dataProductId, handleHover, handleM
 
         const { json, ok } = await updateUser(user, user._id, update);
 
-        if (!ok) {
-            toast.error(json.error)
-        } else {
+        if (ok) {
             updateLocalStorage(json);
             dispatch({ type: 'UPDATE_USER', payload: json });
             toast.success(`1 item is added to your cart`)
+        } else {
+            toast.error(json.error)
         }
     };
 
@@ -83,21 +84,38 @@ const AddToCartButton = ({isGrid, productId, dataProductId, handleHover, handleM
 
     },[products,productId, user,stockCount])
 
+    const handleButtonMouseEnter = (event) => {
+        handleHover(event);
+        handleHoverAddToCart(event);
+    };
+
+    const handleButtonMouseLeave = (event) => {
+        handleMouseLeave(event);
+        handleMouseLeaveAddToCart(event);
+    };
 
     return ( 
-        <div className={`${!isGrid ? "product-actions " : "product-actions-grid"}`} data-product-id={dataProductId} onMouseEnter={handleHover} onMouseLeave={handleMouseLeave}>
-            <button 
-                className={`cartButton ${disableAddToCart ? "bg-gray-400" : " bg-primary2 cartButtonHover"}`} 
-                onMouseEnter={handleHoverAddToCart} 
-                onMouseLeave={handleMouseLeaveAddToCart}
-                onClick={handleAddToCart}
-                disabled={disableAddToCart}
-            >
-                <img src={CartIcon} alt="cartIcon" className='cartImg'/> 
-                <p className="m-auto">Add to Cart</p>
-            </button>
-        </div>
+        <button
+            type="button"
+            className={`${isGrid ? "product-actions-grid" : "product-actions"} cartButton ${disableAddToCart ? "bg-gray-400" : "bg-primary2 cartButtonHover"}`}
+            data-product-id={dataProductId}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
+            onClick={handleAddToCart}
+            disabled={disableAddToCart}
+        >
+            <img src={CartIcon} alt="cartIcon" className='cartImg'/> 
+            <span className="m-auto">Add to Cart</span>
+        </button>
     );
 }
+
+AddToCartButton.propTypes = {
+    isGrid: PropTypes.bool.isRequired,
+    productId: PropTypes.string.isRequired,
+    dataProductId: PropTypes.string.isRequired,
+    handleHover: PropTypes.func.isRequired,
+    handleMouseLeave: PropTypes.func.isRequired,
+};
  
 export default AddToCartButton;
