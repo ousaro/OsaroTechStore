@@ -14,6 +14,7 @@ test("resolveEventBus returns in-process event bus and rejects unknown providers
 
   assert.equal(typeof bus.publish, "function");
   assert.equal(typeof bus.subscribe, "function");
+  assert.equal(bus.getName(), "inprocess");
   assert.throws(() => resolveEventBus({ provider: "unknown", logger }), ServiceUnavailableError);
 });
 
@@ -31,6 +32,7 @@ test("resolveEventBus wires redis event bus from options", () => {
 
   assert.equal(typeof bus.publish, "function");
   assert.equal(typeof bus.subscribe, "function");
+  assert.equal(bus.getName(), "redis");
 });
 
 test("resolvePaymentStrategy returns disabled strategy and rejects unsupported providers", () => {
@@ -65,6 +67,11 @@ test("resolvePaymentStrategy returns Stripe strategy when configured", () => {
   assert.equal(strategy.webhookEnabled, true);
   assert.equal(typeof strategy.gateway.createRedirectPayment, "function");
   assert.equal(typeof strategy.gateway.verifyWebhook, "function");
+});
+
+test("resolveDatabaseStrategy returns mongo strategy", () => {
+  const strategy = resolveDatabaseStrategy({ provider: "mongo", logger, env: {mongoUri: "mongodb://localhost:27017/test"} });
+  assert.equal(strategy.getName(), "mongo");
 });
 
 test("resolveDatabaseStrategy rejects unsupported providers", () => {

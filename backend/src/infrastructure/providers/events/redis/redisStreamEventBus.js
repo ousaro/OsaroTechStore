@@ -42,6 +42,8 @@ export const createRedisStreamEventBus = ({ redisClient, logger }) => {
   assertFunction(redisClient.xAdd, "redisClient.xAdd", "Redis client must implement .xAdd()");
   assertFunction(redisClient.xRead, "redisClient.xRead", "Redis client must implement .xRead()");
 
+  const getName = () => "redis";
+
   const publish = async (event) => {
     assertObject(event, "event", "EventBus.publish: event must be a non-null object");
     assertNonEmptyString(event.type, "event.type", "EventBus.publish: event.type is required");
@@ -126,5 +128,5 @@ export const createRedisStreamEventBus = ({ redisClient, logger }) => {
     };
   };
 
-  return { publish, subscribe };
+  return { publish, subscribe, getName };
 };

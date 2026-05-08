@@ -7,7 +7,7 @@
 
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
-export const EVENT_BUS_METHODS = Object.freeze(["publish", "subscribe"]);
+export const EVENT_BUS_METHODS = Object.freeze(["publish", "subscribe","getName"]);
 
 export const assertEventBusPort = (eventBus, context = "unknown") => {
   assertObject(eventBus, "eventBus", `[${context}] eventBus port is required`);

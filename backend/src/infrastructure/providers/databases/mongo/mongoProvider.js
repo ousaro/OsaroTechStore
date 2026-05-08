@@ -41,5 +41,7 @@ export const createMongoProvider = ({ uri, logger }) => {
     return mongoose.connection;
   };
 
-  return { connect, disconnect, getConnection };
+  const getName = () => "mongo";
+
+  return { connect, disconnect, getConnection, getName };
 };

@@ -18,6 +18,8 @@ export const createInProcessEventBus = ({ logger }) => {
   /** @type {Map<string, Set<Function>>} */
   const handlers = new Map();
 
+  const getName = () => "inprocess";
+
   const subscribe = (eventType, handler) => {
     assertNonEmptyString(
       eventType,
@@ -82,5 +84,5 @@ export const createInProcessEventBus = ({ logger }) => {
     });
   };
 
-  return { publish, subscribe };
+  return { publish, subscribe, getName };
 };
