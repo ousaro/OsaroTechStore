@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import ShippingAddress from '../../../ui/components/PlaceOrderComponents/ShippingAddress';
-import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import {useProductsContext} from "../../../hooks/useProductsContext"
 import { addNewOrder } from '../../../api/orders';
 import { updateProduct } from '../../../api/products';
 import { updateUser } from '../../../api/users';
-import { getSessionById } from '../../../api/sessions';
+import { addNewPayment } from '../../../api/payment';
 import { updateLocalStorage } from '../../../shared/utils/utils';
 import {toast} from "react-hot-toast"
 import LoadingOverlay from '../../../ui/components/OtherComponents/LoadingOverlay';
@@ -18,9 +17,6 @@ const ShippingAddressForm = () => {
     const {user, dispatch} = useAuthContext()
     const {products } = useProductsContext()
     const [cartProducts, setCartProducts] = useState([]);
-
-    const location = useLocation();
-    const [sessionDetails, setSessionDetails] = useState(null);
 
     const [shippingAddress, setShippingAddress] = useState({
         addressLine: "",
@@ -56,47 +52,24 @@ const ShippingAddressForm = () => {
               
     }, [user,products]);
 
-
-    // Fetch the session details
-    useEffect(() => {
-        const query = new URLSearchParams(location.search);
-        const sessionId = query.get('session_id');
-
-        const fetchSessionDetails = async (sessionId) => {
-
-          const {data, ok} = await getSessionById(user, sessionId)
-
-          if(!ok) {
-            toast.error(data.error)
-          }
-          else{
-            setSessionDetails(data);
-          }
-          
-        };
-  
-    
-        if (sessionId) {
-          fetchSessionDetails(sessionId);
-        }
-      }, [location,user]);
-
-
    // Place the order
     const placeOrder = async () => {
           
       setSubmitting(true)
-        // Define the order data
         const orderData = {
-            ownerId: user._id,
-            products: cartProducts,
-            totalPrice: Number(sessionDetails.amount_total) / 100, // Stripe amount is in cents
-            status: "Pending", // Can be 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled
-            address: shippingAddress,
-            paymentMethod: sessionDetails.payment_method_types[0], // Assuming only one payment method is used
-            paymentStatus: sessionDetails.payment_status,
-            transactionId: sessionDetails.payment_intent,
-            paymentDetails: sessionDetails,
+            orderLines: cartProducts.map((product) => ({
+              productId: product._id,
+              name: product.name,
+              price: product.price,
+              quantity: product.quantity,
+            })),
+            deliveryAddress: {
+              street: shippingAddress.addressLine,
+              city: shippingAddress.city,
+              postalCode: shippingAddress.postalCode,
+              country: shippingAddress.country,
+            },
+            currency: "USD",
           };
 
         const {json, ok} = await addNewOrder(user, orderData)
@@ -108,16 +81,27 @@ const ShippingAddressForm = () => {
           
         } else {
 
-          // Update sales count for each product
           await handleSalesUpdate(cartProducts);
-          
-          
-          // Clear the cart after placing the order
-          await handleClearCart();
-          // Redirect to the cart page
-          window.location.href = '/Cart';
 
-          toast.success("Your order has been placed successfully");
+          const paymentItems = cartProducts.map((product) => ({
+            name: product.name,
+            price: product.price,
+            quantity: product.quantity,
+          }));
+
+          const { url, ok: paymentOk, json: paymentJson } = await addNewPayment(user, {
+            orderId: json._id,
+            items: paymentItems,
+            currency: "USD",
+          });
+
+          if (!paymentOk || !url) {
+            toast.error(paymentJson?.error || "Payment could not be started.");
+            return;
+          }
+
+          await handleClearCart();
+          window.location.href = url;
             
         }
 
@@ -177,17 +161,6 @@ const ShippingAddressForm = () => {
       }
 
   }
-
-
-    if (!sessionDetails) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-              <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500"></div>
-            </div>
-          );;
-      }
-
-    
 
     return (
         <div className="text-gray-800 font-roboto">
