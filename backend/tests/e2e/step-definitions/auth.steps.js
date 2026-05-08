@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import jwt from "jsonwebtoken";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   buildUserPayload,
@@ -74,13 +73,9 @@ When("{word} requests the managed user list", async function (name) {
   await this.apiGet("/api/auth/users", this.tokenFor(name));
 });
 
-When("{word} places an order with an expired token", async function (name) {
+When("{word} opens their account profile", async function (name) {
   this.setActor(name);
-  const user = this.users.get(name);
-  const expiredToken = jwt.sign({ _id: user._id }, this.application.env.tokenSecret, {
-    expiresIn: "-1s",
-  });
-  await this.apiPost("/api/orders", {}, expiredToken);
+  await this.apiGet("/api/users/me", this.tokenFor(name));
 });
 
 Then("the response status should be {int}", function (statusCode) {
@@ -92,4 +87,12 @@ Then("{word} should receive a JWT token", async function (name) {
   assert.equal(typeof body.token, "string");
   assert.ok(body.token.length > 20);
   this.tokens.set(name, body.token);
+});
+
+Then("the profile should belong to {word}", async function (name) {
+  const body = await this.responseJson();
+  const user = this.users.get(name);
+
+  assert.equal(body._id, user._id.toString());
+  assert.equal(body.email, user.email);
 });
