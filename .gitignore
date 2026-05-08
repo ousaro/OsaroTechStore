@@ -50,7 +50,9 @@ Thumbs.db
 
 # Local assistant/project notes
 .codex
+**/.codex/
 .agents/
+**/.agents/
 context.md
 guide.md
 
