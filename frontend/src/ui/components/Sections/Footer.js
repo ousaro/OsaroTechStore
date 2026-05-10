@@ -21,17 +21,17 @@ const Footer = () => {
     
 
     return (  
-        <footer className="footer bg-primary1 text-gray-400 border-t-2 border-slate-300 font-roboto">
+        <footer className="footer bg-primary1 text-gray-400 font-roboto">
             {/* Newsletter Signup */}
-            <section className="newsletter bg-gray-200 py-12 text-gray-500 text-center border-b-4  border-primary2 ">
-                    <h2 className="text-3xl font-bold mb-4">Stay Updated!</h2>
+            <section className="newsletter bg-white py-12 text-center text-slate-600 border-y border-slate-200">
+                    <h2 className="text-3xl font-extrabold mb-4 text-primary1">Stay Updated</h2>
                     <p className="text-lg mb-6">Check your email to receive the latest news and exclusive offers.</p>
                    
             </section>
             <div className="text-sm  flex flex-col gap-10 p-4 pt-16 xl:m-auto xl:w-10/12 ">
 
                 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
 
                     <div className="flex flex-col gap-4 pb-10">
                         <h3 className="text-white font-bold text-lg pb-2">ABOUT US</h3>
@@ -57,7 +57,7 @@ const Footer = () => {
 
                     <div className="pb-10">
                         <h3 className="text-white font-bold text-lg pb-5">CATEGORIES</h3>
-                        <ul className="flex flex-col gap-5">
+                        <ul className="flex flex-col gap-3">
                             {categories.map((category) =>(
                                  <li key={category._id}><Link to={`/Products?category=${category.name}`}  className="hover:text-primary2">{category.name}</Link></li>
                             ))}
@@ -67,7 +67,7 @@ const Footer = () => {
 
                     <div className="pb-10">
                         <h3 className="text-white font-bold text-lg pb-5">SERVICES</h3>
-                        <ul className="flex flex-col gap-5">
+                        <ul className="flex flex-col gap-3">
                             <li><Link to="/UserProfile" className="hover:text-primary2">My Profile</Link></li>
                            {!admin &&  <li><Link to="/Cart" className="hover:text-primary2">View Cart</Link></li>}
                            {!admin &&  <li><Link to={`/Products?category=${"Favorite"}`} className="hover:text-primary2">Whishlist</Link></li>}
@@ -77,7 +77,7 @@ const Footer = () => {
 
                     <div className="pb-10">
                         <h3 className="text-white font-bold text-lg pb-5">INFORMATION</h3>
-                        <ul className="flex flex-col gap-5">
+                        <ul className="flex flex-col gap-3">
                             <li><Link className="hover:text-primary2">Privacy Policy</Link></li>
                             <li><Link className="hover:text-primary2">Terms & Conditions</Link></li>
                             <li><Link className="hover:text-primary2">FAQs</Link></li>

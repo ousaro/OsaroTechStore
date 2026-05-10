@@ -6,11 +6,12 @@ import { FaShoppingCart } from 'react-icons/fa';
 const CategoriesSection = ({categories}) => {
    
     return (
-        <section className="categories mb-8 font-roboto">
-            <h2 className="text-3xl font-bold mb-6 flex relative">
-                <FaShoppingCart className="text-primary2 mr-2" />
+        <section className="categories mb-12 font-roboto">
+            <h2 className="mb-6 flex items-center gap-3 text-2xl font-extrabold text-primary1 md:text-3xl">
+                <span className="grid h-10 w-10 place-items-center rounded-md bg-primary4 text-primary2">
+                    <FaShoppingCart />
+                </span>
                 Shop by Categories
-                <span className="w-full absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary2 to-primary3 mt-2"></span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-2">
             {categories.map(category => (
@@ -23,16 +24,16 @@ const CategoriesSection = ({categories}) => {
                         alt={category.name}
                         className="max-w-56 max-h-72 object-cover"
                     />
-                    <div className="absolute inset-0 opacity-0 flex justify-center hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+                    <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-primary1/85 via-primary1/20 to-transparent p-4 opacity-100 transition-opacity duration-300"
                     >
-                        <div className="text-white font-bold flex flex-col justify-center">
+                        <div className="flex flex-col justify-center text-white font-bold">
                             <h3 className="mb-2 text-2xl md:text-xl">{category.name}</h3>
                             <Link
                                 to={`/Products?category=${category.name}`}
                                 onClick={()=> toast.success(`${category.name} category`)}
-                                className="md:text-sm underline hover:text-primary2 flex self-center"
+                                className="flex self-center rounded-md bg-white px-3 py-2 text-sm text-primary1 shadow-sm hover:text-primary2"
                             >
-                                See All!
+                                See all
                             </Link>
                         </div>
                     </div>

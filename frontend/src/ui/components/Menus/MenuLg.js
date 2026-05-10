@@ -93,38 +93,38 @@ const MenuLg = ({admin}) => {
 
 
     return ( 
-        <div className="bg-white text-primary1 text-xs p-2 justify-start gap-16 w-full hidden md:flex md:justify-center lg:justify-start xl:m-auto xl:w-10/12">
+        <div className="bg-white text-primary1 text-xs px-2 py-3 justify-start gap-4 w-full hidden md:flex md:justify-center lg:justify-start xl:m-auto xl:w-10/12">
 
                 {admin ?  (
-                        <Link to="/AddProduct"><figure className={`MenuHover flex gap-2 justify-start ${addProductSelected ? "MenuSelected" : ""}`}>  
+                        <Link to="/AddProduct" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover flex gap-2 justify-start ${addProductSelected ? "MenuSelected" : ""}`}>  
                         <img src={addProductIcon} alt="menu icon" className='w-7 h-7'/>
                         <p className="w-full pt-2 font-bold">Add Product</p>
                         </figure></Link>
                 )
                 :
                 (
-                        <Link to="/Home"><figure className={`MenuHover flex gap-2 justify-start ${homeSelected ? "MenuSelected" : ""}`}>  
+                        <Link to="/Home" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover flex gap-2 justify-start ${homeSelected ? "MenuSelected" : ""}`}>  
                         <img src={homeIconBlack} alt="menu icon" className='w-7 h-7'/>
                         <p className="w-full pt-2 font-bold">Home</p>
                         </figure></Link>
                         )}
 
-            <Link to="/Products"><figure className={`MenuHover flex gap-2 justify-start ${productsSelected ? "MenuSelected" : ""}`}>  
+            <Link to="/Products" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover flex gap-2 justify-start ${productsSelected ? "MenuSelected" : ""}`}>  
                     <img src={productIcon} alt="menu icon" className='w-7 h-7 p-0.5'/>
                     <p className="w-full pt-2 font-bold">Products</p>
             </figure></Link>
 
-            {admin &&  <Link to="/DashBoard" ><figure className={`MenuHover  flex gap-2 justify-start ${dashboardSelected ? "MenuSelected" : ""}`}>  
+            {admin &&  <Link to="/DashBoard" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover  flex gap-2 justify-start ${dashboardSelected ? "MenuSelected" : ""}`}>  
                     <img src={dashBordIcon} alt="menu icon" className='w-7 h-7 p-0.5'/>
                     <p className="w-full pt-2 font-bold">DashBord</p>
             </figure></Link>}
 
-            <Link to="/UserProfile" ><figure className={`MenuHover  flex gap-2 justify-start ${profileSelected ? "MenuSelected" : ""}`}>  
+            <Link to="/UserProfile" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover  flex gap-2 justify-start ${profileSelected ? "MenuSelected" : ""}`}>  
                     <img src={profileIconBlack} alt="menu icon" className='w-7 h-7 p-0.5'/>
                     <p className="w-full pt-2 font-bold">Profile</p>
             </figure></Link>
 
-            <Link to="/About" ><figure className={`MenuHover flex gap-2 justify-start ${aboutSelected ? "MenuSelected" : ""}`}>  
+            <Link to="/About" className="rounded-md px-3 py-2 hover:bg-slate-50"><figure className={`MenuHover flex gap-2 justify-start ${aboutSelected ? "MenuSelected" : ""}`}>  
                     <img src={aboutIconBlack} alt="menu icon" className='w-7 h-7'/>
                     <p className="w-full pt-2 font-bold">About</p>
             </figure></Link>

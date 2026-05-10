@@ -74,7 +74,7 @@ const Products = () => {
     if (loading) {
         return (
             <div className="text-gray-800 font-roboto">
-                <main className="xl:w-10/12 xl:m-auto p-4 flex flex-col gap-5">
+            <main className="xl:w-10/12 xl:m-auto p-4 flex flex-col gap-5">
                     <p>Loading...</p>
                 </main>
             </div>
@@ -84,9 +84,9 @@ const Products = () => {
 
     return (
         <div className="text-gray-800 font-roboto">
-            <main className="xl:w-10/12 xl:m-auto p-4 flex flex-col md:flex-row gap-5 justify-between">
+            <main className="xl:w-10/12 xl:m-auto p-4 py-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <ProductsGrid admin={admin} category={selectedCategory} products={filteredProducts}/>
-                <div className='flex-shrink md:mt-5 mb-3 border-l-4 pl-10'>
+                <aside className='mb-3 w-full flex-shrink-0 rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-6 lg:w-72'>
 
                 <FilterComponent
                     sectionTitle="Categories"
@@ -119,7 +119,7 @@ const Products = () => {
                         />
                     </>
                 )}
-                </div>
+                </aside>
             </main>
         </div>
     );

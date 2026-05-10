@@ -16,7 +16,7 @@ module.exports = {
         primary6: "#e5e6ef",
       },
       fontFamily: {
-        roboto: ['Roboto', 'sans-serif'],
+        roboto: ['Inter', 'sans-serif'],
       },
       keyframes: {
         'expand-height': {

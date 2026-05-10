@@ -90,9 +90,9 @@ const Menu = ({showMenu , admin}) => {
 
 
     return ( 
-        <div className={`fixed bg-primary1 text-white text-xs w-7/12 h-lvh z-50  transform transition-transform duration-300  ease-in-out  ${showMenu ? 'translate-x-0' : '-translate-x-full'} p-2 pt-24 flex flex-col gap-10  md: w-5/12 lg:hidden`}>
+        <div className={`fixed bg-primary1 text-white text-xs w-9/12 max-w-80 h-lvh z-50 transform transition-transform duration-300 ease-in-out ${showMenu ? 'translate-x-0' : '-translate-x-full'} p-5 pt-24 flex flex-col gap-6 shadow-2xl md:w-5/12 lg:hidden`}>
 
-            <div className="border-b-4  text-2xl">Menu</div>
+            <div className="border-b border-white/20 pb-4 text-2xl font-bold">Menu</div>
 
            {admin ?  (
                 <Link to="/AddProduct"><figure className={`MenuHover flex gap-2 justify-start ${addProductSelected ? "MenuSelected" : ""}`}>  

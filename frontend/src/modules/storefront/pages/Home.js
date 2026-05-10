@@ -78,11 +78,11 @@ const Home = () => {
 
 
     return (
-        <div className="text-gray-800 " onClick={handleClick}>
+        <div className="text-gray-800" onClick={handleClick}>
            
             <main>
             <HeroSection />
-            <div className="xl:w-10/12 xl:m-auto p-4">
+            <div className="xl:w-10/12 xl:m-auto px-4 py-2">
 
                     {/* Categories Section */}
                     {categories.length>0 ? (
@@ -110,7 +110,7 @@ const Home = () => {
                 <HotDealSection endDate={new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000)} /> {/* Example: 2 days from now */}
 
 
-                <div className="xl:w-10/12 xl:m-auto p-4">
+                <div className="xl:w-10/12 xl:m-auto px-4 py-2">
 
                     {/* Top selling Section */}
                     {productsTopSelling.length > 0 ? (

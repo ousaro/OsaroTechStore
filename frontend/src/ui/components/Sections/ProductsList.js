@@ -62,14 +62,15 @@ const ProductsList = ({admin,sectionId,products,name,productContainerRef, setCan
 
   
     return ( 
-        <section className="featured-products mb-8 font-roboto">
-          <h2 className="text-3xl font-bold mb-6 flex relative">
-                <FaShoppingCart className="text-primary2 mr-2" />
+        <section className="featured-products mb-12 font-roboto">
+          <h2 className="mb-6 flex items-center gap-3 text-2xl font-extrabold text-primary1 md:text-3xl">
+                <span className="grid h-10 w-10 place-items-center rounded-md bg-primary4 text-primary2">
+                  <FaShoppingCart />
+                </span>
                 {name}
-                <span className="w-full absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary2 to-primary3 mt-2"></span>
             </h2>
             <div className="">
-                <div ref={productContainerRef} data-name="productContainerRef" className="flex gap-5 overflow-x-auto hide-scrollbar p-2">
+                <div ref={productContainerRef} data-name="productContainerRef" className="flex gap-5 overflow-x-auto hide-scrollbar p-2 pb-4">
                     {products.map((product) => (
                         <div className='products_container' key={product._id} >
 
@@ -91,9 +92,9 @@ const ProductsList = ({admin,sectionId,products,name,productContainerRef, setCan
                                       </div>
                                     }
 
-                                    <div className="absolute right-2 bottom-2">
-                                      <button>
-                                        <img src={OpenEye} alt="View Detail" className="w-6 h-6 opacity-25 hover:opacity-50 transition duration-300 ease-in-out" onClick={() => openModal(product.image, setSelectedImage, setModalIsOpen)}/>
+                                    <div className="absolute right-3 top-3">
+                                      <button className="grid h-9 w-9 place-items-center rounded-md bg-white shadow-sm ring-1 ring-slate-200 transition hover:ring-primary4">
+                                        <img src={OpenEye} alt="View Detail" className="w-5 h-5 opacity-60 hover:opacity-100 transition duration-300 ease-in-out" onClick={() => openModal(product.image, setSelectedImage, setModalIsOpen)}/>
                                       </button>
                                       <Modal isOpen={modalIsOpen} onRequestClose={() => closeModal(setSelectedImage, setModalIsOpen)} className="modalContent "  overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40">
                                             <div className="  w-full">
@@ -103,10 +104,10 @@ const ProductsList = ({admin,sectionId,products,name,productContainerRef, setCan
                                         </Modal>
                                     </div>
 
-                                    <h1 className="text-lg font-semibold mb-1 text-primary1light text-center">{product.category}</h1>
+                                    <h1 className="mt-3 text-center text-sm font-semibold uppercase tracking-wide text-slate-400">{product.category}</h1>
 
-                                    <div className="p-1">
-                                        <Link to={`/CardDetail/${product._id}`}><h3 className="text-xl font-semibold mb-0.5 text-center">{product.name}</h3></Link>
+                                    <div className="px-4 pb-14 pt-1">
+                                        <Link to={`/CardDetail/${product._id}`}><h3 className="mb-2 min-h-14 text-center text-lg font-bold leading-snug hover:text-primary2">{product.name}</h3></Link>
 
                                         <div className="flex gap-2 justify-center mb-2">
                                             <p className="text-lg font-semibold text-primary2">${product.price.toFixed(2)}</p>
