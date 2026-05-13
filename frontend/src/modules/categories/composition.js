@@ -19,6 +19,15 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
     return category;
   }
 
+  async function updateCategory(id, payload) {
+    const { ok, data, error } = await repo.update(id, payload, tok());
+    if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
+    const category = new Category(data);
+    eventBus.publish(CategoryEvents.updated(category));
+    notify.success("Category updated!");
+    return category;
+  }
+
   async function deleteCategory(id, categoryName) {
     const { ok, error } = await repo.delete(id, tok());
     if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
@@ -26,7 +35,7 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
     notify.success("Category deleted");
   }
 
-  const inputPort = { getAllCategories, createCategory, deleteCategory };
-  assertInputPort("CategoriesInputPort", inputPort, ["getAllCategories","createCategory","deleteCategory"]);
+  const inputPort = { getAllCategories, createCategory, updateCategory, deleteCategory };
+  assertInputPort("CategoriesInputPort", inputPort, ["getAllCategories","createCategory","updateCategory","deleteCategory"]);
   return inputPort;
 }

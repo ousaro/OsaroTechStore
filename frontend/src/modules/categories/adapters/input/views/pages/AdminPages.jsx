@@ -9,6 +9,7 @@ import {
   FiArchive,
   FiCheckCircle,
   FiClock,
+  FiEdit2,
   FiHeadphones,
   FiMapPin,
   FiMail,
@@ -17,6 +18,7 @@ import {
   FiTag,
   FiTrash2,
   FiTruck,
+  FiX,
   FiZap,
 } from "react-icons/fi";
 
@@ -116,10 +118,13 @@ export function ManageUsersPage({ authInputPort }) {
 /* ── CategoriesPage ────────────────────────────────────────────── */
 export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const { path } = useNavigate();
-  const [cats, setCats]     = useState([]);
-  const [form, setForm]     = useState({ name:"", description:"" });
+  const [cats, setCats]       = useState([]);
+  const [form, setForm]       = useState({ name:"", description:"" });
   const [creating, setCreating] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
+  const [editId, setEditId]   = useState(null);
+  const [editForm, setEditForm] = useState({ name:"", description:"" });
+  const [saving, setSaving]   = useState(false);
 
   useEffect(() => {
     categoriesInputPort.getAllCategories().then((data) => {
@@ -141,6 +146,32 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
       setForm({ name:"", description:"" });
     }
     finally { setCreating(false); }
+  };
+
+  const startEdit = (c) => {
+    setEditId(c.id);
+    setEditForm({ name: c.name, description: c.description });
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditForm({ name:"", description:"" });
+  };
+
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.name.trim()) return;
+    setSaving(true);
+    try {
+      const updated = await categoriesInputPort.updateCategory(editId, editForm);
+      setCats((cs) => {
+        const next = cs.map((x) => (x.id === editId ? updated : x));
+        onCategoriesChange?.(next);
+        return next;
+      });
+      cancelEdit();
+    }
+    finally { setSaving(false); }
   };
 
   const del = async (c) => {
@@ -175,12 +206,21 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
             <thead><tr><th>Name</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
             <tbody>
               {cats.map((c) => (
-                <tr key={c.id}>
-                  <td className="font-semibold">{c.name}</td>
-                  <td className="text-[13px] text-ink-muted">{c.description||"—"}</td>
-                  <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
-                  <td><button className="btn btn-danger btn-sm" onClick={() => del(c)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></td>
-                </tr>
+                editId === c.id ? (
+                  <tr key={c.id}>
+                    <td><input className="input w-full" value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} required autoFocus /></td>
+                    <td><input className="input w-full" value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} /></td>
+                    <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
+                    <td><div className="flex gap-1.5"><button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>{saving ? "Saving…" : <FiCheckCircle />}</button><button className="btn btn-ghost btn-sm" onClick={cancelEdit} disabled={saving}><FiX /></button></div></td>
+                  </tr>
+                ) : (
+                  <tr key={c.id}>
+                    <td className="font-semibold">{c.name}</td>
+                    <td className="text-[13px] text-ink-muted">{c.description||"—"}</td>
+                    <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
+                    <td><div className="flex gap-1.5"><button className="btn btn-ghost btn-sm" onClick={() => startEdit(c)} aria-label="Edit category"><FiEdit2 /></button><button className="btn btn-danger btn-sm" onClick={() => del(c)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></div></td>
+                  </tr>
+                )
               ))}
             </tbody>
           </table>

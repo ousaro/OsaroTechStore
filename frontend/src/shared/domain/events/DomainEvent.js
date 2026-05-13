@@ -32,6 +32,7 @@ export const Events = Object.freeze({
 
   // Categories
   CATEGORY_CREATED:  "categories/CategoryCreated",
+  CATEGORY_UPDATED:  "categories/CategoryUpdated",
   CATEGORY_DELETED:  "categories/CategoryDeleted",
 
   // Orders

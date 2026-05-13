@@ -2,5 +2,6 @@ import { DomainEvent, Events } from "../../../../shared/domain/events/DomainEven
 
 export const CategoryEvents = {
   created: (category) => new DomainEvent(Events.CATEGORY_CREATED, { category }),
+  updated: (category) => new DomainEvent(Events.CATEGORY_UPDATED, { category }),
   deleted: (id, categoryName) => new DomainEvent(Events.CATEGORY_DELETED, { id, categoryName }),
 };
