@@ -144,7 +144,7 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/admin/users":
         return sessionUser?.admin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
       case route === "/admin/categories":
-        return sessionUser?.admin ? <CategoriesPage categoriesInputPort={modules.categories} /> : <AccessDenied />;
+        return sessionUser?.admin ? <CategoriesPage categoriesInputPort={modules.categories} onCategoriesChange={setCategories} /> : <AccessDenied />;
       case route === "/about":                      return <AboutPage />;
       default:                                      return <NotFound />;
     }

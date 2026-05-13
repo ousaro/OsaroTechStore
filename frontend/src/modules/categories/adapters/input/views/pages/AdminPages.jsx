@@ -114,26 +114,46 @@ export function ManageUsersPage({ authInputPort }) {
 }
 
 /* ── CategoriesPage ────────────────────────────────────────────── */
-export function CategoriesPage({ categoriesInputPort }) {
+export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const { path } = useNavigate();
   const [cats, setCats]     = useState([]);
   const [form, setForm]     = useState({ name:"", description:"" });
   const [creating, setCreating] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
 
-  useEffect(() => { categoriesInputPort.getAllCategories().then(setCats); }, []); // eslint-disable-line
+  useEffect(() => {
+    categoriesInputPort.getAllCategories().then((data) => {
+      setCats(data);
+      onCategoriesChange?.(data);
+    });
+  }, []); // eslint-disable-line
 
   const create = async (e) => {
     e.preventDefault(); if (!form.name.trim()) return;
     setCreating(true);
-    try { const c = await categoriesInputPort.createCategory(form); setCats((cs) => [c,...cs]); setForm({ name:"", description:"" }); }
+    try {
+      const c = await categoriesInputPort.createCategory(form);
+      setCats((cs) => {
+        const next = [c, ...cs];
+        onCategoriesChange?.(next);
+        return next;
+      });
+      setForm({ name:"", description:"" });
+    }
     finally { setCreating(false); }
   };
 
   const del = async (c) => {
     if (!window.confirm("Delete this category?")) return;
     setLoadingId(c.id);
-    try { await categoriesInputPort.deleteCategory(c.id, c.name); setCats((cs) => cs.filter((x) => x.id !== c.id)); }
+    try {
+      await categoriesInputPort.deleteCategory(c.id, c.name);
+      setCats((cs) => {
+        const next = cs.filter((x) => x.id !== c.id);
+        onCategoriesChange?.(next);
+        return next;
+      });
+    }
     finally { setLoadingId(null); }
   };
 

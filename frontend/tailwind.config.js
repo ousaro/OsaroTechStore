@@ -20,8 +20,8 @@ module.exports = {
         success: "var(--success)",
       },
       fontFamily: {
-        sans: ["Instrument Sans", "system-ui", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Instrument Sans", "system-ui", "sans-serif"],
+        sans: ["Manrope", "system-ui", "sans-serif"],
+        display: ["Sora", "Manrope", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "Fira Mono", "monospace"],
       },
       borderRadius: {

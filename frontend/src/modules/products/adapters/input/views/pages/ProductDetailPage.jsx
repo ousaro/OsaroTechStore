@@ -7,7 +7,7 @@ import { Badge } from "../../../../../../shared/infrastructure/ui/Badge.jsx";
 import { QtyControl } from "../../../../../../shared/infrastructure/ui/QtyControl.jsx";
 import { Spinner } from "../../../../../../shared/infrastructure/ui/Spinner.jsx";
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
-import { FiEdit2, FiShoppingBag, FiSmartphone, FiTrash2 } from "react-icons/fi";
+import { FiCreditCard, FiEdit2, FiRefreshCcw, FiShoppingBag, FiShield, FiSmartphone, FiTrash2, FiTruck } from "react-icons/fi";
 
 export function ProductDetailPage({ id }) {
   const { products, getProductById, deleteProduct } = useProducts();
@@ -48,10 +48,10 @@ export function ProductDetailPage({ id }) {
   return (
     <div className="page-shell">
       <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{product.name}</span></div>
-      <div className="mt-2 grid items-start gap-12 lg:grid-cols-2">
+      <div className="mt-2 grid items-start gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
         <div>
-          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2">
-            {images[activeImg] ? <img src={images[activeImg]} alt={product.name} className="max-h-[80%] max-w-[80%] object-contain" /> : <span className="text-ink-faint"><FiSmartphone size={82} /></span>}
+          <div className="product-detail-media">
+            {images[activeImg] ? <img src={images[activeImg]} alt={product.name} /> : <span className="text-ink-faint"><FiSmartphone size={82} /></span>}
           </div>
           {images.length > 1 && (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -63,11 +63,11 @@ export function ProductDetailPage({ id }) {
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="product-detail-panel">
           <div>
             <div className="mb-3 flex gap-2"><Badge status={product.status} />{product.category && <span className="rounded-sm bg-surface-3 px-2 py-0.5 text-xs font-semibold">{product.category}</span>}</div>
-            <h1 className="mb-3 text-[28px] font-extrabold leading-tight tracking-[-.5px]">{product.name}</h1>
-            <div className="mb-3 text-4xl font-black tracking-[-1px] text-accent">
+            <h1 className="mb-3 font-display text-[clamp(30px,4vw,46px)] font-extrabold leading-tight tracking-[-.03em]">{product.name}</h1>
+            <div className="mb-3 text-4xl font-black tracking-[-1px] text-accent tabular-nums">
               <span className="text-lg font-bold">{product.price.currency} </span>{product.price.amount.toFixed(2)}
             </div>
             {product.description && <p className="text-[15px] leading-7 text-ink-muted">{product.description}</p>}
@@ -85,6 +85,12 @@ export function ProductDetailPage({ id }) {
               <button className="btn btn-primary flex-1" onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
             </div>
           )}
+          <div className="product-trust-grid">
+            <div><FiTruck /><span>Fast dispatch</span></div>
+            <div><FiShield /><span>Protected payment</span></div>
+            <div><FiRefreshCcw /><span>Easy support</span></div>
+            <div><FiCreditCard /><span>Secure checkout</span></div>
+          </div>
           {user?.isAdmin && (
             <div className="flex gap-2">
               <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost"><FiEdit2 /> Edit</Link>

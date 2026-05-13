@@ -4,7 +4,7 @@ import { useCart } from "../../../modules/cart/adapters/input/views/useCartModul
 import { Avatar } from "./Avatar.jsx";
 import { Link } from "./Link.jsx";
 import { useNavigate } from "../../hooks/useNavigate.js";
-import { FiLogOut, FiMoon, FiSearch, FiShoppingBag, FiSun } from "react-icons/fi";
+import { FiLogOut, FiMoon, FiSearch, FiShoppingBag, FiSun, FiTruck } from "react-icons/fi";
 
 export function Navbar({ path }) {
   const { user, logout } = useAuth();
@@ -46,22 +46,25 @@ export function Navbar({ path }) {
           <span className="nav-logo-mark">OT</span>
           <span><span className="accent">Osaro</span>Tech</span>
         </Link>
-        <div className="nav-links">
-          {navLinks.map(({ to, label }) => (
-            <Link key={to} to={to} className={`nav-link ${isActive(to) ? "active" : ""}`}>{label}</Link>
-          ))}
+        <div className="nav-center">
+          <div className="nav-links">
+            {navLinks.map(({ to, label }) => (
+              <Link key={to} to={to} className={`nav-link ${isActive(to) ? "active" : ""}`}>{label}</Link>
+            ))}
+          </div>
+          <form className="search-wrap" onSubmit={submitSearch}>
+            <span className="search-icon"><FiSearch size={16} /></span>
+            <input
+              type="text"
+              placeholder="Search products, brands, accessories"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search products"
+            />
+          </form>
         </div>
-        <form className="search-wrap" onSubmit={submitSearch}>
-          <span className="search-icon"><FiSearch size={16} /></span>
-          <input
-            type="text"
-            placeholder="Search products, brands, accessories"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search products"
-          />
-        </form>
         <div className="nav-actions">
+          <div className="nav-status"><FiTruck size={14} /> Fast dispatch</div>
           <button
             className="nav-icon-btn"
             onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}

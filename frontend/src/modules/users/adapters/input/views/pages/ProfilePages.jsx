@@ -140,9 +140,9 @@ export function DeleteAccountPage() {
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title text-accent">Delete account</h1><p className="page-subtitle">Permanently remove your account</p></div></div>
         <div className="card max-w-[560px] p-7">
-          <div className="mb-6 rounded border border-[#74303a] bg-[#3a1519] px-5 py-4">
-            <strong className="mb-1.5 flex items-center gap-2 text-[#ffb4bd]"><FiAlertTriangle /> This action is permanent</strong>
-            <p className="text-sm text-[#ffb4bd]">This cannot be undone. All your data will be erased.</p>
+          <div className="danger-panel mb-6">
+            <strong className="danger-panel-title"><FiAlertTriangle /> This action is permanent</strong>
+            <p className="danger-panel-copy">This cannot be undone. All your data will be erased.</p>
           </div>
           <label className="mb-6 flex cursor-pointer items-center gap-2.5 text-sm">
             <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
