@@ -7,7 +7,8 @@ import { Badge } from "../../../../../../shared/infrastructure/ui/Badge.jsx";
 import { QtyControl } from "../../../../../../shared/infrastructure/ui/QtyControl.jsx";
 import { Spinner } from "../../../../../../shared/infrastructure/ui/Spinner.jsx";
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
-import { FiCreditCard, FiEdit2, FiRefreshCcw, FiShoppingBag, FiShield, FiSmartphone, FiTrash2, FiTruck } from "react-icons/fi";
+import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
+import { FiCreditCard, FiEdit2, FiMessageSquare, FiRefreshCcw, FiShoppingBag, FiShield, FiSmartphone, FiStar, FiTrash2, FiTruck } from "react-icons/fi";
 
 export function ProductDetailPage({ id }) {
   const { products, getProductById, deleteProduct } = useProducts();
@@ -21,6 +22,13 @@ export function ProductDetailPage({ id }) {
   const [adding, setAdding]     = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [reviewDraft, setReviewDraft] = useState({ rating: 5, comment: "" });
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(`product-reviews:${id}`);
+    setReviews(saved ? JSON.parse(saved) : []);
+  }, [id]);
 
   useEffect(() => {
     if (product) return;
@@ -43,7 +51,36 @@ export function ProductDetailPage({ id }) {
     finally { setDeleting(false); }
   };
 
+  const saveReviews = (nextReviews) => {
+    setReviews(nextReviews);
+    window.localStorage.setItem(`product-reviews:${id}`, JSON.stringify(nextReviews));
+  };
+
+  const submitReview = (e) => {
+    e.preventDefault();
+    if (!user || !reviewDraft.comment.trim()) return;
+    const nextReviews = [
+      {
+        id: `${Date.now()}`,
+        userId: user.id,
+        name: user.fullName || [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || "Customer",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        picture: user.picture || "",
+        rating: Number(reviewDraft.rating),
+        comment: reviewDraft.comment.trim(),
+        createdAt: new Date().toISOString(),
+      },
+      ...reviews,
+    ];
+    saveReviews(nextReviews);
+    setReviewDraft({ rating: 5, comment: "" });
+  };
+
   const images = product.images.length ? product.images : [null];
+  const averageRating = reviews.length
+    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
   return (
     <div className="page-shell">
@@ -99,6 +136,93 @@ export function ProductDetailPage({ id }) {
           )}
         </div>
       </div>
+      <section className="product-review-shell">
+        <div className="product-review-summary card">
+          <div>
+            <div className="section-kicker">Customer feedback</div>
+            <h2 className="text-[28px] font-extrabold text-ink">Comments and ratings</h2>
+            <p className="mt-2 text-sm leading-6 text-ink-muted">Helpful buying notes, quick reactions, and product impressions.</p>
+          </div>
+          <div className="review-score-block">
+            <div className="review-score-value">{averageRating || "—"}</div>
+            <div className="review-score-stars">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <FiStar key={index} className={averageRating && index < Math.round(Number(averageRating)) ? "fill-current" : ""} />
+              ))}
+            </div>
+            <div className="review-score-meta">{reviews.length} comment{reviews.length === 1 ? "" : "s"}</div>
+          </div>
+        </div>
+        <div className="product-review-grid">
+          <div className="card product-review-form-card">
+            <div className="mb-4 flex items-center gap-2">
+              <FiMessageSquare className="text-accent" />
+              <h3 className="text-lg font-extrabold text-ink">Leave a comment</h3>
+            </div>
+            {user ? (
+              <form onSubmit={submitReview} className="flex flex-col gap-4">
+                <label className="field">
+                  <span>Rating</span>
+                  <select className="input" value={reviewDraft.rating} onChange={(e) => setReviewDraft((current) => ({ ...current, rating: e.target.value }))}>
+                    {[5, 4, 3, 2, 1].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
+                  </select>
+                </label>
+                <label className="field">
+                  <span>Comment</span>
+                  <textarea
+                    className="input min-h-[140px] resize-y"
+                    value={reviewDraft.comment}
+                    onChange={(e) => setReviewDraft((current) => ({ ...current, comment: e.target.value }))}
+                    placeholder="Share what stood out, what felt good, or what buyers should know."
+                  />
+                </label>
+                <button type="submit" className="btn btn-primary self-start">Post comment</button>
+              </form>
+            ) : (
+              <div className="empty-state px-0 py-6 text-left">
+                <h3>Sign in to comment</h3>
+                <p>Customer comments are available once you are logged in.</p>
+              </div>
+            )}
+          </div>
+          <div className="product-review-list">
+            {reviews.length === 0 ? (
+              <div className="card empty-state">
+                <span className="icon"><FiMessageSquare size={26} /></span>
+                <h3>No comments yet</h3>
+                <p>This product is ready for its first review.</p>
+              </div>
+            ) : (
+              reviews.map((review) => (
+                <article key={review.id} className="card review-card">
+                  <div className="review-card-head">
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        src={review.picture}
+                        name={review.name}
+                        firstName={review.firstName}
+                        lastName={review.lastName}
+                        alt={review.name}
+                        className="table-avatar"
+                      />
+                      <div>
+                        <div className="font-extrabold text-ink">{review.name}</div>
+                        <div className="text-xs text-ink-faint">{new Date(review.createdAt).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                    <div className="review-inline-stars">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <FiStar key={index} className={index < review.rating ? "fill-current" : ""} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm leading-7 text-ink-muted">{review.comment}</p>
+                </article>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

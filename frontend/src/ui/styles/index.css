@@ -241,6 +241,41 @@
   .product-trust-grid { @apply grid grid-cols-2 gap-2.5; }
   .product-trust-grid div { @apply flex min-h-[54px] items-center gap-2.5 rounded border border-border bg-surface-2 px-3 text-sm font-bold text-ink-muted; }
   .product-trust-grid svg { @apply shrink-0 text-accent; }
+  .product-review-shell { @apply mt-10; }
+  .product-review-summary { @apply mb-5 flex flex-wrap items-center justify-between gap-5 p-6; }
+  .review-score-block { @apply min-w-[180px] rounded-lg border border-border bg-surface-2 px-5 py-4 text-center; }
+  .review-score-value { @apply text-[38px] font-black leading-none text-ink; }
+  .review-score-stars { @apply mt-3 flex items-center justify-center gap-1 text-accent; }
+  .review-score-meta { @apply mt-2 text-sm font-semibold text-ink-muted; }
+  .product-review-grid { @apply grid items-start gap-5 lg:grid-cols-[360px_minmax(0,1fr)]; }
+  .product-review-form-card { @apply p-6; }
+  .product-review-list { @apply grid gap-4; }
+  .review-card { @apply p-5; }
+  .review-card-head { @apply flex flex-wrap items-start justify-between gap-3; }
+  .review-inline-stars { @apply flex items-center gap-1 text-accent; }
+
+  .orders-stack { @apply grid gap-4; }
+  .order-card { @apply overflow-hidden; }
+  .order-card-head { @apply flex w-full flex-wrap items-center justify-between gap-4 px-5 py-4 text-left transition-colors duration-200 hover:bg-surface-2; }
+  .order-card-main { @apply min-w-0; }
+  .order-card-id { @apply text-sm font-extrabold text-ink; }
+  .order-card-id code { @apply text-[13px]; }
+  .order-card-meta { @apply mt-1 text-sm text-ink-muted; }
+  .order-card-side { @apply flex flex-col items-end gap-2; }
+  .order-card-total { @apply text-lg font-black text-ink; }
+  .order-card-body { @apply border-t border-border px-5 py-5; }
+  .order-lines { @apply grid gap-3; }
+  .order-line-item { @apply flex items-center justify-between gap-3 rounded border border-border bg-surface-2 px-4 py-3; }
+  .order-line-name { @apply text-sm font-extrabold text-ink; }
+  .order-line-meta { @apply mt-1 text-xs text-ink-muted; }
+  .order-line-total { @apply text-sm font-black text-ink; }
+  .order-card-footer { @apply mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]; }
+  .order-address { @apply rounded-lg border border-border bg-surface-2 p-4; }
+  .order-address span { @apply flex items-center gap-2 text-xs font-extrabold uppercase tracking-[.08em] text-ink-faint; }
+  .order-address p { @apply mt-3 text-sm leading-7 text-ink-muted; }
+  .order-admin-tools { @apply grid gap-3 rounded-lg border border-border bg-surface-2 p-4; }
+  .order-tool-label { @apply text-xs font-bold uppercase tracking-[.05em] text-ink-muted; }
+  .order-admin-actions { @apply flex flex-wrap gap-2; }
 
   .category-strip { @apply flex gap-2.5 overflow-x-auto pb-3 pt-1 [scrollbar-width:none]; }
   .category-strip::-webkit-scrollbar { @apply hidden; }
@@ -452,6 +487,8 @@
     .filter-card { @apply mb-0; }
     .home-featured-head { @apply flex-col items-start; }
     .discovery-grid { @apply grid-cols-1; }
+    .product-review-grid { @apply grid-cols-1; }
+    .order-card-footer { @apply grid-cols-1; }
     .about-hero, .about-story, .about-contact { @apply grid-cols-1; }
     .about-grid { @apply grid-cols-1; }
     .site-footer-inner { @apply grid-cols-2; }
@@ -479,6 +516,11 @@
     .spotlight-card-body { @apply flex-col items-start; }
     .spotlight-media { @apply h-[140px] w-full; }
     .launch-strip-list { @apply justify-start; }
+    .product-trust-grid { @apply grid-cols-1; }
+    .product-review-summary { @apply p-5; }
+    .order-card-head { @apply px-4 py-4; }
+    .order-card-side { @apply items-start; }
+    .order-card-body { @apply px-4 py-4; }
     .cart-item { @apply flex-wrap; }
     .auth-panel { @apply px-[18px] py-8; }
     .site-footer-inner { @apply grid-cols-1 px-4 pb-[22px] pt-7; }

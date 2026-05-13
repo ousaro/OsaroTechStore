@@ -6,6 +6,7 @@ export class Product {
     this.name        = raw.name        || "";
     this.description = raw.description || "";
     this.price       = Money.fromRaw({ amount: raw.price, currency: raw.currency || "USD" });
+    this.categoryId  = raw.categoryId  || "";
     this.category    = raw.category    || "";
     this.stock       = Number(raw.stock ?? 0);
     this.images      = Array.isArray(raw.images) ? raw.images : [];
@@ -23,7 +24,7 @@ export class Product {
     return {
       _id: this.id, name: this.name, description: this.description,
       price: this.price.amount, currency: this.price.currency,
-      category: this.category, stock: this.stock, images: this.images,
+      categoryId: this.categoryId, category: this.category, stock: this.stock, images: this.images,
       status: this.status, createdAt: this.createdAt,
     };
   }

@@ -8,13 +8,17 @@ export function AddProductPage({ editId, categories }) {
   const { products, createProduct, updateProduct } = useProducts();
   const { navigate } = useNavigate();
   const existing = editId ? products.find((p) => p.id === editId) : null;
+  const existingCategoryId =
+    existing?.categoryId ||
+    categories.find((category) => category.name === existing?.category)?.id ||
+    "";
 
   const [form, setForm] = useState({
     name:        existing?.name            || "",
     description: existing?.description    || "",
     price:       existing?.price.amount   || "",
     currency:    existing?.price.currency || "USD",
-    category:    existing?.category       || "",
+    category:    existingCategoryId,
     stock:       existing?.stock          ?? 0,
     status:      existing?.status         || "new",
     images:      existing?.images         || [],
@@ -42,7 +46,7 @@ export function AddProductPage({ editId, categories }) {
             <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
             <div className="field"><label>Price *</label><input type="number" className="input" value={form.price} onChange={set("price")} required min={0} step="0.01" placeholder="0.00" /></div>
             <div className="field"><label>Currency</label><select className="input" value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></select></div>
-            <div className="field"><label>Category *</label><select className="input" value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}</select></div>
+            <div className="field"><label>Category *</label><select className="input" value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
             <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
             <div className="field"><label>Status</label><select className="input" value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</select></div>
             <div className="field sm:col-span-2"><label>Image URLs (one per line)</label><textarea className="input resize-y" rows={3} placeholder="https://…" value={form.images.join("\n")} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }))} /></div>

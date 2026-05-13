@@ -6,6 +6,7 @@ export const toProductReadModel = (record) => {
     description: record.description,
     price: record.price,
     currency: record.currency,
+    categoryId: record.categoryId?.toString(),
     category: record.category?.toString(),
     stock: record.stock,
     images: record.images,
