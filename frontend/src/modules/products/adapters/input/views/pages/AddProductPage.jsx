@@ -32,22 +32,22 @@ export function AddProductPage({ editId, categories }) {
   };
 
   return (
-    <div style={{ maxWidth:800, margin:"0 auto", padding:"40px 24px" }}>
+    <div className="mx-auto max-w-[800px] px-6 py-10">
       <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{editId ? "Edit" : "Add product"}</span></div>
-      <h1 className="page-title" style={{ marginBottom:28, marginTop:8 }}>{editId ? "Edit product" : "Add new product"}</h1>
+      <h1 className="page-title mb-7 mt-2">{editId ? "Edit product" : "Add new product"}</h1>
       <form onSubmit={submit}>
-        <div className="card" style={{ padding:28 }}>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-            <div className="field" style={{ gridColumn:"1 / -1" }}><label>Product name *</label><input className="input" value={form.name} onChange={set("name")} required placeholder="e.g. Samsung Galaxy S24" /></div>
-            <div className="field" style={{ gridColumn:"1 / -1" }}><label>Description</label><textarea className="input" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" style={{ resize:"vertical" }} /></div>
+        <div className="card p-7">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="field sm:col-span-2"><label>Product name *</label><input className="input" value={form.name} onChange={set("name")} required placeholder="e.g. Samsung Galaxy S24" /></div>
+            <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
             <div className="field"><label>Price *</label><input type="number" className="input" value={form.price} onChange={set("price")} required min={0} step="0.01" placeholder="0.00" /></div>
             <div className="field"><label>Currency</label><select className="input" value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></select></div>
             <div className="field"><label>Category *</label><select className="input" value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}</select></div>
             <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
             <div className="field"><label>Status</label><select className="input" value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</select></div>
-            <div className="field" style={{ gridColumn:"1 / -1" }}><label>Image URLs (one per line)</label><textarea className="input" rows={3} placeholder="https://…" value={form.images.join("\n")} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }))} style={{ resize:"vertical" }} /></div>
+            <div className="field sm:col-span-2"><label>Image URLs (one per line)</label><textarea className="input resize-y" rows={3} placeholder="https://…" value={form.images.join("\n")} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }))} /></div>
           </div>
-          <div style={{ display:"flex", gap:10, marginTop:24 }}>
+          <div className="mt-6 flex gap-2.5">
             <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Saving…" : editId ? "Save changes" : "Create product"}</button>
             <Link to="/products" className="btn btn-ghost">Cancel</Link>
           </div>

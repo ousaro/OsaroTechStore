@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useProducts } from "../useProductsModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { ProductCard } from "../ProductCard.jsx";
-import { FiArrowRight, FiBox, FiCpu, FiGrid, FiShield, FiTruck } from "react-icons/fi";
+import { FiArrowRight, FiBox, FiCpu, FiGrid, FiShield, FiStar, FiTruck, FiZap } from "react-icons/fi";
 
 export function HomePage({ categories }) {
   const { products } = useProducts();
@@ -26,6 +26,23 @@ export function HomePage({ categories }) {
               <button className="btn btn-primary btn-lg" onClick={() => navigate("/products")}>Shop now <FiArrowRight /></button>
               <button className="btn btn-lg muted-cta" onClick={() => navigate("/about")}>About us</button>
             </div>
+            <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+              {[
+                [FiZap, "Same-day prep", "Ready fast"],
+                [FiStar, "Curated picks", "No noisy catalog"],
+                [FiShield, "Protected pay", "Secure checkout"],
+              ].map(([Icon, title, sub]) => (
+                <div key={title} className="flex min-h-20 items-center gap-3 rounded-lg border border-[var(--hero-card-border)] bg-[var(--hero-card-bg)] px-4 py-3 text-[var(--hero-text)] shadow-soft backdrop-blur-xl transition-transform duration-200 hover:-translate-y-0.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[var(--hero-icon-bg)] text-[var(--hero-icon-color)]">
+                    <Icon size={19} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-extrabold leading-tight">{title}</span>
+                    <span className="block text-xs leading-snug text-[var(--hero-card-muted)]">{sub}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="hero-visual">
             <div className="hero-card wide">
@@ -48,7 +65,7 @@ export function HomePage({ categories }) {
           </div>
           {filtered.length > 0 && <button className="btn btn-ghost" onClick={() => navigate("/products")}>View all <FiArrowRight /></button>}
         </div>
-        <div className="category-strip" style={{ marginBottom:28 }}>
+        <div className="category-strip mb-7">
           <button className={`category-pill ${selectedCat==="all"?"active":""}`} onClick={() => setSelectedCat("all")}>All products</button>
           {categories.map((c) => (
             <button key={c.id} className={`category-pill ${selectedCat===c.name?"active":""}`} onClick={() => setSelectedCat(c.name)}>{c.name}</button>
@@ -59,8 +76,8 @@ export function HomePage({ categories }) {
           : <div className="products-grid">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>
         }
         {filtered.length > 0 && (
-          <div style={{ textAlign:"center", marginTop:40 }}>
-            <button className="btn btn-primary" style={{ padding:"12px 32px" }} onClick={() => navigate("/products")}>Browse full catalog <FiArrowRight /></button>
+          <div className="mt-10 text-center">
+            <button className="btn btn-primary px-8 py-3" onClick={() => navigate("/products")}>Browse full catalog <FiArrowRight /></button>
           </div>
         )}
       </div>

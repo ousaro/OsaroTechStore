@@ -20,9 +20,9 @@ export function ProfileSidebar({ path }) {
       ))}
       {user?.isAdmin && (
         <>
-          <div className="sidebar-label" style={{ marginTop:16 }}>Admin</div>
-          <Link to="/admin/users"      className={`sidebar-link ${path==="/admin/users"?"active":""}`}><FiUsers size={16} /> Manage users <span className="admin-tag" style={{ marginLeft:"auto" }}>Admin</span></Link>
-          <Link to="/admin/categories" className={`sidebar-link ${path==="/admin/categories"?"active":""}`}><FiTag size={16} /> Categories <span className="admin-tag" style={{ marginLeft:"auto" }}>Admin</span></Link>
+          <div className="sidebar-label mt-4">Admin</div>
+          <Link to="/admin/users"      className={`sidebar-link ${path==="/admin/users"?"active":""}`}><FiUsers size={16} /> Manage users <span className="admin-tag ml-auto">Admin</span></Link>
+          <Link to="/admin/categories" className={`sidebar-link ${path==="/admin/categories"?"active":""}`}><FiTag size={16} /> Categories <span className="admin-tag ml-auto">Admin</span></Link>
         </>
       )}
     </aside>

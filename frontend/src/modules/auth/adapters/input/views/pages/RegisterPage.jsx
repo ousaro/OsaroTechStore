@@ -40,15 +40,15 @@ export function RegisterPage() {
           <h1 className="auth-title">Create account</h1>
           <p className="auth-sub">Let's get you set up</p>
           {error && <div className="error-box"><FiAlertCircle /> {error}</div>}
-          <form onSubmit={handleSubmit} style={{ display:"flex", flexDirection:"column", gap:14 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
               <div className="field"><label>First name</label><input className="input" placeholder="John" value={form.firstName} onChange={set("firstName")} required /></div>
               <div className="field"><label>Last name</label><input className="input" placeholder="Doe" value={form.lastName} onChange={set("lastName")} required /></div>
             </div>
             <div className="field"><label>Email address</label><input type="email" className="input" placeholder="you@example.com" value={form.email} onChange={set("email")} required /></div>
             <PasswordInput label="Password" name="password" value={form.password} onChange={set("password")} placeholder="At least 8 characters" required />
             <PasswordInput label="Confirm password" name="confirm" value={form.confirm} onChange={set("confirm")} placeholder="Repeat password" required />
-            <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width:"100%", justifyContent:"center", marginTop:4 }}>
+            <button type="submit" className="btn btn-primary btn-lg mt-1 w-full" disabled={loading}>
               {loading ? "Creating account…" : "Create account"}
             </button>
           </form>

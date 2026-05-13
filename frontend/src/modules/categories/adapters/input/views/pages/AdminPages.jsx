@@ -35,7 +35,7 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
   const byStatus = orders.reduce((m, o) => { m[o.orderStatus] = (m[o.orderStatus]||0)+1; return m; }, {});
 
   return (
-    <div style={{ maxWidth:1280, margin:"0 auto", padding:"40px 24px" }}>
+    <div className="page-shell">
       <div className="page-header"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Store overview</p></div></div>
       <div className="stats-grid">
         {[
@@ -45,22 +45,22 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
           [FiClock, "Pending", orders.filter(o=>o.orderStatus==="pending").length],
           [FiTag, "Products", products.length],
         ].map(([Icon,label,value,accent])=>(
-          <div key={label} className="card stat-card"><div className="stat-label" style={{ display:"flex", alignItems:"center", gap:8 }}><Icon size={14} /> {label}</div><div className={`stat-value ${accent?"accent":""}`}>{value}</div></div>
+          <div key={label} className="card stat-card"><div className="stat-label flex items-center gap-2"><Icon size={14} /> {label}</div><div className={`stat-value ${accent?"accent":""}`}>{value}</div></div>
         ))}
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-        <div className="card" style={{ padding:24 }}>
-          <h2 style={{ fontSize:16, fontWeight:700, marginBottom:16 }}>Orders by status</h2>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="card p-6">
+          <h2 className="mb-4 text-base font-bold">Orders by status</h2>
           {Object.entries(byStatus).map(([s,c]) => (
-            <div key={s} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"9px 0", borderBottom:"1px solid var(--border)" }}><Badge status={s} /><span style={{ fontWeight:700 }}>{c}</span></div>
+            <div key={s} className="flex items-center justify-between border-b border-border py-[9px]"><Badge status={s} /><span className="font-bold">{c}</span></div>
           ))}
         </div>
-        <div className="card" style={{ padding:24 }}>
-          <h2 style={{ fontSize:16, fontWeight:700, marginBottom:16 }}>Recent orders</h2>
+        <div className="card p-6">
+          <h2 className="mb-4 text-base font-bold">Recent orders</h2>
           {orders.slice(0,6).map((o) => (
-            <div key={o.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"9px 0", borderBottom:"1px solid var(--border)" }}>
-              <div><code style={{ fontSize:12 }}>#{o.id?.slice(-8)}</code><div style={{ fontSize:12, color:"var(--ink-muted)" }}>{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
-              <div style={{ textAlign:"right" }}><div style={{ fontWeight:700, fontSize:13 }}>{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
+            <div key={o.id} className="flex items-center justify-between border-b border-border py-[9px]">
+              <div><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
+              <div className="text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
             </div>
           ))}
         </div>
@@ -97,10 +97,10 @@ export function ManageUsersPage({ authInputPort }) {
             <tbody>
               {users.map((u) => (
                 <tr key={u.id||u._id}>
-                  <td><div style={{ display:"flex", alignItems:"center", gap:10 }}><img src={u.picture||`https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName||"U")}&size=36&background=222632&color=f5f1e8`} alt="" style={{ width:36,height:36,borderRadius:"50%",objectFit:"cover" }} /><span style={{ fontWeight:600 }}>{u.fullName}</span></div></td>
-                  <td style={{ color:"var(--ink-muted)", fontSize:13 }}>{u.email}</td>
-                  <td>{u.admin ? <span className="admin-tag">Admin</span> : <span style={{ fontSize:13, color:"var(--ink-muted)" }}>Customer</span>}</td>
-                  <td style={{ fontSize:13, color:"var(--ink-muted)" }}>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
+                  <td><div className="flex items-center gap-2.5"><img src={u.picture||`https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName||"U")}&size=36&background=222632&color=f5f1e8`} alt="" className="h-9 w-9 rounded-full object-cover" /><span className="font-semibold">{u.fullName}</span></div></td>
+                  <td className="text-[13px] text-ink-muted">{u.email}</td>
+                  <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
+                  <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
                   <td><button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
                 </tr>
               ))}
@@ -141,11 +141,11 @@ export function CategoriesPage({ categoriesInputPort }) {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Categories</h1><p className="page-subtitle">{cats.length} categories</p></div></div>
-        <div className="card" style={{ padding:24, marginBottom:20 }}>
-          <h2 style={{ fontSize:16, fontWeight:700, marginBottom:16 }}>Add new category</h2>
-          <form onSubmit={create} style={{ display:"flex", gap:12, alignItems:"flex-end", flexWrap:"wrap" }}>
-            <div className="field" style={{ flex:"1 1 160px" }}><label>Name *</label><input className="input" placeholder="e.g. Smartphones" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name:e.target.value }))} required /></div>
-            <div className="field" style={{ flex:"2 1 240px" }}><label>Description</label><input className="input" placeholder="Optional" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description:e.target.value }))} /></div>
+        <div className="card mb-5 p-6">
+          <h2 className="mb-4 text-base font-bold">Add new category</h2>
+          <form onSubmit={create} className="flex flex-wrap items-end gap-3">
+            <div className="field flex-[1_1_160px]"><label>Name *</label><input className="input" placeholder="e.g. Smartphones" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name:e.target.value }))} required /></div>
+            <div className="field flex-[2_1_240px]"><label>Description</label><input className="input" placeholder="Optional" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description:e.target.value }))} /></div>
             <button type="submit" className="btn btn-primary" disabled={creating}>+ {creating ? "Creating…" : "Create"}</button>
           </form>
         </div>
@@ -155,9 +155,9 @@ export function CategoriesPage({ categoriesInputPort }) {
             <tbody>
               {cats.map((c) => (
                 <tr key={c.id}>
-                  <td style={{ fontWeight:600 }}>{c.name}</td>
-                  <td style={{ color:"var(--ink-muted)", fontSize:13 }}>{c.description||"—"}</td>
-                  <td style={{ fontSize:13, color:"var(--ink-muted)" }}>{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
+                  <td className="font-semibold">{c.name}</td>
+                  <td className="text-[13px] text-ink-muted">{c.description||"—"}</td>
+                  <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
                   <td><button className="btn btn-danger btn-sm" onClick={() => del(c)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></td>
                 </tr>
               ))}
@@ -202,8 +202,8 @@ export function AboutPage() {
         {values.map(({ icon: Icon, title, sub })=>(
           <div key={title} className="card about-value-card">
             <span className="icon-pill"><Icon size={22} /></span>
-            <div style={{ fontWeight:800, marginBottom:4 }}>{title}</div>
-            <div style={{ fontSize:14, color:"var(--ink-muted)" }}>{sub}</div>
+            <div className="mb-1 font-extrabold">{title}</div>
+            <div className="text-sm text-ink-muted">{sub}</div>
           </div>
         ))}
       </section>

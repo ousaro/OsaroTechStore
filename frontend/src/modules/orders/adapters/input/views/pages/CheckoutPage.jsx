@@ -51,40 +51,40 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   };
 
   return (
-    <div style={{ maxWidth:900, margin:"0 auto", padding:"40px 24px" }}>
-      <h1 className="page-title" style={{ marginBottom:28 }}>Checkout</h1>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 340px", gap:24, alignItems:"start" }}>
-        <form onSubmit={placeOrder} style={{ display:"flex", flexDirection:"column", gap:16 }}>
-          <div className="card" style={{ padding:24 }}>
-            <h2 style={{ fontSize:17, fontWeight:700, marginBottom:20 }}>Delivery address</h2>
-            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+    <div className="mx-auto max-w-[900px] px-6 py-10">
+      <h1 className="page-title mb-7">Checkout</h1>
+      <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
+        <form onSubmit={placeOrder} className="flex flex-col gap-4">
+          <div className="card p-6">
+            <h2 className="mb-5 text-[17px] font-bold">Delivery address</h2>
+            <div className="flex flex-col gap-3.5">
               <div className="field"><label>Street address</label><input className="input" placeholder="123 Main Street" value={address.street} onChange={setA("street")} required /></div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 <div className="field"><label>City</label><input className="input" placeholder="Casablanca" value={address.city} onChange={setA("city")} required /></div>
                 <div className="field"><label>State / Region</label><input className="input" placeholder="Region" value={address.state} onChange={setA("state")} /></div>
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 <div className="field"><label>Postal code</label><input className="input" placeholder="20000" value={address.postalCode} onChange={setA("postalCode")} /></div>
                 <div className="field"><label>Country</label><input className="input" placeholder="Morocco" value={address.country} onChange={setA("country")} required /></div>
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary btn-lg" style={{ justifyContent:"center" }} disabled={loading}>
+          <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
             {loading ? "Processing…" : `Pay USD ${total.toFixed(2)} →`}
           </button>
         </form>
-        <div className="card" style={{ padding:20 }}>
-          <h2 style={{ fontSize:16, fontWeight:700, marginBottom:16 }}>Your order</h2>
+        <div className="card p-5">
+          <h2 className="mb-4 text-base font-bold">Your order</h2>
           {cartItems.map((i) => (
-            <div key={i.id} style={{ display:"flex", gap:12, alignItems:"center", padding:"12px 0", borderBottom:"1px solid var(--border)" }}>
-              <div style={{ width:48, height:48, background:"var(--surface-2)", borderRadius:"var(--radius-sm)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>
-                {i.primaryImage ? <img src={i.primaryImage} style={{ width:"100%", height:"100%", objectFit:"contain", padding:4 }} alt="" /> : <FiSmartphone />}
+            <div key={i.id} className="flex items-center gap-3 border-b border-border py-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-lg">
+                {i.primaryImage ? <img src={i.primaryImage} className="h-full w-full object-contain p-1" alt="" /> : <FiSmartphone />}
               </div>
-              <div style={{ flex:1 }}><div style={{ fontWeight:600, fontSize:13 }}>{i.name}</div><div style={{ fontSize:12, color:"var(--ink-muted)" }}>Qty: {i.quantity}</div></div>
-              <div style={{ fontWeight:700, fontSize:14 }}>{i.price.currency} {(i.price.amount*i.quantity).toFixed(2)}</div>
+              <div className="flex-1"><div className="text-[13px] font-semibold">{i.name}</div><div className="text-xs text-ink-muted">Qty: {i.quantity}</div></div>
+              <div className="text-sm font-bold">{i.price.currency} {(i.price.amount*i.quantity).toFixed(2)}</div>
             </div>
           ))}
-          <div className="summary-row total" style={{ marginTop:16 }}><span>Total</span><span>USD {total.toFixed(2)}</span></div>
+          <div className="summary-row total mt-4"><span>Total</span><span>USD {total.toFixed(2)}</span></div>
         </div>
       </div>
     </div>

@@ -24,47 +24,47 @@ export function CartPage() {
 
   if (cart.isEmpty) return (
     <div className="page-shell">
-      <div className="empty-state" style={{ paddingTop:80 }}>
+      <div className="empty-state pt-20">
         <span className="icon"><FiShoppingBag size={30} /></span><h3>Your cart is empty</h3><p>Browse products and add items to get started.</p>
-        <button className="btn btn-primary" style={{ marginTop:20 }} onClick={() => navigate("/products")}>Shop now <FiArrowRight /></button>
+        <button className="btn btn-primary mt-5" onClick={() => navigate("/products")}>Shop now <FiArrowRight /></button>
       </div>
     </div>
   );
 
   return (
     <div className="page-shell">
-      <h1 className="page-title" style={{ marginBottom:28 }}>Shopping cart</h1>
+      <h1 className="page-title mb-7">Shopping cart</h1>
       <div className="cart-layout">
-        <div className="card" style={{ padding:"0 24px" }}>
+        <div className="card px-6">
           {cartItems.map((item) => (
             <div key={item.id} className="cart-item">
               {item.primaryImage
                 ? <img src={item.primaryImage} className="cart-item-img" alt={item.name} />
-                : <div className="cart-item-img" style={{ display:"flex", alignItems:"center", justifyContent:"center", color:"var(--ink-faint)" }}><FiSmartphone size={30} /></div>
+                : <div className="cart-item-img flex items-center justify-center text-ink-faint"><FiSmartphone size={30} /></div>
               }
-              <div style={{ flex:1 }}>
-                <Link to={`/product/${item.id}`} style={{ fontWeight:600, fontSize:15, display:"block", marginBottom:4 }}>{item.name}</Link>
-                <div style={{ fontSize:13, color:"var(--ink-muted)" }}>{item.price.currency} {item.price.amount.toFixed(2)} each</div>
+              <div className="flex-1">
+                <Link to={`/product/${item.id}`} className="mb-1 block text-[15px] font-semibold">{item.name}</Link>
+                <div className="text-[13px] text-ink-muted">{item.price.currency} {item.price.amount.toFixed(2)} each</div>
                 <QtyControl value={item.quantity} max={item.stock} onDecrement={() => setQuantity(item.id, item.quantity-1)} onIncrement={() => setQuantity(item.id, item.quantity+1)} />
               </div>
-              <div style={{ textAlign:"right" }}>
-                <div style={{ fontWeight:800, fontSize:16 }}>{item.price.currency} {(item.price.amount * item.quantity).toFixed(2)}</div>
-                <button className="btn btn-sm" style={{ color:"var(--accent)", marginTop:8, background:"none" }} onClick={() => removeFromCart(item.id)}><FiTrash2 /> Remove</button>
+              <div className="text-right">
+                <div className="text-base font-extrabold">{item.price.currency} {(item.price.amount * item.quantity).toFixed(2)}</div>
+                <button className="btn btn-sm mt-2 bg-transparent text-accent" onClick={() => removeFromCart(item.id)}><FiTrash2 /> Remove</button>
               </div>
             </div>
           ))}
         </div>
         <div className="card order-summary">
-          <h2 style={{ fontSize:18, fontWeight:700, marginBottom:20 }}>Order summary</h2>
+          <h2 className="mb-5 text-lg font-bold">Order summary</h2>
           {cartItems.map((i) => (
             <div key={i.id} className="summary-row">
-              <span style={{ maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{i.name} ×{i.quantity}</span>
+              <span className="max-w-40 overflow-hidden text-ellipsis whitespace-nowrap">{i.name} ×{i.quantity}</span>
               <span>{i.price.currency} {(i.price.amount * i.quantity).toFixed(2)}</span>
             </div>
           ))}
           <div className="summary-row total"><span>Total</span><span>{currency} {total.toFixed(2)}</span></div>
-          <button className="btn btn-primary btn-lg" style={{ width:"100%", justifyContent:"center", marginTop:20 }} onClick={() => navigate("/checkout")}>Proceed to checkout <FiArrowRight /></button>
-          <button className="btn btn-ghost" style={{ width:"100%", justifyContent:"center", marginTop:8 }} onClick={() => navigate("/products")}>Continue shopping</button>
+          <button className="btn btn-primary btn-lg mt-5 w-full" onClick={() => navigate("/checkout")}>Proceed to checkout <FiArrowRight /></button>
+          <button className="btn btn-ghost mt-2 w-full" onClick={() => navigate("/products")}>Continue shopping</button>
         </div>
       </div>
     </div>

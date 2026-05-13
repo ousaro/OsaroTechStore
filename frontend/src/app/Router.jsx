@@ -58,20 +58,20 @@ const PUBLIC_ROUTES = ["/", "/login", "/register"];
 
 function NotFound() {
   return (
-    <div style={{ textAlign:"center", padding:"80px 24px" }}>
-      <div style={{ fontSize:96, fontWeight:900, color:"var(--accent)", lineHeight:1 }}>404</div>
-      <p style={{ color:"var(--ink-muted)", marginTop:12, fontSize:16 }}>Page not found</p>
-      <a href="#/home" style={{ display:"inline-block", marginTop:20, color:"var(--accent)", fontWeight:600 }}>← Back home</a>
+    <div className="px-6 py-20 text-center">
+      <div className="text-8xl font-black leading-none text-accent">404</div>
+      <p className="mt-3 text-base text-ink-muted">Page not found</p>
+      <a href="#/home" className="mt-5 inline-block font-semibold text-accent">← Back home</a>
     </div>
   );
 }
 
 function AccessDenied() {
   return (
-    <div style={{ textAlign:"center", padding:"80px 24px" }}>
-      <div className="empty-state" style={{ padding:0 }}><span className="icon"><FiLock size={30} /></span></div>
-      <h2 style={{ fontWeight:700 }}>Access denied</h2>
-      <p style={{ color:"var(--ink-muted)", marginTop:8 }}>You don't have permission to view this page.</p>
+    <div className="px-6 py-20 text-center">
+      <div className="empty-state p-0"><span className="icon"><FiLock size={30} /></span></div>
+      <h2 className="font-bold">Access denied</h2>
+      <p className="mt-2 text-ink-muted">You don't have permission to view this page.</p>
     </div>
   );
 }

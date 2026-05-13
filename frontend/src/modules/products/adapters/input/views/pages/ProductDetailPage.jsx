@@ -48,45 +48,45 @@ export function ProductDetailPage({ id }) {
   return (
     <div className="page-shell">
       <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{product.name}</span></div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"start", marginTop:8 }}>
+      <div className="mt-2 grid items-start gap-12 lg:grid-cols-2">
         <div>
-          <div style={{ background:"var(--surface-2)", borderRadius:"var(--radius-lg)", aspectRatio:"1", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
-            {images[activeImg] ? <img src={images[activeImg]} alt={product.name} style={{ maxWidth:"80%", maxHeight:"80%", objectFit:"contain" }} /> : <span style={{ color:"var(--ink-faint)" }}><FiSmartphone size={82} /></span>}
+          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2">
+            {images[activeImg] ? <img src={images[activeImg]} alt={product.name} className="max-h-[80%] max-w-[80%] object-contain" /> : <span className="text-ink-faint"><FiSmartphone size={82} /></span>}
           </div>
           {images.length > 1 && (
-            <div style={{ display:"flex", gap:8, marginTop:12, flexWrap:"wrap" }}>
+            <div className="mt-3 flex flex-wrap gap-2">
               {images.slice(0,6).map((img,i) => (
-                <div key={i} onClick={() => setActiveImg(i)} style={{ width:72,height:72,borderRadius:"var(--radius-sm)",background:"var(--surface-2)",cursor:"pointer",overflow:"hidden",border:`2px solid ${activeImg===i?"var(--accent)":"var(--border)"}`,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                  {img ? <img src={img} alt="" style={{ width:"100%",height:"100%",objectFit:"contain",padding:8 }} /> : <FiSmartphone />}
+                <div key={i} onClick={() => setActiveImg(i)} className={`flex h-[72px] w-[72px] cursor-pointer items-center justify-center overflow-hidden rounded-sm border-2 bg-surface-2 ${activeImg===i ? "border-accent" : "border-border"}`}>
+                  {img ? <img src={img} alt="" className="h-full w-full object-contain p-2" /> : <FiSmartphone />}
                 </div>
               ))}
             </div>
           )}
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+        <div className="flex flex-col gap-5">
           <div>
-            <div style={{ display:"flex", gap:8, marginBottom:12 }}><Badge status={product.status} />{product.category && <span style={{ background:"var(--surface-3)",padding:"2px 8px",borderRadius:"var(--radius-sm)",fontSize:12,fontWeight:600 }}>{product.category}</span>}</div>
-            <h1 style={{ fontSize:28, fontWeight:800, letterSpacing:"-.5px", marginBottom:12, lineHeight:1.25 }}>{product.name}</h1>
-            <div style={{ fontSize:36, fontWeight:900, letterSpacing:"-1px", color:"var(--accent)", marginBottom:12 }}>
-              <span style={{ fontSize:18, fontWeight:700 }}>{product.price.currency} </span>{product.price.amount.toFixed(2)}
+            <div className="mb-3 flex gap-2"><Badge status={product.status} />{product.category && <span className="rounded-sm bg-surface-3 px-2 py-0.5 text-xs font-semibold">{product.category}</span>}</div>
+            <h1 className="mb-3 text-[28px] font-extrabold leading-tight tracking-[-.5px]">{product.name}</h1>
+            <div className="mb-3 text-4xl font-black tracking-[-1px] text-accent">
+              <span className="text-lg font-bold">{product.price.currency} </span>{product.price.amount.toFixed(2)}
             </div>
-            {product.description && <p style={{ fontSize:15, color:"var(--ink-muted)", lineHeight:1.7 }}>{product.description}</p>}
+            {product.description && <p className="text-[15px] leading-7 text-ink-muted">{product.description}</p>}
           </div>
-          <div style={{ height:1, background:"var(--border)" }} />
-          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <div className="h-px bg-border" />
+          <div className="flex items-center gap-2">
             <span className={`status-dot ${product.inStock?(product.lowStock?"yellow":"green"):"red"}`} />
-            <span style={{ fontSize:14, fontWeight:600 }}>
+            <span className="text-sm font-semibold">
               {product.inStock ? (product.lowStock ? `Low stock — only ${product.stock} left` : `In stock (${product.stock} units)`) : "Out of stock"}
             </span>
           </div>
           {product.inStock && (
-            <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+            <div className="flex items-center gap-3">
               <QtyControl value={qty} min={1} max={product.stock} onDecrement={() => setQty((q) => Math.max(1,q-1))} onIncrement={() => setQty((q) => Math.min(product.stock,q+1))} />
-              <button className="btn btn-primary" style={{ flex:1, justifyContent:"center" }} onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
+              <button className="btn btn-primary flex-1" onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
             </div>
           )}
           {user?.isAdmin && (
-            <div style={{ display:"flex", gap:8 }}>
+            <div className="flex gap-2">
               <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost"><FiEdit2 /> Edit</Link>
               <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}><FiTrash2 /> {deleting ? "Deleting…" : "Delete"}</button>
             </div>

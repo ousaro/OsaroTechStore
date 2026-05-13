@@ -37,10 +37,10 @@ export function OrdersPage({ ordersInputPort }) {
                 <tbody>
                   {myOrders.map((o) => (
                     <tr key={o.id}>
-                      <td><code style={{ fontSize:12 }}>#{o.id?.slice(-8)}</code></td>
-                      <td style={{ color:"var(--ink-muted)", fontSize:13 }}>{fmt(o.createdAt)}</td>
+                      <td><code className="text-xs">#{o.id?.slice(-8)}</code></td>
+                      <td className="text-[13px] text-ink-muted">{fmt(o.createdAt)}</td>
                       <td>{o.orderLines?.length ?? 0} items</td>
-                      <td style={{ fontWeight:700 }}>{Money.fromRaw(o.totalPrice).format()}</td>
+                      <td className="font-bold">{Money.fromRaw(o.totalPrice).format()}</td>
                       <td><Badge status={o.orderStatus} /></td>
                       <td><Badge status={o.paymentStatus} /></td>
                     </tr>

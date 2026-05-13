@@ -35,14 +35,14 @@ export function ProductCard({ product: p }) {
       <div className="product-img-wrap">
         {p.primaryImage
           ? <img src={p.primaryImage} alt={p.name} loading="lazy" />
-          : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100%", color:"var(--ink-faint)" }}><FiSmartphone size={58} /></div>
+          : <div className="flex h-full items-center justify-center text-ink-faint"><FiSmartphone size={58} /></div>
         }
-        {p.status === "new" && <div style={{ position:"absolute", top:8, left:8 }}><Badge status="new" /></div>}
+        {p.status === "new" && <div className="absolute left-2 top-2"><Badge status="new" /></div>}
         <div className="product-actions-overlay">
-          <button className="btn btn-primary btn-sm" style={{ flex:1, justifyContent:"center" }} onClick={handleAddToCart} disabled={adding || !p.inStock}>
+          <button className="btn btn-primary btn-sm flex-1" onClick={handleAddToCart} disabled={adding || !p.inStock}>
             <FiShoppingBag /> {adding ? "Adding" : p.inStock ? "Add to cart" : "Out of stock"}
           </button>
-          <button className="btn btn-sm" style={{ background:"rgba(255,255,255,.2)", color:"#fff", border:"none", padding:"6px 10px" }} onClick={handleToggleFav} aria-label={isFav ? "Remove from favorites" : "Add to favorites"}>
+          <button className="btn btn-sm border-0 bg-white/20 px-2.5 py-1.5 text-white" onClick={handleToggleFav} aria-label={isFav ? "Remove from favorites" : "Add to favorites"}>
             {isFav ? <FaHeart /> : <FiHeart />}
           </button>
         </div>
@@ -50,7 +50,7 @@ export function ProductCard({ product: p }) {
       <div className="product-body">
         <div className="product-category">{p.category}</div>
         <div className="product-name" title={p.name}>{p.name}</div>
-        <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", gap:8 }}>
+        <div className="flex items-baseline justify-between gap-2">
           <div className="product-price"><span className="currency">{p.price.currency}</span>{p.price.amount.toFixed(2)}</div>
           <Badge status={p.status} />
         </div>
