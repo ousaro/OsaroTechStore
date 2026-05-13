@@ -8,7 +8,8 @@ import { QtyControl } from "../../../../../../shared/infrastructure/ui/QtyContro
 import { Spinner } from "../../../../../../shared/infrastructure/ui/Spinner.jsx";
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
 import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
-import { FiCreditCard, FiEdit2, FiMessageSquare, FiRefreshCcw, FiShoppingBag, FiShield, FiSmartphone, FiStar, FiTrash2, FiTruck } from "react-icons/fi";
+import { ProductImage } from "../../../../../../shared/infrastructure/ui/ProductImage.jsx";
+import { FiCreditCard, FiEdit2, FiMessageSquare, FiRefreshCcw, FiShoppingBag, FiShield, FiStar, FiTrash2, FiTruck } from "react-icons/fi";
 
 export function ProductDetailPage({ id }) {
   const { products, getProductById, deleteProduct } = useProducts();
@@ -88,13 +89,13 @@ export function ProductDetailPage({ id }) {
       <div className="mt-2 grid items-start gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
         <div>
           <div className="product-detail-media">
-            {images[activeImg] ? <img src={images[activeImg]} alt={product.name} /> : <span className="text-ink-faint"><FiSmartphone size={82} /></span>}
+            <ProductImage src={images[activeImg]} alt={product.name} placeholderSize={82} />
           </div>
           {images.length > 1 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {images.slice(0,6).map((img,i) => (
                 <div key={i} onClick={() => setActiveImg(i)} className={`flex h-[72px] w-[72px] cursor-pointer items-center justify-center overflow-hidden rounded-sm border-2 bg-surface-2 ${activeImg===i ? "border-accent" : "border-border"}`}>
-                  {img ? <img src={img} alt="" className="h-full w-full object-contain p-2" /> : <FiSmartphone />}
+                  <ProductImage src={img} alt="" placeholderSize={22} imgClassName="h-full w-full object-contain p-2" />
                 </div>
               ))}
             </div>

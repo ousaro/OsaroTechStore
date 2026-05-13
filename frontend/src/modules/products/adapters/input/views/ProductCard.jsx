@@ -4,7 +4,8 @@ import { useUsers } from "../../../../users/adapters/input/views/useUsersModule.
 import { useAuth } from "../../../../auth/adapters/input/views/useAuthModule.js";
 import { useNavigate } from "../../../../../shared/hooks/useNavigate.js";
 import { Badge } from "../../../../../shared/infrastructure/ui/Badge.jsx";
-import { FiHeart, FiShoppingBag, FiSmartphone } from "react-icons/fi";
+import { ProductImage } from "../../../../../shared/infrastructure/ui/ProductImage.jsx";
+import { FiHeart, FiShoppingBag } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 
 export function ProductCard({ product: p }) {
@@ -45,10 +46,8 @@ export function ProductCard({ product: p }) {
       aria-label={`View ${p.name}`}
     >
       <div className="product-img-wrap">
-        {p.primaryImage
-          ? <img src={p.primaryImage} alt={p.name} loading="lazy" />
-          : <div className="flex h-full items-center justify-center text-ink-faint"><FiSmartphone size={58} /></div>
-        }
+        <ProductImage src={p.primaryImage} alt={p.name} placeholderSize={58} />
+        
         {p.status === "new" && <div className="absolute left-2 top-2"><Badge status="new" /></div>}
         <div className="product-actions-overlay">
           <button className="btn btn-primary btn-sm flex-1" onClick={handleAddToCart} disabled={adding || !p.inStock}>

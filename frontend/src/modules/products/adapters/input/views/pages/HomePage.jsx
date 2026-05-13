@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useProducts } from "../useProductsModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { ProductCard } from "../ProductCard.jsx";
+import { ProductImage } from "../../../../../../shared/infrastructure/ui/ProductImage.jsx";
 import { FiArrowRight, FiBox, FiClock, FiCpu, FiGrid, FiHeadphones, FiShield, FiStar, FiTruck, FiZap } from "react-icons/fi";
 
 export function HomePage({ categories }) {
@@ -66,10 +67,7 @@ export function HomePage({ categories }) {
             {heroProduct && (
               <div className="hero-product-card">
                 <div className="hero-product-media">
-                  {heroProduct.primaryImage
-                    ? <img src={heroProduct.primaryImage} alt={heroProduct.name} />
-                    : <FiCpu size={88} />
-                  }
+                  <ProductImage src={heroProduct.primaryImage} alt={heroProduct.name} placeholderSize={88} />
                 </div>
                 <div className="hero-product-info">
                   <div>
@@ -147,7 +145,7 @@ export function HomePage({ categories }) {
                     <span className="spotlight-price">{heroProduct.price.currency} {heroProduct.price.amount.toFixed(2)}</span>
                   </div>
                   <div className="spotlight-media">
-                    {heroProduct.primaryImage ? <img src={heroProduct.primaryImage} alt={heroProduct.name} /> : <FiCpu size={72} />}
+                    <ProductImage src={heroProduct.primaryImage} alt={heroProduct.name} placeholderSize={72} />
                   </div>
                 </div>
               </button>

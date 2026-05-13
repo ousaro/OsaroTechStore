@@ -4,7 +4,8 @@ import { useProducts } from "../../../../../products/adapters/input/views/usePro
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
 import { QtyControl } from "../../../../../../shared/infrastructure/ui/QtyControl.jsx";
-import { FiArrowRight, FiShoppingBag, FiSmartphone, FiTrash2 } from "react-icons/fi";
+import { ProductImage } from "../../../../../../shared/infrastructure/ui/ProductImage.jsx";
+import { FiArrowRight, FiShoppingBag, FiTrash2 } from "react-icons/fi";
 
 export function CartPage() {
   const { cart, removeFromCart, setQuantity } = useCart();
@@ -38,10 +39,7 @@ export function CartPage() {
         <div className="card px-6">
           {cartItems.map((item) => (
             <div key={item.id} className="cart-item">
-              {item.primaryImage
-                ? <img src={item.primaryImage} className="cart-item-img" alt={item.name} />
-                : <div className="cart-item-img flex items-center justify-center text-ink-faint"><FiSmartphone size={30} /></div>
-              }
+              <ProductImage src={item.primaryImage} alt={item.name} placeholderSize={30} imgClassName="cart-item-img" wrapperClassName="cart-item-img" />
               <div className="flex-1">
                 <Link to={`/product/${item.id}`} className="mb-1 block text-[15px] font-semibold">{item.name}</Link>
                 <div className="text-[13px] text-ink-muted">{item.price.currency} {item.price.amount.toFixed(2)} each</div>

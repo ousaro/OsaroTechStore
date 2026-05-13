@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { useUsers } from "../../../../../users/adapters/input/views/useUsersModule.js";
 import { useCart } from "../../../../../cart/adapters/input/views/useCartModule.js";
 import { useProducts } from "../../../../../products/adapters/input/views/useProductsModule.js";
-import { FiMapPin, FiShield, FiSmartphone, FiTruck } from "react-icons/fi";
+import { ProductImage } from "../../../../../../shared/infrastructure/ui/ProductImage.jsx";
+import { FiMapPin, FiShield, FiTruck } from "react-icons/fi";
 
 export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   const { profile } = useUsers();
@@ -85,7 +86,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
           {cartItems.map((i) => (
             <div key={i.id} className="checkout-line">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-lg">
-                {i.primaryImage ? <img src={i.primaryImage} className="h-full w-full object-contain p-1" alt="" /> : <FiSmartphone />}
+                <ProductImage src={i.primaryImage} alt="" placeholderSize={22} imgClassName="h-full w-full object-contain p-1" />
               </div>
               <div className="flex-1"><div className="text-[13px] font-semibold">{i.name}</div><div className="text-xs text-ink-muted">Qty: {i.quantity}</div></div>
               <div className="text-sm font-bold">{i.price.currency} {(i.price.amount*i.quantity).toFixed(2)}</div>
