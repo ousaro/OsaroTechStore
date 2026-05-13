@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "../../../../../auth/adapters/input/views/useAuthModule.js";
 import { useUsers } from "../useUsersModule.js";
+import { useProducts } from "../../../../../products/adapters/input/views/useProductsModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { ProfileSidebar } from "../ProfileSidebar.jsx";
 import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
 import { PasswordInput } from "../../../../../../shared/infrastructure/ui/PasswordInput.jsx";
-import { FiAlertTriangle, FiEdit2, FiInfo, FiTrash2 } from "react-icons/fi";
+import { ProductCard } from "../../../../../products/adapters/input/views/ProductCard.jsx";
+import { FiAlertTriangle, FiEdit2, FiHeart, FiInfo, FiTrash2 } from "react-icons/fi";
 
 export function ProfilePage() {
   const { profile, updateProfile } = useUsers();
@@ -115,6 +117,40 @@ export function PasswordPage() {
           </div>
           <button className="btn btn-primary mt-5" disabled>Change password</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function FavoritesPage() {
+  const { profile } = useUsers();
+  const { products } = useProducts();
+  const { path } = useNavigate();
+
+  const favorites = useMemo(() =>
+    products.filter((p) => profile?.hasFavorite(p.id)),
+    [products, profile]
+  );
+
+  return (
+    <div className="sidebar-layout">
+      <ProfileSidebar path={path} />
+      <div className="content-area">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">My favorites</h1>
+            <p className="page-subtitle">{favorites.length} favorited product{favorites.length === 1 ? "" : "s"}</p>
+          </div>
+        </div>
+        {favorites.length === 0 ? (
+          <div className="empty-state pt-12">
+            <span className="icon"><FiHeart size={30} /></span>
+            <h3>No favorites yet</h3>
+            <p>Heart the products you like and they will show up here.</p>
+          </div>
+        ) : (
+          <div className="products-grid">{favorites.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+        )}
       </div>
     </div>
   );

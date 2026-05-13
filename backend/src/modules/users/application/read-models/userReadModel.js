@@ -5,6 +5,7 @@ export const toUserReadModel = (record) =>
         firstName: record.firstName,
         lastName: record.lastName,
         email: record.email,
+        admin: record.admin,
         phone: record.phone,
         address: record.address,
         city: record.city,

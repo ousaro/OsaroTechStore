@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useProducts } from "../useProductsModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
+import { Select } from "../../../../../../shared/infrastructure/ui/Select.jsx";
 import { ProductCard } from "../ProductCard.jsx";
 import { PRODUCT_STATUSES } from "../../../../domain/entities/Product.js";
 import { FiGrid, FiPackage, FiSearch, FiSliders, FiX, FiZap } from "react-icons/fi";
@@ -98,13 +99,13 @@ export function ProductsPage({ categories }) {
           <div className="catalog-active-filters"><FiSliders size={14} /> {activeFilterCount} active filters</div>
           <label className="catalog-sort">
             <span>Sort</span>
-            <select className="input" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="featured">Featured</option>
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
               <option value="name">Name</option>
               <option value="stock">Stock level</option>
-            </select>
+            </Select>
           </label>
         </div>
       </div>

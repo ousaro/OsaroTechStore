@@ -43,7 +43,7 @@ import { CartPage }     from "../modules/cart/adapters/input/views/pages/CartPag
 import { CheckoutPage } from "../modules/orders/adapters/input/views/pages/CheckoutPage.jsx";
 
 // ── Pages — profile ────────────────────────────────────────────
-import { ProfilePage, AddressPage, PasswordPage, DeleteAccountPage }
+import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPage }
   from "../modules/users/adapters/input/views/pages/ProfilePages.jsx";
 import { OrdersPage } from "../modules/users/adapters/input/views/pages/OrdersPage.jsx";
 
@@ -133,6 +133,7 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/profile":                    return <ProfilePage />;
       case route === "/profile/address":            return <AddressPage />;
       case route === "/profile/orders":             return <OrdersPage ordersInputPort={modules.orders} />;
+      case route === "/profile/favorites":          return <FavoritesPage />;
       case route === "/profile/password":           return <PasswordPage />;
       case route === "/profile/delete":             return <DeleteAccountPage />;
       case route === "/dashboard":

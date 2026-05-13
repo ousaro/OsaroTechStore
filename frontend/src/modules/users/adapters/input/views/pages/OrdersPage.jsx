@@ -3,6 +3,7 @@ import { useAuth } from "../../../../../auth/adapters/input/views/useAuthModule.
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { ProfileSidebar } from "../ProfileSidebar.jsx";
 import { Badge } from "../../../../../../shared/infrastructure/ui/Badge.jsx";
+import { Select } from "../../../../../../shared/infrastructure/ui/Select.jsx";
 import { Money } from "../../../../../../shared/domain/value-objects/Money.js";
 import { FiArchive, FiMapPin, FiSave, FiTrash2 } from "react-icons/fi";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "../../../../../orders/domain/entities/Order.js";
@@ -123,15 +124,15 @@ export function OrdersPage({ ordersInputPort }) {
                             <div className="order-admin-tools">
                               <label className="field">
                                 <span className="order-tool-label">Order status</span>
-                                <select className="input" value={draft.orderStatus} onChange={(e) => setDraft(o.id, "orderStatus", e.target.value)}>
+                                <Select value={draft.orderStatus} onChange={(e) => setDraft(o.id, "orderStatus", e.target.value)}>
                                   {ORDER_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
-                                </select>
+                                </Select>
                               </label>
                               <label className="field">
                                 <span className="order-tool-label">Payment</span>
-                                <select className="input" value={draft.paymentStatus} onChange={(e) => setDraft(o.id, "paymentStatus", e.target.value)}>
+                                <Select value={draft.paymentStatus} onChange={(e) => setDraft(o.id, "paymentStatus", e.target.value)}>
                                   {PAYMENT_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
-                                </select>
+                                </Select>
                               </label>
                               <div className="order-admin-actions">
                                 <button className="btn btn-primary" onClick={() => saveOrder(o.id)} disabled={savingId === o.id}>

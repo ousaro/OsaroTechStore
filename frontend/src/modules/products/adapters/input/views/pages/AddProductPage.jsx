@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useProducts } from "../useProductsModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
+import { Select } from "../../../../../../shared/infrastructure/ui/Select.jsx";
 import { PRODUCT_STATUSES } from "../../../../domain/entities/Product.js";
 
 export function AddProductPage({ editId, categories }) {
@@ -45,10 +46,10 @@ export function AddProductPage({ editId, categories }) {
             <div className="field sm:col-span-2"><label>Product name *</label><input className="input" value={form.name} onChange={set("name")} required placeholder="e.g. Samsung Galaxy S24" /></div>
             <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
             <div className="field"><label>Price *</label><input type="number" className="input" value={form.price} onChange={set("price")} required min={0} step="0.01" placeholder="0.00" /></div>
-            <div className="field"><label>Currency</label><select className="input" value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></select></div>
-            <div className="field"><label>Category *</label><select className="input" value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+            <div className="field"><label>Currency</label><Select value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></Select></div>
+            <div className="field"><label>Category *</label><Select value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></div>
             <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
-            <div className="field"><label>Status</label><select className="input" value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</select></div>
+            <div className="field"><label>Status</label><Select value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</Select></div>
             <div className="field sm:col-span-2"><label>Image URLs (one per line)</label><textarea className="input resize-y" rows={3} placeholder="https://…" value={form.images.join("\n")} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }))} /></div>
           </div>
           <div className="mt-6 flex gap-2.5">

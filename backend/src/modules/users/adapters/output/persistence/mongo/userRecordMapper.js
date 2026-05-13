@@ -11,6 +11,7 @@ export const toUserRecord = (doc) => {
     firstName: obj.firstName,
     lastName: obj.lastName,
     email: obj.email,
+    admin: obj.admin,
     phone: obj.phone,
     address: obj.address,
     city: obj.city,

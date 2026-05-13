@@ -9,6 +9,7 @@ import { Spinner } from "../../../../../../shared/infrastructure/ui/Spinner.jsx"
 import { Link } from "../../../../../../shared/infrastructure/ui/Link.jsx";
 import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
 import { ProductImage } from "../../../../../../shared/infrastructure/ui/ProductImage.jsx";
+import { Select } from "../../../../../../shared/infrastructure/ui/Select.jsx";
 import { FiCreditCard, FiEdit2, FiMessageSquare, FiRefreshCcw, FiShoppingBag, FiShield, FiStar, FiTrash2, FiTruck } from "react-icons/fi";
 
 export function ProductDetailPage({ id }) {
@@ -164,9 +165,9 @@ export function ProductDetailPage({ id }) {
               <form onSubmit={submitReview} className="flex flex-col gap-4">
                 <label className="field">
                   <span>Rating</span>
-                  <select className="input" value={reviewDraft.rating} onChange={(e) => setReviewDraft((current) => ({ ...current, rating: e.target.value }))}>
+                  <Select value={reviewDraft.rating} onChange={(e) => setReviewDraft((current) => ({ ...current, rating: e.target.value }))}>
                     {[5, 4, 3, 2, 1].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
-                  </select>
+                  </Select>
                 </label>
                 <label className="field">
                   <span>Comment</span>

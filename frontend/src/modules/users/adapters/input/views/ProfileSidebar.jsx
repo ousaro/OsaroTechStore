@@ -1,11 +1,12 @@
 import { useAuth } from "../../../../auth/adapters/input/views/useAuthModule.js";
 import { Link } from "../../../../../shared/infrastructure/ui/Link.jsx";
-import { FiArchive, FiKey, FiMapPin, FiTag, FiTrash2, FiUsers, FiUser } from "react-icons/fi";
+import { FiArchive, FiHeart, FiKey, FiMapPin, FiTag, FiTrash2, FiUsers, FiUser } from "react-icons/fi";
 
 const LINKS = [
   { to:"/profile",          label:"Profile",        icon:FiUser },
   { to:"/profile/address",  label:"Address",        icon:FiMapPin },
   { to:"/profile/orders",   label:"My orders",      icon:FiArchive },
+  { to:"/profile/favorites",label:"Favorites",      icon:FiHeart },
   { to:"/profile/password", label:"Password",       icon:FiKey },
   { to:"/profile/delete",   label:"Delete account", icon:FiTrash2 },
 ];

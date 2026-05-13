@@ -154,7 +154,8 @@
   .field { @apply flex flex-col gap-1.5; }
   .field label { @apply text-xs font-bold uppercase tracking-[.05em] text-ink-muted; }
   .input { @apply min-h-11 w-full rounded border-[1.5px] border-border bg-[var(--input-bg)] px-3.5 py-[11px] text-sm text-ink outline-none transition-all duration-200 placeholder:text-ink-faint focus:border-accent focus:shadow-[0_0_0_3px_rgba(209,0,36,.1)]; }
-  select.input { @apply appearance-none bg-[right_12px_center] bg-no-repeat pr-9; }
+  select option { background: var(--surface); color: var(--ink); padding: 8px 12px; }
+  select option:checked { background: var(--accent-lt); color: var(--accent); font-weight: 700; }
 
   .card { @apply rounded-lg border border-white/70 bg-[var(--card-bg)] shadow-soft backdrop-blur-xl dark:border-white/10; }
   .card-hover { @apply transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lift; }
