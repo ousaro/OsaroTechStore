@@ -1,17 +1,13 @@
 import { useState, useMemo } from "react";
-import { useAuth } from "../../../../../auth/adapters/input/views/useAuthModule.js";
 import { useUsers } from "../../../../../users/adapters/input/views/useUsersModule.js";
 import { useCart } from "../../../../../cart/adapters/input/views/useCartModule.js";
 import { useProducts } from "../../../../../products/adapters/input/views/useProductsModule.js";
-import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
-import { FiSmartphone } from "react-icons/fi";
+import { FiMapPin, FiShield, FiSmartphone, FiTruck } from "react-icons/fi";
 
 export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
-  const { user } = useAuth();
   const { profile } = useUsers();
   const { cart } = useCart();
   const { products } = useProducts();
-  const { navigate } = useNavigate();
 
   const [address, setAddress] = useState({
     street: profile?.address || "", city: profile?.city || "",
@@ -51,8 +47,19 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   };
 
   return (
-    <div className="mx-auto max-w-[900px] px-6 py-10">
-      <h1 className="page-title mb-7">Checkout</h1>
+    <div className="page-shell">
+      <div className="page-header">
+        <div>
+          <div className="section-kicker">Checkout</div>
+          <h1 className="page-title">Review and pay</h1>
+          <p className="page-subtitle">Delivery details, item summary, and protected payment in one clear step.</p>
+        </div>
+      </div>
+      <div className="checkout-banner">
+        <div className="checkout-banner-item"><FiTruck size={18} /> Fast dispatch on in-stock items</div>
+        <div className="checkout-banner-item"><FiMapPin size={18} /> Ship to your saved address or update it here</div>
+        <div className="checkout-banner-item"><FiShield size={18} /> Stripe-secured checkout session</div>
+      </div>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
         <form onSubmit={placeOrder} className="flex flex-col gap-4">
           <div className="card p-6">
@@ -69,14 +76,14 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+          <button type="submit" className="btn btn-primary btn-lg" disabled={loading || cartItems.length === 0}>
             {loading ? "Processing…" : `Pay USD ${total.toFixed(2)} →`}
           </button>
         </form>
-        <div className="card p-5">
+        <div className="card checkout-summary">
           <h2 className="mb-4 text-base font-bold">Your order</h2>
           {cartItems.map((i) => (
-            <div key={i.id} className="flex items-center gap-3 border-b border-border py-3">
+            <div key={i.id} className="checkout-line">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-lg">
                 {i.primaryImage ? <img src={i.primaryImage} className="h-full w-full object-contain p-1" alt="" /> : <FiSmartphone />}
               </div>
@@ -85,6 +92,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
             </div>
           ))}
           <div className="summary-row total mt-4"><span>Total</span><span>USD {total.toFixed(2)}</span></div>
+          <p className="checkout-summary-note">You will be redirected to a secure payment page after placing the order.</p>
         </div>
       </div>
     </div>

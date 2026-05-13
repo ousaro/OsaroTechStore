@@ -8,6 +8,8 @@ export function HomePage({ categories }) {
   const { products } = useProducts();
   const { navigate } = useNavigate();
   const [selectedCat, setSelectedCat] = useState("all");
+  const featuredCategories = categories.slice(0, 4);
+  const inStockCount = products.filter((product) => product.inStock).length;
 
   const filtered = useMemo(() => {
     const base = selectedCat === "all" ? products : products.filter((p) => p.category === selectedCat);
@@ -25,6 +27,20 @@ export function HomePage({ categories }) {
             <div className="hero-actions">
               <button className="btn btn-primary btn-lg" onClick={() => navigate("/products")}>Shop now <FiArrowRight /></button>
               <button className="btn btn-lg muted-cta" onClick={() => navigate("/about")}>About us</button>
+            </div>
+            <div className="hero-stat-row">
+              <div className="hero-stat">
+                <span className="hero-stat-value">{products.length}</span>
+                <span className="hero-stat-label">live products</span>
+              </div>
+              <div className="hero-stat">
+                <span className="hero-stat-value">{categories.length || "0"}</span>
+                <span className="hero-stat-label">shop categories</span>
+              </div>
+              <div className="hero-stat">
+                <span className="hero-stat-value">{inStockCount}</span>
+                <span className="hero-stat-label">ready to ship</span>
+              </div>
             </div>
             <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
               {[
@@ -65,6 +81,23 @@ export function HomePage({ categories }) {
           </div>
           {filtered.length > 0 && <button className="btn btn-ghost" onClick={() => navigate("/products")}>View all <FiArrowRight /></button>}
         </div>
+        {featuredCategories.length > 0 && (
+          <div className="featured-category-grid">
+            {featuredCategories.map((category) => {
+              const count = products.filter((product) => product.category === category.name).length;
+              return (
+                <button
+                  key={category.id}
+                  className={`featured-category-card ${selectedCat === category.name ? "active" : ""}`}
+                  onClick={() => setSelectedCat(category.name)}
+                >
+                  <span className="featured-category-name">{category.name}</span>
+                  <span className="featured-category-meta">{count} items</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
         <div className="category-strip mb-7">
           <button className={`category-pill ${selectedCat==="all"?"active":""}`} onClick={() => setSelectedCat("all")}>All products</button>
           {categories.map((c) => (

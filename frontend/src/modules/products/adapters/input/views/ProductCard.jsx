@@ -31,7 +31,19 @@ export function ProductCard({ product: p }) {
   };
 
   return (
-    <div className="card card-hover product-card" onClick={() => navigate(`/product/${p.id}`)}>
+    <article
+      className="card card-hover product-card"
+      onClick={() => navigate(`/product/${p.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(`/product/${p.id}`);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${p.name}`}
+    >
       <div className="product-img-wrap">
         {p.primaryImage
           ? <img src={p.primaryImage} alt={p.name} loading="lazy" />
@@ -50,6 +62,10 @@ export function ProductCard({ product: p }) {
       <div className="product-body">
         <div className="product-category">{p.category}</div>
         <div className="product-name" title={p.name}>{p.name}</div>
+        <div className="product-meta-row">
+          <span className="product-meta-pill">{p.inStock ? "Ready to ship" : "Notify me"}</span>
+          <span className="product-meta-pill">{p.images.length || (p.primaryImage ? 1 : 0)} view{p.images.length === 1 || p.primaryImage ? "" : "s"}</span>
+        </div>
         <div className="flex items-baseline justify-between gap-2">
           <div className="product-price"><span className="currency">{p.price.currency}</span>{p.price.amount.toFixed(2)}</div>
           <Badge status={p.status} />
@@ -58,6 +74,6 @@ export function ProductCard({ product: p }) {
           {p.inStock ? (p.lowStock ? `Only ${p.stock} left` : `In stock (${p.stock})`) : "Out of stock"}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

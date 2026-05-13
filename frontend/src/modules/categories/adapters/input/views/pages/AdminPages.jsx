@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { useAuth } from "../../../../../auth/adapters/input/views/useAuthModule.js";
 import { ProfileSidebar } from "../../../../../users/adapters/input/views/ProfileSidebar.jsx";
+import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
 import { Badge } from "../../../../../../shared/infrastructure/ui/Badge.jsx";
 import { Money } from "../../../../../../shared/domain/value-objects/Money.js";
 import {
@@ -97,7 +98,7 @@ export function ManageUsersPage({ authInputPort }) {
             <tbody>
               {users.map((u) => (
                 <tr key={u.id||u._id}>
-                  <td><div className="flex items-center gap-2.5"><img src={u.picture||`https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName||"U")}&size=36&background=222632&color=f5f1e8`} alt="" className="h-9 w-9 rounded-full object-cover" /><span className="font-semibold">{u.fullName}</span></div></td>
+                  <td><div className="flex items-center gap-2.5"><Avatar src={u.picture} name={u.fullName} firstName={u.firstName} lastName={u.lastName} alt={u.fullName || "User"} className="table-avatar" /><span className="font-semibold">{u.fullName}</span></div></td>
                   <td className="text-[13px] text-ink-muted">{u.email}</td>
                   <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
                   <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>

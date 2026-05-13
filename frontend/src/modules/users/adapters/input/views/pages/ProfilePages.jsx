@@ -3,11 +3,11 @@ import { useAuth } from "../../../../../auth/adapters/input/views/useAuthModule.
 import { useUsers } from "../useUsersModule.js";
 import { useNavigate } from "../../../../../../shared/hooks/useNavigate.js";
 import { ProfileSidebar } from "../ProfileSidebar.jsx";
+import { Avatar } from "../../../../../../shared/infrastructure/ui/Avatar.jsx";
 import { PasswordInput } from "../../../../../../shared/infrastructure/ui/PasswordInput.jsx";
 import { FiAlertTriangle, FiEdit2, FiInfo, FiTrash2 } from "react-icons/fi";
 
 export function ProfilePage() {
-  const { user } = useAuth();
   const { profile, updateProfile } = useUsers();
   const { path } = useNavigate();
   const [editing, setEditing] = useState(false);
@@ -35,7 +35,14 @@ export function ProfilePage() {
         <form onSubmit={save}>
           <div className="card p-7">
             <div className="mb-7 flex items-center gap-5">
-              <img src={form.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.fullName||"U")}&background=ff4d5e&color=11131b&size=80`} alt="" className="h-20 w-20 rounded-full border-[3px] border-border object-cover" />
+              <Avatar
+                src={form.picture}
+                name={profile?.fullName}
+                firstName={form.firstName}
+                lastName={form.lastName}
+                alt={profile?.fullName || "Profile"}
+                className="profile-avatar"
+              />
               <div>
                 <div className="text-xl font-bold">{profile?.fullName}</div>
                 <div className="text-sm text-ink-muted">{profile?.email}</div>

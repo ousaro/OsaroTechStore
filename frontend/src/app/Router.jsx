@@ -82,6 +82,7 @@ function AppShell({ modules, viewAdapters }) {
   const { ProductsProvider } = viewAdapters.products;
   const { UsersProvider }   = viewAdapters.users;
   const { CartProvider }    = viewAdapters.cart;
+  const [categories, setCategories] = useState([]);
 
   const cleanPath = path.split("?")[0];
   const segments  = cleanPath.split("/").filter(Boolean);
@@ -90,7 +91,24 @@ function AppShell({ modules, viewAdapters }) {
   // We need auth state to guard routes — read it directly from session for the
   // shell-level check (the contexts handle re-renders)
   const sessionUser = sessionStore.get();
+  const sessionUserId = sessionUser?.id || null;
   const isPublic = PUBLIC_ROUTES.includes(route);
+
+  useEffect(() => {
+    if (!sessionUserId) {
+      setCategories([]);
+      return;
+    }
+
+    let cancelled = false;
+    modules.categories.getAllCategories().then((data) => {
+      if (!cancelled) setCategories(data);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [modules.categories, sessionUserId]);
 
   if (!sessionUser && !isPublic) {
     setTimeout(() => navigate("/login"), 0);
@@ -101,15 +119,14 @@ function AppShell({ modules, viewAdapters }) {
     return <Spinner full />;
   }
 
-  const isAdminRoute = route.startsWith("/dashboard") || route.startsWith("/admin");
   const showNav = sessionUser && !isPublic;
 
   const renderPage = () => {
     switch (true) {
       case route === "/login":                      return <LoginPage />;
       case route === "/register":                   return <RegisterPage />;
-      case route === "/home":                       return <HomePage categories={[]} />;
-      case route === "/products":                   return <ProductsPage categories={[]} />;
+      case route === "/home":                       return <HomePage categories={categories} />;
+      case route === "/products":                   return <ProductsPage categories={categories} />;
       case route.startsWith("/product/"):           return <ProductDetailPage id={segments[1]} />;
       case route === "/cart":                       return <CartPage />;
       case route === "/checkout":                   return <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />;
@@ -121,9 +138,9 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/dashboard":
         return sessionUser?.admin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
       case route === "/admin/products":
-        return sessionUser?.admin ? <AddProductPage categories={[]} /> : <AccessDenied />;
+        return sessionUser?.admin ? <AddProductPage categories={categories} /> : <AccessDenied />;
       case route.startsWith("/admin/edit-product/"):
-        return sessionUser?.admin ? <AddProductPage editId={segments[2]} categories={[]} /> : <AccessDenied />;
+        return sessionUser?.admin ? <AddProductPage editId={segments[2]} categories={categories} /> : <AccessDenied />;
       case route === "/admin/users":
         return sessionUser?.admin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
       case route === "/admin/categories":
