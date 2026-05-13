@@ -1,70 +1,220 @@
-# Getting Started with Create React App
+# OsaroTechStore Frontend — Hexagonal DDD Architecture
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React 18 frontend mirroring the backend's modular hexagonal architecture with full DDD boundaries.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Quick Start
 
-### `npm start`
+```bash
+npm install
+cp .env.example .env
+npm start          # http://localhost:3000
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Architecture
 
-### `npm test`
+This frontend uses the **exact same architectural pattern** as the backend, mapped to React idioms.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Backend → Frontend Mapping
 
-### `npm run build`
+| Backend | Frontend |
+|---|---|
+| `server.js` | `src/index.js` |
+| `app/createApp.js` | `src/app/Router.jsx` |
+| `infrastructure/bootstrap/configureApplicationModules.js` | `src/infrastructure/bootstrap/configureModules.js` |
+| `modules/<feature>/composition.js` | `modules/<feature>/composition.js` |
+| `modules/<feature>/domain/` | `modules/<feature>/domain/` |
+| `modules/<feature>/application/commands/` | `modules/<feature>/application/commands/` |
+| `modules/<feature>/application/queries/` | `modules/<feature>/application/queries/` |
+| `modules/<feature>/application/read-models/` | `modules/<feature>/application/read-models/` |
+| `modules/<feature>/ports/input/` | `modules/<feature>/ports/input/` |
+| `modules/<feature>/ports/output/` | `modules/<feature>/ports/output/` |
+| `modules/<feature>/adapters/input/http/` | `modules/<feature>/adapters/input/views/` ← React hook/context |
+| `modules/<feature>/adapters/input/collaboration/` | `modules/<feature>/adapters/input/collaboration/` |
+| `modules/<feature>/adapters/output/repositories/` | `modules/<feature>/adapters/output/http/` |
+| `infrastructure/providers/events/` | `infrastructure/providers/events/inProcessEventBus.js` |
+| `shared/domain/value-objects/` | `shared/domain/value-objects/` |
+| `shared/kernel/assertions/` | `shared/kernel/assertions/portAssertions.js` |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Directory Layout
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+src/
+├── index.js                          ← Entry (mirrors server.js)
+├── app/
+│   ├── App.jsx                       ← Thin root (mirrors server.js)
+│   └── Router.jsx                    ← Route mounting (mirrors createApp.js)
+│
+├── infrastructure/
+│   ├── bootstrap/
+│   │   └── configureModules.js       ← COMPOSITION ROOT (mirrors configureApplicationModules.js)
+│   ├── config/
+│   │   └── env.js                    ← Normalized env vars
+│   └── providers/
+│       ├── http/httpClient.js        ← Single fetch wrapper
+│       ├── session/sessionStore.js   ← localStorage adapter
+│       ├── events/inProcessEventBus.js ← EventTarget-based event bus
+│       └── notifications/toastNotifier.js
+│
+├── modules/
+│   ├── auth/
+│   │   ├── composition.js            ← Wires commands+queries → input port
+│   │   ├── domain/
+│   │   │   ├── entities/AuthUser.js
+│   │   │   ├── events/AuthEvents.js
+│   │   │   └── errors/AuthErrors.js
+│   │   ├── application/
+│   │   │   ├── commands/loginCommand.js
+│   │   │   ├── commands/registerCommand.js
+│   │   │   ├── commands/logoutCommand.js
+│   │   │   └── queries/getSessionQuery.js
+│   │   ├── ports/
+│   │   │   ├── input/AuthInputPort.js
+│   │   │   └── output/AuthRepositoryPort.js
+│   │   └── adapters/
+│   │       ├── input/views/useAuthModule.js     ← React context (input adapter)
+│   │       ├── input/views/pages/LoginPage.jsx
+│   │       ├── input/views/pages/RegisterPage.jsx
+│   │       └── output/http/httpAuthRepository.js
+│   │
+│   ├── products/                     ← Same structure, + read-model + collaboration translator
+│   ├── categories/
+│   ├── orders/
+│   ├── payments/
+│   ├── users/
+│   └── cart/                        ← Owns Cart entity + clearCart collaboration adapter
+│
+├── shared/
+│   ├── domain/
+│   │   ├── value-objects/Money.js
+│   │   ├── value-objects/Address.js
+│   │   ├── errors/DomainError.js
+│   │   └── events/DomainEvent.js    ← DomainEvent base + Events constants
+│   ├── application/
+│   │   └── ports/RepositoryPort.js
+│   ├── infrastructure/
+│   │   └── ui/                      ← Navbar, Badge, Spinner, QtyControl, PasswordInput, Link
+│   ├── kernel/
+│   │   ├── assertions/portAssertions.js
+│   │   └── guards/authGuard.js
+│   └── hooks/useNavigate.js
+│
+└── ui/
+    └── styles/index.css             ← Full design system
+```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Key Architecture Decisions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Modules Never Import Each Other's Internals
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Cross-module workflows go through the **event bus + collaboration translators**, wired exclusively in `configureModules.js`:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+OrderPlaced event
+  → orderPlacedCartClearTranslator (in cart module)
+  → cartModule.clearCart()
 
-## Learn More
+CategoryDeleted event
+  → categoryDeletedProductCleanupTranslator (in products module)
+  → productsModule.removeProductsByCategory()
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 2. Port Assertions at Startup
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Every repository adapter is validated against its port contract at composition time. If a method is missing, the app throws immediately:
 
-### Code Splitting
+```js
+assertPort("ProductRepositoryPort", adapter, ["getAll","getById","create","update","delete"]);
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. View Adapters as Input Adapters
 
-### Analyzing the Bundle Size
+React contexts are the frontend's HTTP controllers — they translate UI state lifecycle into input port calls:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+LoginPage.handleSubmit()
+  → useAuth().login()           ← input adapter (view hook)
+    → authInputPort.login()     ← input port
+      → loginCommand()          ← use case
+        → authRepository.login() ← output adapter
+          → httpClient()        ← infrastructure
+```
 
-### Making a Progressive Web App
+### 4. Read Models per Module
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Each module that has list state owns a reactive read model that listens to domain events:
 
-### Advanced Configuration
+```js
+// products/application/read-models/productReadModel.js
+eventBus.subscribe(Events.PRODUCT_CREATED, (e) => setProducts(ps => [e.payload.product, ...ps]));
+eventBus.subscribe(Events.PRODUCT_UPDATED, (e) => setProducts(ps => ps.map(...)));
+eventBus.subscribe(Events.PRODUCT_DELETED, (e) => setProducts(ps => ps.filter(...)));
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 5. Composition Root is the Only File with Full Knowledge
 
-### Deployment
+`configureModules.js` is the only file that:
+- Knows which HTTP adapter → which repository port → which module gets it
+- Subscribes collaboration translators to the event bus
+- Knows the full module dependency graph
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## Cross-Module Event Flow
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+Cart module                          Orders module
+─────────────────                    ─────────────────
+cartModule.clearCart()               ordersModule.placeOrder()
+     ↑                                      │
+     │                                      ▼
+     │                              eventBus.publish(OrderPlaced)
+     │                                      │
+     └──── orderPlacedCartClear ────────────┘
+           Translator (wired in
+           configureModules.js)
+
+
+Products module                      Categories module
+─────────────────                    ─────────────────
+productsModule                       categoriesModule.deleteCategory()
+  .removeProductsByCategory()                │
+     ↑                                       ▼
+     │                               eventBus.publish(CategoryDeleted)
+     │                                       │
+     └──── categoryDeletedProduct ───────────┘
+           CleanupTranslator (wired in
+           configureModules.js)
+```
+
+---
+
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `REACT_APP_API_BASE_URL` | `/api` | Backend base URL |
+| `REACT_APP_GOOGLE_API_URL` | `/api/auth/google` | Google OAuth |
+| `REACT_APP_STRIPE_PUBLIC_KEY` | — | Stripe publishable key |
+
+---
+
+## Rules (mirrors backend rules exactly)
+
+1. Keep `index.js` tiny — no modules, no routes, no domain.
+2. Keep route mounting inside `Router.jsx` — not in App, not in modules.
+3. Keep ALL runtime wiring in `configureModules.js` (the composition root).
+4. Each feature owns its own `domain`, `application`, `ports`, and `adapters`.
+5. Validate ports during module composition with `assertPort()`.
+6. Keep infrastructure behind output ports (no direct `fetch` in use cases).
+7. Use events + translators for cross-module workflows — never direct imports.
+8. Expose only input port methods and deliberate collaboration surfaces from a module.
+9. Put shared code in `shared/` only when genuinely cross-cutting.
+10. Add boundary tests early (`tests/unit/architecture/module-boundaries.test.js`).

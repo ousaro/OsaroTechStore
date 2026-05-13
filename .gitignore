@@ -55,6 +55,7 @@ Thumbs.db
 **/.agents/
 context.md
 guide.md
+skills-lock.json
 
 # Sonar Qube reports
 sonar-reports/
@@ -64,3 +65,11 @@ sonar-reports/
 
 # Generated bundles
 bundle.js
+frontend.zip
+.gitignore
+backend/ARCHITECTURE.md
+osarotech-hexagonal-ddd-frontend.zip
+frontend/ARCHITECTURE.md
+
+# old
+frontend-old

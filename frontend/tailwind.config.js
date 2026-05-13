@@ -1,33 +1,32 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary1: "#15161d",
-        primary1light: "#15161d4d",
-        primary2: "#d10024",
-        primary2dark: "#b20020",
-        primary3: "#d31737",
-        primary4: "#ffdce5",
-        primary5: "#1e1f29",
-        primary6: "#e5e6ef",
+        ink:        "#0d0e14",
+        "ink-muted":"#5a5c6e",
+        "ink-faint":"#9a9cb0",
+        surface:    "#ffffff",
+        "surface-2":"#f4f5f9",
+        "surface-3":"#ecedf3",
+        border:     "#e0e1ea",
+        accent:     "#d10024",
+        "accent-dk":"#a80019",
+        "accent-lt":"#ffeaee",
+        gold:       "#e6a817",
+        success:    "#1a7a4a",
       },
       fontFamily: {
-        roboto: ['Inter', 'sans-serif'],
+        sans: ["DM Sans", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "Fira Mono", "monospace"],
       },
-      keyframes: {
-        'expand-height': {
-          '0%': { height: '0%' },
-          '100%': { height: '17rem' }, // Adjust to your desired full height
-        },
-      },
-      animation: {
-        'expand-height': 'expand-height 0.5s ease-out forwards',
+      borderRadius: {
+        sm: "6px",
+        DEFAULT: "10px",
+        lg: "16px",
       },
     },
   },
   plugins: [],
-}
+};

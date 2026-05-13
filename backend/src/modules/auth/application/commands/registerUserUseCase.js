@@ -17,6 +17,10 @@ export const buildRegisterUserUseCase =
       confirmPassword,
     });
 
+    if (!picture) {
+      picture = "https://via.placeholder.com/150";
+    }
+
     const command = createRegistrationCommand({
       firstName,
       lastName,
