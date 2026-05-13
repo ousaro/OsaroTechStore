@@ -156,9 +156,11 @@ function AppShell({ modules, viewAdapters }) {
       <UsersProvider>
         <CartProvider>
           <ProductsProvider>
-            {showNav && <Navbar path={path} />}
-            {renderPage()}
-            {showNav && <Footer />}
+            <div className="flex min-h-screen flex-col">
+              {showNav && <Navbar path={path} />}
+              <main className="flex-1">{renderPage()}</main>
+              {showNav && <Footer />}
+            </div>
           </ProductsProvider>
         </CartProvider>
       </UsersProvider>

@@ -194,8 +194,8 @@
   .profile-avatar { @apply flex h-20 w-20 items-center justify-center rounded-full border-[3px] border-border bg-[linear-gradient(135deg,var(--accent-lt),var(--surface-3))] text-2xl font-extrabold uppercase text-accent object-cover; }
   .table-avatar { @apply flex h-9 w-9 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--surface-3),var(--surface-2))] text-[12px] font-extrabold uppercase text-ink object-cover; }
 
-  .sidebar-layout { @apply flex min-h-[calc(100vh-68px)]; }
-  .sidebar { @apply sticky top-[68px] h-[calc(100vh-68px)] w-[260px] shrink-0 overflow-y-auto border-r border-border bg-[var(--sidebar-bg)] px-3.5 py-[22px] backdrop-blur-xl; }
+  .sidebar-layout { @apply flex min-h-full; }
+  .sidebar { @apply w-[260px] shrink-0 border-r border-border bg-[var(--sidebar-bg)] px-3.5 py-[22px] backdrop-blur-xl; }
   .sidebar-label { @apply mb-2 mt-2.5 px-3 text-[11px] font-extrabold uppercase tracking-[.08em] text-ink-faint first:mt-0; }
   .sidebar-link { @apply flex min-h-11 cursor-pointer items-center gap-2.5 rounded bg-transparent px-3 py-2.5 text-sm font-semibold text-ink-muted no-underline transition-all duration-200 hover:translate-x-0.5 hover:bg-[var(--sidebar-link-hover)] hover:text-ink; }
   .sidebar-link svg { @apply h-[18px] w-[18px] shrink-0 text-ink-faint transition-all duration-200; }
@@ -421,7 +421,7 @@
   .danger-panel-title { @apply mb-1.5 flex items-center gap-2 text-sm font-extrabold; color: var(--danger-ink); }
   .danger-panel-copy { @apply text-sm leading-6; color: color-mix(in srgb, var(--danger-ink) 88%, white 12%); }
 
-  .site-footer { @apply mt-7 border-t border-border bg-[var(--footer-bg)] backdrop-blur-xl; }
+  .site-footer { @apply  border-t border-border bg-[var(--footer-bg)] backdrop-blur-xl; }
   .site-footer-inner { @apply mx-auto grid max-w-7xl grid-cols-[minmax(260px,1.4fr)_repeat(3,minmax(150px,1fr))] gap-7 px-6 pb-[26px] pt-[34px]; }
   .footer-logo { @apply mb-2.5 inline-flex font-display text-xl font-extrabold; }
   .footer-brand p { @apply max-w-[420px] text-sm leading-7 text-ink-muted; }
