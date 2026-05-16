@@ -19,6 +19,7 @@ import {
   FiTag,
   FiTrash2,
   FiTruck,
+  FiUsers,
   FiX,
   FiZap,
 } from "react-icons/fi";
@@ -79,25 +80,56 @@ export function ManageUsersPage({ authInputPort }) {
   const { path } = useNavigate();
   const [users, setUsers]       = useState([]);
   const [loadingId, setLoadingId] = useState(null);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!user?.isAdmin) return;
 
-    authInputPort.listUsers().then(({ data }) => {
-      setUsers(asArray(data).map((u) => ({
-        ...u,
-        id: u._id,
-        fullName: `${u.firstName || ""} ${u.lastName || ""}`.trim(),
-      })));
-    });
+    let cancelled = false;
+    setLoadingUsers(true);
+    setError("");
+
+    authInputPort.listUsers()
+      .then((response) => {
+        if (cancelled) return;
+        if (response?.ok === false) {
+          throw new Error(response.error?.message || response.error || "Unable to load users");
+        }
+
+        const payload = response?.data ?? response;
+        setUsers(asArray(payload).map((u) => {
+          const id = u._id || u.id;
+          const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email || "Unnamed user";
+          return { ...u, id, fullName };
+        }));
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.message || "Unable to load users");
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingUsers(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id]); // eslint-disable-line
 
   const deleteUser = async (id) => {
     if (!window.confirm("Delete this user?")) return;
     setLoadingId(id);
-    await authInputPort.deleteUser(id);
-    setUsers((us) => us.filter((u) => u.id !== id));
-    setLoadingId(null);
+    try {
+      const response = await authInputPort.deleteUser(id);
+      if (response?.ok === false) {
+        throw new Error(response.error?.message || response.error || "Unable to delete user");
+      }
+      setUsers((us) => us.filter((u) => u.id !== id));
+    } catch (err) {
+      setError(err?.message || "Unable to delete user");
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   return (
@@ -105,21 +137,28 @@ export function ManageUsersPage({ authInputPort }) {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Manage users</h1><p className="page-subtitle">{users.length} users</p></div></div>
+        {error && <div className="error-box">{error}</div>}
         <div className="card table-wrap">
-          <table>
-            <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.id||u._id}>
-                  <td><div className="flex items-center gap-2.5"><Avatar src={u.picture} name={u.fullName} firstName={u.firstName} lastName={u.lastName} alt={u.fullName || "User"} className="table-avatar" /><span className="font-semibold">{u.fullName}</span></div></td>
-                  <td className="text-[13px] text-ink-muted">{u.email}</td>
-                  <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
-                  <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
-                  <td><button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {loadingUsers ? (
+            <div className="empty-state"><span className="icon"><FiUsers size={30} /></span><h3>Loading users</h3></div>
+          ) : users.length === 0 ? (
+            <div className="empty-state"><span className="icon"><FiUsers size={30} /></span><h3>No users found</h3><p>Customer accounts will appear here.</p></div>
+          ) : (
+            <table>
+              <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id||u._id}>
+                    <td><div className="flex items-center gap-2.5"><Avatar src={u.picture} name={u.fullName} firstName={u.firstName} lastName={u.lastName} alt={u.fullName || "User"} className="table-avatar" /><span className="font-semibold">{u.fullName}</span></div></td>
+                    <td className="text-[13px] text-ink-muted">{u.email || "—"}</td>
+                    <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
+                    <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
+                    <td><button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

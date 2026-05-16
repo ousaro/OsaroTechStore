@@ -8,7 +8,7 @@ import { Money } from "../../../lib/Money.js";
 import { FiArchive, FiMapPin, FiSave, FiTrash2 } from "react-icons/fi";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "../../orders/model/Order.js";
 
-export function OrdersPage({ ordersInputPort }) {
+export function OrdersPage({ ordersInputPort, adminView = false }) {
   const { user } = useAuth();
   const { path } = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -33,9 +33,9 @@ export function OrdersPage({ ordersInputPort }) {
     );
   }, [orders]);
 
-  const myOrders = useMemo(() =>
-    user?.isAdmin ? orders : orders.filter((o) => o.ownerId === user?.id),
-    [orders, user]
+  const visibleOrders = useMemo(() =>
+    adminView && user?.isAdmin ? orders : orders.filter((o) => o.ownerId === user?.id),
+    [adminView, orders, user]
   );
 
   const fmt = (d) => d ? new Date(d).toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" }) : "—";
@@ -78,12 +78,17 @@ export function OrdersPage({ ordersInputPort }) {
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
-        <div className="page-header"><div><h1 className="page-title">Order history</h1><p className="page-subtitle">{myOrders.length} orders</p></div></div>
-        {myOrders.length === 0
-          ? <div className="empty-state"><span className="icon"><FiArchive size={30} /></span><h3>No orders yet</h3><p>Your orders will appear here.</p></div>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">{adminView ? "Manage orders" : "Order history"}</h1>
+            <p className="page-subtitle">{visibleOrders.length} orders{adminView ? " across customers" : ""}</p>
+          </div>
+        </div>
+        {visibleOrders.length === 0
+          ? <div className="empty-state"><span className="icon"><FiArchive size={30} /></span><h3>No orders yet</h3><p>{adminView ? "Customer orders will appear here." : "Your orders will appear here."}</p></div>
           : (
             <div className="orders-stack">
-              {myOrders.map((o) => {
+              {visibleOrders.map((o) => {
                 const isExpanded = expandedId === o.id;
                 const draft = drafts[o.id] || { orderStatus: o.orderStatus, paymentStatus: o.paymentStatus };
 
@@ -92,7 +97,10 @@ export function OrdersPage({ ordersInputPort }) {
                     <button className="order-card-head" onClick={() => setExpandedId(isExpanded ? null : o.id)}>
                       <div className="order-card-main">
                         <div className="order-card-id"><code>#{o.id?.slice(-8)}</code></div>
-                        <div className="order-card-meta">{fmt(o.createdAt)} • {o.orderLines?.length ?? 0} items</div>
+                        <div className="order-card-meta">
+                          {fmt(o.createdAt)} • {o.orderLines?.length ?? 0} items
+                          {adminView && o.ownerId ? ` • Customer ${o.ownerId.slice(-8)}` : ""}
+                        </div>
                       </div>
                       <div className="order-card-side">
                         <div className="order-card-total">{Money.fromRaw(o.totalPrice).format()}</div>

@@ -30,7 +30,11 @@ export function Navbar({ path }) {
     { to:"/home",     label:"Home" },
     { to:"/products", label:"Products" },
     { to:"/about",    label:"About" },
-    ...(user.isAdmin ? [{ to:"/dashboard", label:"Dashboard" }, { to:"/admin/products", label:"Add product" }] : []),
+    ...(user.isAdmin ? [
+      { to:"/dashboard", label:"Dashboard" },
+      { to:"/admin/orders", label:"Orders" },
+      { to:"/admin/products", label:"Add product" },
+    ] : []),
   ];
 
   const submitSearch = (e) => {

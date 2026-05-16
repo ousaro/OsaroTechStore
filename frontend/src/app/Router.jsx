@@ -80,6 +80,7 @@ function AppShell({ modules, viewAdapters }) {
   // shell-level check (the contexts handle re-renders)
   const sessionUser = sessionStore.get();
   const sessionUserId = sessionUser?.id || null;
+  const sessionUserIsAdmin = Boolean(sessionUser?.admin || sessionUser?.isAdmin);
   const isPublic = PUBLIC_ROUTES.includes(route);
 
   useEffect(() => {
@@ -126,15 +127,17 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/profile/password":           return <PasswordPage />;
       case route === "/profile/delete":             return <DeleteAccountPage />;
       case route === "/dashboard":
-        return sessionUser?.admin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
       case route === "/admin/products":
-        return sessionUser?.admin ? <AddProductPage categories={categories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <AddProductPage categories={categories} /> : <AccessDenied />;
       case route.startsWith("/admin/edit-product/"):
-        return sessionUser?.admin ? <AddProductPage editId={segments[2]} categories={categories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <AddProductPage editId={segments[2]} categories={categories} /> : <AccessDenied />;
       case route === "/admin/users":
-        return sessionUser?.admin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
+      case route === "/admin/orders":
+        return sessionUserIsAdmin ? <OrdersPage ordersInputPort={modules.orders} adminView /> : <AccessDenied />;
       case route === "/admin/categories":
-        return sessionUser?.admin ? <CategoriesPage categoriesInputPort={modules.categories} onCategoriesChange={setCategories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <CategoriesPage categoriesInputPort={modules.categories} onCategoriesChange={setCategories} /> : <AccessDenied />;
       case route === "/about":                      return <AboutPage />;
       default:                                      return <NotFound />;
     }
