@@ -14,6 +14,7 @@ export function ProductCard({ product: p }) {
   const { profile, toggleFavorite } = useUsers();
   const { navigate } = useNavigate();
   const [adding, setAdding] = useState(false);
+  const [favoriting, setFavoriting] = useState(false);
 
   const isFav = profile?.hasFavorite(p.id);
 
@@ -22,13 +23,23 @@ export function ProductCard({ product: p }) {
     if (!user) { navigate("/login"); return; }
     setAdding(true);
     try { await addToCart(p.id, 1); }
+    catch {
+      // Service layer already shows the message; keep the card interactive.
+    }
     finally { setAdding(false); }
   };
 
   const handleToggleFav = async (e) => {
     e.stopPropagation();
     if (!user) { navigate("/login"); return; }
-    await toggleFavorite(p.id, isFav ? "remove" : "add");
+    setFavoriting(true);
+    try {
+      await toggleFavorite(p.id, isFav ? "remove" : "add");
+    } catch {
+      // Service layer already shows the message; avoid an unhandled rejection.
+    } finally {
+      setFavoriting(false);
+    }
   };
 
   return (
@@ -53,7 +64,7 @@ export function ProductCard({ product: p }) {
           <button className="btn btn-primary btn-sm flex-1" onClick={handleAddToCart} disabled={adding || !p.inStock}>
             <FiShoppingBag /> {adding ? "Adding" : p.inStock ? "Add to cart" : "Out of stock"}
           </button>
-          <button className="btn btn-sm border-0 bg-white/20 px-2.5 py-1.5 text-white" onClick={handleToggleFav} aria-label={isFav ? "Remove from favorites" : "Add to favorites"}>
+          <button className="btn btn-sm border-0 bg-white/20 px-2.5 py-1.5 text-white" onClick={handleToggleFav} disabled={favoriting} aria-label={isFav ? "Remove from favorites" : "Add to favorites"}>
             {isFav ? <FaHeart /> : <FiHeart />}
           </button>
         </div>

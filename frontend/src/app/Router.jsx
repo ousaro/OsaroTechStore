@@ -15,8 +15,11 @@ import { createCartViewAdapter }     from "../features/cart/hooks/useCart.js";
 import { Navbar }   from "../components/ui/Navbar.jsx";
 import { Spinner }  from "../components/ui/Spinner.jsx";
 import { Footer }   from "../components/ui/Footer.jsx";
+import { ErrorBoundary, ErrorFallback } from "../components/ui/ErrorBoundary.jsx";
 import { useNavigate } from "../hooks/useNavigate.js";
 import { FiLock } from "react-icons/fi";
+import { toastNotifier } from "../lib/toastNotifier.js";
+import { getErrorMessage } from "../lib/errorUtils.js";
 
 // ── Pages — auth ───────────────────────────────────────────────
 import { LoginPage }    from "../features/auth/pages/LoginPage.jsx";
@@ -44,13 +47,16 @@ import { AddProductPage }
 
 // ─────────────────────────────────────────────────────────────────
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
+const CUSTOMER_ROUTES = ["/home", "/products", "/cart", "/checkout", "/about"];
+const ADMIN_HOME = "/dashboard";
+const CUSTOMER_HOME = "/home";
 
-function NotFound() {
+function NotFound({ homeTo = CUSTOMER_HOME, homeLabel = "Back home" }) {
   return (
     <div className="px-6 py-20 text-center">
       <div className="text-8xl font-black leading-none text-accent">404</div>
       <p className="mt-3 text-base text-ink-muted">Page not found</p>
-      <a href="#/home" className="mt-5 inline-block font-semibold text-accent">← Back home</a>
+      <a href={`#${homeTo}`} className="mt-5 inline-block font-semibold text-accent">← {homeLabel}</a>
     </div>
   );
 }
@@ -85,6 +91,7 @@ function AppShell({ modules, viewAdapters }) {
   const sessionUserId = sessionUser?.id || null;
   const sessionUserIsAdmin = Boolean(sessionUser?.admin || sessionUser?.isAdmin);
   const isPublic = PUBLIC_ROUTES.includes(route);
+  const isCustomerRoute = CUSTOMER_ROUTES.includes(route) || route.startsWith("/product/");
 
   const loadCategories = useCallback(() => {
     if (!sessionUserId) {
@@ -153,22 +160,27 @@ function AppShell({ modules, viewAdapters }) {
     return <Spinner full />;
   }
   if (sessionUser && (route === "/login" || route === "/register" || route === "/")) {
-    setTimeout(() => navigate("/home"), 0);
+    setTimeout(() => navigate(sessionUserIsAdmin ? ADMIN_HOME : CUSTOMER_HOME), 0);
+    return <Spinner full />;
+  }
+  if (sessionUserIsAdmin && isCustomerRoute) {
+    setTimeout(() => navigate(ADMIN_HOME), 0);
     return <Spinner full />;
   }
 
   const showNav = sessionUser && !isPublic;
+  const showFooter = showNav && !sessionUserIsAdmin;
 
   const renderPage = () => {
     switch (true) {
       case route === "/":                           return <LoginPage />; 
       case route === "/login":                      return <LoginPage />;
       case route === "/register":                   return <RegisterPage />;
-      case route === "/home":                       return <HomePage categories={categories} />;
-      case route === "/products":                   return <ProductsPage categories={categories} />;
-      case route.startsWith("/product/"):           return <ProductDetailPage id={segments[1]} />;
-      case route === "/cart":                       return <CartPage />;
-      case route === "/checkout":                   return <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />;
+      case route === "/home":                       return sessionUserIsAdmin ? <AccessDenied /> : <HomePage categories={categories} />;
+      case route === "/products":                   return sessionUserIsAdmin ? <AccessDenied /> : <ProductsPage categories={categories} />;
+      case route.startsWith("/product/"):           return sessionUserIsAdmin ? <AccessDenied /> : <ProductDetailPage id={segments[1]} />;
+      case route === "/cart":                       return sessionUserIsAdmin ? <AccessDenied /> : <CartPage />;
+      case route === "/checkout":                   return sessionUserIsAdmin ? <AccessDenied /> : <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />;
       case route === "/profile":                    return <ProfilePage />;
       case route === "/profile/address":            return <AddressPage />;
       case route === "/profile/orders":             return <OrdersPage ordersInputPort={modules.orders} />;
@@ -187,8 +199,8 @@ function AppShell({ modules, viewAdapters }) {
         return sessionUserIsAdmin ? <OrdersPage ordersInputPort={modules.orders} adminView /> : <AccessDenied />;
       case route === "/admin/categories":
         return sessionUserIsAdmin ? <CategoriesPage categoriesInputPort={modules.categories} onCategoriesChange={setCategories} /> : <AccessDenied />;
-      case route === "/about":                      return <AboutPage />;
-      default:                                      return <NotFound />;
+      case route === "/about":                      return sessionUserIsAdmin ? <AccessDenied /> : <AboutPage />;
+      default:                                      return <NotFound homeTo={sessionUserIsAdmin ? ADMIN_HOME : CUSTOMER_HOME} homeLabel={sessionUserIsAdmin ? "Back to dashboard" : "Back home"} />;
     }
   };
 
@@ -199,8 +211,12 @@ function AppShell({ modules, viewAdapters }) {
           <ProductsProvider>
             <div className="flex min-h-screen flex-col">
               {showNav && <Navbar path={path} />}
-              <main className="flex-1">{renderPage()}</main>
-              {showNav && <Footer />}
+              <main className="flex-1">
+                <ErrorBoundary key={route}>
+                  {renderPage()}
+                </ErrorBoundary>
+              </main>
+              {showFooter && <Footer />}
             </div>
           </ProductsProvider>
         </CartProvider>
@@ -213,46 +229,101 @@ export function Router() {
   const [ready, setReady] = useState(false);
   const [modules, setModules] = useState(null);
   const [viewAdapters, setViewAdapters] = useState(null);
+  const [fatalError, setFatalError] = useState(null);
 
   useEffect(() => {
-    // Boot the composition root
-    const mods = configureModules();
+    try {
+      // Boot the composition root
+      const mods = configureModules();
 
-    // Create view adapters from module input ports
-    // (mirrors how createApp.js mounts routes from already-wired route factories)
-    const authViewAdapter = createAuthViewAdapter({
-      authInputPort: mods.auth,
-      eventBus,
-    });
-    const productsViewAdapter = createProductsViewAdapter({
-      productsInputPort: mods.products,
-      productReadModel:  mods.products.readModel,
-    });
-    const usersViewAdapter = createUsersViewAdapter({
-      usersInputPort: mods.users,
-      sessionStore,
-      eventBus,
-    });
-    const cartViewAdapter = createCartViewAdapter({
-      cartInputPort: mods.cart,
-      eventBus,
-    });
+      // Create view adapters from module input ports
+      // (mirrors how createApp.js mounts routes from already-wired route factories)
+      const authViewAdapter = createAuthViewAdapter({
+        authInputPort: mods.auth,
+        eventBus,
+      });
+      const productsViewAdapter = createProductsViewAdapter({
+        productsInputPort: mods.products,
+        productReadModel:  mods.products.readModel,
+      });
+      const usersViewAdapter = createUsersViewAdapter({
+        usersInputPort: mods.users,
+        sessionStore,
+        eventBus,
+      });
+      const cartViewAdapter = createCartViewAdapter({
+        cartInputPort: mods.cart,
+        eventBus,
+      });
 
-    setModules(mods);
-    setViewAdapters({
-      auth:     authViewAdapter,
-      products: productsViewAdapter,
-      users:    usersViewAdapter,
-      cart:     cartViewAdapter,
-    });
-    setReady(true);
+      setModules(mods);
+      setViewAdapters({
+        auth:     authViewAdapter,
+        products: productsViewAdapter,
+        users:    usersViewAdapter,
+        cart:     cartViewAdapter,
+      });
+      setReady(true);
+    } catch (error) {
+      setFatalError(error);
+      setReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const notifyUnhandled = (event) => {
+      const error = event.reason || event.error;
+      setFatalError(error || "Something went wrong");
+      toastNotifier.error(getErrorMessage(error));
+      if (process.env.NODE_ENV === "production") event.preventDefault?.();
+    };
+
+    window.addEventListener("unhandledrejection", notifyUnhandled);
+    window.addEventListener("error", notifyUnhandled);
+
+    return () => {
+      window.removeEventListener("unhandledrejection", notifyUnhandled);
+      window.removeEventListener("error", notifyUnhandled);
+    };
   }, []);
 
   if (!ready) return <Spinner full />;
 
+  if (fatalError) {
+    return (
+      <>
+        <ErrorFallback
+          error={fatalError}
+          title="The app ran into a problem."
+          fallback="Something unexpected happened. You can retry the current page or go back to a safe start."
+          onRetry={() => {
+            setFatalError(null);
+            window.location.reload();
+          }}
+        />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "#0d0e14", color: "#fff",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 14, fontWeight: 500,
+              borderRadius: 10, padding: "12px 18px",
+            },
+            success: { iconTheme: { primary: "#22c55e", secondary: "#fff" } },
+            error:   { iconTheme: { primary: "#d10024", secondary: "#fff" } },
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <AppShell modules={modules} viewAdapters={viewAdapters} />
+      <ErrorBoundary>
+        <AppShell modules={modules} viewAdapters={viewAdapters} />
+      </ErrorBoundary>
       <Toaster
         position="bottom-right"
         toastOptions={{

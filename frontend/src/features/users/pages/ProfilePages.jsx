@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../../auth/hooks/useAuth.js";
 import { useUsers } from "../hooks/useUsers.js";
 import { useProducts } from "../../products/hooks/useProducts.js";
@@ -7,22 +7,63 @@ import { ProfileSidebar } from "../components/ProfileSidebar.jsx";
 import { Avatar } from "../../../components/ui/Avatar.jsx";
 import { PasswordInput } from "../../../components/ui/PasswordInput.jsx";
 import { ProductCard } from "../../products/components/ProductCard.jsx";
-import { FiAlertTriangle, FiEdit2, FiHeart, FiInfo, FiTrash2 } from "react-icons/fi";
+import { getErrorMessage } from "../../../lib/errorUtils.js";
+import { FiAlertTriangle, FiEdit2, FiHeart, FiImage, FiInfo, FiTrash2, FiUploadCloud, FiX } from "react-icons/fi";
 
 export function ProfilePage() {
   const { profile, updateProfile } = useUsers();
+  const { uploadProductImage } = useProducts();
   const { path } = useNavigate();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadingPicture, setUploadingPicture] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     firstName: profile?.firstName || "", lastName: profile?.lastName || "",
     email: profile?.email || "", phone: profile?.phone || "", picture: profile?.picture || "",
   });
+  const canManageProfilePicture = Boolean(profile?.isAdmin);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    setForm({
+      firstName: profile?.firstName || "", lastName: profile?.lastName || "",
+      email: profile?.email || "", phone: profile?.phone || "", picture: profile?.picture || "",
+    });
+  }, [profile]);
+
+  const handlePictureUpload = async (e) => {
+    if (!canManageProfilePicture) return;
+
+    const file = [...e.target.files].find((candidate) => candidate.type.startsWith("image/"));
+    if (!file) return;
+
+    setUploadingPicture(true);
+    setError("");
+    try {
+      const uploadedImage = await uploadProductImage(file);
+      setForm((f) => ({ ...f, picture: uploadedImage }));
+      e.target.value = "";
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not upload your profile picture. Please try again."));
+    } finally {
+      setUploadingPicture(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setForm({
+      firstName: profile?.firstName || "", lastName: profile?.lastName || "",
+      email: profile?.email || "", phone: profile?.phone || "", picture: profile?.picture || "",
+    });
+    setEditing(false);
+  };
 
   const save = async (e) => {
     e.preventDefault(); setLoading(true);
+    setError("");
     try { await updateProfile(form); setEditing(false); }
+    catch (err) { setError(getErrorMessage(err, "Could not save your profile. Please try again.")); }
     finally { setLoading(false); }
   };
 
@@ -34,6 +75,7 @@ export function ProfilePage() {
           <div><h1 className="page-title">Profile information</h1><p className="page-subtitle">Manage your personal details</p></div>
           {!editing && <button className="btn btn-ghost" onClick={() => setEditing(true)}><FiEdit2 /> Edit</button>}
         </div>
+        {error && <div className="error-box">{error}</div>}
         <form onSubmit={save}>
           <div className="card p-5 sm:p-7">
             <div className="mb-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
@@ -56,12 +98,41 @@ export function ProfilePage() {
               <div className="field"><label>Last name</label><input className="input" value={form.lastName} onChange={set("lastName")} readOnly={!editing} required /></div>
               <div className="field"><label>Email</label><input type="email" className="input" value={form.email} onChange={set("email")} readOnly={!editing} required /></div>
               <div className="field"><label>Phone</label><input className="input" value={form.phone} onChange={set("phone")} readOnly={!editing} placeholder="+212 600 000 000" /></div>
-              {editing && <div className="field sm:col-span-2"><label>Picture URL</label><input className="input" value={form.picture} onChange={set("picture")} placeholder="https://…" /></div>}
+              {editing && canManageProfilePicture && (
+                <div className="field sm:col-span-2">
+                  <label>Profile picture</label>
+                  <label className="image-upload-dropzone profile-picture-dropzone">
+                    <input type="file" accept="image/*" onChange={handlePictureUpload} disabled={uploadingPicture} />
+                    <span className="image-upload-icon"><FiUploadCloud /></span>
+                    <span className="image-upload-copy">
+                      <strong>{uploadingPicture ? "Uploading picture..." : "Upload profile picture"}</strong>
+                      <small>PNG, JPG, WebP, or GIF files</small>
+                    </span>
+                  </label>
+                  {form.picture ? (
+                    <div className="profile-picture-preview">
+                      <Avatar
+                        src={form.picture}
+                        name={profile?.fullName}
+                        firstName={form.firstName}
+                        lastName={form.lastName}
+                        alt="Profile preview"
+                        className="profile-avatar"
+                      />
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => setForm((f) => ({ ...f, picture: "" }))}>
+                        <FiX /> Remove picture
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="image-upload-empty"><FiImage /> No profile picture selected</div>
+                  )}
+                </div>
+              )}
             </div>
             {editing && (
               <div className="mt-5 flex flex-wrap gap-2.5">
-                <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Saving…" : "Save changes"}</button>
-                <button type="button" className="btn btn-ghost" onClick={() => setEditing(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={loading || uploadingPicture}>{loading ? "Saving…" : "Save changes"}</button>
+                <button type="button" className="btn btn-ghost" onClick={cancelEdit}>Cancel</button>
               </div>
             )}
           </div>
@@ -75,15 +146,24 @@ export function AddressPage() {
   const { profile, updateProfile } = useUsers();
   const { path } = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({ address: profile?.address||"", city: profile?.city||"", state: profile?.state||"", postalCode: String(profile?.postalCode||""), country: profile?.country||"" });
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const save = async (e) => { e.preventDefault(); setLoading(true); try { await updateProfile(form); } finally { setLoading(false); } };
+  const save = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try { await updateProfile(form); }
+    catch (err) { setError(getErrorMessage(err, "Could not save your address. Please try again.")); }
+    finally { setLoading(false); }
+  };
 
   return (
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Address information</h1><p className="page-subtitle">Your default delivery address</p></div></div>
+        {error && <div className="error-box">{error}</div>}
         <form onSubmit={save}>
           <div className="card p-5 sm:p-7">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -162,11 +242,14 @@ export function DeleteAccountPage() {
   const { path, navigate } = useNavigate();
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handle = async () => {
     if (!confirmed) return;
     setLoading(true);
+    setError("");
     try { await deleteAccount(user.id); navigate("/login"); }
+    catch (err) { setError(getErrorMessage(err, "Could not delete your account. Please try again.")); }
     finally { setLoading(false); }
   };
 
@@ -175,6 +258,7 @@ export function DeleteAccountPage() {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title text-accent">Delete account</h1><p className="page-subtitle">Permanently remove your account</p></div></div>
+        {error && <div className="error-box">{error}</div>}
         <div className="card max-w-[560px] p-5 sm:p-7">
           <div className="danger-panel mb-6">
             <strong className="danger-panel-title"><FiAlertTriangle /> This action is permanent</strong>

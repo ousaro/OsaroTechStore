@@ -1,11 +1,8 @@
 import { env } from "./env.js";
+import { getErrorMessage } from "../lib/errorUtils.js";
 
 function normalizeApiError(error, fallback = "Request failed") {
-  if (!error) return fallback;
-  if (typeof error === "string") return error;
-  if (typeof error.message === "string") return error.message;
-  if (typeof error.code === "string") return error.code;
-  return fallback;
+  return getErrorMessage(error, fallback);
 }
 
 function isRawRequestBody(body) {
@@ -29,7 +26,12 @@ export async function httpClient(endpoint, { method = "GET", body, token, header
     });
 
     const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = text ? { message: text } : null;
+    }
     const error = !response.ok
       ? normalizeApiError(data?.error || data?.message)
       : null;
@@ -38,7 +40,7 @@ export async function httpClient(endpoint, { method = "GET", body, token, header
   } catch (error) {
     return {
       data: null,
-      error: error?.message || "Network request failed",
+      error: normalizeApiError(error, "Network request failed"),
       ok: false,
       status: 0,
     };

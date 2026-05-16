@@ -3,6 +3,7 @@ import { useUsers } from "../../users/hooks/useUsers.js";
 import { useCart } from "../../cart/hooks/useCart.js";
 import { useProducts } from "../../products/hooks/useProducts.js";
 import { ProductImage } from "../../../components/ui/ProductImage.jsx";
+import { getErrorMessage } from "../../../lib/errorUtils.js";
 import { FiMapPin, FiShield, FiTruck } from "react-icons/fi";
 
 export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
@@ -15,6 +16,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
     state: profile?.state || "", postalCode: String(profile?.postalCode||""), country: profile?.country || "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const cartItems = useMemo(() =>
     cart.lines.map((line) => {
@@ -30,6 +32,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   const placeOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       const order = await ordersInputPort.placeOrder({
         orderLines: cartItems.map((i) => ({ productId: i.id, name: i.name, price: i.price.amount, quantity: i.quantity })),
@@ -43,7 +46,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
       });
       if (payment?.url) window.location.href = payment.url;
     } catch (err) {
-      // errors already toasted by use cases
+      setError(getErrorMessage(err, "Could not start checkout. Please review your order and try again."));
     } finally { setLoading(false); }
   };
 
@@ -61,6 +64,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
         <div className="checkout-banner-item"><FiMapPin size={18} /> Ship to your saved address or update it here</div>
         <div className="checkout-banner-item"><FiShield size={18} /> Stripe-secured checkout session</div>
       </div>
+      {error && <div className="error-box">{error}</div>}
       <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <form onSubmit={placeOrder} className="flex flex-col gap-4">
           <div className="card p-5 sm:p-6">

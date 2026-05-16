@@ -6,6 +6,7 @@ import { Avatar } from "../../../components/ui/Avatar.jsx";
 import { Badge } from "../../../components/ui/Badge.jsx";
 import { Money } from "../../../lib/Money.js";
 import { asArray } from "../../../lib/apiData.js";
+import { getErrorMessage } from "../../../lib/errorUtils.js";
 import {
   FiArchive,
   FiCheckCircle,
@@ -26,48 +27,77 @@ import {
 
 /* ── DashboardPage ─────────────────────────────────────────────── */
 export function DashboardPage({ ordersInputPort, productsInputPort }) {
+  const { path } = useNavigate();
   const [orders, setOrders]     = useState([]);
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
-    ordersInputPort.getAllOrders().then(setOrders);
-    productsInputPort.getAllProducts().then(setProducts);
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+
+    Promise.all([
+      ordersInputPort.getAllOrders(),
+      productsInputPort.getAllProducts(),
+    ])
+      .then(([nextOrders, nextProducts]) => {
+        if (cancelled) return;
+        setOrders(nextOrders);
+        setProducts(nextProducts);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(getErrorMessage(err, "Could not load dashboard data. Please try again."));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id]); // eslint-disable-line
 
   const revenue = orders.reduce((s, o) => s + (o.totalPrice?.amount || 0), 0);
   const byStatus = orders.reduce((m, o) => { m[o.orderStatus] = (m[o.orderStatus]||0)+1; return m; }, {});
 
   return (
-    <div className="page-shell">
-      <div className="page-header"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Store overview</p></div></div>
-      <div className="stats-grid">
-        {[
-          [FiZap, "Revenue", "$"+revenue.toFixed(0), true],
-          [FiArchive, "Orders", orders.length],
-          [FiCheckCircle, "Paid", orders.filter(o=>o.paymentStatus==="paid").length],
-          [FiClock, "Pending", orders.filter(o=>o.orderStatus==="pending").length],
-          [FiTag, "Products", products.length],
-        ].map(([Icon,label,value,accent])=>(
-          <div key={label} className="card stat-card"><div className="stat-label flex items-center gap-2"><Icon size={14} /> {label}</div><div className={`stat-value ${accent?"accent":""}`}>{value}</div></div>
-        ))}
-      </div>
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="card p-5 sm:p-6">
-          <h2 className="mb-4 text-base font-bold">Orders by status</h2>
-          {Object.entries(byStatus).map(([s,c]) => (
-            <div key={s} className="flex items-center justify-between border-b border-border py-[9px]"><Badge status={s} /><span className="font-bold">{c}</span></div>
+    <div className="sidebar-layout">
+      <ProfileSidebar path={path} />
+      <div className="content-area">
+        <div className="page-header"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Store overview</p></div></div>
+        {error && <div className="error-box">{error}</div>}
+        {loading && <div className="info-box">Loading dashboard data...</div>}
+        <div className="stats-grid">
+          {[
+            [FiZap, "Revenue", "$"+revenue.toFixed(0), true],
+            [FiArchive, "Orders", orders.length],
+            [FiCheckCircle, "Paid", orders.filter(o=>o.paymentStatus==="paid").length],
+            [FiClock, "Pending", orders.filter(o=>o.orderStatus==="pending").length],
+            [FiTag, "Products", products.length],
+          ].map(([Icon,label,value,accent])=>(
+            <div key={label} className="card stat-card"><div className="stat-label flex items-center gap-2"><Icon size={14} /> {label}</div><div className={`stat-value ${accent?"accent":""}`}>{value}</div></div>
           ))}
         </div>
-        <div className="card p-5 sm:p-6">
-          <h2 className="mb-4 text-base font-bold">Recent orders</h2>
-          {orders.slice(0,6).map((o) => (
-            <div key={o.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-[9px]">
-              <div className="min-w-0"><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
-              <div className="text-left sm:text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
-            </div>
-          ))}
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div className="card p-5 sm:p-6">
+            <h2 className="mb-4 text-base font-bold">Orders by status</h2>
+            {Object.entries(byStatus).map(([s,c]) => (
+              <div key={s} className="flex items-center justify-between border-b border-border py-[9px]"><Badge status={s} /><span className="font-bold">{c}</span></div>
+            ))}
+          </div>
+          <div className="card p-5 sm:p-6">
+            <h2 className="mb-4 text-base font-bold">Recent orders</h2>
+            {orders.slice(0,6).map((o) => (
+              <div key={o.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-[9px]">
+                <div className="min-w-0"><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
+                <div className="text-left sm:text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -175,17 +205,36 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const [editId, setEditId]   = useState(null);
   const [editForm, setEditForm] = useState({ name:"", description:"" });
   const [saving, setSaving]   = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    categoriesInputPort.getAllCategories().then((data) => {
-      setCats(data);
-      onCategoriesChange?.(data);
-    });
+    let cancelled = false;
+    setLoadingCategories(true);
+    setError("");
+
+    categoriesInputPort.getAllCategories()
+      .then((data) => {
+        if (cancelled) return;
+        setCats(data);
+        onCategoriesChange?.(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(getErrorMessage(err, "Could not load categories. Please try again."));
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingCategories(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []); // eslint-disable-line
 
   const create = async (e) => {
     e.preventDefault(); if (!form.name.trim()) return;
     setCreating(true);
+    setError("");
     try {
       const c = await categoriesInputPort.createCategory(form);
       setCats((cs) => {
@@ -195,6 +244,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
       });
       setForm({ name:"", description:"" });
     }
+    catch (err) { setError(getErrorMessage(err, "Could not create this category. Please try again.")); }
     finally { setCreating(false); }
   };
 
@@ -212,6 +262,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
     e.preventDefault();
     if (!editForm.name.trim()) return;
     setSaving(true);
+    setError("");
     try {
       const updated = await categoriesInputPort.updateCategory(editId, editForm);
       setCats((cs) => {
@@ -221,12 +272,14 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
       });
       cancelEdit();
     }
+    catch (err) { setError(getErrorMessage(err, "Could not save this category. Please try again.")); }
     finally { setSaving(false); }
   };
 
   const del = async (c) => {
     if (!window.confirm("Delete this category?")) return;
     setLoadingId(c.id);
+    setError("");
     try {
       await categoriesInputPort.deleteCategory(c.id, c.name);
       setCats((cs) => {
@@ -235,6 +288,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
         return next;
       });
     }
+    catch (err) { setError(getErrorMessage(err, "Could not delete this category. Please try again.")); }
     finally { setLoadingId(null); }
   };
 
@@ -243,6 +297,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Categories</h1><p className="page-subtitle">{cats.length} categories</p></div></div>
+        {error && <div className="error-box">{error}</div>}
         <div className="card mb-5 p-5 sm:p-6">
           <h2 className="mb-4 text-base font-bold">Add new category</h2>
           <form onSubmit={create} className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
@@ -252,6 +307,11 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
           </form>
         </div>
         <div className="card table-wrap">
+          {loadingCategories ? (
+            <div className="empty-state"><span className="icon"><FiTag size={30} /></span><h3>Loading categories</h3></div>
+          ) : cats.length === 0 ? (
+            <div className="empty-state"><span className="icon"><FiTag size={30} /></span><h3>No categories yet</h3><p>Create your first category above.</p></div>
+          ) : (
           <table>
             <thead><tr><th>Name</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
             <tbody>
@@ -274,6 +334,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
     </div>

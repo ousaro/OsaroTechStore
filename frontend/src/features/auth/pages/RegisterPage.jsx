@@ -24,14 +24,14 @@ export function RegisterPage() {
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return; }
     setError(""); setLoading(true);
     try {
-      await register({
+      const user = await register({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim(),
         password: form.password,
         confirmPassword: form.confirmPassword,
       });
-      navigate("/home");
+      navigate(user?.isAdmin ? "/dashboard" : "/home");
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally { setLoading(false); }

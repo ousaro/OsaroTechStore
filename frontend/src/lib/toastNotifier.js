@@ -1,11 +1,8 @@
 import toast from "react-hot-toast";
+import { getErrorMessage } from "./errorUtils.js";
 
 const toastMessage = (msg, fallback = "Something went wrong") => {
-  if (!msg) return fallback;
-  if (typeof msg === "string") return msg;
-  if (typeof msg.message === "string") return msg.message;
-  if (typeof msg.code === "string") return msg.code;
-  return fallback;
+  return getErrorMessage(msg, fallback);
 };
 
 export const toastNotifier = {

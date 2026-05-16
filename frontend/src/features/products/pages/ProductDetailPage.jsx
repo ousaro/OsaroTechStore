@@ -25,6 +25,7 @@ export function ProductDetailPage({ id }) {
   const [deleting, setDeleting] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [reviewDraft, setReviewDraft] = useState({ rating: 5, comment: "" });
+  const [reviewError, setReviewError] = useState("");
 
   useEffect(() => {
     if (product) return;
@@ -37,6 +38,9 @@ export function ProductDetailPage({ id }) {
   const handleAdd = async () => {
     setAdding(true);
     try { await addToCart(product.id, qty); }
+    catch {
+      // Toasted by the service layer.
+    }
     finally { setAdding(false); }
   };
 
@@ -44,22 +48,30 @@ export function ProductDetailPage({ id }) {
     if (!window.confirm(`Delete "${product.name}"?`)) return;
     setDeleting(true);
     try { await deleteProduct(product.id); navigate("/products"); }
+    catch {
+      // Toasted by the service layer.
+    }
     finally { setDeleting(false); }
   };
 
   const submitReview = async (e) => {
     e.preventDefault();
     if (!user || !reviewDraft.comment.trim()) return;
-    const updatedProduct = await addProductReview(product.id, {
-      name: user.fullName || [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || "Customer",
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      picture: user.picture || "",
-      rating: Number(reviewDraft.rating),
-      comment: reviewDraft.comment.trim(),
-    });
-    setProduct(updatedProduct);
-    setReviewDraft({ rating: 5, comment: "" });
+    setReviewError("");
+    try {
+      const updatedProduct = await addProductReview(product.id, {
+        name: user.fullName || [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || "Customer",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        picture: user.picture || "",
+        rating: Number(reviewDraft.rating),
+        comment: reviewDraft.comment.trim(),
+      });
+      setProduct(updatedProduct);
+      setReviewDraft({ rating: 5, comment: "" });
+    } catch (error) {
+      setReviewError(error?.message || "Could not post your comment. Please try again.");
+    }
   };
 
   const images = product.images.length ? product.images : [null];
@@ -147,6 +159,7 @@ export function ProductDetailPage({ id }) {
             </div>
             {user ? (
               <form onSubmit={submitReview} className="flex flex-col gap-4">
+                {reviewError && <div className="error-box">{reviewError}</div>}
                 <label className="field">
                   <span>Rating</span>
                   <Select value={reviewDraft.rating} onChange={(e) => setReviewDraft((current) => ({ ...current, rating: e.target.value }))}>

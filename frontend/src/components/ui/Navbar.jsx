@@ -4,7 +4,7 @@ import { useCart } from "../../features/cart/hooks/useCart.js";
 import { Avatar } from "./Avatar.jsx";
 import { Link } from "./Link.jsx";
 import { useNavigate } from "../../hooks/useNavigate.js";
-import { FiLogOut, FiMenu, FiMoon, FiSearch, FiShoppingBag, FiSun, FiTruck, FiX } from "react-icons/fi";
+import { FiGrid, FiLayers, FiLogOut, FiMenu, FiMoon, FiSearch, FiShoppingBag, FiSun, FiTag, FiTruck, FiUsers, FiX } from "react-icons/fi";
 
 export function Navbar({ path }) {
   const { user, logout } = useAuth();
@@ -28,57 +28,65 @@ export function Navbar({ path }) {
   if (!user) return null;
 
   const isActive = (to) => path.startsWith(to);
-  const navLinks = [
-    { to:"/home",     label:"Home" },
-    { to:"/products", label:"Products" },
-    { to:"/about",    label:"About" },
-    ...(user.isAdmin ? [
-      { to:"/dashboard", label:"Dashboard" },
-      { to:"/admin/orders", label:"Orders" },
-      { to:"/admin/products", label:"Add product" },
-    ] : []),
-  ];
+  const isAdmin = Boolean(user.isAdmin);
+  const homePath = isAdmin ? "/dashboard" : "/home";
+  const navLinks = isAdmin
+    ? [
+      { to:"/dashboard", label:"Dashboard", icon:FiGrid },
+      { to:"/admin/users", label:"Users", icon:FiUsers },
+      { to:"/admin/orders", label:"Orders", icon:FiShoppingBag },
+      { to:"/admin/products", label:"Products", icon:FiLayers },
+      { to:"/admin/categories", label:"Categories", icon:FiTag },
+    ]
+    : [
+      { to:"/home",     label:"Home" },
+      { to:"/products", label:"Products" },
+      { to:"/about",    label:"About" },
+    ];
 
   const submitSearch = (e) => {
     e.preventDefault();
     const next = query.trim();
     setMobileOpen(false);
-    navigate(next ? `/products?q=${encodeURIComponent(next)}` : "/products");
+    if (!isAdmin) navigate(next ? `/products?q=${encodeURIComponent(next)}` : "/products");
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <Link to="/home" className="nav-logo">
+        <Link to={homePath} className="nav-logo">
           <span className="nav-logo-mark">OT</span>
-          <span><span className="accent">Osaro</span>Tech</span>
+          <span><span className="accent">Osaro</span>Tech{isAdmin ? " Admin" : ""}</span>
         </Link>
         <div className={`nav-center ${mobileOpen ? "open" : ""}`}>
           <div className="nav-links">
-            {navLinks.map(({ to, label }) => (
+            {navLinks.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
                 className={`nav-link ${isActive(to) ? "active" : ""}`}
                 onClick={() => setMobileOpen(false)}
               >
+                {Icon && <Icon size={15} />}
                 {label}
               </Link>
             ))}
           </div>
-          <form className="search-wrap" onSubmit={submitSearch}>
-            <span className="search-icon"><FiSearch size={16} /></span>
-            <input
-              type="text"
-              placeholder="Search products, brands, accessories"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Search products"
-            />
-          </form>
+          {!isAdmin && (
+            <form className="search-wrap" onSubmit={submitSearch}>
+              <span className="search-icon"><FiSearch size={16} /></span>
+              <input
+                type="text"
+                placeholder="Search products, brands, accessories"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search products"
+              />
+            </form>
+          )}
         </div>
         <div className="nav-actions">
-          <div className="nav-status"><FiTruck size={14} /> Fast dispatch</div>
+          <div className="nav-status"><FiTruck size={14} /> {isAdmin ? "Admin console" : "Fast dispatch"}</div>
           <button
             className="nav-icon-btn"
             onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
@@ -87,10 +95,12 @@ export function Navbar({ path }) {
           >
             {theme === "dark" ? <FiSun size={19} /> : <FiMoon size={19} />}
           </button>
-          <button className="nav-icon-btn" onClick={() => navigate("/cart")} title="Cart" aria-label="Cart">
-            <FiShoppingBag size={19} />
-            {cart.count > 0 && <span className="nav-badge">{cart.count}</span>}
-          </button>
+          {!isAdmin && (
+            <button className="nav-icon-btn" onClick={() => navigate("/cart")} title="Cart" aria-label="Cart">
+              <FiShoppingBag size={19} />
+              {cart.count > 0 && <span className="nav-badge">{cart.count}</span>}
+            </button>
+          )}
           <button className="nav-icon-btn" onClick={() => navigate("/profile")} title="Profile" aria-label="Profile">
             <Avatar
               src={user.picture}

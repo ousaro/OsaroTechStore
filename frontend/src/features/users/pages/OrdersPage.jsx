@@ -5,6 +5,7 @@ import { ProfileSidebar } from "../components/ProfileSidebar.jsx";
 import { Badge } from "../../../components/ui/Badge.jsx";
 import { Select } from "../../../components/ui/Select.jsx";
 import { Money } from "../../../lib/Money.js";
+import { getErrorMessage } from "../../../lib/errorUtils.js";
 import { FiArchive, FiMapPin, FiSave, FiTrash2 } from "react-icons/fi";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "../../orders/model/Order.js";
 
@@ -16,10 +17,29 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
   const [drafts, setDrafts] = useState({});
   const [savingId, setSavingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!user) return;
-    ordersInputPort.getAllOrders().then(setOrders);
+    let cancelled = false;
+    setLoadingOrders(true);
+    setError("");
+
+    ordersInputPort.getAllOrders()
+      .then((data) => {
+        if (!cancelled) setOrders(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(getErrorMessage(err, "Could not load orders. Please try again."));
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingOrders(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id]); // eslint-disable-line
 
   useEffect(() => {
@@ -55,9 +75,12 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
     const patch = drafts[orderId];
     if (!patch) return;
     setSavingId(orderId);
+    setError("");
     try {
       const updated = await ordersInputPort.updateOrder(orderId, patch);
       setOrders((current) => current.map((order) => order.id === orderId ? updated : order));
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not save this order. Please try again."));
     } finally {
       setSavingId(null);
     }
@@ -66,9 +89,12 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
   const deleteOrder = async (orderId) => {
     if (!window.confirm("Delete this order?")) return;
     setDeletingId(orderId);
+    setError("");
     try {
       await ordersInputPort.deleteOrder(orderId);
       setOrders((current) => current.filter((order) => order.id !== orderId));
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not delete this order. Please try again."));
     } finally {
       setDeletingId(null);
     }
@@ -84,7 +110,10 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
             <p className="page-subtitle">{visibleOrders.length} orders{adminView ? " across customers" : ""}</p>
           </div>
         </div>
-        {visibleOrders.length === 0
+        {error && <div className="error-box">{error}</div>}
+        {loadingOrders
+          ? <div className="empty-state"><span className="icon"><FiArchive size={30} /></span><h3>Loading orders</h3></div>
+          : visibleOrders.length === 0
           ? <div className="empty-state"><span className="icon"><FiArchive size={30} /></span><h3>No orders yet</h3><p>{adminView ? "Customer orders will appear here." : "Your orders will appear here."}</p></div>
           : (
             <div className="orders-stack">

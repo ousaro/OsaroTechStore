@@ -19,8 +19,8 @@ export function LoginPage() {
     e.preventDefault();
     setError(""); setLoading(true);
     try {
-      await login(form.email, form.password);
-      navigate("/home");
+      const user = await login(form.email, form.password);
+      navigate(user?.isAdmin ? "/dashboard" : "/home");
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
