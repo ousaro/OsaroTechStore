@@ -29,6 +29,8 @@ build/
 dist/
 **/build/
 **/dist/
+uploads/
+**/uploads/
 .cache/
 **/.cache/
 .parcel-cache/

@@ -70,6 +70,7 @@ test("products and categories routes expose public reads and protected writes", 
     routeSummary(createProductsRoutes({ controller: productController, requireAuth })),
     [
       { path: "/", methods: ["get"], handlerCount: 1 },
+      { path: "/uploads", methods: ["post"], handlerCount: 4 },
       { path: "/:id", methods: ["get"], handlerCount: 1 },
       { path: "/", methods: ["post"], handlerCount: 3 },
       { path: "/:id/reviews", methods: ["post"], handlerCount: 2 },

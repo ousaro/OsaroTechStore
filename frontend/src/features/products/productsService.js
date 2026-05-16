@@ -12,6 +12,7 @@ export function createProductsModule(deps) {
     getProductById:         queries.getProductById,
     createProduct:          commands.createProduct,
     updateProduct:          commands.updateProduct,
+    uploadProductImage:     commands.uploadProductImage,
     deleteProduct:          commands.deleteProduct,
     addProductReview:       commands.addProductReview,
     removeProductsByCategory: commands.removeProductsByCategory,

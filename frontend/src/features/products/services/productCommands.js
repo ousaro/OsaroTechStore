@@ -22,6 +22,12 @@ export function createProductCommands({ products: productRepository, sessionStor
     return product;
   }
 
+  async function uploadProductImage(file) {
+    const { ok, data, error } = await productRepository.uploadImage(file, tok());
+    if (!ok) { notify.error(error || "Failed to upload image"); throw new Error(error); }
+    return data.url;
+  }
+
   async function deleteProduct(id) {
     const { ok, error } = await productRepository.delete(id, tok());
     if (!ok) { notify.error(error || "Failed to delete product"); throw new Error(error); }
@@ -43,5 +49,5 @@ export function createProductCommands({ products: productRepository, sessionStor
     eventBus.publish(ProductEvents.deleted(`category:${categoryName}`));
   }
 
-  return { createProduct, updateProduct, deleteProduct, addProductReview, removeProductsByCategory };
+  return { createProduct, updateProduct, uploadProductImage, deleteProduct, addProductReview, removeProductsByCategory };
 }

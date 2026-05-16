@@ -4,9 +4,10 @@ import { useNavigate } from "../../../hooks/useNavigate.js";
 import { Link } from "../../../components/ui/Link.jsx";
 import { Select } from "../../../components/ui/Select.jsx";
 import { PRODUCT_STATUSES } from "../model/Product.js";
+import { FiImage, FiUploadCloud, FiX } from "react-icons/fi";
 
 export function AddProductPage({ editId, categories }) {
-  const { products, createProduct, updateProduct } = useProducts();
+  const { products, createProduct, updateProduct, uploadProductImage } = useProducts();
   const { navigate } = useNavigate();
   const existing = editId ? products.find((p) => p.id === editId) : null;
   const existingCategoryId =
@@ -25,7 +26,26 @@ export function AddProductPage({ editId, categories }) {
     images:      existing?.images         || [],
   });
   const [loading, setLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleImageUpload = async (e) => {
+    const files = [...e.target.files].filter((file) => file.type.startsWith("image/"));
+    if (!files.length) return;
+
+    setUploadingImages(true);
+    try {
+      const uploadedImages = await Promise.all(files.map(uploadProductImage));
+      setForm((f) => ({ ...f, images: [...f.images, ...uploadedImages] }));
+      e.target.value = "";
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
+  };
 
   const submit = async (e) => {
     e.preventDefault(); setLoading(true);
@@ -50,10 +70,35 @@ export function AddProductPage({ editId, categories }) {
             <div className="field"><label>Category *</label><Select value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></div>
             <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
             <div className="field"><label>Status</label><Select value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</Select></div>
-            <div className="field sm:col-span-2"><label>Image URLs (one per line)</label><textarea className="input resize-y" rows={3} placeholder="https://…" value={form.images.join("\n")} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }))} /></div>
+            <div className="field sm:col-span-2">
+              <label>Product images</label>
+              <label className="image-upload-dropzone">
+                <input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploadingImages} />
+                <span className="image-upload-icon"><FiUploadCloud /></span>
+                <span className="image-upload-copy">
+                  <strong>{uploadingImages ? "Uploading photos..." : "Upload product photos"}</strong>
+                  <small>PNG, JPG, WebP, or GIF files</small>
+                </span>
+              </label>
+              {form.images.length > 0 && (
+                <div className="image-upload-grid">
+                  {form.images.map((image, index) => (
+                    <div className="image-upload-preview" key={`${image.slice(0, 42)}-${index}`}>
+                      <img src={image} alt={`Product upload ${index + 1}`} />
+                      <button type="button" aria-label={`Remove image ${index + 1}`} onClick={() => removeImage(index)}>
+                        <FiX />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!form.images.length && (
+                <div className="image-upload-empty"><FiImage /> No images uploaded yet</div>
+              )}
+            </div>
           </div>
           <div className="mt-6 flex gap-2.5">
-            <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Saving…" : editId ? "Save changes" : "Create product"}</button>
+            <button type="submit" className="btn btn-primary" disabled={loading || uploadingImages}>{loading ? "Saving…" : editId ? "Save changes" : "Create product"}</button>
             <Link to="/products" className="btn btn-ghost">Cancel</Link>
           </div>
         </div>

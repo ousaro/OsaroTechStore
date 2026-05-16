@@ -10,6 +10,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 import { requestIdMiddleware } from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
 import { createRequestLoggingMiddleware } from "../shared/infrastructure/http/middleware/requestLoggingMiddleware.js";
@@ -44,8 +45,11 @@ export const createApp = ({
   // NOTE: Raw body for Stripe webhook is handled inside paymentsRoutes.
   // Do NOT apply express.json() globally before the webhook route.
   app.use((req, res, next) => {
-    if (req.originalUrl === "/api/payments/webhook") {
-      return next(); // Raw body handled by the payments router
+    if (
+      req.originalUrl === "/api/payments/webhook" ||
+      req.originalUrl.startsWith("/api/products/uploads")
+    ) {
+      return next(); // Raw body handled by feature routers
     }
     return express.json()(req, res, next);
   });
@@ -62,6 +66,7 @@ export const createApp = ({
   });
 
   app.use(createHealthRoutes({ healthChecks, serviceName, version }));
+  app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
   // Route factories receive requireAuth — they decide which routes are protected.
   app.use("/api/auth", authRoutes({ requireAuth }));

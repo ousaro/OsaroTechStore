@@ -41,6 +41,7 @@ export function createProductsViewAdapter({ productsInputPort, productReadModel 
       error,
       createProduct:  productsInputPort.createProduct,
       updateProduct:  productsInputPort.updateProduct,
+      uploadProductImage: productsInputPort.uploadProductImage,
       deleteProduct:  productsInputPort.deleteProduct,
       addProductReview: productsInputPort.addProductReview,
       getProductById: productsInputPort.getProductById,

@@ -2,6 +2,7 @@
 const E = {
   root:  "/products",
   byId:  (id) => `/products/${id}`,
+  uploads: "/products/uploads",
   reviews: (id) => `/products/${id}/reviews`,
 };
 
@@ -16,6 +17,14 @@ export function createHttpProductRepository({ httpClient }) {
     },
     async create(payload, token) {
       return httpClient(E.root, { method: "POST", body: payload, token });
+    },
+    async uploadImage(file, token) {
+      return httpClient(E.uploads, {
+        method: "POST",
+        body: file,
+        token,
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+      });
     },
     async update(id, patch, token) {
       return httpClient(E.byId(id), { method: "PUT", body: patch, token });

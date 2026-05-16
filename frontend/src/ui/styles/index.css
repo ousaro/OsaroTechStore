@@ -160,6 +160,18 @@
   .card { @apply rounded-lg border border-white/70 bg-[var(--card-bg)] shadow-soft backdrop-blur-xl dark:border-white/10; }
   .card-hover { @apply transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lift; }
 
+  .image-upload-dropzone { @apply flex min-h-[148px] cursor-pointer items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border bg-surface-2 px-5 py-6 text-center normal-case transition-all duration-200 hover:-translate-y-0.5 hover:border-accent hover:bg-[var(--soft-hover)] hover:shadow-soft; }
+  .image-upload-dropzone input { @apply sr-only; }
+  .image-upload-icon { @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--soft-bg)] text-2xl text-accent; }
+  .image-upload-copy { @apply flex flex-col gap-1 text-left; }
+  .image-upload-copy strong { @apply text-sm font-extrabold text-ink; }
+  .image-upload-copy small { @apply text-xs font-semibold text-ink-faint; }
+  .image-upload-grid { @apply mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4; }
+  .image-upload-preview { @apply relative aspect-square overflow-hidden rounded border border-border bg-[image:var(--product-well)]; }
+  .image-upload-preview img { @apply h-full w-full object-contain p-2; }
+  .image-upload-preview button { @apply absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-ink-muted shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--danger-surface)] hover:text-[var(--danger-ink)]; }
+  .image-upload-empty { @apply mt-3 flex min-h-11 items-center justify-center gap-2 rounded border border-border bg-[var(--soft-bg)] text-sm font-semibold text-ink-faint; }
+
   .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.04em]; }
   .badge-new, .badge-processing { @apply bg-[#14324f] text-blue-300; }
   .badge-active, .badge-delivered, .badge-paid { @apply bg-[#123724] text-green-300; }
