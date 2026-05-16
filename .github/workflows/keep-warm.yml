@@ -1,0 +1,13 @@
+name: Keep Render Warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend to prevent Render spin-down
+        run: curl -sSfo /dev/null https://osarotechstore.onrender.com/health || true

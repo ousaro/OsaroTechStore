@@ -5,10 +5,10 @@ import { createMongooseCategoryRepository } from "../../../modules/categories/ad
 import { createMongooseOrderRepository } from "../../../modules/orders/adapters/output/repositories/mongo/mongooseOrderRepository.js";
 import { createMongoosePaymentRepository } from "../../../modules/payments/adapters/output/repositories/mongo/mongoosePaymentRepository.js";
 
-export const createMongooseRepositories = ({ dbClient }) => ({
+export const createMongooseRepositories = ({ dbClient, cache }) => ({
   authUserRepository: createMongooseAuthUserRepository({ dbClient }),
   userRepository: createMongooseUserRepository({ dbClient }),
-  productRepository: createMongooseProductRepository({ dbClient }),
+  productRepository: createMongooseProductRepository({ dbClient, cache }),
   categoryRepository: createMongooseCategoryRepository({ dbClient }),
   orderRepository: createMongooseOrderRepository({ dbClient }),
   paymentRepository: createMongoosePaymentRepository({ dbClient }),

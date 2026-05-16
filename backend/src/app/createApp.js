@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
 import path from "path";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import promBundle from "express-prom-bundle";
 
 import { requestIdMiddleware } from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
 import { createRequestLoggingMiddleware } from "../shared/infrastructure/http/middleware/requestLoggingMiddleware.js";
@@ -42,9 +45,34 @@ export const createApp = ({
 }) => {
   const app = express();
 
+  app.use(helmet());
   app.use(requestIdMiddleware);
   app.use(createRequestLoggingMiddleware(logger));
   app.use(cors(createCorsOptions({ allowedOrigins: corsAllowedOrigins })));
+
+  const globalRateLimit = rateLimit({
+    windowMs: 60 * 1000,
+    max: 200,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      error: {
+        code: "RATE_LIMITED",
+        message: "Too many requests. Please try again later.",
+      },
+    },
+  });
+  app.use(globalRateLimit);
+
+  const metricsMiddleware = promBundle({
+    includeMethod: true,
+    includePath: true,
+    includeStatusCode: true,
+    normalizePath: true,
+    customLabels: { app: "osarotechstore-backend" },
+  });
+  app.use(metricsMiddleware);
+
   app.use(cookieParser());
 
   app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
@@ -60,7 +88,7 @@ export const createApp = ({
         secure: nodeEnv === "production",
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: "lax",
+        sameSite: "strict",
       },
     })
   );

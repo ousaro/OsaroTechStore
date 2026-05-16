@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: mongo:7
+              command:
+                - sh
+                - -c
+                - mongodump --uri="$MONGO_URI" --archive | gzip | mc pipe target-bucket/backups/$(date +%Y%m%d-%H%M%S).archive.gz
+              env:
+                - name: MONGO_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: backend-secrets
+                      key: mongo-uri
+          restartPolicy: OnFailure

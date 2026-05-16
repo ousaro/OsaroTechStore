@@ -1,36 +1,22 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { resolveOAuthStrategies } from "../../output/oauth/oauthProviderRegistry.js";
 
-const createRateLimitMiddleware = ({ windowMs = 60_000, max = 20 } = {}) => {
-  const hitsByKey = new Map();
-
-  return (req, res, next) => {
-    const now = Date.now();
-    const key = req.ip ?? req.headers["x-forwarded-for"] ?? req.socket?.remoteAddress ?? "unknown";
-    const hit = hitsByKey.get(key);
-
-    if (!hit || hit.resetAt <= now) {
-      hitsByKey.set(key, { count: 1, resetAt: now + windowMs });
-      return next();
-    }
-
-    hit.count += 1;
-    if (hit.count > max) {
-      return res.status(429).json({
-        error: {
-          code: "RATE_LIMITED",
-          message: "Too many authentication attempts. Please try again later.",
-        },
-      });
-    }
-
-    return next();
-  };
-};
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: {
+      code: "RATE_LIMITED",
+      message: "Too many authentication attempts. Please try again later.",
+    },
+  },
+});
 
 export const createAuthRoutes = ({ controller, requireAuth, oauthProviders, clientUrl }) => {
   const router = Router();
-  const authRateLimit = createRateLimitMiddleware();
 
   router.post("/register", authRateLimit, controller.registerUser);
   router.post("/login", authRateLimit, controller.loginUser);

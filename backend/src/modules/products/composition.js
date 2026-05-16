@@ -13,7 +13,7 @@ import { assertProductRepositoryPort } from "./ports/output/productsOutputPort.j
 import { createProductsHttpController } from "./adapters/input/http/productsHttpController.js";
 import { createProductsRoutes } from "./adapters/input/http/productsRoutes.js";
 
-export const createProductsModule = ({ productRepository, logger }) => {
+export const createProductsModule = ({ productRepository, logger, auditLogger }) => {
   assertProductRepositoryPort(productRepository);
 
   const addProduct = buildAddProductUseCase({ productRepository, logger });
@@ -38,7 +38,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
     getProductById,
   });
 
-  const controller = createProductsHttpController({ productsInputPort });
+  const controller = createProductsHttpController({ productsInputPort, auditLogger });
   const createRoutes = ({ requireAuth } = {}) => createProductsRoutes({ controller, requireAuth });
 
   const createNewProductStatusScheduler = () =>

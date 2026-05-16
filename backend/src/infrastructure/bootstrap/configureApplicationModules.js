@@ -4,6 +4,7 @@ import { resolveLogger } from "../providers/logger/resolveLogger.js";
 import { resolveEventBus } from "../providers/events/resolveEventBus.js";
 import { createRedisClient } from "../providers/events/redis/redisClient.js";
 import { createScopedLogger } from "../../shared/application/ports/loggerPort.js";
+import { createAuditLogger } from "../../shared/infrastructure/audit/createAuditLogger.js";
 
 import { createAuthModule } from "../../modules/auth/composition.js";
 import { createUsersModule } from "../../modules/users/composition.js";
@@ -79,7 +80,7 @@ export const configureApplicationModules = async ({ env }) => {
     categoryRepository,
     orderRepository,
     paymentRepository,
-  } = createMongooseRepositories({ dbClient });
+  } = createMongooseRepositories({ dbClient, cache: redisClient });
 
   const authModule = createAuthModule({
     authUserRepository,
@@ -93,9 +94,12 @@ export const configureApplicationModules = async ({ env }) => {
     userRepository,
   });
 
+  const auditLogger = createAuditLogger({ dbClient });
+
   const productsModule = createProductsModule({
     productRepository,
     logger: createScopedLogger(logger, "products"),
+    auditLogger,
   });
 
   const categoriesModule = createCategoriesModule({

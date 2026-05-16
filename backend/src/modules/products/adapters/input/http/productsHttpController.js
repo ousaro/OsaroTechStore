@@ -1,7 +1,7 @@
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { assertProductsInputPort } from "../../../ports/input/productsInputPort.js";
 
-export const createProductsHttpController = ({ productsInputPort }) => {
+export const createProductsHttpController = ({ productsInputPort, auditLogger }) => {
   assertProductsInputPort(productsInputPort);
 
   return {
@@ -22,6 +22,13 @@ export const createProductsHttpController = ({ productsInputPort }) => {
 
     addProduct: asyncHandler(async (req, res) => {
       const product = await productsInputPort.addProduct(req.body);
+      auditLogger?.log({
+        action: "PRODUCT_CREATED",
+        actor: req.user?._id,
+        target: product?._id ?? req.body.name,
+        details: { name: req.body.name },
+        ip: req.ip,
+      });
       res.status(201).json(product);
     }),
 
@@ -29,6 +36,13 @@ export const createProductsHttpController = ({ productsInputPort }) => {
       const product = await productsInputPort.updateProduct({
         id: req.params.id,
         updates: req.body,
+      });
+      auditLogger?.log({
+        action: "PRODUCT_UPDATED",
+        actor: req.user?._id,
+        target: req.params.id,
+        details: { updates: Object.keys(req.body) },
+        ip: req.ip,
       });
       res.status(200).json(product);
     }),
@@ -44,6 +58,13 @@ export const createProductsHttpController = ({ productsInputPort }) => {
 
     deleteProduct: asyncHandler(async (req, res) => {
       const product = await productsInputPort.deleteProduct({ id: req.params.id });
+      auditLogger?.log({
+        action: "PRODUCT_DELETED",
+        actor: req.user?._id,
+        target: req.params.id,
+        details: { productName: product?.name },
+        ip: req.ip,
+      });
       res.status(200).json(product);
     }),
   };
