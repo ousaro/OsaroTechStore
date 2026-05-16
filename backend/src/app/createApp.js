@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
-import path from "path";
+import path from "node:path";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import promBundle from "express-prom-bundle";
