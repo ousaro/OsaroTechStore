@@ -45,8 +45,8 @@ export function LoginPage() {
           {error && <div className="error-box"><FiAlertCircle /> {error}</div>}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="field">
-              <label>Email address</label>
-              <input type="email" className="input" placeholder="you@example.com" value={form.email} onChange={set("email")} required autoComplete="email" />
+              <label htmlFor="email">Email address</label>
+              <input id="email" type="email" className="input" placeholder="you@example.com" value={form.email} onChange={set("email")} required autoComplete="email" />
             </div>
             <PasswordInput label="Password" name="password" value={form.password} onChange={set("password")} required />
             <button type="submit" className="btn btn-primary btn-lg mt-1 w-full" disabled={loading}>

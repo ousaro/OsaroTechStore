@@ -194,7 +194,7 @@
   .profile-avatar { @apply flex h-20 w-20 items-center justify-center rounded-full border-[3px] border-border bg-[linear-gradient(135deg,var(--accent-lt),var(--surface-3))] text-2xl font-extrabold uppercase text-accent object-cover; }
   .table-avatar { @apply flex h-9 w-9 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--surface-3),var(--surface-2))] text-[12px] font-extrabold uppercase text-ink object-cover; }
 
-  .sidebar-layout { @apply flex min-h-full; }
+  .sidebar-layout { @apply flex min-h-[60vh]; }
   .sidebar { @apply w-[260px] shrink-0 border-r border-border bg-[var(--sidebar-bg)] px-3.5 py-[22px] backdrop-blur-xl; }
   .sidebar-label { @apply mb-2 mt-2.5 px-3 text-[11px] font-extrabold uppercase tracking-[.08em] text-ink-faint first:mt-0; }
   .sidebar-link { @apply flex min-h-11 cursor-pointer items-center gap-2.5 rounded bg-transparent px-3 py-2.5 text-sm font-semibold text-ink-muted no-underline transition-all duration-200 hover:translate-x-0.5 hover:bg-[var(--sidebar-link-hover)] hover:text-ink; }
