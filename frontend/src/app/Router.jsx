@@ -1,7 +1,6 @@
 /**
  * APP — Router
  *
- * This is the frontend equivalent of createApp.js in the backend.
  * It receives already-wired module input ports and:
  *   1. Creates view adapters (React context providers) from each module
  *   2. Registers route → page mappings
@@ -12,46 +11,46 @@
  */
 import { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
-import { configureModules } from "../infrastructure/bootstrap/configureModules.js";
-import { eventBus } from "../infrastructure/providers/events/inProcessEventBus.js";
-import { sessionStore } from "../infrastructure/providers/session/sessionStore.js";
+import { configureModules } from "./createServices.js";
+import { eventBus } from "../store/eventBus.js";
+import { sessionStore } from "../store/sessionStore.js";
 
 // ── View adapter factories ─────────────────────────────────────
-import { createAuthViewAdapter }     from "../modules/auth/adapters/input/views/useAuthModule.js";
-import { createProductsViewAdapter } from "../modules/products/adapters/input/views/useProductsModule.js";
-import { createUsersViewAdapter }    from "../modules/users/adapters/input/views/useUsersModule.js";
-import { createCartViewAdapter }     from "../modules/cart/adapters/input/views/useCartModule.js";
+import { createAuthViewAdapter }     from "../features/auth/hooks/useAuth.js";
+import { createProductsViewAdapter } from "../features/products/hooks/useProducts.js";
+import { createUsersViewAdapter }    from "../features/users/hooks/useUsers.js";
+import { createCartViewAdapter }     from "../features/cart/hooks/useCart.js";
 
 // ── Shared UI ──────────────────────────────────────────────────
-import { Navbar }   from "../shared/infrastructure/ui/Navbar.jsx";
-import { Spinner }  from "../shared/infrastructure/ui/Spinner.jsx";
-import { Footer }   from "../shared/infrastructure/ui/Footer.jsx";
-import { useNavigate } from "../shared/hooks/useNavigate.js";
+import { Navbar }   from "../components/ui/Navbar.jsx";
+import { Spinner }  from "../components/ui/Spinner.jsx";
+import { Footer }   from "../components/ui/Footer.jsx";
+import { useNavigate } from "../hooks/useNavigate.js";
 import { FiLock } from "react-icons/fi";
 
 // ── Pages — auth ───────────────────────────────────────────────
-import { LoginPage }    from "../modules/auth/adapters/input/views/pages/LoginPage.jsx";
-import { RegisterPage } from "../modules/auth/adapters/input/views/pages/RegisterPage.jsx";
+import { LoginPage }    from "../features/auth/pages/LoginPage.jsx";
+import { RegisterPage } from "../features/auth/pages/RegisterPage.jsx";
 
 // ── Pages — storefront ─────────────────────────────────────────
-import { HomePage }          from "../modules/products/adapters/input/views/pages/HomePage.jsx";
-import { ProductsPage }      from "../modules/products/adapters/input/views/pages/ProductsPage.jsx";
-import { ProductDetailPage } from "../modules/products/adapters/input/views/pages/ProductDetailPage.jsx";
+import { HomePage }          from "../features/products/pages/HomePage.jsx";
+import { ProductsPage }      from "../features/products/pages/ProductsPage.jsx";
+import { ProductDetailPage } from "../features/products/pages/ProductDetailPage.jsx";
 
 // ── Pages — checkout ───────────────────────────────────────────
-import { CartPage }     from "../modules/cart/adapters/input/views/pages/CartPage.jsx";
-import { CheckoutPage } from "../modules/orders/adapters/input/views/pages/CheckoutPage.jsx";
+import { CartPage }     from "../features/cart/pages/CartPage.jsx";
+import { CheckoutPage } from "../features/orders/pages/CheckoutPage.jsx";
 
 // ── Pages — profile ────────────────────────────────────────────
 import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPage }
-  from "../modules/users/adapters/input/views/pages/ProfilePages.jsx";
-import { OrdersPage } from "../modules/users/adapters/input/views/pages/OrdersPage.jsx";
+  from "../features/users/pages/ProfilePages.jsx";
+import { OrdersPage } from "../features/users/pages/OrdersPage.jsx";
 
 // ── Pages — admin ──────────────────────────────────────────────
 import { DashboardPage, ManageUsersPage, CategoriesPage, AboutPage }
-  from "../modules/categories/adapters/input/views/pages/AdminPages.jsx";
+  from "../features/categories/pages/AdminPages.jsx";
 import { AddProductPage }
-  from "../modules/products/adapters/input/views/pages/AddProductPage.jsx";
+  from "../features/products/pages/AddProductPage.jsx";
 
 // ─────────────────────────────────────────────────────────────────
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
@@ -123,6 +122,7 @@ function AppShell({ modules, viewAdapters }) {
 
   const renderPage = () => {
     switch (true) {
+      case route === "/":                           return <LoginPage />; 
       case route === "/login":                      return <LoginPage />;
       case route === "/register":                   return <RegisterPage />;
       case route === "/home":                       return <HomePage categories={categories} />;

@@ -50,6 +50,7 @@ test("async controllers forward thrown application errors to the error chain", a
       addProduct: fn({}),
       updateProduct: fn({}),
       deleteProduct: fn({}),
+      addProductReview: fn({}),
       removeProductsByCategory: fn(0),
     },
   });
@@ -169,6 +170,10 @@ test("products controller maps params, query, body, and status codes", async () 
         calls.push(["updateProduct", payload]);
         return { _id: payload.id, ...payload.updates };
       },
+      addProductReview: async (payload) => {
+        calls.push(["addProductReview", payload]);
+        return { _id: payload.id, reviews: [{ comment: payload.comment }] };
+      },
       deleteProduct: async (payload) => {
         calls.push(["deleteProduct", payload]);
         return { _id: payload.id };
@@ -192,6 +197,16 @@ test("products controller maps params, query, body, and status codes", async () 
   assert.deepEqual(
     (await runHandler(controller.updateProduct, { params: { id: "p1" }, body: { stock: 2 } })).body,
     { _id: "p1", stock: 2 }
+  );
+  assert.equal(
+    (
+      await runHandler(controller.addProductReview, {
+        params: { id: "p1" },
+        user: { _id: "u1" },
+        body: { rating: 5, comment: "Great" },
+      })
+    ).statusCode,
+    201
   );
   assert.deepEqual((await runHandler(controller.deleteProduct, { params: { id: "p1" } })).body, {
     _id: "p1",

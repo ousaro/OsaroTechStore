@@ -5,6 +5,7 @@ const REQUIRED_METHODS = Object.freeze([
   "updateProduct",
   "deleteProduct",
   "removeProductsByCategory",
+  "addProductReview",
   "getAllProducts",
   "getProductById",
 ]);

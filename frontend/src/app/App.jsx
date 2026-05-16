@@ -1,6 +1,6 @@
 /**
  * APP ROOT
- * Thin entry point — mirrors backend's server.js.
+ * Thin entry point.
  * Delegates everything to Router (which boots the composition root).
  */
 import { Router } from "./Router.jsx";

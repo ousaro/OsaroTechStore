@@ -4,6 +4,7 @@ export const createProductsRoutes = ({ controller, requireAuth }) => {
   router.get("/", controller.getAllProducts);
   router.get("/:id", controller.getProductById);
   router.post("/", requireAuth, requireAuth.requireAdmin, controller.addProduct);
+  router.post("/:id/reviews", requireAuth, controller.addProductReview);
   router.put("/:id", requireAuth, requireAuth.requireAdmin, controller.updateProduct);
   router.delete("/:id", requireAuth, requireAuth.requireAdmin, controller.deleteProduct);
   return router;

@@ -31,6 +31,15 @@ export const createProductsHttpController = ({ productsInputPort }) => {
       res.status(200).json(product);
     }),
 
+    addProductReview: asyncHandler(async (req, res) => {
+      const product = await productsInputPort.addProductReview({
+        id: req.params.id,
+        userId: req.user._id,
+        ...req.body,
+      });
+      res.status(201).json(product);
+    }),
+
     deleteProduct: asyncHandler(async (req, res) => {
       const product = await productsInputPort.deleteProduct({ id: req.params.id });
       res.status(200).json(product);

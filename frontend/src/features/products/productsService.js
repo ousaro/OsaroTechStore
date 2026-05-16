@@ -1,0 +1,21 @@
+import { createProductCommands }   from "./services/productCommands.js";
+import { createProductQueries }    from "./services/productQueries.js";
+import { createProductReadModel }  from "./services/productReadModel.js";
+
+export function createProductsModule(deps) {
+  const commands = createProductCommands(deps);
+  const queries  = createProductQueries(deps);
+  const readModel = createProductReadModel(deps);
+
+  const inputPort = {
+    getAllProducts:          queries.getAllProducts,
+    getProductById:         queries.getProductById,
+    createProduct:          commands.createProduct,
+    updateProduct:          commands.updateProduct,
+    deleteProduct:          commands.deleteProduct,
+    addProductReview:       commands.addProductReview,
+    removeProductsByCategory: commands.removeProductsByCategory,
+    // Expose read model factory for view adapters
+    readModel,
+  };  return inputPort;
+}

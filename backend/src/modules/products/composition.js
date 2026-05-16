@@ -7,6 +7,7 @@ import { buildUpdateProductUseCase } from "./application/commands/updateProductU
 import { buildDeleteProductUseCase } from "./application/commands/deleteProductUseCase.js";
 import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
 import { buildNewProductStatusScheduler } from "./application/commands/newProductStatusScheduler.js";
+import { buildAddProductReviewUseCase } from "./application/commands/addProductReviewUseCase.js";
 import { buildGetAllProductsUseCase } from "./application/queries/getAllProductsUseCase.js";
 import { buildGetProductByIdUseCase } from "./application/queries/getProductByIdUseCase.js";
 
@@ -27,6 +28,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
     productRepository,
     logger,
   });
+  const addProductReview = buildAddProductReviewUseCase({ productRepository });
   const getAllProducts = buildGetAllProductsUseCase({ productRepository });
   const getProductById = buildGetProductByIdUseCase({ productRepository });
 
@@ -36,6 +38,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
     updateProduct,
     deleteProduct,
     removeProductsByCategory,
+    addProductReview,
     getAllProducts,
     getProductById,
   });

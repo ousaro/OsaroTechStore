@@ -11,6 +11,7 @@ export const toProductReadModel = (record) => {
     stock: record.stock,
     images: record.images,
     status: record.status,
+    reviews: Array.isArray(record.reviews) ? record.reviews : [],
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };

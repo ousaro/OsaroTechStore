@@ -29,6 +29,18 @@ export const createMongooseProductRepository = ({ dbClient }) => {
       );
     },
 
+    async addReview(id, review) {
+      return toProductRecord(
+        await withCategory(
+          ProductModel.findByIdAndUpdate(
+            id,
+            { $push: { reviews: { $each: [review], $position: 0 } } },
+            { new: true, runValidators: true }
+          )
+        )
+      );
+    },
+
     async deleteById(id) {
       return toProductRecord(await withCategory(ProductModel.findByIdAndDelete(id)));
     },

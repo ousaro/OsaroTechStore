@@ -24,6 +24,19 @@ export const toProductRecord = (doc) => {
     stock: obj.stock,
     images: obj.images,
     status: obj.status,
+    reviews: Array.isArray(obj.reviews)
+      ? obj.reviews.map((review) => ({
+          _id: review._id?.toString(),
+          userId: review.userId,
+          name: review.name,
+          firstName: review.firstName,
+          lastName: review.lastName,
+          picture: review.picture,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+        }))
+      : [],
     createdAt: obj.createdAt,
     updatedAt: obj.updatedAt,
   };
