@@ -67,11 +67,7 @@ sonar-reports/
 
 # Generated bundles
 bundle.js
-frontend.zip
-.gitignore
-backend/ARCHITECTURE.md
-osarotech-hexagonal-ddd-frontend.zip
-frontend/ARCHITECTURE.md
 
-# old
-frontend-old
+# ignored files and directories
+.gitignore
+ignoredFiles/
