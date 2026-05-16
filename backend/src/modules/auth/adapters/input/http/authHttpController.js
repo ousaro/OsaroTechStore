@@ -41,9 +41,9 @@ export const createAuthHttpController = ({ authInputPort }) => {
     oauthCallback: (req, res) => {
       if (req.isAuthenticated()) {
         const userData = encodeURIComponent(JSON.stringify(req.user));
-        return res.redirect(`${req.app.locals.clientUrl}/SetPassword?user=${userData}`);
+        return res.redirect(`${req.app.locals.clientUrl}/#/set-password?user=${userData}`);
       }
-      return res.redirect(`${req.app.locals.clientUrl}/login`);
+      return res.redirect(`${req.app.locals.clientUrl}/#/login`);
     },
   };
 };

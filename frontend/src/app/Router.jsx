@@ -21,6 +21,7 @@ import { getErrorMessage } from "../lib/errorUtils.js";
 
 import { LoginPage }    from "../features/auth/pages/LoginPage.jsx";
 import { RegisterPage } from "../features/auth/pages/RegisterPage.jsx";
+import { SetPasswordPage } from "../features/auth/pages/SetPasswordPage.jsx";
 
 import { HomePage }          from "../features/products/pages/HomePage.jsx";
 import { ProductsPage }      from "../features/products/pages/ProductsPage.jsx";
@@ -38,7 +39,7 @@ import { DashboardPage, ManageUsersPage, CategoriesPage, AboutPage }
 import { AddProductPage }
   from "../features/products/pages/AddProductPage.jsx";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register"];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/set-password"];
 const CUSTOMER_ROUTES = ["/home", "/products", "/cart", "/checkout", "/about"];
 const ADMIN_HOME = "/dashboard";
 const CUSTOMER_HOME = "/home";
@@ -166,6 +167,7 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/":                           return <LoginPage />; 
       case route === "/login":                      return <LoginPage />;
       case route === "/register":                   return <RegisterPage />;
+      case route === "/set-password":               return <SetPasswordPage />;
       case route === "/home":                       return sessionUserIsAdmin ? <AccessDenied /> : <HomePage categories={categories} />;
       case route === "/products":                   return sessionUserIsAdmin ? <AccessDenied /> : <ProductsPage categories={categories} />;
       case route.startsWith("/product/"):           return sessionUserIsAdmin ? <AccessDenied /> : <ProductDetailPage id={segments[1]} />;

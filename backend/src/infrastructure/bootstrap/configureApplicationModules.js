@@ -185,6 +185,9 @@ export const configureApplicationModules = async ({ env }) => {
     serviceName: env.serviceName,
     version: env.appVersion,
     corsAllowedOrigins: env.corsAllowedOrigins,
+    clientUrl: env.clientUrl,
+    sessionSecret: env.sessionSecret,
+    nodeEnv: env.nodeEnv,
 
     schedulers: [productsModule.createNewProductStatusScheduler()],
 

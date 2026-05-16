@@ -32,7 +32,7 @@ const createGoogleStrategy = ({ config, clientUrl, callbackHandler }) => {
     name: "google",
     authenticateHandler: passport.authenticate("google", { scope: ["profile", "email"] }),
     callbackHandler: [
-      passport.authenticate("google", { failureRedirect: `${clientUrl}/login` }),
+      passport.authenticate("google", { failureRedirect: `${clientUrl}/#/login` }),
       callbackHandler,
     ],
   };

@@ -61,6 +61,7 @@ export const env = Object.freeze({
   loggerTimestampFormat: optional("LOGGER_TIMESTAMP_FORMAT", "YYYY-MM-DD HH:mm:ss.SSS"),
   loggerTimestampEnabled: optionalBoolean("LOGGER_TIMESTAMP_ENABLED", true),
 
+  sessionSecret: optional("SESSION_SECRET", "development-session-secret-change-in-production"),
   tokenSecret: required("TOKEN_SECRET"),
   tokenExpiresIn: optional("TOKEN_EXPIRES_IN", "15m"),
 

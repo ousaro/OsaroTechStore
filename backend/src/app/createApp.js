@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import session from "express-session";
+import passport from "passport";
 import path from "path";
 
 import { requestIdMiddleware } from "../shared/infrastructure/http/middleware/requestIdMiddleware.js";
@@ -34,6 +36,9 @@ export const createApp = ({
   serviceName,
   version,
   corsAllowedOrigins = [],
+  clientUrl,
+  sessionSecret,
+  nodeEnv,
 }) => {
   const app = express();
 
@@ -41,6 +46,26 @@ export const createApp = ({
   app.use(createRequestLoggingMiddleware(logger));
   app.use(cors(createCorsOptions({ allowedOrigins: corsAllowedOrigins })));
   app.use(cookieParser());
+
+  app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
+
+  app.locals.clientUrl = clientUrl;
+
+  app.use(
+    session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: nodeEnv === "production",
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "lax",
+      },
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   app.use((req, res, next) => {
     if (
@@ -62,7 +87,6 @@ export const createApp = ({
   });
 
   app.use(createHealthRoutes({ healthChecks, serviceName, version }));
-  app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
   app.use("/api/auth", authRoutes({ requireAuth }));
   app.use("/api/users", usersRoutes({ requireAuth }));

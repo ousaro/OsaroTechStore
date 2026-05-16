@@ -18,6 +18,9 @@ export const startApplication = async ({ port, env }) => {
     serviceName,
     version,
     corsAllowedOrigins,
+    clientUrl,
+    sessionSecret,
+    nodeEnv,
     schedulers,
     shutdown,
   } = await configureApplicationModules({ env });
@@ -36,6 +39,9 @@ export const startApplication = async ({ port, env }) => {
     serviceName,
     version,
     corsAllowedOrigins,
+    clientUrl,
+    sessionSecret,
+    nodeEnv,
   });
 
   const server = app.listen(port, () => {
