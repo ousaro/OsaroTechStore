@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useAuth } from "../../auth/hooks/useAuth.js";
 import { useUsers } from "../../users/hooks/useUsers.js";
 import { useCart } from "../../cart/hooks/useCart.js";
 import { useProducts } from "../../products/hooks/useProducts.js";
@@ -11,8 +10,6 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   const { profile } = useUsers();
   const { cart } = useCart();
   const { products } = useProducts();
-  const { user } = useAuth();
-
   const [address, setAddress] = useState({
     street: profile?.address || "", city: profile?.city || "",
     state: profile?.state || "", postalCode: String(profile?.postalCode||""), country: profile?.country || "",

@@ -526,6 +526,15 @@
   .status-dot.red { @apply bg-accent; }
   .status-dot.blue { @apply bg-blue-500; }
   .status-dot.gray { @apply bg-ink-faint; }
+
+  .dialog-overlay { @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm; }
+  .dialog { @apply w-full max-w-sm rounded-xl bg-[var(--bg)] p-6 shadow-lift; }
+  .dialog-header { @apply mb-2 flex items-center gap-3; }
+  .dialog-icon { @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600; }
+  .dialog-title { @apply flex-1 text-lg font-extrabold text-ink; }
+  .dialog-close { @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-0 bg-transparent text-ink-muted hover:bg-surface-2 hover:text-ink; }
+  .dialog-message { @apply mb-6 text-sm leading-6 text-ink-muted; }
+  .dialog-actions { @apply flex justify-end gap-3; }
 }
 
 @layer utilities {

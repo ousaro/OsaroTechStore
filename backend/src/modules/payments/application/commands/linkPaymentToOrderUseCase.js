@@ -12,8 +12,8 @@ export const buildLinkPaymentToOrderUseCase =
       quantity: line.quantity,
     }));
 
-    const successUrl = `${clientUrl}/payment-success?orderId=${orderId}`;
-    const cancelUrl = `${clientUrl}/payment-cancelled?orderId=${orderId}`;
+    const successUrl = `${clientUrl}/#/payment-success?orderId=${orderId}`;
+    const cancelUrl = `${clientUrl}/#/payment-cancelled?orderId=${orderId}`;
 
     const session = await paymentGateway.createRedirectPayment({ items, successUrl, cancelUrl });
 

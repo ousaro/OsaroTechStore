@@ -29,6 +29,8 @@ import { ProductDetailPage } from "../features/products/pages/ProductDetailPage.
 
 import { CartPage }     from "../features/cart/pages/CartPage.jsx";
 import { CheckoutPage } from "../features/orders/pages/CheckoutPage.jsx";
+import { PaymentSuccessPage } from "../features/payments/pages/PaymentSuccessPage.jsx";
+import { PaymentCancelledPage } from "../features/payments/pages/PaymentCancelledPage.jsx";
 
 import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPage }
   from "../features/users/pages/ProfilePages.jsx";
@@ -173,6 +175,8 @@ function AppShell({ modules, viewAdapters }) {
       case route.startsWith("/product/"):           return sessionUserIsAdmin ? <AccessDenied /> : <ProductDetailPage id={segments[1]} />;
       case route === "/cart":                       return sessionUserIsAdmin ? <AccessDenied /> : <CartPage />;
       case route === "/checkout":                   return sessionUserIsAdmin ? <AccessDenied /> : <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />;
+      case route === "/payment-success":            return <PaymentSuccessPage paymentsInputPort={modules.payments} ordersInputPort={modules.orders} />;
+      case route === "/payment-cancelled":          return <PaymentCancelledPage />;
       case route === "/profile":                    return <ProfilePage />;
       case route === "/profile/address":            return <AddressPage />;
       case route === "/profile/orders":             return <OrdersPage ordersInputPort={modules.orders} />;

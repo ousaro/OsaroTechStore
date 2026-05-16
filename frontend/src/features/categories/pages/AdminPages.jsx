@@ -4,6 +4,8 @@ import { useAuth } from "../../auth/hooks/useAuth.js";
 import { ProfileSidebar } from "../../users/components/ProfileSidebar.jsx";
 import { Avatar } from "../../../components/ui/Avatar.jsx";
 import { Badge } from "../../../components/ui/Badge.jsx";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog.jsx";
+import { toastNotifier } from "../../../lib/toastNotifier.js";
 import { Money } from "../../../lib/Money.js";
 import { asArray } from "../../../lib/apiData.js";
 import { getErrorMessage } from "../../../lib/errorUtils.js";
@@ -113,6 +115,7 @@ export function ManageUsersPage({ authInputPort }) {
   const [loadingId, setLoadingId] = useState(null);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -148,7 +151,6 @@ export function ManageUsersPage({ authInputPort }) {
   }, [user?.id]); // eslint-disable-line
 
   const deleteUser = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
     setLoadingId(id);
     try {
       const response = await authInputPort.deleteUser(id);
@@ -156,8 +158,9 @@ export function ManageUsersPage({ authInputPort }) {
         throw new Error(response.error?.message || response.error || "Unable to delete user");
       }
       setUsers((us) => us.filter((u) => u.id !== id));
+      toastNotifier.success("User deleted");
     } catch (err) {
-      setError(err?.message || "Unable to delete user");
+      toastNotifier.error(err?.message || "Unable to delete user");
     } finally {
       setLoadingId(null);
     }
@@ -184,13 +187,20 @@ export function ManageUsersPage({ authInputPort }) {
                     <td className="text-[13px] text-ink-muted">{u.email || "—"}</td>
                     <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
                     <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
-                    <td><button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
+                    <td><button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
         </div>
+        <ConfirmDialog
+          open={confirmDelete !== null}
+          title="Delete user"
+          message="Delete this user? This action cannot be undone."
+          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); deleteUser(id); }}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     </div>
   );
@@ -205,6 +215,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const [editId, setEditId]   = useState(null);
   const [editForm, setEditForm] = useState({ name:"", description:"" });
   const [saving, setSaving]   = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [error, setError] = useState("");
 
@@ -276,19 +287,19 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
     finally { setSaving(false); }
   };
 
-  const del = async (c) => {
-    if (!window.confirm("Delete this category?")) return;
-    setLoadingId(c.id);
+  const del = async (id) => {
+    setLoadingId(id);
     setError("");
     try {
-      await categoriesInputPort.deleteCategory(c.id, c.name);
+      await categoriesInputPort.deleteCategory(id);
       setCats((cs) => {
-        const next = cs.filter((x) => x.id !== c.id);
+        const next = cs.filter((x) => x.id !== id);
         onCategoriesChange?.(next);
         return next;
       });
+      toastNotifier.success("Category deleted");
     }
-    catch (err) { setError(getErrorMessage(err, "Could not delete this category. Please try again.")); }
+    catch (err) { toastNotifier.error(getErrorMessage(err, "Could not delete this category.")); }
     finally { setLoadingId(null); }
   };
 
@@ -328,7 +339,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
                     <td className="font-semibold">{c.name}</td>
                     <td className="text-[13px] text-ink-muted">{c.description||"—"}</td>
                     <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
-                    <td><div className="flex gap-1.5"><button className="btn btn-ghost btn-sm" onClick={() => startEdit(c)} aria-label="Edit category"><FiEdit2 /></button><button className="btn btn-danger btn-sm" onClick={() => del(c)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></div></td>
+                    <td><div className="flex gap-1.5"><button className="btn btn-ghost btn-sm" onClick={() => startEdit(c)} aria-label="Edit category"><FiEdit2 /></button>                                <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(c.id)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></div></td>
                   </tr>
                 )
               ))}
@@ -336,6 +347,13 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
           </table>
           )}
         </div>
+        <ConfirmDialog
+          open={confirmDelete !== null}
+          title="Delete category"
+          message="Delete this category? This action cannot be undone."
+          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); del(id); }}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     </div>
   );
@@ -346,6 +364,7 @@ export function ManageProductsPage({ productsInputPort }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [error, setError] = useState("");
 
   const load = () => {
@@ -360,15 +379,15 @@ export function ManageProductsPage({ productsInputPort }) {
   useEffect(load, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const del = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
     setDeletingId(id);
     setError("");
     try {
       await productsInputPort.deleteProduct(id);
       setProducts((ps) => ps.filter((p) => p.id !== id));
       eventBus.publish({ type: "products-changed" });
+      toastNotifier.success("Product deleted");
     } catch (err) {
-      setError(getErrorMessage(err, "Could not delete this product. Please try again."));
+      toastNotifier.error(getErrorMessage(err, "Could not delete this product."));
     } finally {
       setDeletingId(null);
     }
@@ -407,7 +426,7 @@ export function ManageProductsPage({ productsInputPort }) {
                     <td>
                       <div className="flex gap-1.5">
                         <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/admin/edit-product/${p.id}`)} aria-label="Edit product"><FiEdit2 /></button>
-                        <button className="btn btn-danger btn-sm" onClick={() => del(p.id)} disabled={deletingId === p.id} aria-label="Delete product">{deletingId === p.id ? "…" : <FiTrash2 />}</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(p.id)} disabled={deletingId === p.id} aria-label="Delete product">{deletingId === p.id ? "…" : <FiTrash2 />}</button>
                       </div>
                     </td>
                   </tr>
@@ -416,6 +435,13 @@ export function ManageProductsPage({ productsInputPort }) {
             </table>
           )}
         </div>
+        <ConfirmDialog
+          open={confirmDelete !== null}
+          title="Delete product"
+          message="Delete this product? This action cannot be undone."
+          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); del(id); }}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     </div>
   );

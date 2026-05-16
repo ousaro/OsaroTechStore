@@ -35,7 +35,7 @@ export function SetPasswordPage() {
 
   useEffect(() => {
     if (!profile) navigate("/login");
-  }, []);
+  }, [profile, navigate]);
 
   if (!profile) return null;
 

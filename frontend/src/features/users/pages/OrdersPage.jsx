@@ -4,6 +4,8 @@ import { useNavigate } from "../../../hooks/useNavigate.js";
 import { ProfileSidebar } from "../components/ProfileSidebar.jsx";
 import { Badge } from "../../../components/ui/Badge.jsx";
 import { Select } from "../../../components/ui/Select.jsx";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog.jsx";
+import { toastNotifier } from "../../../lib/toastNotifier.js";
 import { Money } from "../../../lib/Money.js";
 import { getErrorMessage } from "../../../lib/errorUtils.js";
 import { FiArchive, FiMapPin, FiSave, FiTrash2, FiUser } from "react-icons/fi";
@@ -14,6 +16,7 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
   const { path } = useNavigate();
   const [orders, setOrders] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [drafts, setDrafts] = useState({});
   const [savingId, setSavingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
@@ -87,14 +90,14 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
   };
 
   const deleteOrder = async (orderId) => {
-    if (!window.confirm("Delete this order?")) return;
     setDeletingId(orderId);
     setError("");
     try {
       await ordersInputPort.deleteOrder(orderId);
       setOrders((current) => current.filter((order) => order.id !== orderId));
+      toastNotifier.success("Order deleted");
     } catch (err) {
-      setError(getErrorMessage(err, "Could not delete this order. Please try again."));
+      toastNotifier.error(getErrorMessage(err, "Could not delete this order."));
     } finally {
       setDeletingId(null);
     }
@@ -181,7 +184,7 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
                                 <button className="btn btn-primary" onClick={() => saveOrder(o.id)} disabled={savingId === o.id}>
                                   <FiSave /> {savingId === o.id ? "Saving..." : "Save changes"}
                                 </button>
-                                <button className="btn btn-danger" onClick={() => deleteOrder(o.id)} disabled={deletingId === o.id}>
+                                <button className="btn btn-danger" onClick={() => setConfirmDelete(o.id)} disabled={deletingId === o.id}>
                                   <FiTrash2 /> {deletingId === o.id ? "Deleting..." : "Delete order"}
                                 </button>
                               </div>
@@ -196,6 +199,13 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
             </div>
           )
         }
+        <ConfirmDialog
+          open={confirmDelete !== null}
+          title="Delete order"
+          message={`Delete order #${confirmDelete?.slice(-8) || ""}? This action cannot be undone.`}
+          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); deleteOrder(id); }}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     </div>
   );

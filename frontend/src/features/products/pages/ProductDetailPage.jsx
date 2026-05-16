@@ -4,6 +4,7 @@ import { useCart } from "../../cart/hooks/useCart.js";
 import { useAuth } from "../../auth/hooks/useAuth.js";
 import { useNavigate } from "../../../hooks/useNavigate.js";
 import { Badge } from "../../../components/ui/Badge.jsx";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog.jsx";
 import { QtyControl } from "../../../components/ui/QtyControl.jsx";
 import { Spinner } from "../../../components/ui/Spinner.jsx";
 import { Link } from "../../../components/ui/Link.jsx";
@@ -23,6 +24,7 @@ export function ProductDetailPage({ id }) {
   const [qty, setQty]           = useState(1);
   const [adding, setAdding]     = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [reviewDraft, setReviewDraft] = useState({ rating: 5, comment: "" });
   const [reviewError, setReviewError] = useState("");
@@ -47,7 +49,6 @@ export function ProductDetailPage({ id }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Delete "${product.name}"?`)) return;
     setDeleting(true);
     try { await deleteProduct(product.id); navigate("/products"); }
     catch {
@@ -131,11 +132,18 @@ export function ProductDetailPage({ id }) {
           {user?.isAdmin && (
             <div className="flex flex-wrap gap-2">
               <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost"><FiEdit2 /> Edit</Link>
-              <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}><FiTrash2 /> {deleting ? "Deleting…" : "Delete"}</button>
+              <button className="btn btn-danger" onClick={() => setConfirmDelete(true)} disabled={deleting}><FiTrash2 /> {deleting ? "Deleting…" : "Delete"}</button>
             </div>
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={confirmDelete}
+        title={`Delete "${product?.name || ""}"?`}
+        message="This action cannot be undone."
+        onConfirm={() => { setConfirmDelete(false); handleDelete(); }}
+        onCancel={() => setConfirmDelete(false)}
+      />
       <section className="product-review-shell">
         <div className="product-review-summary card">
           <div>
