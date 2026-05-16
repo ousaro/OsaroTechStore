@@ -28,8 +28,10 @@ export function ProductDetailPage({ id }) {
   const [reviewError, setReviewError] = useState("");
 
   useEffect(() => {
-    if (product) return;
-    getProductById(id).then(setProduct).catch(() => navigate("/products")).finally(() => setLoading(false));
+    getProductById(id)
+      .then((fresh) => setProduct(fresh))
+      .catch(() => navigate("/products"))
+      .finally(() => setLoading(false));
   }, [id]); // eslint-disable-line
 
   if (loading) return <Spinner full />;

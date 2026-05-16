@@ -74,7 +74,7 @@ export function ProductCard({ product: p }) {
         <div className="product-name" title={p.name}>{p.name}</div>
         <div className="product-meta-row">
           <span className="product-meta-pill">{p.inStock ? "Ready to ship" : "Notify me"}</span>
-          <span className="product-meta-pill">{p.images.length || (p.primaryImage ? 1 : 0)} view{p.images.length === 1 || p.primaryImage ? "" : "s"}</span>
+          <span className="product-meta-pill">{p.reviews.length} review{p.reviews.length === 1 ? "" : "s"}</span>
         </div>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div className="product-price"><span className="currency">{p.price.currency}</span>{p.price.amount.toFixed(2)}</div>
