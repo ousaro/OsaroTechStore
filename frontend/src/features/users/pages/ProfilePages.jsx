@@ -35,8 +35,8 @@ export function ProfilePage() {
           {!editing && <button className="btn btn-ghost" onClick={() => setEditing(true)}><FiEdit2 /> Edit</button>}
         </div>
         <form onSubmit={save}>
-          <div className="card p-7">
-            <div className="mb-7 flex items-center gap-5">
+          <div className="card p-5 sm:p-7">
+            <div className="mb-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
               <Avatar
                 src={form.picture}
                 name={profile?.fullName}
@@ -45,9 +45,9 @@ export function ProfilePage() {
                 alt={profile?.fullName || "Profile"}
                 className="profile-avatar"
               />
-              <div>
+              <div className="min-w-0">
                 <div className="text-xl font-bold">{profile?.fullName}</div>
-                <div className="text-sm text-ink-muted">{profile?.email}</div>
+                <div className="break-all text-sm text-ink-muted">{profile?.email}</div>
                 {profile?.isAdmin && <span className="admin-tag mt-1.5 inline-block">Admin</span>}
               </div>
             </div>
@@ -59,7 +59,7 @@ export function ProfilePage() {
               {editing && <div className="field sm:col-span-2"><label>Picture URL</label><input className="input" value={form.picture} onChange={set("picture")} placeholder="https://…" /></div>}
             </div>
             {editing && (
-              <div className="mt-5 flex gap-2.5">
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Saving…" : "Save changes"}</button>
                 <button type="button" className="btn btn-ghost" onClick={() => setEditing(false)}>Cancel</button>
               </div>
@@ -85,7 +85,7 @@ export function AddressPage() {
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Address information</h1><p className="page-subtitle">Your default delivery address</p></div></div>
         <form onSubmit={save}>
-          <div className="card p-7">
+          <div className="card p-5 sm:p-7">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="field sm:col-span-2"><label>Street address</label><input className="input" placeholder="123 Main Street" value={form.address} onChange={set("address")} /></div>
               <div className="field"><label>City</label><input className="input" placeholder="Casablanca" value={form.city} onChange={set("city")} /></div>
@@ -108,7 +108,7 @@ export function PasswordPage() {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Change password</h1><p className="page-subtitle">Update your account password</p></div></div>
-        <div className="card max-w-[480px] p-7">
+        <div className="card max-w-[480px] p-5 sm:p-7">
           <div className="info-box mb-5"><FiInfo /> Password update is not yet exposed in API v1.0.0.</div>
           <div className="pointer-events-none flex flex-col gap-4 opacity-50">
             <PasswordInput label="Current password" name="cur" value="" onChange={() => {}} />
@@ -175,7 +175,7 @@ export function DeleteAccountPage() {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title text-accent">Delete account</h1><p className="page-subtitle">Permanently remove your account</p></div></div>
-        <div className="card max-w-[560px] p-7">
+        <div className="card max-w-[560px] p-5 sm:p-7">
           <div className="danger-panel mb-6">
             <strong className="danger-panel-title"><FiAlertTriangle /> This action is permanent</strong>
             <p className="danger-panel-copy">This cannot be undone. All your data will be erased.</p>
@@ -184,7 +184,7 @@ export function DeleteAccountPage() {
             <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
             I understand this is permanent
           </label>
-          <button className="btn btn-danger px-6 py-2.5" onClick={handle} disabled={!confirmed||loading}><FiTrash2 /> {loading ? "Deleting…" : "Delete my account permanently"}</button>
+          <button className="btn btn-danger flex-wrap px-6 py-2.5" onClick={handle} disabled={!confirmed||loading}><FiTrash2 /> {loading ? "Deleting…" : "Delete my account permanently"}</button>
         </div>
       </div>
     </div>

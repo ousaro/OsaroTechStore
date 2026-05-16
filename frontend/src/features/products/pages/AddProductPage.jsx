@@ -107,11 +107,11 @@ export function AddProductPage({
   };
 
   return (
-    <div className="mx-auto max-w-[800px] px-6 py-10">
+    <div className="mx-auto max-w-[800px] px-4 py-8 sm:px-6 sm:py-10">
       <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{editId ? "Edit" : "Add product"}</span></div>
       <h1 className="page-title mb-7 mt-2">{editId ? "Edit product" : "Add new product"}</h1>
       <form onSubmit={submit}>
-        <div className="card p-7">
+        <div className="card p-5 sm:p-7">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="field sm:col-span-2"><label>Product name *</label><input className="input" value={form.name} onChange={set("name")} required placeholder="e.g. Samsung Galaxy S24" /></div>
             <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
@@ -161,7 +161,7 @@ export function AddProductPage({
               )}
             </div>
           </div>
-          <div className="mt-6 flex gap-2.5">
+          <div className="mt-6 flex flex-wrap gap-2.5">
             <button type="submit" className="btn btn-primary" disabled={loading || uploadingImages}>{loading ? "Saving…" : editId ? "Save changes" : "Create product"}</button>
             <Link to="/products" className="btn btn-ghost">Cancel</Link>
           </div>

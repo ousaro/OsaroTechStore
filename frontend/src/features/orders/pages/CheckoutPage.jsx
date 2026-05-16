@@ -61,9 +61,9 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
         <div className="checkout-banner-item"><FiMapPin size={18} /> Ship to your saved address or update it here</div>
         <div className="checkout-banner-item"><FiShield size={18} /> Stripe-secured checkout session</div>
       </div>
-      <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <form onSubmit={placeOrder} className="flex flex-col gap-4">
-          <div className="card p-6">
+          <div className="card p-5 sm:p-6">
             <h2 className="mb-5 text-[17px] font-bold">Delivery address</h2>
             <div className="flex flex-col gap-3.5">
               <div className="field"><label>Street address</label><input className="input" placeholder="123 Main Street" value={address.street} onChange={setA("street")} required /></div>
@@ -88,8 +88,8 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-lg">
                 <ProductImage src={i.primaryImage} alt="" placeholderSize={22} imgClassName="h-full w-full object-contain p-1" />
               </div>
-              <div className="flex-1"><div className="text-[13px] font-semibold">{i.name}</div><div className="text-xs text-ink-muted">Qty: {i.quantity}</div></div>
-              <div className="text-sm font-bold">{i.price.currency} {(i.price.amount*i.quantity).toFixed(2)}</div>
+              <div className="min-w-0 flex-1"><div className="text-[13px] font-semibold leading-snug">{i.name}</div><div className="text-xs text-ink-muted">Qty: {i.quantity}</div></div>
+              <div className="ml-auto text-sm font-bold">{i.price.currency} {(i.price.amount*i.quantity).toFixed(2)}</div>
             </div>
           ))}
           <div className="summary-row total mt-4"><span>Total</span><span>USD {total.toFixed(2)}</span></div>

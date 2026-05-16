@@ -36,7 +36,7 @@ export function CartPage() {
     <div className="page-shell">
       <h1 className="page-title mb-7">Shopping cart</h1>
       <div className="cart-layout">
-        <div className="card px-6">
+        <div className="card px-4 sm:px-6">
           {cartItems.map((item) => (
             <div key={item.id} className="cart-item">
               <div className="cart-item-media">
@@ -49,7 +49,7 @@ export function CartPage() {
               </div>
               <div className="cart-item-total">
                 <div className="text-base font-extrabold">{item.price.currency} {(item.price.amount * item.quantity).toFixed(2)}</div>
-                <button className="btn btn-sm mt-2 bg-transparent text-accent" onClick={() => removeFromCart(item.id)}><FiTrash2 /> Remove</button>
+                <button className="btn btn-sm bg-transparent text-accent sm:mt-2" onClick={() => removeFromCart(item.id)}><FiTrash2 /> Remove</button>
               </div>
             </div>
           ))}
@@ -58,7 +58,7 @@ export function CartPage() {
           <h2 className="mb-5 text-lg font-bold">Order summary</h2>
           {cartItems.map((i) => (
             <div key={i.id} className="summary-row">
-              <span className="max-w-40 overflow-hidden text-ellipsis whitespace-nowrap">{i.name} ×{i.quantity}</span>
+              <span className="min-w-0 max-w-[14rem] overflow-hidden text-ellipsis whitespace-nowrap">{i.name} ×{i.quantity}</span>
               <span>{i.price.currency} {(i.price.amount * i.quantity).toFixed(2)}</span>
             </div>
           ))}

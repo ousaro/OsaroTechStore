@@ -4,7 +4,7 @@ import { useCart } from "../../features/cart/hooks/useCart.js";
 import { Avatar } from "./Avatar.jsx";
 import { Link } from "./Link.jsx";
 import { useNavigate } from "../../hooks/useNavigate.js";
-import { FiLogOut, FiMoon, FiSearch, FiShoppingBag, FiSun, FiTruck } from "react-icons/fi";
+import { FiLogOut, FiMenu, FiMoon, FiSearch, FiShoppingBag, FiSun, FiTruck, FiX } from "react-icons/fi";
 
 export function Navbar({ path }) {
   const { user, logout } = useAuth();
@@ -12,6 +12,7 @@ export function Navbar({ path }) {
   const { navigate } = useNavigate();
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "light");
   const [query, setQuery] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -21,6 +22,7 @@ export function Navbar({ path }) {
   useEffect(() => {
     const params = new URLSearchParams(path.includes("?") ? path.split("?")[1] : "");
     setQuery(params.get("q") || "");
+    setMobileOpen(false);
   }, [path]);
 
   if (!user) return null;
@@ -40,6 +42,7 @@ export function Navbar({ path }) {
   const submitSearch = (e) => {
     e.preventDefault();
     const next = query.trim();
+    setMobileOpen(false);
     navigate(next ? `/products?q=${encodeURIComponent(next)}` : "/products");
   };
 
@@ -50,10 +53,17 @@ export function Navbar({ path }) {
           <span className="nav-logo-mark">OT</span>
           <span><span className="accent">Osaro</span>Tech</span>
         </Link>
-        <div className="nav-center">
+        <div className={`nav-center ${mobileOpen ? "open" : ""}`}>
           <div className="nav-links">
             {navLinks.map(({ to, label }) => (
-              <Link key={to} to={to} className={`nav-link ${isActive(to) ? "active" : ""}`}>{label}</Link>
+              <Link
+                key={to}
+                to={to}
+                className={`nav-link ${isActive(to) ? "active" : ""}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                {label}
+              </Link>
             ))}
           </div>
           <form className="search-wrap" onSubmit={submitSearch}>
@@ -93,6 +103,14 @@ export function Navbar({ path }) {
           </button>
           <button className="nav-icon-btn" onClick={logout} title="Log out" aria-label="Log out">
             <FiLogOut size={19} />
+          </button>
+          <button
+            className="nav-icon-btn nav-menu-btn"
+            onClick={() => setMobileOpen((current) => !current)}
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <FiX size={21} /> : <FiMenu size={21} />}
           </button>
         </div>
       </div>

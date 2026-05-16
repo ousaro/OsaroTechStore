@@ -3,16 +3,31 @@ import { useProducts } from "../hooks/useProducts.js";
 import { useNavigate } from "../../../hooks/useNavigate.js";
 import { ProductCard } from "../components/ProductCard.jsx";
 import { ProductImage } from "../../../components/ui/ProductImage.jsx";
-import { FiArrowRight, FiBox, FiClock, FiCpu, FiGrid, FiHeadphones, FiShield, FiStar, FiTruck, FiZap } from "react-icons/fi";
+import { FiArrowRight, FiBox, FiCpu, FiGrid, FiShield, FiTruck } from "react-icons/fi";
 
 export function HomePage({ categories }) {
   const { products } = useProducts();
   const { navigate } = useNavigate();
   const [selectedCat, setSelectedCat] = useState("all");
-  const featuredCategories = categories.slice(0, 4);
   const inStockCount = products.filter((product) => product.inStock).length;
   const heroProduct = products.find((product) => product.primaryImage) || products[0];
   const newestProducts = [...products].sort((a, b) => Number(b.status === "new") - Number(a.status === "new")).slice(0, 3);
+  const shopCategories = useMemo(() => {
+    const byName = new Map();
+
+    categories.forEach((category) => {
+      if (category?.name) byName.set(category.name, category);
+    });
+
+    products.forEach((product) => {
+      if (product.category && !byName.has(product.category)) {
+        byName.set(product.category, { id: `product-category-${product.category}`, name: product.category });
+      }
+    });
+
+    return [...byName.values()];
+  }, [categories, products]);
+  const featuredCategories = shopCategories.slice(0, 4);
 
   const filtered = useMemo(() => {
     const base = selectedCat === "all" ? products : products.filter((p) => p.category === selectedCat);
@@ -37,30 +52,13 @@ export function HomePage({ categories }) {
                 <span className="hero-stat-label">live products</span>
               </div>
               <div className="hero-stat">
-                <span className="hero-stat-value">{categories.length || "0"}</span>
+                <span className="hero-stat-value">{shopCategories.length}</span>
                 <span className="hero-stat-label">shop categories</span>
               </div>
               <div className="hero-stat">
                 <span className="hero-stat-value">{inStockCount}</span>
                 <span className="hero-stat-label">ready to ship</span>
               </div>
-            </div>
-            <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
-              {[
-                [FiZap, "Same-day prep", "Ready fast"],
-                [FiStar, "Curated picks", "No noisy catalog"],
-                [FiShield, "Protected pay", "Secure checkout"],
-              ].map(([Icon, title, sub]) => (
-                <div key={title} className="flex min-h-20 items-center gap-3 rounded-lg border border-[var(--hero-card-border)] bg-[var(--hero-card-bg)] px-4 py-3 text-[var(--hero-text)] shadow-soft backdrop-blur-xl transition-transform duration-200 hover:-translate-y-0.5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[var(--hero-icon-bg)] text-[var(--hero-icon-color)]">
-                    <Icon size={19} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-extrabold leading-tight">{title}</span>
-                    <span className="block text-xs leading-snug text-[var(--hero-card-muted)]">{sub}</span>
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
           <div className="hero-visual">
@@ -82,7 +80,7 @@ export function HomePage({ categories }) {
               <span className="hero-card-icon"><FiBox size={22} /></span>
               <div><div className="hero-card-title">{products.length} products</div><div className="hero-card-sub">Across all categories</div></div>
             </div>
-            <div className="hero-card"><span className="hero-card-icon"><FiGrid size={22} /></span><div className="hero-card-title">{categories.length} categories</div><div className="hero-card-sub">Something for everyone</div></div>
+            <div className="hero-card"><span className="hero-card-icon"><FiGrid size={22} /></span><div className="hero-card-title">{shopCategories.length} categories</div><div className="hero-card-sub">Something for everyone</div></div>
             <div className="hero-card"><span className="hero-card-icon"><FiTruck size={22} /></span><div className="hero-card-title">Fast delivery</div><div className="hero-card-sub">To your door</div></div>
             <div className="hero-card"><span className="hero-card-icon"><FiShield size={22} /></span><div className="hero-card-title">Secure checkout</div><div className="hero-card-sub">Stripe-powered</div></div>
           </div>
@@ -107,7 +105,7 @@ export function HomePage({ categories }) {
                   <button
                     key={category.id}
                     className={`featured-category-card ${selectedCat === category.name ? "active" : ""}`}
-                    onClick={() => setSelectedCat(category.name)}
+                    onClick={() => navigate(`/products?category=${encodeURIComponent(category.name)}`)}
                   >
                     <span className="featured-category-name">{category.name}</span>
                     <span className="featured-category-meta">{count} items</span>
@@ -117,24 +115,6 @@ export function HomePage({ categories }) {
             </div>
           </div>
           <div className="discovery-stack">
-            <div className="discovery-panel">
-              <div className="section-kicker">Why it feels better</div>
-              <div className="discovery-mini-list">
-                {[
-                  [FiClock, "Fast checkout flow", "Clear path from browse to payment"],
-                  [FiHeadphones, "Human support", "Useful products, less catalog noise"],
-                  [FiShield, "Protected payments", "Stripe-backed secure checkout"],
-                ].map(([Icon, title, text]) => (
-                  <div key={title} className="discovery-mini-item">
-                    <span className="discovery-mini-icon"><Icon size={18} /></span>
-                    <div>
-                      <div className="discovery-mini-title">{title}</div>
-                      <div className="discovery-mini-text">{text}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
             {heroProduct && (
               <button className="discovery-panel spotlight-card" onClick={() => navigate(`/product/${heroProduct.id}`)}>
                 <div className="section-kicker">Spotlight pick</div>
@@ -163,7 +143,7 @@ export function HomePage({ categories }) {
         </div>
         <div className="category-strip mb-7">
           <button className={`category-pill ${selectedCat==="all"?"active":""}`} onClick={() => setSelectedCat("all")}>All products</button>
-          {categories.map((c) => (
+          {shopCategories.map((c) => (
             <button key={c.id} className={`category-pill ${selectedCat===c.name?"active":""}`} onClick={() => setSelectedCat(c.name)}>{c.name}</button>
           ))}
         </div>

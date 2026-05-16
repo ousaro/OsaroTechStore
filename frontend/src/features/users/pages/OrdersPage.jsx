@@ -104,7 +104,7 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
                       </div>
                       <div className="order-card-side">
                         <div className="order-card-total">{Money.fromRaw(o.totalPrice).format()}</div>
-                        <div className="flex flex-wrap justify-end gap-2">
+                        <div className="flex flex-wrap justify-start gap-2 sm:justify-end">
                           <Badge status={o.orderStatus} />
                           <Badge status={o.paymentStatus} />
                         </div>
@@ -115,11 +115,11 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
                         <div className="order-lines">
                           {o.orderLines.map((line) => (
                             <div key={`${o.id}-${line.productId}-${line.name}`} className="order-line-item">
-                              <div>
+                              <div className="min-w-0">
                                 <div className="order-line-name">{line.name}</div>
                                 <div className="order-line-meta">Qty {line.quantity} • {line.unitPrice.format()}</div>
                               </div>
-                              <div className="order-line-total">{line.subtotal.format()}</div>
+                              <div className="ml-auto order-line-total">{line.subtotal.format()}</div>
                             </div>
                           ))}
                         </div>

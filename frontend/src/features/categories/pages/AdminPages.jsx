@@ -54,18 +54,18 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
         ))}
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="card p-6">
+        <div className="card p-5 sm:p-6">
           <h2 className="mb-4 text-base font-bold">Orders by status</h2>
           {Object.entries(byStatus).map(([s,c]) => (
             <div key={s} className="flex items-center justify-between border-b border-border py-[9px]"><Badge status={s} /><span className="font-bold">{c}</span></div>
           ))}
         </div>
-        <div className="card p-6">
+        <div className="card p-5 sm:p-6">
           <h2 className="mb-4 text-base font-bold">Recent orders</h2>
           {orders.slice(0,6).map((o) => (
-            <div key={o.id} className="flex items-center justify-between border-b border-border py-[9px]">
-              <div><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
-              <div className="text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
+            <div key={o.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-[9px]">
+              <div className="min-w-0"><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
+              <div className="text-left sm:text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
             </div>
           ))}
         </div>
@@ -243,12 +243,12 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Categories</h1><p className="page-subtitle">{cats.length} categories</p></div></div>
-        <div className="card mb-5 p-6">
+        <div className="card mb-5 p-5 sm:p-6">
           <h2 className="mb-4 text-base font-bold">Add new category</h2>
-          <form onSubmit={create} className="flex flex-wrap items-end gap-3">
+          <form onSubmit={create} className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
             <div className="field flex-[1_1_160px]"><label>Name *</label><input className="input" placeholder="e.g. Smartphones" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name:e.target.value }))} required /></div>
             <div className="field flex-[2_1_240px]"><label>Description</label><input className="input" placeholder="Optional" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description:e.target.value }))} /></div>
-            <button type="submit" className="btn btn-primary" disabled={creating}>+ {creating ? "Creating…" : "Create"}</button>
+            <button type="submit" className="btn btn-primary sm:w-auto" disabled={creating}>+ {creating ? "Creating…" : "Create"}</button>
           </form>
         </div>
         <div className="card table-wrap">
@@ -283,28 +283,35 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
 /* ── AboutPage ─────────────────────────────────────────────────── */
 export function AboutPage() {
   const values = [
-    { icon: FiTruck, title: "Fast local delivery", sub: "Clear fulfillment from cart to doorstep." },
-    { icon: FiShield, title: "Secure checkout", sub: "Stripe-powered payments and careful account handling." },
-    { icon: FiHeadphones, title: "Human support", sub: "Help with orders, products, and setup questions." },
+    { icon: FiTruck, title: "Delivery", sub: "Clear order status and practical fulfillment updates." },
+    { icon: FiShield, title: "Checkout", sub: "Secure payments with a straightforward purchase flow." },
+    { icon: FiHeadphones, title: "Support", sub: "Help with products, delivery, and account questions." },
   ];
 
   return (
     <div className="about-page">
       <section className="about-hero">
-        <div>
+        <div className="about-intro">
           <div className="section-kicker">About the store</div>
           <h1 className="about-title"><span className="accent">Osaro</span>Tech Store</h1>
           <p className="about-lede">A focused tech shop for phones, accessories, and everyday devices, built around clear product discovery, reliable checkout, and customer support that feels close to home.</p>
           <div className="about-actions">
-            <a className="btn btn-primary btn-lg" href="#/products">Explore products</a>
-            <a className="btn btn-ghost btn-lg" href="mailto:hello@osarotech.store">Contact support</a>
+            <a className="btn btn-primary" href="#/products">Explore products</a>
+            <a className="btn btn-ghost" href="mailto:hello@osarotech.store">Contact support</a>
           </div>
         </div>
-        <div className="about-signal-card">
-          <span className="icon-pill"><FiZap size={22} /></span>
-          <div>
-            <div className="about-signal-value">2024</div>
-            <div className="about-signal-label">Founded with a practical love for useful technology</div>
+        <div className="about-summary">
+          <div className="about-summary-item">
+            <span>Catalog</span>
+            <strong>Phones and essentials</strong>
+          </div>
+          <div className="about-summary-item">
+            <span>Focus</span>
+            <strong>Simple, useful technology</strong>
+          </div>
+          <div className="about-summary-item">
+            <span>Founded</span>
+            <strong>2024</strong>
           </div>
         </div>
       </section>
@@ -324,8 +331,10 @@ export function AboutPage() {
           <div className="section-kicker">What we care about</div>
           <h2>Simple choices, solid gear, no noise.</h2>
         </div>
-        <p>OsaroTech exists for shoppers who want the right device without digging through clutter. The catalog is kept direct, product pages put the useful details first, and the checkout flow is designed to stay calm even when you are moving quickly.</p>
-        <p>We focus on practical technology: the phone you use every day, the accessory that saves your battery, the device that makes work or study smoother. The goal is a store that feels polished, trustworthy, and easy to return to.</p>
+        <div className="about-story-copy">
+          <p>OsaroTech exists for shoppers who want the right device without digging through clutter. The catalog is kept direct, product pages put useful details first, and checkout stays calm even when you are moving quickly.</p>
+          <p>We focus on practical technology: the phone you use every day, the accessory that saves your battery, and the device that makes work or study smoother.</p>
+        </div>
       </section>
 
       <section className="card about-contact">

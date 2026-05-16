@@ -71,7 +71,7 @@ export function ProductDetailPage({ id }) {
   return (
     <div className="page-shell">
       <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{product.name}</span></div>
-      <div className="mt-2 grid items-start gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
+      <div className="mt-2 grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,.95fr)] lg:gap-12">
         <div>
           <div className="product-detail-media">
             <ProductImage src={images[activeImg]} alt={product.name} placeholderSize={82} />
@@ -103,9 +103,9 @@ export function ProductDetailPage({ id }) {
             </span>
           </div>
           {product.inStock && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <QtyControl value={qty} min={1} max={product.stock} onDecrement={() => setQty((q) => Math.max(1,q-1))} onIncrement={() => setQty((q) => Math.min(product.stock,q+1))} />
-              <button className="btn btn-primary flex-1" onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
+              <button className="btn btn-primary min-w-[180px] flex-1" onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
             </div>
           )}
           <div className="product-trust-grid">
@@ -115,7 +115,7 @@ export function ProductDetailPage({ id }) {
             <div><FiCreditCard /><span>Secure checkout</span></div>
           </div>
           {user?.isAdmin && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost"><FiEdit2 /> Edit</Link>
               <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}><FiTrash2 /> {deleting ? "Deleting…" : "Delete"}</button>
             </div>
