@@ -5,11 +5,13 @@ on:
     branches: ["main"]
     paths:
       - "backend/**"
+      - "backend/Dockerfile"
       - ".github/workflows/backend-ci.yml"
   pull_request:
     branches: ["main"]
     paths:
       - "backend/**"
+      - "backend/Dockerfile"
       - ".github/workflows/backend-ci.yml"
 
 concurrency:

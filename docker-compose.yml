@@ -25,7 +25,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
@@ -54,18 +54,17 @@ services:
       - "5000:5000"
 
   frontend:
-    image: node:24-bookworm-slim
-    working_dir: /app/frontend
-    command: sh -c "npm ci && npm start"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: /api
+        REACT_APP_GOOGLE_API_URL: http://localhost:5000/api/auth/google
+        REACT_APP_STRIPE_PUBLIC_KEY: ${REACT_APP_STRIPE_PUBLIC_KEY:-pk_test_key}
     depends_on:
       - backend
-    environment:
-      PORT: 3000
-      REACT_APP_API_URL: http://localhost:5000
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app/frontend
+      - "3000:80"
 
 volumes:
   mongo-data:
