@@ -1,5 +1,7 @@
 import express, { Router } from "express";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const IMAGE_EXTENSIONS = {
   "image/jpeg": ".jpg",
@@ -10,16 +12,6 @@ const IMAGE_EXTENSIONS = {
 
 const uploadProductImage = async (req, res, next) => {
   try {
-    const uploadBaseUrl = process.env.PRODUCT_IMAGE_UPLOAD_URL;
-    const publicBaseUrl = process.env.PRODUCT_IMAGE_PUBLIC_URL;
-    const uploadToken = process.env.PRODUCT_IMAGE_UPLOAD_TOKEN;
-
-    if (!uploadBaseUrl || !publicBaseUrl) {
-      return res.status(503).json({
-        error: "Product image storage is not configured",
-      });
-    }
-
     const ext = IMAGE_EXTENSIONS[req.headers["content-type"]];
     if (!ext) {
       return res.status(415).json({ error: "Unsupported image type" });
@@ -30,29 +22,40 @@ const uploadProductImage = async (req, res, next) => {
     }
 
     const filename = `${randomUUID()}${ext}`;
-    const uploadUrl = new URL(
-      filename,
-      uploadBaseUrl.endsWith("/") ? uploadBaseUrl : `${uploadBaseUrl}/`
-    );
-    const publicUrl = new URL(
-      filename,
-      publicBaseUrl.endsWith("/") ? publicBaseUrl : `${publicBaseUrl}/`
-    );
+    const uploadBaseUrl = process.env.PRODUCT_IMAGE_UPLOAD_URL;
+    const publicBaseUrl = process.env.PRODUCT_IMAGE_PUBLIC_URL;
 
-    const uploadResponse = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": req.headers["content-type"],
-        ...(uploadToken ? { Authorization: `Bearer ${uploadToken}` } : {}),
-      },
-      body: req.body,
-    });
+    if (uploadBaseUrl && publicBaseUrl) {
+      const uploadToken = process.env.PRODUCT_IMAGE_UPLOAD_TOKEN;
+      const uploadUrl = new URL(
+        filename,
+        uploadBaseUrl.endsWith("/") ? uploadBaseUrl : `${uploadBaseUrl}/`
+      );
+      const publicUrl = new URL(
+        filename,
+        publicBaseUrl.endsWith("/") ? publicBaseUrl : `${publicBaseUrl}/`
+      );
 
-    if (!uploadResponse.ok) {
-      return res.status(502).json({ error: "Product image storage upload failed" });
+      const uploadResponse = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": req.headers["content-type"],
+          ...(uploadToken ? { Authorization: `Bearer ${uploadToken}` } : {}),
+        },
+        body: req.body,
+      });
+
+      if (!uploadResponse.ok) {
+        return res.status(502).json({ error: "Product image storage upload failed" });
+      }
+
+      return res.status(201).json({ url: publicUrl.toString() });
     }
 
-    res.status(201).json({ url: publicUrl.toString() });
+    const uploadsDir = path.resolve(process.cwd(), "uploads", "products");
+    await fs.mkdir(uploadsDir, { recursive: true });
+    await fs.writeFile(path.join(uploadsDir, filename), req.body);
+    res.status(201).json({ url: `/uploads/products/${filename}` });
   } catch (error) {
     next(error);
   }

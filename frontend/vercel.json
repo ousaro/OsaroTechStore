@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://osarotechstore.onrender.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://osarotechstore.onrender.com/uploads/:path*"
     }
   ],
   "headers": [

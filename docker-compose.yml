@@ -52,6 +52,8 @@ services:
       retries: 3
     ports:
       - "5000:5000"
+    volumes:
+      - product-uploads:/app/uploads
 
   frontend:
     build:
@@ -68,3 +70,4 @@ services:
 
 volumes:
   mongo-data:
+  product-uploads:
