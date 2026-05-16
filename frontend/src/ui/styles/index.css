@@ -432,9 +432,13 @@
   .footer-contact svg { @apply shrink-0 text-accent; }
   .site-footer-bottom { @apply mx-auto flex max-w-7xl flex-wrap justify-between gap-3.5 border-t border-[rgba(223,221,212,.72)] px-6 pb-[22px] pt-3.5 text-[13px] text-ink-faint; }
 
-  .cart-layout { @apply grid grid-cols-[1fr_360px] items-start gap-6; }
-  .cart-item { @apply flex gap-4 border-b border-border py-5 last:border-b-0; }
-  .cart-item-img { @apply h-[86px] w-[86px] shrink-0 rounded bg-[image:var(--product-well)] object-contain p-2; }
+  .cart-layout { @apply grid grid-cols-[minmax(0,1fr)_360px] items-start gap-6; }
+  .cart-item { @apply grid min-w-0 grid-cols-[86px_minmax(0,1fr)_minmax(120px,max-content)] items-center gap-4 border-b border-border py-5 last:border-b-0; }
+  .cart-item-media { @apply flex h-[86px] w-[86px] shrink-0 items-center justify-center overflow-hidden rounded bg-[image:var(--product-well)]; }
+  .cart-item-img { @apply h-full w-full object-contain p-2; }
+  .cart-item-main { @apply min-w-0; }
+  .cart-item-title { @apply mb-1 block overflow-hidden text-ellipsis whitespace-nowrap text-[15px] font-semibold; }
+  .cart-item-total { @apply min-w-0 text-right; }
   .qty-control { @apply mt-2.5 inline-flex items-center overflow-hidden rounded-sm border-[1.5px] border-border; }
   .qty-btn { @apply flex h-8 w-8 cursor-pointer items-center justify-center border-0 bg-surface-2 text-base font-bold text-ink-muted transition-colors duration-200 hover:bg-surface-3 hover:text-ink disabled:pointer-events-none disabled:opacity-40; }
   .qty-value { @apply w-10 border-x-[1.5px] border-border py-1.5 text-center text-sm font-semibold; }
@@ -522,7 +526,9 @@
     .order-card-head { @apply px-4 py-4; }
     .order-card-side { @apply items-start; }
     .order-card-body { @apply px-4 py-4; }
-    .cart-item { @apply flex-wrap; }
+    .cart-item { @apply grid-cols-[72px_minmax(0,1fr)] gap-3; }
+    .cart-item-media { @apply h-[72px] w-[72px]; }
+    .cart-item-total { @apply col-span-2 flex items-center justify-between gap-3 text-left; }
     .auth-panel { @apply px-[18px] py-8; }
     .site-footer-inner { @apply grid-cols-1 px-4 pb-[22px] pt-7; }
     .site-footer-bottom { @apply px-4; }

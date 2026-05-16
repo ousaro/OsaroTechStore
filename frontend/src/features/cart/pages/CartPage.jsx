@@ -14,7 +14,7 @@ export function CartPage() {
 
   const cartItems = useMemo(() =>
     cart.lines.map((line) => {
-      const p = products.find((pr) => pr.id === line._id);
+      const p = products.find((pr) => pr.id === line.productId);
       return p ? { ...p, quantity: line.quantity } : null;
     }).filter(Boolean),
     [cart.lines, products]
@@ -39,13 +39,15 @@ export function CartPage() {
         <div className="card px-6">
           {cartItems.map((item) => (
             <div key={item.id} className="cart-item">
-              <ProductImage src={item.primaryImage} alt={item.name} placeholderSize={30} imgClassName="cart-item-img" wrapperClassName="cart-item-img" />
-              <div className="flex-1">
-                <Link to={`/product/${item.id}`} className="mb-1 block text-[15px] font-semibold">{item.name}</Link>
+              <div className="cart-item-media">
+                <ProductImage src={item.primaryImage} alt={item.name} placeholderSize={30} imgClassName="cart-item-img" />
+              </div>
+              <div className="cart-item-main">
+                <Link to={`/product/${item.id}`} className="cart-item-title">{item.name}</Link>
                 <div className="text-[13px] text-ink-muted">{item.price.currency} {item.price.amount.toFixed(2)} each</div>
                 <QtyControl value={item.quantity} max={item.stock} onDecrement={() => setQuantity(item.id, item.quantity-1)} onIncrement={() => setQuantity(item.id, item.quantity+1)} />
               </div>
-              <div className="text-right">
+              <div className="cart-item-total">
                 <div className="text-base font-extrabold">{item.price.currency} {(item.price.amount * item.quantity).toFixed(2)}</div>
                 <button className="btn btn-sm mt-2 bg-transparent text-accent" onClick={() => removeFromCart(item.id)}><FiTrash2 /> Remove</button>
               </div>

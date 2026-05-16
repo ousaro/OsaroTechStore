@@ -18,7 +18,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
 
   const cartItems = useMemo(() =>
     cart.lines.map((line) => {
-      const p = products.find((pr) => pr.id === line._id);
+      const p = products.find((pr) => pr.id === line.productId);
       return p ? { ...p, quantity: line.quantity } : null;
     }).filter(Boolean),
     [cart.lines, products]
