@@ -6,8 +6,9 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
   const tok = () => sessionStore.get()?.token;
 
   async function getAllCategories() {
-    const { ok, data } = await repo.getAll(tok());
-    return ok ? asArray(data).map((r) => new Category(r)) : [];
+    const { ok, data, error } = await repo.getAll(tok());
+    if (!ok) throw new Error(error || "Failed to load categories");
+    return asArray(data).map((r) => new Category(r));
   }
 
   async function createCategory(payload) {

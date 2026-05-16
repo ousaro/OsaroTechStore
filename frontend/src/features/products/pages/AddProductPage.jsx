@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProducts } from "../hooks/useProducts.js";
 import { useNavigate } from "../../../hooks/useNavigate.js";
 import { Link } from "../../../components/ui/Link.jsx";
@@ -6,7 +6,15 @@ import { Select } from "../../../components/ui/Select.jsx";
 import { PRODUCT_STATUSES } from "../model/Product.js";
 import { FiImage, FiUploadCloud, FiX } from "react-icons/fi";
 
-export function AddProductPage({ editId, categories }) {
+export function AddProductPage({
+  editId,
+  categories,
+  categoriesLoading = false,
+  categoriesError = "",
+  categoriesInputPort,
+  onCategoriesChange,
+  onReloadCategories,
+}) {
   const { products, createProduct, updateProduct, uploadProductImage } = useProducts();
   const { navigate } = useNavigate();
   const existing = editId ? products.find((p) => p.id === editId) : null;
@@ -27,7 +35,49 @@ export function AddProductPage({ editId, categories }) {
   });
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [localCategories, setLocalCategories] = useState(categories);
+  const [localCategoriesLoading, setLocalCategoriesLoading] = useState(false);
+  const [localCategoriesError, setLocalCategoriesError] = useState("");
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const displayedCategories = localCategories.length ? localCategories : categories;
+  const categoryLoading = categoriesLoading || localCategoriesLoading;
+  const categoryError = categoriesError || localCategoriesError;
+
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
+
+  useEffect(() => {
+    if (categories.length || categoriesLoading || categoriesError || !categoriesInputPort) return;
+
+    let cancelled = false;
+    setLocalCategoriesLoading(true);
+    setLocalCategoriesError("");
+
+    categoriesInputPort.getAllCategories()
+      .then((data) => {
+        if (cancelled) return;
+        setLocalCategories(data);
+        onCategoriesChange?.(data);
+      })
+      .catch((error) => {
+        if (!cancelled) setLocalCategoriesError(error?.message || "Failed to load categories");
+      })
+      .finally(() => {
+        if (!cancelled) setLocalCategoriesLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [categories.length, categoriesError, categoriesInputPort, categoriesLoading, onCategoriesChange]);
+
+  useEffect(() => {
+    if (!editId || form.category || !existing?.category || !displayedCategories.length) return;
+
+    const categoryId = displayedCategories.find((category) => category.name === existing.category)?.id;
+    if (categoryId) setForm((f) => ({ ...f, category: categoryId }));
+  }, [displayedCategories, editId, existing?.category, form.category]);
 
   const handleImageUpload = async (e) => {
     const files = [...e.target.files].filter((file) => file.type.startsWith("image/"));
@@ -67,7 +117,21 @@ export function AddProductPage({ editId, categories }) {
             <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
             <div className="field"><label>Price *</label><input type="number" className="input" value={form.price} onChange={set("price")} required min={0} step="0.01" placeholder="0.00" /></div>
             <div className="field"><label>Currency</label><Select value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></Select></div>
-            <div className="field"><label>Category *</label><Select value={form.category} onChange={set("category")} required><option value="">Select…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></div>
+            <div className="field">
+              <label>Category *</label>
+              <Select value={form.category} onChange={set("category")} required disabled={categoryLoading || Boolean(categoryError) || !displayedCategories.length}>
+                <option value="">
+                  {categoryLoading ? "Loading categories..." : categoryError ? "Categories unavailable" : displayedCategories.length ? "Select..." : "No categories yet"}
+                </option>
+                {displayedCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </Select>
+              {categoryError && (
+                <button type="button" className="category-retry-btn" onClick={onReloadCategories}>Retry loading categories</button>
+              )}
+              {!categoryLoading && !categoryError && !displayedCategories.length && (
+                <Link to="/admin/categories" className="category-retry-btn">Create a category first</Link>
+              )}
+            </div>
             <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
             <div className="field"><label>Status</label><Select value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</Select></div>
             <div className="field sm:col-span-2">

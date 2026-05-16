@@ -1,8 +1,9 @@
 import { Toaster } from "react-hot-toast";
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { configureModules } from "./createServices.js";
 import { eventBus } from "../store/eventBus.js";
 import { sessionStore } from "../store/sessionStore.js";
+import { Events } from "../lib/events.js";
 
 // ── View adapter factories ─────────────────────────────────────
 import { createAuthViewAdapter }     from "../features/auth/hooks/useAuth.js";
@@ -71,6 +72,8 @@ function AppShell({ modules, viewAdapters }) {
   const { UsersProvider }   = viewAdapters.users;
   const { CartProvider }    = viewAdapters.cart;
   const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [categoriesError, setCategoriesError] = useState("");
 
   const cleanPath = path.split("?")[0];
   const segments  = cleanPath.split("/").filter(Boolean);
@@ -83,21 +86,67 @@ function AppShell({ modules, viewAdapters }) {
   const sessionUserIsAdmin = Boolean(sessionUser?.admin || sessionUser?.isAdmin);
   const isPublic = PUBLIC_ROUTES.includes(route);
 
-  useEffect(() => {
+  const loadCategories = useCallback(() => {
     if (!sessionUserId) {
       setCategories([]);
-      return;
+      setCategoriesError("");
+      setCategoriesLoading(false);
+      return () => {};
     }
 
     let cancelled = false;
-    modules.categories.getAllCategories().then((data) => {
-      if (!cancelled) setCategories(data);
-    });
+    setCategoriesLoading(true);
+    setCategoriesError("");
+
+    modules.categories.getAllCategories()
+      .then((data) => {
+        if (!cancelled) setCategories(data);
+      })
+      .catch((error) => {
+        if (!cancelled) setCategoriesError(error?.message || "Failed to load categories");
+      })
+      .finally(() => {
+        if (!cancelled) setCategoriesLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
   }, [modules.categories, sessionUserId]);
+
+  useEffect(() => {
+    return loadCategories();
+  }, [loadCategories]);
+
+  useEffect(() => {
+    if (!sessionUserId) return undefined;
+
+    const syncCreated = (event) => {
+      setCategories((current) => (
+        current.some((category) => category.id === event.payload.category.id)
+          ? current
+          : [event.payload.category, ...current]
+      ));
+    };
+    const syncUpdated = (event) => {
+      setCategories((current) => current.map((category) => (
+        category.id === event.payload.category.id ? event.payload.category : category
+      )));
+    };
+    const syncDeleted = (event) => {
+      setCategories((current) => current.filter((category) => category.id !== event.payload.id));
+    };
+
+    eventBus.subscribe(Events.CATEGORY_CREATED, syncCreated);
+    eventBus.subscribe(Events.CATEGORY_UPDATED, syncUpdated);
+    eventBus.subscribe(Events.CATEGORY_DELETED, syncDeleted);
+
+    return () => {
+      eventBus.unsubscribe(Events.CATEGORY_CREATED, syncCreated);
+      eventBus.unsubscribe(Events.CATEGORY_UPDATED, syncUpdated);
+      eventBus.unsubscribe(Events.CATEGORY_DELETED, syncDeleted);
+    };
+  }, [sessionUserId]);
 
   if (!sessionUser && !isPublic) {
     setTimeout(() => navigate("/login"), 0);
@@ -129,9 +178,9 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/dashboard":
         return sessionUserIsAdmin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
       case route === "/admin/products":
-        return sessionUserIsAdmin ? <AddProductPage categories={categories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <AddProductPage categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;
       case route.startsWith("/admin/edit-product/"):
-        return sessionUserIsAdmin ? <AddProductPage editId={segments[2]} categories={categories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? <AddProductPage editId={segments[2]} categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;
       case route === "/admin/users":
         return sessionUserIsAdmin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
       case route === "/admin/orders":
