@@ -52,6 +52,19 @@ export const createMongooseProductRepository = ({ dbClient }) => {
       return result.deletedCount;
     },
 
+    async decrementStock(items) {
+      const results = await Promise.all(
+        items.map(({ productId, quantity }) =>
+          ProductModel.findOneAndUpdate(
+            { _id: productId, stock: { $gte: quantity } },
+            { $inc: { stock: -quantity } },
+            { new: true, select: "stock" }
+          ).then((doc) => ({ productId, success: !!doc }))
+        )
+      );
+      return results;
+    },
+
     async updateStatusBefore({ fromStatus, toStatus, before }) {
       const result = await ProductModel.updateMany(
         { status: fromStatus, createdAt: { $lte: before } },

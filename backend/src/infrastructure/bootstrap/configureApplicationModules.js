@@ -17,6 +17,7 @@ import { createMongooseRepositories } from "../providers/repositories/createMong
 import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
 
 import { createOrderPlacedPaymentLinkTranslator } from "../../modules/payments/adapters/input/collaboration/orderPlacedPaymentLinkTranslator.js";
+import { createOrderPlacedStockTranslator } from "../../modules/products/adapters/input/collaboration/orderPlacedStockTranslator.js";
 import { createCategoryDeletedProductCleanupTranslator } from "../../modules/categories/adapters/input/collaboration/categoryDeletedProductCleanupTranslator.js";
 import { createPaymentConfirmedOrderSyncTranslator } from "../../modules/orders/adapters/input/collaboration/paymentConfirmedOrderSyncTranslator.js";
 
@@ -123,6 +124,11 @@ export const configureApplicationModules = async ({ env }) => {
     linkPaymentToOrder: paymentsModule.linkPaymentToOrder,
   });
   eventBus.subscribe("OrderPlaced", (event) => paymentLinkTranslator.publish(event));
+
+  const stockTranslator = createOrderPlacedStockTranslator({
+    decrementStock: productsModule.decrementStock,
+  });
+  eventBus.subscribe("OrderPlaced", (event) => stockTranslator.publish(event));
 
   const productCleanupTranslator = createCategoryDeletedProductCleanupTranslator({
     removeProductsByCategory: productsModule.removeProductsByCategory,

@@ -11,6 +11,7 @@ const REPO_METHODS = [
   ...WRITABLE_REPOSITORY_METHODS,
   "deleteByCategoryId",
   "addReview",
+  "decrementStock",
   "updateStatusBefore",
 ];
 

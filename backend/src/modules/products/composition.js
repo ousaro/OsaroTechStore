@@ -2,6 +2,7 @@ import { buildAddProductUseCase } from "./application/commands/addProductUseCase
 import { buildUpdateProductUseCase } from "./application/commands/updateProductUseCase.js";
 import { buildDeleteProductUseCase } from "./application/commands/deleteProductUseCase.js";
 import { buildRemoveProductsByCategoryUseCase } from "./application/commands/removeProductsByCategoryUseCase.js";
+import { buildDecrementStockUseCase } from "./application/commands/decrementStockUseCase.js";
 import { buildNewProductStatusScheduler } from "./application/commands/newProductStatusScheduler.js";
 import { buildAddProductReviewUseCase } from "./application/commands/addProductReviewUseCase.js";
 import { buildGetAllProductsUseCase } from "./application/queries/getAllProductsUseCase.js";
@@ -22,6 +23,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
     productRepository,
     logger,
   });
+  const decrementStock = buildDecrementStockUseCase({ productRepository, logger });
   const addProductReview = buildAddProductReviewUseCase({ productRepository });
   const getAllProducts = buildGetAllProductsUseCase({ productRepository });
   const getProductById = buildGetProductByIdUseCase({ productRepository });
@@ -45,6 +47,7 @@ export const createProductsModule = ({ productRepository, logger }) => {
   return {
     createRoutes,
     removeProductsByCategory: productsInputPort.removeProductsByCategory,
+    decrementStock,
     createNewProductStatusScheduler,
   };
 };
