@@ -1,4 +1,5 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
 import { FiAlertTriangle, FiHome, FiRefreshCcw } from "react-icons/fi";
 import { getErrorMessage } from "../../lib/errorUtils.js";
 
@@ -35,6 +36,14 @@ export function ErrorFallback({
   );
 }
 
+ErrorFallback.propTypes = {
+  error: PropTypes.any,
+  title: PropTypes.string,
+  fallback: PropTypes.string,
+  onRetry: PropTypes.func,
+  homeHref: PropTypes.string,
+};
+
 export class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -68,3 +77,8 @@ export class ErrorBoundary extends Component {
     );
   }
 }
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.node,
+  onReset: PropTypes.func,
+};

@@ -94,15 +94,15 @@ export function ProfilePage() {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="field"><label>First name</label><input className="input" value={form.firstName} onChange={set("firstName")} readOnly={!editing} required /></div>
-              <div className="field"><label>Last name</label><input className="input" value={form.lastName} onChange={set("lastName")} readOnly={!editing} required /></div>
-              <div className="field"><label>Email</label><input type="email" className="input" value={form.email} onChange={set("email")} readOnly={!editing} required /></div>
-              <div className="field"><label>Phone</label><input className="input" value={form.phone} onChange={set("phone")} readOnly={!editing} placeholder="+212 600 000 000" /></div>
+              <div className="field"><label htmlFor="profile-first-name">First name</label><input id="profile-first-name" className="input" value={form.firstName} onChange={set("firstName")} readOnly={!editing} required /></div>
+              <div className="field"><label htmlFor="profile-last-name">Last name</label><input id="profile-last-name" className="input" value={form.lastName} onChange={set("lastName")} readOnly={!editing} required /></div>
+              <div className="field"><label htmlFor="profile-email">Email</label><input id="profile-email" type="email" className="input" value={form.email} onChange={set("email")} readOnly={!editing} required /></div>
+              <div className="field"><label htmlFor="profile-phone">Phone</label><input id="profile-phone" className="input" value={form.phone} onChange={set("phone")} readOnly={!editing} placeholder="+212 600 000 000" /></div>
               {editing && canManageProfilePicture && (
                 <div className="field sm:col-span-2">
-                  <label>Profile picture</label>
-                  <label className="image-upload-dropzone profile-picture-dropzone">
-                    <input type="file" accept="image/*" onChange={handlePictureUpload} disabled={uploadingPicture} />
+                  <label htmlFor="profile-picture-upload">Profile picture</label>
+                  <label className="image-upload-dropzone profile-picture-dropzone" htmlFor="profile-picture-upload">
+                    <input id="profile-picture-upload" type="file" accept="image/*" onChange={handlePictureUpload} disabled={uploadingPicture} />
                     <span className="image-upload-icon"><FiUploadCloud /></span>
                     <span className="image-upload-copy">
                       <strong>{uploadingPicture ? "Uploading picture..." : "Upload profile picture"}</strong>
@@ -167,11 +167,11 @@ export function AddressPage() {
         <form onSubmit={save}>
           <div className="card p-5 sm:p-7">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="field sm:col-span-2"><label>Street address</label><input className="input" placeholder="123 Main Street" value={form.address} onChange={set("address")} /></div>
-              <div className="field"><label>City</label><input className="input" placeholder="Casablanca" value={form.city} onChange={set("city")} /></div>
-              <div className="field"><label>State / Region</label><input className="input" placeholder="Grand Casablanca" value={form.state} onChange={set("state")} /></div>
-              <div className="field"><label>Postal code</label><input className="input" placeholder="20000" value={form.postalCode} onChange={set("postalCode")} /></div>
-              <div className="field"><label>Country</label><input className="input" placeholder="Morocco" value={form.country} onChange={set("country")} /></div>
+              <div className="field sm:col-span-2"><label htmlFor="address-street">Street address</label><input id="address-street" className="input" placeholder="123 Main Street" value={form.address} onChange={set("address")} /></div>
+              <div className="field"><label htmlFor="address-city">City</label><input id="address-city" className="input" placeholder="Casablanca" value={form.city} onChange={set("city")} /></div>
+              <div className="field"><label htmlFor="address-state">State / Region</label><input id="address-state" className="input" placeholder="Grand Casablanca" value={form.state} onChange={set("state")} /></div>
+              <div className="field"><label htmlFor="address-postal-code">Postal code</label><input id="address-postal-code" className="input" placeholder="20000" value={form.postalCode} onChange={set("postalCode")} /></div>
+              <div className="field"><label htmlFor="address-country">Country</label><input id="address-country" className="input" placeholder="Morocco" value={form.country} onChange={set("country")} /></div>
             </div>
             <div className="mt-5"><button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Saving…" : "Save address"}</button></div>
           </div>
@@ -288,9 +288,9 @@ export function DeleteAccountPage() {
             <strong className="danger-panel-title"><FiAlertTriangle /> This action is permanent</strong>
             <p className="danger-panel-copy">This cannot be undone. All your data will be erased.</p>
           </div>
-          <label className="mb-6 flex cursor-pointer items-center gap-2.5 text-sm">
-            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
-            I understand this is permanent
+          <label className="mb-6 flex cursor-pointer items-center gap-2.5 text-sm" htmlFor="delete-account-confirm">
+            <input id="delete-account-confirm" type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
+            <span>I understand this is permanent</span>
           </label>
           <button className="btn btn-danger flex-wrap px-6 py-2.5" onClick={handle} disabled={!confirmed||loading}><FiTrash2 /> {loading ? "Deleting…" : "Delete my account permanently"}</button>
         </div>
