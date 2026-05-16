@@ -6,7 +6,11 @@ export const createMongooseOrderRepository = ({ dbClient }) => {
 
   return {
     async findAll({ limit = 50, offset = 0 } = {}) {
-      const docs = await OrderModel.find().sort({ createdAt: -1 }).skip(offset).limit(limit);
+      const docs = await OrderModel.find()
+        .populate("ownerId", "firstName lastName email")
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit);
       return docs.map(toOrderRecord);
     },
 

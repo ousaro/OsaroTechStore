@@ -36,7 +36,7 @@ export const createOrderLine = ({ productId, name, price, currency, quantity }) 
   });
 };
 
-export const createAddress = ({ street, city, state, postalCode, country }) => {
+export const createAddress = ({ street, city, state, postalCode, country, phone }) => {
   try {
     assertNonEmptyString(street, "street");
     assertNonEmptyString(city, "city");
@@ -51,9 +51,10 @@ export const createAddress = ({ street, city, state, postalCode, country }) => {
     state: state ?? "",
     postalCode: postalCode ?? "",
     country,
+    phone: phone ?? "",
 
     toPrimitives() {
-      return { street, city, state, postalCode, country };
+      return { street, city, state, postalCode, country, phone };
     },
 
     toString() {

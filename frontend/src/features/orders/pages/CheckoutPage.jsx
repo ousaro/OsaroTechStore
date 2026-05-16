@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useAuth } from "../../auth/hooks/useAuth.js";
 import { useUsers } from "../../users/hooks/useUsers.js";
 import { useCart } from "../../cart/hooks/useCart.js";
 import { useProducts } from "../../products/hooks/useProducts.js";
@@ -10,10 +11,12 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
   const { profile } = useUsers();
   const { cart } = useCart();
   const { products } = useProducts();
+  const { user } = useAuth();
 
   const [address, setAddress] = useState({
     street: profile?.address || "", city: profile?.city || "",
     state: profile?.state || "", postalCode: String(profile?.postalCode||""), country: profile?.country || "",
+    phone: profile?.phone || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -79,6 +82,7 @@ export function CheckoutPage({ ordersInputPort, paymentsInputPort }) {
                 <div className="field"><label>Postal code</label><input className="input" placeholder="20000" value={address.postalCode} onChange={setA("postalCode")} /></div>
                 <div className="field"><label>Country</label><input className="input" placeholder="Morocco" value={address.country} onChange={setA("country")} required /></div>
               </div>
+              <div className="field"><label>Phone number</label><input type="tel" className="input" placeholder="+212 6 00 00 00 00" value={address.phone} onChange={setA("phone")} required /></div>
             </div>
           </div>
           <button type="submit" className="btn btn-primary btn-lg" disabled={loading || cartItems.length === 0}>

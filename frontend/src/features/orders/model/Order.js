@@ -16,6 +16,8 @@ export class Order {
   constructor(raw) {
     this.id              = raw._id;
     this.ownerId         = raw.ownerId;
+    this.customerName    = raw.customerName || "";
+    this.customerEmail   = raw.customerEmail || "";
     this.orderLines      = (raw.orderLines || []).map((l) => new OrderLine(l));
     this.deliveryAddress = Address.fromRaw(raw.deliveryAddress || {});
     this.currency        = raw.currency    || "USD";

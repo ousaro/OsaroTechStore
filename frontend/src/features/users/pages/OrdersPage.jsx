@@ -6,7 +6,7 @@ import { Badge } from "../../../components/ui/Badge.jsx";
 import { Select } from "../../../components/ui/Select.jsx";
 import { Money } from "../../../lib/Money.js";
 import { getErrorMessage } from "../../../lib/errorUtils.js";
-import { FiArchive, FiMapPin, FiSave, FiTrash2 } from "react-icons/fi";
+import { FiArchive, FiMapPin, FiSave, FiTrash2, FiUser } from "react-icons/fi";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "../../orders/model/Order.js";
 
 export function OrdersPage({ ordersInputPort, adminView = false }) {
@@ -156,6 +156,12 @@ export function OrdersPage({ ordersInputPort, adminView = false }) {
                           <div className="order-address">
                             <span><FiMapPin size={14} /> Delivery</span>
                             <p>{fmtAddress(o.deliveryAddress) || "No delivery address provided"}</p>
+                            {o.deliveryAddress?.phone && <p className="mt-1 text-sm"><strong>Phone:</strong> {o.deliveryAddress.phone}</p>}
+                          </div>
+                          <div className="order-customer-info">
+                            <span><FiUser size={14} /> Customer</span>
+                            {o.customerName && <p className="text-sm font-semibold text-ink">{o.customerName}</p>}
+                            {o.customerEmail && <p className="text-sm text-ink-muted">{o.customerEmail}</p>}
                           </div>
                           {user?.isAdmin ? (
                             <div className="order-admin-tools">

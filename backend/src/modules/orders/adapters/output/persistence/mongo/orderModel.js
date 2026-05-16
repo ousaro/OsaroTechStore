@@ -23,6 +23,7 @@ const addressSchema = new mongoose.Schema(
     state: String,
     postalCode: String,
     country: String,
+    phone: String,
   },
   { _id: false }
 );

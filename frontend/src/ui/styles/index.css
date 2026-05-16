@@ -291,12 +291,22 @@
   .order-line-name { @apply text-sm font-extrabold text-ink; }
   .order-line-meta { @apply mt-1 text-xs text-ink-muted; }
   .order-line-total { @apply text-sm font-black text-ink; }
-  .order-card-footer { @apply mt-5 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_420px]; }
+  .order-card-footer { @apply mt-5 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]; }
+
   .order-address { @apply rounded-lg border border-border bg-surface-2 p-4; }
+
   .order-address span { @apply flex items-center gap-2 text-xs font-extrabold uppercase tracking-[.08em] text-ink-faint; }
+
   .order-address p { @apply mt-3 text-sm leading-7 text-ink-muted; }
-  .order-admin-tools { @apply grid gap-3 rounded-lg border border-border bg-surface-2 p-4; }
-  .order-tool-label { @apply text-xs font-bold uppercase tracking-[.05em] text-ink-muted; }
+
+  .order-customer-info { @apply rounded-lg border border-border bg-surface-2 p-4; }
+
+  .order-customer-info span { @apply flex items-center gap-2 text-xs font-extrabold uppercase tracking-[.08em] text-ink-faint; }
+
+  .order-customer-info p { @apply mt-1 text-sm leading-6; }
+
+  .order-admin-tools { @apply col-span-full grid gap-3 rounded-lg border border-border bg-surface-2 p-4; }
+
   .order-admin-actions { @apply flex flex-wrap gap-2; }
 
   .category-strip { @apply flex gap-2.5 overflow-x-auto pb-3 pt-1 [scrollbar-width:none]; }

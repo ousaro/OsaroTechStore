@@ -4,6 +4,8 @@ export const toOrderReadModel = (record) => {
   return {
     _id: record._id?.toString(),
     ownerId: record.ownerId?.toString(),
+    customerName: record.customerName ?? "",
+    customerEmail: record.customerEmail ?? "",
     orderLines: record.orderLines ?? [],
     deliveryAddress: record.deliveryAddress ?? {},
     currency: record.currency,
