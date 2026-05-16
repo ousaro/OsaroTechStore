@@ -1,22 +1,3 @@
-/**
- * INFRASTRUCTURE BOOTSTRAP — Composition Root
- * 
- * THIS IS THE ONLY FILE THAT KNOWS THE FULL DEPENDENCY GRAPH.
- *
- * Responsibilities :
- *  1. Resolve providers (http, session, events, notifications)
- *  2. Create repository adapters
- *  3. Create module compositions (input ports)
- *  4. Register cross-module event translators
- *  5. Return module input ports for consumption by the router
- *
- * Rule: if a dependency connects two modules or infrastructure concerns,
- *       wire it HERE — never inside a module.
- *
- * Modules must NOT import each other's internals.
- * Cross-module communication goes through events + translators (see below).
- */
-
 // ── Providers ─────────────────────────────────────────────────────
 import { httpClient }    from "../api/client.js";
 import { sessionStore }  from "../store/sessionStore.js";

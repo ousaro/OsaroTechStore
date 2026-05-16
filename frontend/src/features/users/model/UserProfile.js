@@ -1,9 +1,3 @@
-/**
- * USERS MODULE — Domain Entity: UserProfile
- * Owns profile, address, favorites state.
- * Separate from AuthUser (which only owns identity + token).
- */
-
 export class UserProfile {
   constructor(raw) {
     this.id         = raw._id;

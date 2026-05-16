@@ -1,14 +1,3 @@
-/**
- * APP — Router
- *
- * It receives already-wired module input ports and:
- *   1. Creates view adapters (React context providers) from each module
- *   2. Registers route → page mappings
- *   3. Renders the provider tree
- *
- * It does NOT know about repositories, HTTP, or event wiring.
- * That all lives in configureModules.js (the composition root).
- */
 import { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { configureModules } from "./createServices.js";

@@ -1,8 +1,3 @@
-/**
- * INFRASTRUCTURE — Session store provider
- * Only file that touches localStorage. Satisfies SessionPort.
- */
-
 const KEY = "ots_session";
 
 export const sessionStore = {

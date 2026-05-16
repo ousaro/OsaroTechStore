@@ -1,8 +1,3 @@
-/**
- * INFRASTRUCTURE — Notification provider
- * Wraps react-hot-toast. Satisfies NotificationPort.
- * Modules call this through their composition — never import toast directly.
- */
 import toast from "react-hot-toast";
 
 export const toastNotifier = {

@@ -1,11 +1,3 @@
-/**
- * SHARED DOMAIN — Domain Event base class
- *
- * Frontend equivalent of the backend's event bus pattern.
- * Modules emit typed events; other modules subscribe through translators
- * wired in the composition root — never via direct import.
- */
-
 export class DomainEvent {
   constructor(type, payload) {
     this.type      = type;

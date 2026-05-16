@@ -1,8 +1,3 @@
-/**
- * CART MODULE — Domain Entity: Cart
- * Encapsulates cart line items and quantity logic.
- */
-
 export class CartLine {
   constructor(raw) {
     this.productId = raw.productId || raw._id || raw.id || raw.product?._id || raw.product?.id;

@@ -1,7 +1,3 @@
-/**
- * SHARED DOMAIN — Address value object
- */
-
 export class Address {
   constructor({ street = "", city = "", state = "", postalCode = "", country = "" } = {}) {
     this.street     = street;

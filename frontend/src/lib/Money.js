@@ -1,8 +1,3 @@
-/**
- * SHARED DOMAIN — Money value object
- * Immutable. No infrastructure dependencies.
- */
-
 export class Money {
   #amount;
   #currency;

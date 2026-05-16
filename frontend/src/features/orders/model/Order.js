@@ -1,4 +1,3 @@
-// src/modules/orders/domain/entities/Order.js
 import { Money } from "../../../lib/Money.js";
 import { Address } from "../../../lib/Address.js";
 

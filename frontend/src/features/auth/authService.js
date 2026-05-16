@@ -1,11 +1,3 @@
-/**
- * AUTH MODULE — Composition
- *
- * Mirror of backend's modules/auth/composition.js.
- * Wires commands, queries → input port.
- * Called only by the composition root. Never called by other modules.
- */
-
 import { createLoginCommand }    from "./services/loginCommand.js";
 import { createRegisterCommand } from "./services/registerCommand.js";
 import { createLogoutCommand }   from "./services/logoutCommand.js";

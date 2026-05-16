@@ -1,4 +1,3 @@
-// src/modules/categories/domain/entities/Category.js
 export class Category {
   constructor(raw) {
     this.id          = raw._id;

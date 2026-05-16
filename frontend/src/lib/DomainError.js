@@ -1,7 +1,3 @@
-/**
- * SHARED DOMAIN — Base error hierarchy
- */
-
 export class DomainError extends Error {
   constructor(message, code) {
     super(message);

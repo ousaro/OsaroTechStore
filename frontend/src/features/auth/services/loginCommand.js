@@ -1,6 +1,3 @@
-/**
- * AUTH — Application Command: login
- */
 import { AuthUser } from "../model/AuthUser.js";
 import { AuthEvents } from "../model/AuthEvents.js";
 import { InvalidCredentialsError } from "../model/AuthErrors.js";

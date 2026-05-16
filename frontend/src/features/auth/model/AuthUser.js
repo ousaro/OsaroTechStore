@@ -1,7 +1,3 @@
-/**
- * AUTH MODULE — Domain Entity: AuthUser
- */
-
 export class AuthUser {
   constructor(raw) {
     this.id         = raw._id;
