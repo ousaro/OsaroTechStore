@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { ApplicationNotFoundError } from "../../../../../src/shared/application/errors/index.js";
 import { buildGetUserProfileUseCase } from "../../../../../src/modules/users/application/queries/getUserProfileUseCase.js";
 import { buildUpdateUserProfileUseCase } from "../../../../../src/modules/users/application/commands/updateUserProfileUseCase.js";
+import { buildUpdateUserPasswordUseCase } from "../../../../../src/modules/users/application/commands/updateUserPasswordUseCase.js";
 import { buildUpdateUserCartUseCase } from "../../../../../src/modules/users/application/commands/updateUserCartUseCase.js";
 import { buildUpdateUserFavoritesUseCase } from "../../../../../src/modules/users/application/commands/updateUserFavoritesUseCase.js";
 
@@ -53,6 +54,53 @@ test("updateUserProfile updates target and returns read model", async () => {
 
   assert.deepEqual(updates[0], { id: "u1", update: { city: "Casablanca" } });
   assert.equal(result.city, "Casablanca");
+});
+
+test("updateUserPassword verifies current password and stores hash", async () => {
+  const updates = [];
+  const updateUserPassword = buildUpdateUserPasswordUseCase({
+    userRepository: {
+      findByIdWithPassword: async (id) => ({ ...userRecord, _id: id, password: "stored-hash" }),
+      comparePassword: async (plain, hash) => plain === "Password123!" && hash === "stored-hash",
+      hashPassword: async (plain) => `hashed:${plain}`,
+      updatePasswordById: async (id, password) => updates.push({ id, password }),
+    },
+  });
+
+  const result = await updateUserPassword({
+    userId: "u1",
+    currentPassword: "Password123!",
+    newPassword: "BetterPassword123!",
+    confirmPassword: "BetterPassword123!",
+  });
+
+  assert.deepEqual(result, { success: true });
+  assert.deepEqual(updates, [{ id: "u1", password: "hashed:BetterPassword123!" }]);
+});
+
+test("updateUserPassword rejects incorrect current password", async () => {
+  const updateUserPassword = buildUpdateUserPasswordUseCase({
+    userRepository: {
+      findByIdWithPassword: async () => ({ ...userRecord, password: "stored-hash" }),
+      comparePassword: async () => false,
+      hashPassword: async () => {
+        throw new Error("should not hash");
+      },
+      updatePasswordById: async () => {
+        throw new Error("should not update");
+      },
+    },
+  });
+
+  await assert.rejects(
+    () => updateUserPassword({
+      userId: "u1",
+      currentPassword: "wrong",
+      newPassword: "BetterPassword123!",
+      confirmPassword: "BetterPassword123!",
+    }),
+    /Current password is incorrect/
+  );
 });
 
 test("updateUserCart writes cart and returns read model", async () => {

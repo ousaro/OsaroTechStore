@@ -182,20 +182,44 @@ export function AddressPage() {
 }
 
 export function PasswordPage() {
+  const { updatePassword } = useUsers();
   const { path } = useNavigate();
+  const [form, setForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const set = (key) => (e) => setForm((current) => ({ ...current, [key]: e.target.value }));
+
+  const save = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await updatePassword(form);
+      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not update your password. Please try again."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="page-header"><div><h1 className="page-title">Change password</h1><p className="page-subtitle">Update your account password</p></div></div>
-        <div className="card max-w-[480px] p-5 sm:p-7">
-          <div className="info-box mb-5"><FiInfo /> Password update is not yet exposed in API v1.0.0.</div>
-          <div className="pointer-events-none flex flex-col gap-4 opacity-50">
-            <PasswordInput label="Current password" name="cur" value="" onChange={() => {}} />
-            <PasswordInput label="New password"     name="new" value="" onChange={() => {}} />
-            <PasswordInput label="Confirm"          name="con" value="" onChange={() => {}} />
-          </div>
-          <button className="btn btn-primary mt-5" disabled>Change password</button>
+        {error && <div className="error-box">{error}</div>}
+        <div className="card max-w-[520px] p-5 sm:p-7">
+          <div className="info-box mb-5"><FiInfo /> Use at least 8 characters with uppercase, lowercase, number, and symbol.</div>
+          <form onSubmit={save} className="flex flex-col gap-4">
+            <PasswordInput label="Current password" name="currentPassword" value={form.currentPassword} onChange={set("currentPassword")} required />
+            <PasswordInput label="New password" name="newPassword" value={form.newPassword} onChange={set("newPassword")} required />
+            <PasswordInput label="Confirm new password" name="confirmPassword" value={form.confirmPassword} onChange={set("confirmPassword")} required />
+            <button className="btn btn-primary mt-1 self-start" disabled={loading}>
+              {loading ? "Updating..." : "Change password"}
+            </button>
+          </form>
         </div>
       </div>
     </div>

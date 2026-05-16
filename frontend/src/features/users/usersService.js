@@ -8,6 +8,7 @@ export function createUsersModule(deps) {
   return {
     getMyProfile:   queries.getMyProfile,
     updateProfile:  commands.updateProfile,
+    updatePassword: commands.updatePassword,
     toggleFavorite: commands.toggleFavorite,
     deleteAccount:  commands.deleteAccount,
     deleteUser:     commands.deleteUser,

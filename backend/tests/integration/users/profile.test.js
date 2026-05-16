@@ -29,3 +29,43 @@ test("authenticated user can read and update their profile", async () => {
   assert.equal(updateResponse.body.city, "Rabat");
   assert.equal(updateResponse.body.postalCode, 10000);
 });
+
+test("authenticated user can change their password", async () => {
+  const user = await ctx.createUser({ password: "Password123!" });
+
+  await ctx.client
+    .as(user)
+    .put("/api/users/me/password")
+    .send({
+      currentPassword: "Password123!",
+      newPassword: "BetterPassword123!",
+      confirmPassword: "BetterPassword123!",
+    })
+    .expect(200);
+
+  await ctx.client
+    .post("/api/auth/login")
+    .send({ email: user.email, password: "Password123!" })
+    .expect(401);
+
+  await ctx.client
+    .post("/api/auth/login")
+    .send({ email: user.email, password: "BetterPassword123!" })
+    .expect(200);
+});
+
+test("password change rejects incorrect current password", async () => {
+  const user = await ctx.createUser({ password: "Password123!" });
+
+  const response = await ctx.client
+    .as(user)
+    .put("/api/users/me/password")
+    .send({
+      currentPassword: "WrongPassword123!",
+      newPassword: "BetterPassword123!",
+      confirmPassword: "BetterPassword123!",
+    })
+    .expect(401);
+
+  assert.equal(response.body.error.message, "Current password is incorrect");
+});

@@ -5,6 +5,7 @@ export const createUsersRoutes = ({ controller, requireAuth }) => {
   router.get("/me", controller.getMyProfile);
   router.get("/:id", requireAuth.requireAdmin, controller.getUserById);
   router.put("/me", controller.updateProfile);
+  router.put("/me/password", controller.updatePassword);
   router.put("/me/cart", controller.updateCart);
   router.put("/me/favorites/:productId", controller.updateFavorites);
   return router;

@@ -3,6 +3,7 @@ import { assertFunction, assertObject } from "../../../../shared/kernel/assertio
 const REQUIRED_METHODS = Object.freeze([
   "getUserProfile",
   "updateUserProfile",
+  "updateUserPassword",
   "updateUserCart",
   "updateUserFavorites",
 ]);

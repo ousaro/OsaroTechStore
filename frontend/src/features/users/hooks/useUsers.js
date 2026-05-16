@@ -26,6 +26,8 @@ export function createUsersViewAdapter({ usersInputPort, sessionStore }) {
       return updated;
     };
 
+    const updatePassword = (payload) => usersInputPort.updatePassword(payload);
+
     const toggleFavorite = async (productId, action) => {
       const updated = await usersInputPort.toggleFavorite(productId, action);
       setProfile(updated);
@@ -40,6 +42,7 @@ export function createUsersViewAdapter({ usersInputPort, sessionStore }) {
     const value = {
       profile,
       updateProfile,
+      updatePassword,
       toggleFavorite,
       deleteAccount,
       refreshProfile,

@@ -1,6 +1,7 @@
 
 const E = {
   me:       "/users/me",
+  password: "/users/me/password",
   byId:     (id) => `/users/${id}`,
   favorite: (productId) => `/users/me/favorites/${productId}`,
 };
@@ -11,6 +12,9 @@ export function createHttpUserRepository({ httpClient, sessionStore }) {
   const adapter = {
     async getMe()            { return httpClient(E.me, { token: tok() }); },
     async updateMe(patch)    { return httpClient(E.me, { method: "PUT", body: patch, token: tok() }); },
+    async updatePassword(payload) {
+      return httpClient(E.password, { method: "PUT", body: payload, token: tok() });
+    },
     /** action: "add" | "remove" — per openapi.yaml */
     async toggleFavorite(productId, action) {
       return httpClient(E.favorite(productId), { method: "PUT", body: { action }, token: tok() });

@@ -307,6 +307,10 @@ test("users controller maps authenticated user actions", async () => {
         calls.push(["updateUserProfile", payload]);
         return { _id: payload.requesterId, ...payload.updates };
       },
+      updateUserPassword: async (payload) => {
+        calls.push(["updateUserPassword", payload]);
+        return { success: true };
+      },
       updateUserCart: async (payload) => {
         calls.push(["updateUserCart", payload]);
         return { cart: payload.cart };
@@ -330,6 +334,19 @@ test("users controller maps authenticated user actions", async () => {
     (await runHandler(controller.updateProfile, { user: { _id: "u1" }, body: { city: "Casa" } }))
       .body,
     { _id: "u1", city: "Casa" }
+  );
+  assert.deepEqual(
+    (
+      await runHandler(controller.updatePassword, {
+        user: { _id: "u1" },
+        body: {
+          currentPassword: "Password123!",
+          newPassword: "BetterPassword123!",
+          confirmPassword: "BetterPassword123!",
+        },
+      })
+    ).body,
+    { success: true }
   );
   assert.deepEqual(
     (

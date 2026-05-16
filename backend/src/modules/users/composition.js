@@ -1,4 +1,5 @@
 import { buildUpdateUserProfileUseCase } from "./application/commands/updateUserProfileUseCase.js";
+import { buildUpdateUserPasswordUseCase } from "./application/commands/updateUserPasswordUseCase.js";
 import { buildUpdateUserCartUseCase } from "./application/commands/updateUserCartUseCase.js";
 import { buildUpdateUserFavoritesUseCase } from "./application/commands/updateUserFavoritesUseCase.js";
 import { buildGetUserProfileUseCase } from "./application/queries/getUserProfileUseCase.js";
@@ -14,6 +15,7 @@ export const createUsersModule = ({ userRepository }) => {
   // ── Use cases ────────────────────────────────────────────────────────────
   const getUserProfile = buildGetUserProfileUseCase({ userRepository });
   const updateUserProfile = buildUpdateUserProfileUseCase({ userRepository });
+  const updateUserPassword = buildUpdateUserPasswordUseCase({ userRepository });
   const updateUserCart = buildUpdateUserCartUseCase({ userRepository });
   const updateUserFavorites = buildUpdateUserFavoritesUseCase({ userRepository });
 
@@ -21,6 +23,7 @@ export const createUsersModule = ({ userRepository }) => {
   const usersInputPort = createUsersInputPort({
     getUserProfile,
     updateUserProfile,
+    updateUserPassword,
     updateUserCart,
     updateUserFavorites,
   });

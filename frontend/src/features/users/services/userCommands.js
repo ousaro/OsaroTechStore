@@ -15,6 +15,13 @@ export function createUserCommands({ users: repo, sessionStore, notify }) {
     return rehydrate(data);
   }
 
+  async function updatePassword(payload) {
+    const { ok, error } = await repo.updatePassword(payload);
+    if (!ok) { notify.error(error || "Password update failed"); throw new Error(error); }
+    notify.success("Password updated");
+    return true;
+  }
+
   async function toggleFavorite(productId, action) {
     const { ok, data, error } = await repo.toggleFavorite(productId, action);
     if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
@@ -34,5 +41,5 @@ export function createUserCommands({ users: repo, sessionStore, notify }) {
     notify.success("User deleted");
   }
 
-  return { updateProfile, toggleFavorite, deleteAccount, deleteUser };
+  return { updateProfile, updatePassword, toggleFavorite, deleteAccount, deleteUser };
 }
