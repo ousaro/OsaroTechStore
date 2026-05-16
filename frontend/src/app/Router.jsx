@@ -34,7 +34,7 @@ import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPag
   from "../features/users/pages/ProfilePages.jsx";
 import { OrdersPage } from "../features/users/pages/OrdersPage.jsx";
 
-import { DashboardPage, ManageUsersPage, CategoriesPage, AboutPage }
+import { DashboardPage, ManageProductsPage, ManageUsersPage, CategoriesPage, AboutPage }
   from "../features/categories/pages/AdminPages.jsx";
 import { AddProductPage }
   from "../features/products/pages/AddProductPage.jsx";
@@ -182,6 +182,8 @@ function AppShell({ modules, viewAdapters }) {
       case route === "/dashboard":
         return sessionUserIsAdmin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
       case route === "/admin/products":
+        return sessionUserIsAdmin ? <ManageProductsPage productsInputPort={modules.products} /> : <AccessDenied />;
+      case route === "/admin/products/add":
         return sessionUserIsAdmin ? <AddProductPage categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;
       case route.startsWith("/admin/edit-product/"):
         return sessionUserIsAdmin ? <AddProductPage editId={segments[2]} categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;

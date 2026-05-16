@@ -5,6 +5,7 @@ import { resolveEventBus } from "../providers/events/resolveEventBus.js";
 import { createRedisClient } from "../providers/events/redis/redisClient.js";
 import { createScopedLogger } from "../../shared/application/ports/loggerPort.js";
 import { createAuditLogger } from "../../shared/infrastructure/audit/createAuditLogger.js";
+import { seedAdminUser } from "../seed/seedAdminUser.js";
 
 import { createAuthModule } from "../../modules/auth/composition.js";
 import { createUsersModule } from "../../modules/users/composition.js";
@@ -81,6 +82,8 @@ export const configureApplicationModules = async ({ env }) => {
     orderRepository,
     paymentRepository,
   } = createMongooseRepositories({ dbClient, cache: redisClient });
+
+  await seedAdminUser({ authUserRepository, env, logger: createScopedLogger(logger, "seed") });
 
   const authModule = createAuthModule({
     authUserRepository,

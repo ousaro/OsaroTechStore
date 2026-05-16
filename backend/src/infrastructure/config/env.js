@@ -86,6 +86,9 @@ export const env = Object.freeze({
     optional("CLIENT_URL", "http://localhost:3000")
   ),
 
+  adminEmail: optional("ADMIN_EMAIL"),
+  adminPassword: optional("ADMIN_PASSWORD"),
+
   oauthProviders: {
     google: buildGoogleOAuthConfig(),
   },

@@ -30,8 +30,8 @@ export const createMongooseAuthUserRepository = ({ dbClient }) => {
       return { ...toAuthUserRecord(doc), password: doc.password };
     },
 
-    async create({ firstName, lastName, email, password, picture }) {
-      const doc = await UserModel.create({ firstName, lastName, email, password, picture });
+    async create({ firstName, lastName, email, password, picture, admin }) {
+      const doc = await UserModel.create({ firstName, lastName, email, password, picture, admin });
       return toAuthUserRecord(doc);
     },
 

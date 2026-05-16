@@ -7,6 +7,7 @@ import { Badge } from "../../../components/ui/Badge.jsx";
 import { Money } from "../../../lib/Money.js";
 import { asArray } from "../../../lib/apiData.js";
 import { getErrorMessage } from "../../../lib/errorUtils.js";
+import { eventBus } from "../../../store/eventBus.js";
 import {
   FiArchive,
   FiCheckCircle,
@@ -16,6 +17,8 @@ import {
   FiMapPin,
   FiMail,
   FiPhone,
+  FiLayers,
+  FiPlus,
   FiShield,
   FiTag,
   FiTrash2,
@@ -331,6 +334,86 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
               ))}
             </tbody>
           </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ManageProductsPage({ productsInputPort }) {
+  const { path, navigate } = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
+
+  const load = () => {
+    setLoading(true);
+    setError("");
+    productsInputPort.getAllProducts()
+      .then((data) => setProducts(asArray(data)))
+      .catch((err) => setError(getErrorMessage(err, "Could not load products. Please try again.")))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(load, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const del = async (id) => {
+    if (!window.confirm("Delete this product?")) return;
+    setDeletingId(id);
+    setError("");
+    try {
+      await productsInputPort.deleteProduct(id);
+      setProducts((ps) => ps.filter((p) => p.id !== id));
+      eventBus.publish({ type: "products-changed" });
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not delete this product. Please try again."));
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return (
+    <div className="sidebar-layout">
+      <ProfileSidebar path={path} />
+      <div className="content-area">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Products</h1>
+            <p className="page-subtitle">{products.length} products</p>
+          </div>
+          <button className="btn btn-primary" onClick={() => navigate("/admin/products/add")}>
+            <FiPlus /> Add product
+          </button>
+        </div>
+        {error && <div className="error-box">{error}</div>}
+        <div className="card table-wrap">
+          {loading ? (
+            <div className="empty-state"><span className="icon"><FiLayers size={30} /></span><h3>Loading products</h3></div>
+          ) : products.length === 0 ? (
+            <div className="empty-state"><span className="icon"><FiLayers size={30} /></span><h3>No products yet</h3><p>Create your first product.</p></div>
+          ) : (
+            <table>
+              <thead><tr><th>Product</th><th>Price</th><th>Category</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {products.map((p) => (
+                  <tr key={p.id}>
+                    <td><div className="flex items-center gap-2.5 min-w-0"><div className="size-9 shrink-0 rounded-lg bg-muted overflow-hidden">{p.images?.[0] ? <img src={p.images[0]} alt="" className="size-full object-cover" /> : <FiLayers size={18} className="m-auto text-ink-muted" />}</div><span className="font-semibold truncate">{p.name}</span></div></td>
+                    <td className="font-bold">{p.price ? Money.fromRaw(p.price).format() : "—"}</td>
+                    <td className="text-[13px] text-ink-muted">{p.category || "—"}</td>
+                    <td>{p.stock ?? "—"}</td>
+                    <td><Badge status={p.status || "new"} /></td>
+                    <td>
+                      <div className="flex gap-1.5">
+                        <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/admin/edit-product/${p.id}`)} aria-label="Edit product"><FiEdit2 /></button>
+                        <button className="btn btn-danger btn-sm" onClick={() => del(p.id)} disabled={deletingId === p.id} aria-label="Delete product">{deletingId === p.id ? "…" : <FiTrash2 />}</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>

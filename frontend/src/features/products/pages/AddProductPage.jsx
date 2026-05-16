@@ -6,6 +6,7 @@ import { Select } from "../../../components/ui/Select.jsx";
 import { ProfileSidebar } from "../../users/components/ProfileSidebar.jsx";
 import { PRODUCT_STATUSES } from "../model/Product.js";
 import { getErrorMessage } from "../../../lib/errorUtils.js";
+import { eventBus } from "../../../store/eventBus.js";
 import { FiImage, FiUploadCloud, FiX } from "react-icons/fi";
 
 export function AddProductPage({
@@ -109,6 +110,7 @@ export function AddProductPage({
     try {
       const payload = { ...form, price: Number(form.price), stock: Number(form.stock) };
       editId ? await updateProduct(editId, payload) : await createProduct(payload);
+      eventBus.publish({ type: "products-changed" });
       navigate("/dashboard");
     } catch (error) {
       setFormError(getErrorMessage(error, "Could not save this product. Please check the details and try again."));

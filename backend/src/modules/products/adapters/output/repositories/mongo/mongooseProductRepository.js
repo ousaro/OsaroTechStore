@@ -3,10 +3,7 @@ import { toProductRecord } from "../../persistence/mongo/productRecordMapper.js"
 
 const CACHE_TTL = 300;
 
-const productCacheKey = {
-  byId: (id) => `product:${id}`,
-  list: (params) => `products:list:${JSON.stringify(params)}`,
-};
+const cacheKey = (id) => `product:${id}`;
 
 export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
   const ProductModel = createProductModel(dbClient);
@@ -14,32 +11,23 @@ export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
 
   return {
     async findAll({ category, status, limit = 50, offset = 0 } = {}) {
-      const params = { category, status, limit, offset };
-      if (cache) {
-        const cached = await cache.get(productCacheKey.list(params));
-        if (cached) return JSON.parse(cached);
-      }
       const filter = {};
       if (category) filter.category = category;
       if (status) filter.status = status;
       const docs = await withCategory(
         ProductModel.find(filter).sort({ createdAt: -1 }).skip(offset).limit(limit)
       );
-      const result = docs.map(toProductRecord);
-      if (cache) {
-        await cache.setEx(productCacheKey.list(params), CACHE_TTL, JSON.stringify(result));
-      }
-      return result;
+      return docs.map(toProductRecord);
     },
 
     async findById(id) {
       if (cache) {
-        const cached = await cache.get(productCacheKey.byId(id));
+        const cached = await cache.get(cacheKey(id));
         if (cached) return JSON.parse(cached);
       }
       const result = toProductRecord(await withCategory(ProductModel.findById(id)));
       if (cache && result) {
-        await cache.setEx(productCacheKey.byId(id), CACHE_TTL, JSON.stringify(result));
+        await cache.setEx(cacheKey(id), CACHE_TTL, JSON.stringify(result));
       }
       return result;
     },
@@ -48,7 +36,7 @@ export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
       const created = await ProductModel.create(primitives);
       const result = toProductRecord(await withCategory(ProductModel.findById(created._id)));
       if (cache) {
-        await cache.del(productCacheKey.byId(result._id));
+        await cache.del(cacheKey(result._id));
       }
       return result;
     },
@@ -58,7 +46,7 @@ export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
         await withCategory(ProductModel.findByIdAndUpdate(id, updates, { new: true }))
       );
       if (cache) {
-        await cache.del(productCacheKey.byId(id));
+        await cache.del(cacheKey(id));
       }
       return result;
     },
@@ -74,7 +62,7 @@ export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
         )
       );
       if (cache) {
-        await cache.del(productCacheKey.byId(id));
+        await cache.del(cacheKey(id));
       }
       return result;
     },
@@ -82,7 +70,7 @@ export const createMongooseProductRepository = ({ dbClient, cache } = {}) => {
     async deleteById(id) {
       const result = toProductRecord(await withCategory(ProductModel.findByIdAndDelete(id)));
       if (cache) {
-        await cache.del(productCacheKey.byId(id));
+        await cache.del(cacheKey(id));
       }
       return result;
     },
