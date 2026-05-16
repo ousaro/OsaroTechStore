@@ -1,7 +1,3 @@
-/**
- * Category Record Mapper.
- * Maps raw Mongoose documents to the plain record shape used by application code.
- */
 export const toCategoryRecord = (doc) => {
   if (!doc) return null;
 

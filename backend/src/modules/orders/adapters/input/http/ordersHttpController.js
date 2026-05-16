@@ -1,8 +1,3 @@
-/**
- * Orders HTTP Controller.
- * Thin adapter — parses HTTP in, calls use cases, writes HTTP out.
- * Zero domain logic lives here.
- */
 import { asyncHandler } from "../../../../../shared/infrastructure/http/middleware/asyncHandler.js";
 import { assertOrdersInputPort } from "../../../ports/input/ordersInputPort.js";
 

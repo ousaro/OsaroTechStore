@@ -1,4 +1,3 @@
-// User domain entity
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
 export const createUser = ({

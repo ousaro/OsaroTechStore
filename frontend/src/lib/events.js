@@ -7,30 +7,23 @@ export class DomainEvent {
   }
 }
 
-// ── Known event type constants ─────────────────────────────────
 export const Events = Object.freeze({
-  // Auth
   USER_LOGGED_IN:    "auth/UserLoggedIn",
   USER_LOGGED_OUT:   "auth/UserLoggedOut",
   USER_REGISTERED:   "auth/UserRegistered",
 
-  // Cart
   CART_UPDATED:      "cart/CartUpdated",
 
-  // Products
   PRODUCT_CREATED:   "products/ProductCreated",
   PRODUCT_UPDATED:   "products/ProductUpdated",
   PRODUCT_DELETED:   "products/ProductDeleted",
 
-  // Categories
   CATEGORY_CREATED:  "categories/CategoryCreated",
   CATEGORY_UPDATED:  "categories/CategoryUpdated",
   CATEGORY_DELETED:  "categories/CategoryDeleted",
 
-  // Orders
   ORDER_PLACED:      "orders/OrderPlaced",
   ORDER_UPDATED:     "orders/OrderUpdated",
 
-  // Payments
   PAYMENT_INITIATED: "payments/PaymentInitiated",
 });

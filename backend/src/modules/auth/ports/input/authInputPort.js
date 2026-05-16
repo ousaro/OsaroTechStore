@@ -1,7 +1,3 @@
-/**
- * Auth Input Port.
- * Defines and validates the auth module's public interface.
- */
 import { assertFunction, assertObject } from "../../../../shared/kernel/assertions/index.js";
 
 const REQUIRED_METHODS = [

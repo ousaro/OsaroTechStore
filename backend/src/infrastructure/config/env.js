@@ -1,10 +1,3 @@
-/**
- * Environment Configuration.
- *
- * Single source of truth for all environment variables.
- * Fails fast at startup if required vars are missing.
- *
- */
 
 import dotenv from "dotenv";
 import path from "node:path";
@@ -52,41 +45,30 @@ export const env = Object.freeze({
   nodeEnv: optional("NODE_ENV", "development"),
   port: parseInt(optional("PORT", "5000"), 10),
 
-  // ── Logger ─────────────────────────────────────────────────────────────
-  // Switch logger: set LOGGER_PROVIDER=console | pino | noop
   loggerProvider: optional("LOGGER_PROVIDER", "console"),
 
   no_color: optionalBoolean("NO_COLOR", false),
   loggerTimestampFormat: optional("LOGGER_TIMESTAMP_FORMAT", "YYYY-MM-DD HH:mm:ss.SSS"),
   loggerTimestampEnabled: optionalBoolean("LOGGER_TIMESTAMP_ENABLED", true),
 
-  // ── Auth ───────────────────────────────────────────────────────────────
   tokenSecret: required("TOKEN_SECRET"),
   tokenExpiresIn: optional("TOKEN_EXPIRES_IN", "2d"),
 
-  // ── Database ───────────────────────────────────────────────────────────
-  // Switch DB: currently supported DATABASE_PROVIDER=mongo
   databaseProvider: optional("DATABASE_PROVIDER", "mongo"),
   mongoUri: optional("MONGO_URI"),
   postgresUrl: optional("POSTGRES_URL"),
 
-  // ── Payment ────────────────────────────────────────────────────────────
-  // Switch provider: currently supported PAYMENT_PROVIDER=stripe | disabled
   paymentProvider: optional("PAYMENT_PROVIDER", "disabled"),
   stripeSecretKey: optional("STRIPE_SECRET_KEY"),
   stripeWebhookSecret: optional("STRIPE_WEBHOOK_SECRET"),
   paypalClientId: optional("PAYPAL_CLIENT_ID"),
   paypalClientSecret: optional("PAYPAL_CLIENT_SECRET"),
 
-  // ── Event Bus ──────────────────────────────────────────────────────────
-  // Switch bus: set EVENT_BUS_PROVIDER=inprocess | redis
   eventBusProvider: optional("EVENT_BUS_PROVIDER", "inprocess"),
   redisUrl: optional("REDIS_URL"),
 
-  // ── Client ─────────────────────────────────────────────────────────────
   clientUrl: optional("CLIENT_URL", "http://localhost:3000"),
 
-  // ── OAuth ──────────────────────────────────────────────────────────────
   oauthProviders: {
     google: buildGoogleOAuthConfig(),
   },

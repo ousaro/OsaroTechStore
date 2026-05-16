@@ -1,10 +1,3 @@
-/**
- * Logger Provider Resolver.
- *
- * Selects the correct logger adapter from config.
- * Add a new logger here without touching any module code.
- *
- */
 
 import { createConsoleLogger } from "./consoleLogger.js";
 import { assertLoggerPort } from "../../../shared/application/ports/loggerPort.js";
@@ -16,14 +9,12 @@ export const resolveLogger = ({ provider = "console", scope = "app", options = {
       return assertLoggerPort(createConsoleLogger(scope, options), "resolveLogger");
 
     case "pino":
-      // Placeholder — implement createPinoLogger when needed
       throw new ServiceUnavailableError(
         "Pino logger is not yet implemented. " +
           "Set LOGGER_PROVIDER=console or implement createPinoLogger."
       );
 
     case "noop":
-      // Placeholder — implement createNoopLogger when needed
       throw new ServiceUnavailableError(
         "Noop logger is not yet implemented. " +
           "Set LOGGER_PROVIDER=console or implement createNoopLogger."

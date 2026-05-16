@@ -16,7 +16,6 @@ export function createProductsModule(deps) {
     deleteProduct:          commands.deleteProduct,
     addProductReview:       commands.addProductReview,
     removeProductsByCategory: commands.removeProductsByCategory,
-    // Expose read model factory for view adapters
     readModel,
   };  return inputPort;
 }

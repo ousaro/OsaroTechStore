@@ -1,17 +1,3 @@
-/**
- * Money Value Object.
- *
- * Fixed from original:
- *  - Currency is now mandatory. Money(100) was meaningless — 100 of what?
- *  - Supports add() for totaling order lines (same currency only).
- *  - toPrimitives() returns { amount, currency } not just a number.
- *  - Immutable via Object.freeze().
- *
- * Usage:
- *   const price = createMoney({ amount: 99.99, currency: "USD" });
- *   const total = price.add(createMoney({ amount: 5.00, currency: "USD" }));
- *   total.toPrimitives() // { amount: 104.99, currency: "USD" }
- */
 
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 import {
@@ -52,7 +38,6 @@ export const createMoney = ({ amount, currency }) => {
       if (other.currency !== normalizedCurrency) {
         throw new DomainValidationError(`Cannot add ${other.currency} to ${normalizedCurrency}`);
       }
-      // Round to 2 decimal places to avoid floating-point drift
       return createMoney({
         amount: Math.round((amount + other.amount) * 100) / 100,
         currency: normalizedCurrency,

@@ -1,8 +1,3 @@
-/**
- * AUTH — Output Adapter: HTTP Auth Repository
- * Implements AuthRepositoryPort against the real API.
- */
-
 const E = {
   login:    "/auth/login",
   register: "/auth/register",

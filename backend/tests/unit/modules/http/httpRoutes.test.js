@@ -102,6 +102,7 @@ test("orders and users routes mount router-level auth and expected handlers", ()
     getMyProfile: handler,
     getUserById: handler,
     updateProfile: handler,
+    updatePassword: handler,
     updateCart: handler,
     updateFavorites: handler,
   };
@@ -122,6 +123,7 @@ test("orders and users routes mount router-level auth and expected handlers", ()
     { path: "/me", methods: ["get"], handlerCount: 1 },
     { path: "/:id", methods: ["get"], handlerCount: 2 },
     { path: "/me", methods: ["put"], handlerCount: 1 },
+    { path: "/me/password", methods: ["put"], handlerCount: 1 },
     { path: "/me/cart", methods: ["put"], handlerCount: 1 },
     { path: "/me/favorites/:productId", methods: ["put"], handlerCount: 1 },
   ]);

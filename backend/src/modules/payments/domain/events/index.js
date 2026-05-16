@@ -1,8 +1,3 @@
-/**
- * Payment Domain Events.
- * All use the shared envelope — id, type, occurredAt, version are automatic.
- * These events are consumed by the Orders module's collaboration translator.
- */
 import { createDomainEvent } from "../../../../shared/domain/events/createDomainEvent.js";
 
 export const createPaymentConfirmedEvent = (payment) =>

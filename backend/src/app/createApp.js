@@ -1,11 +1,3 @@
-/**
- * Express Application Factory.
- *
- * -Receives all route factories as parameters — it has ZERO knowledge of
- * modules or domain logic. This is the HTTP adapter for the entire application.
- * -handle middleware that must be registered before routes (e.g. body parsing, CORS, auth) and after routes (error handling, 404)
- *
- */
 
 import express from "express";
 import cors from "cors";
@@ -36,28 +28,23 @@ export const createApp = ({
 }) => {
   const app = express();
 
-  // ── Global middleware ────────────────────────────────────────────────────
   app.use(requestIdMiddleware);
   app.use(createRequestLoggingMiddleware(logger));
   app.use(cors({ origin: true, credentials: true }));
   app.use(cookieParser());
 
-  // NOTE: Raw body for Stripe webhook is handled inside paymentsRoutes.
-  // Do NOT apply express.json() globally before the webhook route.
   app.use((req, res, next) => {
     if (
       req.originalUrl === "/api/payments/webhook" ||
       req.originalUrl.startsWith("/api/products/uploads")
     ) {
-      return next(); // Raw body handled by feature routers
+      return next();
     }
     return express.json()(req, res, next);
   });
 
-  // ── Auth middleware (shared across all protected routes) ─────────────────
   const requireAuth = createRequireAuthMiddleware({ tokenService, authUserRepository });
 
-  // ── Routes ───────────────────────────────────────────────────────────────
   registerOpenApiDocs(app);
   logger.info({
     msg: "Swagger docs enabled",
@@ -68,7 +55,6 @@ export const createApp = ({
   app.use(createHealthRoutes({ healthChecks, serviceName, version }));
   app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
-  // Route factories receive requireAuth — they decide which routes are protected.
   app.use("/api/auth", authRoutes({ requireAuth }));
   app.use("/api/users", usersRoutes({ requireAuth }));
   app.use("/api/products", productsRoutes({ requireAuth }));
@@ -76,7 +62,6 @@ export const createApp = ({
   app.use("/api/orders", ordersRoutes({ requireAuth }));
   app.use("/api/payments", paymentsRoutes({ requireAuth }));
 
-  // ── Error handling (MUST be last) ────────────────────────────────────────
   app.use(notFoundMiddleware);
   app.use(createErrorMiddleware(logger));
 

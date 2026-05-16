@@ -1,13 +1,3 @@
-/**
- * Payment Gateway Strategy Resolver.
- *
- * Returns the correct payment gateway adapter based on config.
- * All adapters satisfy the paymentGatewayPort interface.
- *
- * To add a new provider:
- *   1. Create infrastructure/providers/payments/<name>/<name>Gateway.js
- *   2. Add a case below — no module code changes needed.
- */
 
 import { createStripeGateway } from "./stripe/stripeGateway.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";

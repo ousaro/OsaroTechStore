@@ -1,13 +1,3 @@
-/**
- * PaymentStatus — Shared Kernel Value Object.
- *
- * WHY here and not in payments/domain:
- *   The Orders module needs to track payment status on an order record.
- *   If PaymentStatus lived inside payments/domain, Orders would have a
- *   hard cross-module domain import — violating bounded context isolation.
- *   Placing it in the shared kernel makes it neutral: both modules import
- *   from the same canonical definition with no circular dependency.
- */
 
 import { DomainValidationError } from "../errors/index.js";
 import { assertNonEmptyString } from "../../kernel/assertions/index.js";

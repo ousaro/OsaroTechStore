@@ -1,8 +1,3 @@
-/**
- * OrderStatus Value Object.
- * Defines all valid statuses and the allowed transition graph.
- * The state machine lives in the domain — not in a service or controller.
- */
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 
 export const ORDER_STATUSES = Object.freeze({
@@ -13,7 +8,6 @@ export const ORDER_STATUSES = Object.freeze({
   CANCELLED: "cancelled",
 });
 
-// Adjacency map: from → Set of allowed tos
 export const ALLOWED_ORDER_STATUS_TRANSITIONS = Object.freeze({
   [ORDER_STATUSES.PENDING]: new Set([ORDER_STATUSES.PROCESSING, ORDER_STATUSES.CANCELLED]),
   [ORDER_STATUSES.PROCESSING]: new Set([ORDER_STATUSES.SHIPPED, ORDER_STATUSES.CANCELLED]),

@@ -1,11 +1,3 @@
-/**
- * Console Logger Adapter — Development.
- *
- * Implements the Logger port interface using console.
- * Replace with PinoLogger in production for structured JSON output.
- *
- * To switch loggers: change resolveLogger.js — no module code changes needed.
- */
 
 const defaultTimestampFormat = "YYYY-MM-DD HH:mm:ss.SSS";
 

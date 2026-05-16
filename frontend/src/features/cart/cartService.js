@@ -2,7 +2,6 @@ import { Cart } from "./model/Cart.js";
 import { CartEvents } from "./model/CartEvents.js";
 
 export function createCartModule({ cart: repo, sessionStore, eventBus, notify }) {
-  // In-memory cart state — single source of truth for the cart module
   let _cart = (() => {
     const raw = sessionStore.get();
     return Cart.fromRaw(raw?.cart || []);

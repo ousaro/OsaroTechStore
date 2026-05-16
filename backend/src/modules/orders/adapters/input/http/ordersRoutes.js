@@ -2,7 +2,7 @@ import { Router } from "express";
 
 export const createOrdersRoutes = ({ controller, requireAuth }) => {
   const router = Router();
-  router.use(requireAuth); // all orders routes are protected
+  router.use(requireAuth);
 
   router.get("/", controller.getAllOrders);
   router.get("/:id", controller.getOrderById);

@@ -1,14 +1,3 @@
-/**
- * Order Domain Entity.
- *
- * Fixed from original:
- *  - No longer imports PaymentStatus from payments/domain (cross-domain violation).
- *    Uses shared/domain/value-objects/PaymentStatus instead.
- *  - Money value object now carries currency.
- *  - Status transitions enforced via canTransitionTo() on the value object.
- *  - Immutable fields after placement enforced in update().
- *  - toPrimitives() returns a full flat projection (safe for read models).
- */
 
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 import {
@@ -38,7 +27,6 @@ export const createOrder = ({
   orderStatus,
   paymentStatus,
 }) => {
-  // ── Validate ───────────────────────────────────────────────────────────
   try {
     assertNonEmptyString(ownerId, "ownerId");
     assertNonEmptyArray(orderLines, "orderLines");
@@ -48,7 +36,7 @@ export const createOrder = ({
 
   const lines = orderLines.map((line) =>
     line.unitPrice?.toPrimitives
-      ? line // already a value object
+      ? line
       : createOrderLine({
           productId: line.productId,
           name: line.name,
@@ -64,12 +52,10 @@ export const createOrder = ({
 
   const pymtStatus = createPaymentStatus(paymentStatus ?? PAYMENT_STATUSES.PENDING);
 
-  // ── Re-compute total properly ──────────────────────────────────────────
   const computedTotal = lines
     .slice(1)
     .reduce((acc, line) => acc.add(line.subtotal), lines[0].subtotal);
 
-  // ── Entity ────────────────────────────────────────────────────────────
   return Object.freeze({
     _id,
     ownerId,
@@ -79,8 +65,6 @@ export const createOrder = ({
     orderStatus: status,
     paymentStatus: pymtStatus,
     totalPrice: computedTotal,
-
-    // ── Behavior ────────────────────────────────────────────────────────
 
     updateStatus(nextStatus) {
       if (!status.canTransitionTo(nextStatus)) {

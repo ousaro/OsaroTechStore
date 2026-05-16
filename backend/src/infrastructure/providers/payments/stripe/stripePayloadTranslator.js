@@ -1,10 +1,3 @@
-/**
- * Stripe Payload Translator.
- *
- * Maps raw Stripe API objects → internal payment DTOs.
- * This is the Anti-Corruption Layer between Stripe's data model and ours.
- * All Stripe-specific field names (payment_status, payment_intent) stop here.
- */
 
 const WEBHOOK_STATE_BY_STRIPE_EVENT = Object.freeze({
   "checkout.session.completed": { paymentStatus: "paid" },

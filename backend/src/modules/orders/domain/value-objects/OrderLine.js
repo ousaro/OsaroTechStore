@@ -1,8 +1,3 @@
-/**
- * OrderLine Value Object.
- * Represents a single line item in an order.
- * Computes its own subtotal via Money.multiply().
- */
 import { DomainValidationError } from "../../../../shared/domain/errors/index.js";
 import {
   assertNonEmptyString,
@@ -41,11 +36,6 @@ export const createOrderLine = ({ productId, name, price, currency, quantity }) 
   });
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Address Value Object.
- */
 export const createAddress = ({ street, city, state, postalCode, country }) => {
   try {
     assertNonEmptyString(street, "street");

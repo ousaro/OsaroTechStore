@@ -1,9 +1,3 @@
-/**
- * Repository Port Helpers — Shared Application Layer.
- *
- * Modules compose these method groups with their own output-port methods.
- * Keep this file limited to repository conventions that are truly shared.
- */
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
 export const BASE_REPOSITORY_METHODS = Object.freeze(["findById"]);

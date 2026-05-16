@@ -1,10 +1,3 @@
-/**
- * Database Provider Port — Shared Application Layer.
- *
- * Defines the lifecycle interface every database provider must implement.
- * Providers expose a raw connection/client only; repositories are still wired
- * by the composition root.
- */
 
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 

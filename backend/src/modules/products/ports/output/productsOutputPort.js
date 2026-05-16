@@ -1,7 +1,3 @@
-/**
- * Products Output Ports.
- * Validated at wiring time in composition.js.
- */
 import {
   BASE_REPOSITORY_METHODS,
   COLLECTION_REPOSITORY_METHODS,

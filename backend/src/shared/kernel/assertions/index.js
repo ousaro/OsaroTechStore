@@ -1,11 +1,3 @@
-/**
- * Shared Kernel — pure assertion utilities.
- *
- * Rules:
- *  - ZERO imports from any other project layer.
- *  - Safe to import from domain, application, or infrastructure.
- *  - All functions throw plain Error — callers wrap in domain/app errors.
- */
 
 export const assertNonEmptyString = (value, fieldName, message) => {
   if (typeof value !== "string" || value.trim() === "") {

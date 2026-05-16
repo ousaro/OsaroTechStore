@@ -7,7 +7,7 @@ export function createPaymentsModule({ payments: repo, sessionStore, eventBus, n
     const { ok, data, error } = await repo.createIntent(payload, tok());
     if (!ok) { notify.error(error || "Payment init failed"); throw new Error(error); }
     eventBus.publish(PaymentEvents.initiated(data));
-    return data; // { url, ... }
+    return data;
   }
 
   async function getPaymentByOrder(orderId) {

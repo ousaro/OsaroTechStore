@@ -1,8 +1,3 @@
-/**
- * Order Read Model.
- * Maps the persistence record into the shape returned by the API.
- * Read models are intentionally flat and client-friendly.
- */
 export const toOrderReadModel = (record) => {
   if (!record) return null;
 

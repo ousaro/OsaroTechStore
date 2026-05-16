@@ -1,7 +1,3 @@
-/**
- * Payments Output Ports.
- * Validated at wiring time in composition.js.
- */
 import {
   BASE_REPOSITORY_METHODS,
   assertPortMethods,

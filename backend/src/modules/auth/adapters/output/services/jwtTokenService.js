@@ -1,8 +1,3 @@
-/**
- * JWT Token Service Adapter.
- *
- * Implements the tokenServicePort.
- */
 import jwt from "jsonwebtoken";
 import { AuthUnauthorizedError } from "../../../application/errors/AuthApplicationError.js";
 import { assertNonEmptyString } from "../../../../../shared/kernel/assertions/index.js";
@@ -15,9 +10,6 @@ export const createJwtTokenService = ({ secret, expiresIn = "2d", logger }) => {
       return jwt.sign({ _id: userId }, secret, { expiresIn });
     },
 
-    /**
-     * Verifies an Authorization header ("Bearer <token>") and returns { _id }.
-     */
     verify(authorizationHeader) {
       try {
         assertNonEmptyString(authorizationHeader, "authorizationHeader");

@@ -1,6 +1,3 @@
-/**
- * Register User Use Case.
- */
 import { toAuthPrincipal } from "../../domain/entities/AuthPrincipal.js";
 import { createRegistrationCommand } from "../../domain/entities/AuthCredentials.js";
 import { AuthConflictError } from "../errors/AuthApplicationError.js";

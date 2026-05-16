@@ -1,11 +1,3 @@
-/**
- * Mongoose Auth User Repository.
- *
- *  - Accepts dbClient instead of importing a global mongoose model.
- *    The composition root passes the connection — the repo creates its model.
- *  - hashPassword / comparePassword moved here (auth concern, not domain).
- *  - findManagedAccountsSorted returns raw records (mapper normalizes).
- */
 import bcrypt from "bcrypt";
 import { createUserModel } from "../../persistence/mongo/userModel.js";
 import { toAuthUserRecord } from "../../persistence/mongo/authUserRecordMapper.js";
@@ -30,7 +22,6 @@ export const createMongooseAuthUserRepository = ({ dbClient }) => {
     },
 
     async findByIdWithPassword(id) {
-      // Returns the raw record INCLUDING the password hash (for credential checks)
       const doc = await UserModel.findById(id);
       if (!doc) return null;
       return { ...toAuthUserRecord(doc), password: doc.password };

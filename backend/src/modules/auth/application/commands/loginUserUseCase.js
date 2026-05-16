@@ -1,6 +1,3 @@
-/**
- * Login User Use Case.
- */
 import { toAuthPrincipal } from "../../domain/entities/AuthPrincipal.js";
 import { createLoginCommand } from "../../domain/entities/AuthCredentials.js";
 import { AuthUnauthorizedError } from "../errors/AuthApplicationError.js";
@@ -12,8 +9,6 @@ export const buildLoginUserUseCase =
     const normalizedEmail = assertValidLoginData({ email, password });
     const command = createLoginCommand({ email: normalizedEmail, password });
 
-    // findByEmail returns record WITHOUT password hash (safe default)
-    // We need the hash — so we use the specific method
     const user = await authUserRepository.findByEmail(command.email);
     const withCredentials = user ? await authUserRepository.findByIdWithPassword(user._id) : null;
 

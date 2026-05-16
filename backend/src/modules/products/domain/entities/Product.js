@@ -1,6 +1,3 @@
-/**
- * Product Domain Entity.
- */
 import {
   assertNonEmptyString,
   assertPositiveNumber,

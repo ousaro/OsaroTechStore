@@ -12,11 +12,9 @@ import { createCategoriesHttpController } from "./adapters/input/http/categories
 import { createCategoriesRoutes } from "./adapters/input/http/categoriesRoutes.js";
 
 export const createCategoriesModule = ({ categoryRepository, categoryEventPublisher, logger }) => {
-  // ── Validate output ports ────────────────────────────────────────────────
   assertCategoryRepositoryPort(categoryRepository);
   assertCategoryEventPublisherPort(categoryEventPublisher);
 
-  // ── Use cases ────────────────────────────────────────────────────────────
   const addCategory = buildAddCategoryUseCase({
     categoryRepository,
     categoryEventPublisher,
@@ -31,7 +29,6 @@ export const createCategoriesModule = ({ categoryRepository, categoryEventPublis
   const getAllCategories = buildGetAllCategoriesUseCase({ categoryRepository });
   const getCategoryById = buildGetCategoryByIdUseCase({ categoryRepository });
 
-  // ── Input port ───────────────────────────────────────────────────────────
   const categoriesInputPort = createCategoriesInputPort({
     addCategory,
     updateCategory,
@@ -40,13 +37,11 @@ export const createCategoriesModule = ({ categoryRepository, categoryEventPublis
     getCategoryById,
   });
 
-  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createCategoriesHttpController({ categoriesInputPort });
 
   const createRoutes = ({ requireAuth } = {}) =>
     createCategoriesRoutes({ controller, requireAuth });
 
-  // ── Public surface ───────────────────────────────────────────────────────
   return {
     createRoutes,
   };

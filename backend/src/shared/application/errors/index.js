@@ -1,18 +1,3 @@
-/**
- * Shared Application Errors.
- *
- * Application errors wrap domain errors or represent use-case-level failures.
- * They carry an HTTP-mappable .code that resolveHttpError.js uses.
- *
- * Hierarchy:
- *   ApplicationError (base)
- *   ├── ApplicationValidationError  → 400
- *   ├── ApplicationUnauthorizedError→ 401
- *   ├── ApplicationForbiddenError   → 403
- *   ├── ApplicationNotFoundError    → 404
- *   ├── ApplicationConflictError    → 409
- *   └── ServiceUnavailableError     → 503
- */
 
 export class ApplicationError extends Error {
   constructor(message, code = "APPLICATION_ERROR") {

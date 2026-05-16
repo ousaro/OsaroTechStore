@@ -1,6 +1,3 @@
-/**
- * Delete Managed User Use Case (admin operation).
- */
 import { AuthUnauthorizedError } from "../errors/AuthApplicationError.js";
 
 export const buildDeleteUserUseCase =

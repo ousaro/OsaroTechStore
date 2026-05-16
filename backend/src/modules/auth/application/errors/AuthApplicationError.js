@@ -1,7 +1,3 @@
-/**
- * Auth Module — Application Errors.
- * All extend shared ApplicationError so resolveHttpError maps them correctly.
- */
 import {
   ApplicationValidationError,
   ApplicationUnauthorizedError,

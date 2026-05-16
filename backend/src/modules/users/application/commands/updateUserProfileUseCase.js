@@ -24,7 +24,6 @@ export const buildUpdateUserProfileUseCase =
     const id = targetId ?? requesterId;
     assertNonEmptyString(id, "userId");
     if (targetId && targetId !== requesterId) {
-      // Only admins can update other users — enforced by route-level requireAuth
     }
     const record = await userRepository.updateById(id, toProfileUpdates(updates));
     if (!record) throw new ApplicationNotFoundError(`User ${id} not found`);

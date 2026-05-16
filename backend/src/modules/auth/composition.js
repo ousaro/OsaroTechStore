@@ -1,12 +1,3 @@
-/**
- * Auth Module Composition.
- *
- * Pure factory — no global let singletons, no env imports.
- * The composition root calls createAuthModule() and holds the instance.
- *
- * Returns createRoutes factory and public use cases as a plain object.
- *
- */
 
 import { buildRegisterUserUseCase } from "./application/commands/registerUserUseCase.js";
 import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.js";
@@ -30,11 +21,9 @@ export const createAuthModule = ({
   clientUrl,
   logger,
 }) => {
-  // ── Validate output ports ────────────────────────────────────────────────
   assertAuthUserRepositoryPort(authUserRepository);
   assertTokenServicePort(tokenService);
 
-  // ── Use cases ────────────────────────────────────────────────────────────
   const registerUser = buildRegisterUserUseCase({ authUserRepository, tokenService, logger });
   const loginUser = buildLoginUserUseCase({ authUserRepository, tokenService, logger });
   const listUsers = buildListUsersUseCase({ authUserRepository });
@@ -42,7 +31,6 @@ export const createAuthModule = ({
   const updateUser = buildUpdateUserUseCase({ authUserRepository });
   const deleteUser = buildDeleteUserUseCase({ authUserRepository });
 
-  // ── Input port ───────────────────────────────────────────────────────────
   const authInputPort = createAuthInputPort({
     registerUser,
     loginUser,
@@ -52,7 +40,6 @@ export const createAuthModule = ({
     deleteUser,
   });
 
-  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createAuthHttpController({ authInputPort });
 
   const createRoutes = ({ requireAuth } = {}) =>
@@ -63,7 +50,6 @@ export const createAuthModule = ({
       clientUrl,
     });
 
-  // ── Public surface ───────────────────────────────────────────────────────
   return {
     createRoutes,
   };

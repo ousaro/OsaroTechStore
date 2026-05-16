@@ -44,7 +44,6 @@ export function createProductCommands({ products: productRepository, sessionStor
     return product;
   }
 
-  /** Called by the CategoryDeleted collaboration translator */
   async function removeProductsByCategory(categoryName) {
     eventBus.publish(ProductEvents.deleted(`category:${categoryName}`));
   }

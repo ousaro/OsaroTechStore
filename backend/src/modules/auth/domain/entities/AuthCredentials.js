@@ -1,4 +1,3 @@
-// AuthCredentials — domain commands for auth operations
 export const createRegistrationCommand = ({
   firstName,
   lastName,

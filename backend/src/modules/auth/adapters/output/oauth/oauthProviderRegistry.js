@@ -38,8 +38,6 @@ const createGoogleStrategy = ({ config, clientUrl, callbackHandler }) => {
   };
 };
 
-// Add more providers here as needed, following the pattern established by Google.
-
 const PROVIDER_FACTORIES = Object.freeze({
   google: createGoogleStrategy,
 });

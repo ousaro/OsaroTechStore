@@ -1,10 +1,3 @@
-/**
- * Stripe Payment Gateway Adapter.
- *
- * Implements the payment gateway port for Stripe Checkout Sessions.
- * The payments module never imports this — it only knows the port interface.
- * Switching to PayPal means replacing this adapter in resolvePaymentStrategy.js.
- */
 
 import Stripe from "stripe";
 import {
@@ -33,7 +26,7 @@ export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {
         price_data: {
           currency: "usd",
           product_data: { name: item.name },
-          unit_amount: Math.round(item.price * 100), // Stripe expects cents
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity,
       })),
@@ -52,7 +45,7 @@ export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {
 
   return {
     createRedirectPayment,
-    createCheckoutSession: createRedirectPayment, // alias
+    createCheckoutSession: createRedirectPayment,
 
     verifyWebhook(payload, signature) {
       assertNonEmptyString(
@@ -66,6 +59,6 @@ export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {
     },
 
     getRedirectPayment,
-    getCheckoutSession: getRedirectPayment, // alias
+    getCheckoutSession: getRedirectPayment,
   };
 };

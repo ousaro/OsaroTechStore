@@ -1,7 +1,3 @@
-/**
- * Order Domain Events.
- * All events use the shared createDomainEvent envelope (id, type, occurredAt, version).
- */
 import { createDomainEvent } from "../../../../shared/domain/events/createDomainEvent.js";
 
 export const createOrderPlacedEvent = (order) =>

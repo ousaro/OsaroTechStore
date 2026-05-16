@@ -1,11 +1,3 @@
-/**
- * MongoDB Provider.
- *
- * Manages the Mongoose connection lifecycle.
- * Exposes ONLY a raw connection/client — it does NOT know about
- * any domain repository. The composition root wires repositories.
- *
- */
 
 import mongoose from "mongoose";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
@@ -30,10 +22,6 @@ export const createMongoProvider = ({ uri, logger }) => {
     logger.info({ msg: "MongoDB disconnected" });
   };
 
-  /**
-   * Returns the raw mongoose connection.
-   * Repository factories receive this — they do NOT receive the provider.
-   */
   const getConnection = () => {
     if (mongoose.connection.readyState !== 1) {
       throw new Error("[MongoDB] Connection is not open. Call connect() first.");

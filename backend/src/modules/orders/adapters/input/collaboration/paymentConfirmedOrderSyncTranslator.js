@@ -1,13 +1,3 @@
-/**
- * Payment Confirmed → Order Sync Translator.
- *
- * Collaboration adapter (input side of Orders module).
- * Subscribes to PaymentConfirmed / PaymentFailed / PaymentExpired events
- * published by the Payments module and calls confirmOrderPayment use case.
- *
- * This is the Anti-Corruption Layer between the Payments bounded context
- * and the Orders bounded context. Neither module imports the other directly.
- */
 import { assertApplicationEvent } from "../../../../../shared/application/contracts/applicationEventContract.js";
 import { PAYMENT_STATUSES } from "../../../../../shared/domain/value-objects/PaymentStatus.js";
 import { assertFunction } from "../../../../../shared/kernel/assertions/index.js";
@@ -30,7 +20,7 @@ export const createPaymentConfirmedOrderSyncTranslator = ({ confirmOrderPayment 
       assertApplicationEvent(event);
 
       const paymentStatus = EVENT_TO_PAYMENT_STATUS[event.type];
-      if (!paymentStatus) return; // not a payment event we care about
+      if (!paymentStatus) return;
 
       const { orderId } = event.payload;
       if (!orderId) return;

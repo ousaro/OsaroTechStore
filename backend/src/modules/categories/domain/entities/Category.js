@@ -1,4 +1,3 @@
-// Category domain entity
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
 export const createCategory = ({ _id, name, description = "" }) => {

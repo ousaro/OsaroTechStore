@@ -1,7 +1,3 @@
-/**
- * AuthPrincipal — the read model returned after successful login/register.
- * Includes all fields the client needs to bootstrap a session.
- */
 export const toAuthPrincipal = (user, token) =>
   Object.freeze({
     _id: user._id,

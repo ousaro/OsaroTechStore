@@ -1,7 +1,3 @@
-/**
- * Orders Input Port.
- * Defines the public interface exposed to HTTP controllers.
- */
 import { assertFunction, assertObject } from "../../../../shared/kernel/assertions/index.js";
 
 const REQUIRED_METHODS = Object.freeze([

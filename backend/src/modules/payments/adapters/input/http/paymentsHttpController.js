@@ -15,7 +15,6 @@ export const createPaymentsHttpController = ({ paymentsInputPort }) => {
     }),
 
     verifyWebhook: asyncHandler(async (req, res) => {
-      // req.rawBody is set by the express.raw() middleware on this route only
       const signature = req.headers["stripe-signature"];
       await paymentsInputPort.verifyWebhook({ rawBody: req.rawBody, signature });
       res.status(200).json({ received: true });

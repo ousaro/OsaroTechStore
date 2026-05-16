@@ -1,7 +1,3 @@
-/**
- * Product Record Mapper.
- * Maps raw Mongoose documents to the plain record shape used by application code.
- */
 export const toProductRecord = (doc) => {
   if (!doc) return null;
 

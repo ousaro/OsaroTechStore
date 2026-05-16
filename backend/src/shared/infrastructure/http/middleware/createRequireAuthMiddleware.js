@@ -1,12 +1,3 @@
-/**
- * requireAuth Middleware Factory.
- *
- * Depends on the tokenService port — the concrete implementation
- * (JWT, session, etc.) is injected by the composition root.
- *
- * On success: sets req.user = { _id: string, admin: boolean } and calls next().
- * On failure: throws ApplicationUnauthorizedError → 401 via errorMiddleware.
- */
 import {
   ApplicationForbiddenError,
   ApplicationUnauthorizedError,

@@ -1,19 +1,9 @@
-/**
- * HTTP Error Resolver.
- *
- * Converts any thrown error into a structured HTTP response.
- * Uses error.code (set by domain/application errors) to determine
- * the HTTP status code.
- *
- * This is the Anti-Corruption Layer between domain errors and HTTP.
- */
 
 import { HTTP_STATUS_BY_ERROR_CODE, DEFAULT_HTTP_STATUS } from "./httpErrorCodes.js";
 
 export const resolveHttpError = (error, req, res, logger) => {
   const status = HTTP_STATUS_BY_ERROR_CODE[error.code] ?? DEFAULT_HTTP_STATUS;
 
-  // Log server errors with full stack; client errors at warn level
   if (status >= 500) {
     logger?.error({
       msg: "Unhandled server error",

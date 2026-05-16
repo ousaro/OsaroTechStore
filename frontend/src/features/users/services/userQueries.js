@@ -9,8 +9,6 @@ export function createUserQueries({ users: repo, sessionStore }) {
   }
 
   async function getAllUsers() {
-    // Admin-only — uses /auth/users from auth module's repo
-    // This is intentionally thin; the admin view uses authInputPort.listUsers()
     return [];
   }
 

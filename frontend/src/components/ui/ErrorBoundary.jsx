@@ -56,7 +56,6 @@ export class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     if (process.env.NODE_ENV !== "production") {
-      // Keep developer context in dev without exposing stack traces in the UI.
       console.error(error, info);
     }
   }

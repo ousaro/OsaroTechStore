@@ -15,7 +15,6 @@ export function createHttpUserRepository({ httpClient, sessionStore }) {
     async updatePassword(payload) {
       return httpClient(E.password, { method: "PUT", body: payload, token: tok() });
     },
-    /** action: "add" | "remove" — per openapi.yaml */
     async toggleFavorite(productId, action) {
       return httpClient(E.favorite(productId), { method: "PUT", body: { action }, token: tok() });
     },

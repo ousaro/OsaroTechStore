@@ -1,10 +1,3 @@
-/**
- * Event Bus Provider Resolver.
- *
- * Selects the correct EventBus adapter based on config.
- * Add a new bus here without touching any module code.
- *
- */
 
 import { createInProcessEventBus } from "./inProcess/inProcessEventBus.js";
 import { createRedisStreamEventBus } from "./redis/redisStreamEventBus.js";

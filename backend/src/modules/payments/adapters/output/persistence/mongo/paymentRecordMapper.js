@@ -1,7 +1,3 @@
-/**
- * Payment Record Mapper.
- * Normalizes persistence fields to the plain payment record shape.
- */
 export const toPaymentRecord = (doc) => {
   if (!doc) return null;
 

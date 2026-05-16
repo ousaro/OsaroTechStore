@@ -1,9 +1,3 @@
-/**
- * Payment Strategy Port — Shared Application Layer.
- *
- * Defines the object returned by the payment resolver. A disabled strategy may
- * intentionally return gateway: null; enabled strategies must provide a gateway.
- */
 
 import {
   assertBoolean,

@@ -1,9 +1,3 @@
-/**
- * Payment Gateway Port — Shared Application Layer.
- *
- * Defines the payment adapter interface used by payment use cases.
- * Concrete gateways live in infrastructure/providers/payments.
- */
 
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 

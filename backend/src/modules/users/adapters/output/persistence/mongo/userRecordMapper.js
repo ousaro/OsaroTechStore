@@ -1,7 +1,3 @@
-/**
- * User Record Mapper.
- * Maps raw Mongoose documents to the profile record shape used by the Users module.
- */
 export const toUserRecord = (doc) => {
   if (!doc) return null;
 

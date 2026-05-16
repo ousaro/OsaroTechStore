@@ -8,7 +8,6 @@ export function createHttpOrderRepository({ httpClient }) {
     },
     async getById(id, token)          { return httpClient(E.byId(id), { token }); },
     async create(payload, token)      { return httpClient(E.root, { method: "POST", body: payload, token }); },
-    // patch uses orderStatus field (not status) — per openapi.yaml
     async update(id, patch, token)    { return httpClient(E.byId(id), { method: "PUT", body: patch, token }); },
     async delete(id, token)           { return httpClient(E.byId(id), { method: "DELETE", token }); },
   };  return adapter;

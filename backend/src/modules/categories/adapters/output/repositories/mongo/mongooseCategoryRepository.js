@@ -1,7 +1,3 @@
-/**
- * Mongoose Category Repository.
- * Fixed: was named createMongooseCategorieRepository (French plural typo).
- */
 import { createCategoryModel } from "../../persistence/mongo/categoryModel.js";
 import { toCategoryRecord } from "../../persistence/mongo/categoryRecordMapper.js";
 

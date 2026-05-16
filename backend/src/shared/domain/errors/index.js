@@ -1,15 +1,3 @@
-/**
- * Shared Domain Errors — Shared Kernel.
- *
- * All domain errors in every module extend these.
- * The error .code drives HTTP status code mapping in resolveHttpError.js.
- *
- * Hierarchy:
- *   DomainError (base)
- *   ├── DomainValidationError   → 400
- *   ├── DomainNotFoundError     → 404
- *   └── DomainConflictError     → 409
- */
 
 export class DomainError extends Error {
   constructor(message, code = "DOMAIN_ERROR") {

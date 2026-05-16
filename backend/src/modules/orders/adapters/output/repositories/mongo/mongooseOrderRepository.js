@@ -1,11 +1,3 @@
-/**
- * Mongoose Order Repository.
- *
- * Fixed from original:
- *  - Accepts dbClient injected by the composition root.
- *  - Creates its own model from the connection — no global OrderModel import.
- *  - All methods return plain records via toOrderRecord() mapper.
- */
 import { createOrderModel } from "../../persistence/mongo/orderModel.js";
 import { toOrderRecord } from "../../persistence/mongo/orderRecordMapper.js";
 

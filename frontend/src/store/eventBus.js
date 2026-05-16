@@ -1,6 +1,6 @@
 class InProcessEventBus {
   #target = new EventTarget();
-  #handlers = new WeakMap(); // keeps original fn → wrapped fn for cleanup
+  #handlers = new WeakMap();
 
   publish(event) {
     this.#target.dispatchEvent(
@@ -20,5 +20,4 @@ class InProcessEventBus {
   }
 }
 
-// Singleton — one bus per app instance
 export const eventBus = new InProcessEventBus();

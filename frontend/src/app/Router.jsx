@@ -5,13 +5,11 @@ import { eventBus } from "../store/eventBus.js";
 import { sessionStore } from "../store/sessionStore.js";
 import { Events } from "../lib/events.js";
 
-// ── View adapter factories ─────────────────────────────────────
 import { createAuthViewAdapter }     from "../features/auth/hooks/useAuth.js";
 import { createProductsViewAdapter } from "../features/products/hooks/useProducts.js";
 import { createUsersViewAdapter }    from "../features/users/hooks/useUsers.js";
 import { createCartViewAdapter }     from "../features/cart/hooks/useCart.js";
 
-// ── Shared UI ──────────────────────────────────────────────────
 import { Navbar }   from "../components/ui/Navbar.jsx";
 import { Spinner }  from "../components/ui/Spinner.jsx";
 import { Footer }   from "../components/ui/Footer.jsx";
@@ -21,31 +19,25 @@ import { FiLock } from "react-icons/fi";
 import { toastNotifier } from "../lib/toastNotifier.js";
 import { getErrorMessage } from "../lib/errorUtils.js";
 
-// ── Pages — auth ───────────────────────────────────────────────
 import { LoginPage }    from "../features/auth/pages/LoginPage.jsx";
 import { RegisterPage } from "../features/auth/pages/RegisterPage.jsx";
 
-// ── Pages — storefront ─────────────────────────────────────────
 import { HomePage }          from "../features/products/pages/HomePage.jsx";
 import { ProductsPage }      from "../features/products/pages/ProductsPage.jsx";
 import { ProductDetailPage } from "../features/products/pages/ProductDetailPage.jsx";
 
-// ── Pages — checkout ───────────────────────────────────────────
 import { CartPage }     from "../features/cart/pages/CartPage.jsx";
 import { CheckoutPage } from "../features/orders/pages/CheckoutPage.jsx";
 
-// ── Pages — profile ────────────────────────────────────────────
 import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPage }
   from "../features/users/pages/ProfilePages.jsx";
 import { OrdersPage } from "../features/users/pages/OrdersPage.jsx";
 
-// ── Pages — admin ──────────────────────────────────────────────
 import { DashboardPage, ManageUsersPage, CategoriesPage, AboutPage }
   from "../features/categories/pages/AdminPages.jsx";
 import { AddProductPage }
   from "../features/products/pages/AddProductPage.jsx";
 
-// ─────────────────────────────────────────────────────────────────
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
 const CUSTOMER_ROUTES = ["/home", "/products", "/cart", "/checkout", "/about"];
 const ADMIN_HOME = "/dashboard";
@@ -85,8 +77,6 @@ function AppShell({ modules, viewAdapters }) {
   const segments  = cleanPath.split("/").filter(Boolean);
   const route     = "/" + segments.join("/");
 
-  // We need auth state to guard routes — read it directly from session for the
-  // shell-level check (the contexts handle re-renders)
   const sessionUser = sessionStore.get();
   const sessionUserId = sessionUser?.id || null;
   const sessionUserIsAdmin = Boolean(sessionUser?.admin || sessionUser?.isAdmin);
@@ -233,11 +223,8 @@ export function Router() {
 
   useEffect(() => {
     try {
-      // Boot the composition root
       const mods = configureModules();
 
-      // Create view adapters from module input ports
-      // (mirrors how createApp.js mounts routes from already-wired route factories)
       const authViewAdapter = createAuthViewAdapter({
         authInputPort: mods.auth,
         eventBus,

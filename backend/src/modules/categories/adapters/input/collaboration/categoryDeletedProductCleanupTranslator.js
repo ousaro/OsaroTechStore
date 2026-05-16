@@ -1,7 +1,3 @@
-/**
- * CategoryDeleted → Product Cleanup Translator.
- * Collaboration adapter (input side of Categories module, consuming side is Products).
- */
 import { assertApplicationEvent } from "../../../../../shared/application/contracts/applicationEventContract.js";
 import { assertFunction } from "../../../../../shared/kernel/assertions/index.js";
 

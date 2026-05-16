@@ -1,7 +1,3 @@
-/**
- * PaymentWorkflow Domain Entity.
- *
- */
 import {
   createPaymentStatus,
   PAYMENT_STATUSES,

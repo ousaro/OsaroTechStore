@@ -23,9 +23,7 @@ export function ProductCard({ product: p }) {
     if (!user) { navigate("/login"); return; }
     setAdding(true);
     try { await addToCart(p.id, 1); }
-    catch {
-      // Service layer already shows the message; keep the card interactive.
-    }
+    catch {}
     finally { setAdding(false); }
   };
 
@@ -35,9 +33,7 @@ export function ProductCard({ product: p }) {
     setFavoriting(true);
     try {
       await toggleFavorite(p.id, isFav ? "remove" : "add");
-    } catch {
-      // Service layer already shows the message; avoid an unhandled rejection.
-    } finally {
+    } catch {} finally {
       setFavoriting(false);
     }
   };

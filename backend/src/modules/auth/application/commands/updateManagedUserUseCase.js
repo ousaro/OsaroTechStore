@@ -1,7 +1,3 @@
-/**
- * Update Managed User Use Case (admin operation).
- * Extracted from composition root where it incorrectly lived before.
- */
 import { AuthUnauthorizedError } from "../errors/AuthApplicationError.js";
 
 export const buildUpdateUserUseCase =

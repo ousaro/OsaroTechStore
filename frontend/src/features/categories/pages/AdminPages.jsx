@@ -25,7 +25,6 @@ import {
   FiZap,
 } from "react-icons/fi";
 
-/* ── DashboardPage ─────────────────────────────────────────────── */
 export function DashboardPage({ ordersInputPort, productsInputPort }) {
   const { path } = useNavigate();
   const [orders, setOrders]     = useState([]);
@@ -104,7 +103,6 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
   );
 }
 
-/* ── ManageUsersPage ───────────────────────────────────────────── */
 export function ManageUsersPage({ authInputPort }) {
   const { user } = useAuth();
   const { path } = useNavigate();
@@ -195,7 +193,6 @@ export function ManageUsersPage({ authInputPort }) {
   );
 }
 
-/* ── CategoriesPage ────────────────────────────────────────────── */
 export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const { path } = useNavigate();
   const [cats, setCats]       = useState([]);
@@ -341,7 +338,6 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   );
 }
 
-/* ── AboutPage ─────────────────────────────────────────────────── */
 export function AboutPage() {
   const values = [
     { icon: FiTruck, title: "Delivery", sub: "Clear order status and practical fulfillment updates." },

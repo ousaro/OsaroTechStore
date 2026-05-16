@@ -1,10 +1,3 @@
-/**
- * Mongoose User Repository (Users module).
- * NOTE: Uses the same Mongoose model as the auth module (same collection).
- * The auth module owns credentials; this module owns profile fields.
- * Both access the same "User" document — splitting collections is a
- * future refactor when the bounded contexts are fully separated.
- */
 import bcrypt from "bcrypt";
 import { createUserModel } from "../../../../../auth/index.js";
 import { toUserRecord } from "../../persistence/mongo/userRecordMapper.js";

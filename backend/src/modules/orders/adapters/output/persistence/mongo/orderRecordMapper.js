@@ -1,8 +1,3 @@
-/**
- * Order Record Mapper.
- * Maps between Mongoose documents and the flat primitives the domain uses.
- * All snake_case <-> camelCase normalization happens here, never in the domain.
- */
 export const toOrderRecord = (doc) => {
   if (!doc) return null;
 

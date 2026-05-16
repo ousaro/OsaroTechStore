@@ -9,17 +9,14 @@ import { createUsersHttpController } from "./adapters/input/http/usersHttpContro
 import { createUsersRoutes } from "./adapters/input/http/usersRoutes.js";
 
 export const createUsersModule = ({ userRepository }) => {
-  // ── Validate output ports ────────────────────────────────────────────────
   assertUserRepositoryPort(userRepository);
 
-  // ── Use cases ────────────────────────────────────────────────────────────
   const getUserProfile = buildGetUserProfileUseCase({ userRepository });
   const updateUserProfile = buildUpdateUserProfileUseCase({ userRepository });
   const updateUserPassword = buildUpdateUserPasswordUseCase({ userRepository });
   const updateUserCart = buildUpdateUserCartUseCase({ userRepository });
   const updateUserFavorites = buildUpdateUserFavoritesUseCase({ userRepository });
 
-  // ── Input port ───────────────────────────────────────────────────────────
   const usersInputPort = createUsersInputPort({
     getUserProfile,
     updateUserProfile,
@@ -28,12 +25,10 @@ export const createUsersModule = ({ userRepository }) => {
     updateUserFavorites,
   });
 
-  // ── HTTP adapter ─────────────────────────────────────────────────────────
   const controller = createUsersHttpController({ usersInputPort });
 
   const createRoutes = ({ requireAuth } = {}) => createUsersRoutes({ controller, requireAuth });
 
-  // ── Public surface ───────────────────────────────────────────────────────
   return {
     createRoutes,
   };
