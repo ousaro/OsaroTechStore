@@ -1,0 +1,54 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      TOKEN_SECRET: replace-with-a-local-development-secret
+      TOKEN_EXPIRES_IN: 15m
+      DATABASE_PROVIDER: mongo
+      MONGO_URI: mongodb://mongo:27017/osarotechstore
+      EVENT_BUS_PROVIDER: redis
+      REDIS_URL: redis://redis:6379
+      PAYMENT_PROVIDER: disabled
+      CLIENT_URL: http://localhost:3000
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+    ports:
+      - "5000:5000"
+
+  frontend:
+    image: node:24-bookworm-slim
+    working_dir: /app/frontend
+    command: sh -c "npm ci && npm start"
+    depends_on:
+      - backend
+    environment:
+      PORT: 3000
+      REACT_APP_API_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
+
+volumes:
+  mongo-data:

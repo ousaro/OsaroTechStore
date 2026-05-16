@@ -1,4 +1,3 @@
-
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
 export const assertLoggerPort = (logger, context = "unknown") => {

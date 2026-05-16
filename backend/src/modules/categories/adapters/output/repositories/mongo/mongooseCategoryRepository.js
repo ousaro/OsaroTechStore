@@ -4,8 +4,10 @@ import { toCategoryRecord } from "../../persistence/mongo/categoryRecordMapper.j
 export const createMongooseCategoryRepository = ({ dbClient }) => {
   const CategoryModel = createCategoryModel(dbClient);
   return {
-    async findAll() {
-      return (await CategoryModel.find().sort({ name: 1 })).map(toCategoryRecord);
+    async findAll({ limit = 50, offset = 0 } = {}) {
+      return (await CategoryModel.find().sort({ name: 1 }).skip(offset).limit(limit)).map(
+        toCategoryRecord
+      );
     },
     async findById(id) {
       return toCategoryRecord(await CategoryModel.findById(id));

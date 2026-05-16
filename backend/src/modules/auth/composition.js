@@ -1,4 +1,3 @@
-
 import { buildRegisterUserUseCase } from "./application/commands/registerUserUseCase.js";
 import { buildLoginUserUseCase } from "./application/commands/loginUserUseCase.js";
 import { buildListUsersUseCase } from "./application/queries/listUsersUseCase.js";

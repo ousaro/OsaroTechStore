@@ -1,8 +1,7 @@
-
 import mongoose from "mongoose";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
 
-export const createMongoProvider = ({ uri, logger }) => {
+export const createMongoProvider = ({ uri, logger, minPoolSize = 2, maxPoolSize = 10 }) => {
   assertNonEmptyString(
     uri,
     "uri",
@@ -12,6 +11,8 @@ export const createMongoProvider = ({ uri, logger }) => {
 
   const connect = async () => {
     await mongoose.connect(uri, {
+      minPoolSize,
+      maxPoolSize,
       serverSelectionTimeoutMS: 5000,
     });
     logger.info({ msg: "MongoDB connected", uri: uri.replace(/\/\/.*@/, "//<credentials>@") });

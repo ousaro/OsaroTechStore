@@ -84,3 +84,33 @@ test("admin can manage user accounts without exposing password hashes", async ()
     false
   );
 });
+
+test("admin user listing supports pagination", async () => {
+  const admin = await persistAdminUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+  });
+  const adminToken = ctx.application.tokenService.signUserId(admin._id);
+
+  await persistUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+    overrides: { email: "first-page-user@example.test" },
+  });
+  const secondUser = await persistUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+    overrides: { email: "second-page-user@example.test" },
+  });
+  const thirdUser = await persistUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+    overrides: { email: "third-page-user@example.test" },
+  });
+
+  const response = await ctx.client.agent
+    .get("/api/auth/users?limit=2")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .expect(200);
+
+  assert.deepEqual(
+    response.body.map((user) => user.email),
+    [thirdUser.email, secondUser.email]
+  );
+});

@@ -1,4 +1,3 @@
-
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
 export const PAYMENT_GATEWAY_METHODS = Object.freeze(["createRedirectPayment", "verifyWebhook"]);

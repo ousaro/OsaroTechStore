@@ -1,4 +1,3 @@
-
 import { createApp } from "./createApp.js";
 
 export const startApplication = async ({ port, env }) => {
@@ -18,6 +17,7 @@ export const startApplication = async ({ port, env }) => {
     healthChecks,
     serviceName,
     version,
+    corsAllowedOrigins,
     schedulers,
     shutdown,
   } = await configureApplicationModules({ env });
@@ -35,6 +35,7 @@ export const startApplication = async ({ port, env }) => {
     healthChecks,
     serviceName,
     version,
+    corsAllowedOrigins,
   });
 
   const server = app.listen(port, () => {

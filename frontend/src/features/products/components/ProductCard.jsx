@@ -23,7 +23,9 @@ export function ProductCard({ product: p }) {
     if (!user) { navigate("/login"); return; }
     setAdding(true);
     try { await addToCart(p.id, 1); }
-    catch {}
+    catch {
+      // Cart service already surfaces failures through the shared notifier.
+    }
     finally { setAdding(false); }
   };
 
@@ -33,7 +35,9 @@ export function ProductCard({ product: p }) {
     setFavoriting(true);
     try {
       await toggleFavorite(p.id, isFav ? "remove" : "add");
-    } catch {} finally {
+    } catch {
+      // Favorite service already surfaces failures through the shared notifier.
+    } finally {
       setFavoriting(false);
     }
   };

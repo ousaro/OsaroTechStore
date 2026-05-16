@@ -1,4 +1,3 @@
-
 import { createStripeGateway } from "./stripe/stripeGateway.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
 import { assertPaymentStrategyPort } from "../../../shared/application/ports/paymentStrategyPort.js";

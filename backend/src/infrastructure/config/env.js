@@ -1,4 +1,3 @@
-
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +28,17 @@ const optionalBoolean = (key, fallback = false) => {
   return !["false", "0", "no", "off"].includes(String(value).toLowerCase());
 };
 
+const optionalInteger = (key, fallback) => {
+  const value = Number.parseInt(optional(key, String(fallback)), 10);
+  return Number.isNaN(value) ? fallback : value;
+};
+
+const optionalList = (key, fallback = "") =>
+  optional(key, fallback)
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
 const buildGoogleOAuthConfig = () => {
   const clientId = optional("GOOGLE_CLIENT_ID");
   const clientSecret = optional("GOOGLE_CLIENT_SECRET");
@@ -52,10 +62,12 @@ export const env = Object.freeze({
   loggerTimestampEnabled: optionalBoolean("LOGGER_TIMESTAMP_ENABLED", true),
 
   tokenSecret: required("TOKEN_SECRET"),
-  tokenExpiresIn: optional("TOKEN_EXPIRES_IN", "2d"),
+  tokenExpiresIn: optional("TOKEN_EXPIRES_IN", "15m"),
 
   databaseProvider: optional("DATABASE_PROVIDER", "mongo"),
   mongoUri: optional("MONGO_URI"),
+  mongoMinPoolSize: optionalInteger("MONGO_MIN_POOL_SIZE", 2),
+  mongoMaxPoolSize: optionalInteger("MONGO_MAX_POOL_SIZE", 10),
   postgresUrl: optional("POSTGRES_URL"),
 
   paymentProvider: optional("PAYMENT_PROVIDER", "disabled"),
@@ -68,6 +80,10 @@ export const env = Object.freeze({
   redisUrl: optional("REDIS_URL"),
 
   clientUrl: optional("CLIENT_URL", "http://localhost:3000"),
+  corsAllowedOrigins: optionalList(
+    "CORS_ALLOWED_ORIGINS",
+    optional("CLIENT_URL", "http://localhost:3000")
+  ),
 
   oauthProviders: {
     google: buildGoogleOAuthConfig(),

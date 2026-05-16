@@ -211,7 +211,10 @@ test("products controller maps params, query, body, and status codes", async () 
   assert.deepEqual((await runHandler(controller.deleteProduct, { params: { id: "p1" } })).body, {
     _id: "p1",
   });
-  assert.deepEqual(calls[0], ["getAllProducts", { category: "c1", status: "active" }]);
+  assert.deepEqual(calls[0], [
+    "getAllProducts",
+    { category: "c1", status: "active", limit: undefined, offset: undefined },
+  ]);
 });
 
 test("categories controller maps CRUD handlers", async () => {
@@ -251,13 +254,22 @@ test("orders controller maps user, params, query, body, and default currency", a
         calls.push(["getAllOrders", payload]);
         return ["o1"];
       },
-      getOrderById: async ({ id }) => ({ _id: id }),
+      getOrderById: async (payload) => {
+        calls.push(["getOrderById", payload]);
+        return { _id: payload.id };
+      },
       addOrder: async (payload) => {
         calls.push(["addOrder", payload]);
         return { _id: "o1" };
       },
-      updateOrder: async ({ id, updates }) => ({ _id: id, ...updates }),
-      deleteOrder: async ({ id }) => ({ _id: id }),
+      updateOrder: async (payload) => {
+        calls.push(["updateOrder", payload]);
+        return { _id: payload.id, ...payload.updates };
+      },
+      deleteOrder: async (payload) => {
+        calls.push(["deleteOrder", payload]);
+        return { _id: payload.id };
+      },
       confirmOrderPayment: fn({}),
     },
   });
@@ -265,9 +277,15 @@ test("orders controller maps user, params, query, body, and default currency", a
   assert.deepEqual((await runHandler(controller.getAllOrders, { query: { ownerId: "u1" } })).body, [
     "o1",
   ]);
-  assert.deepEqual((await runHandler(controller.getOrderById, { params: { id: "o1" } })).body, {
-    _id: "o1",
-  });
+  assert.deepEqual(
+    (
+      await runHandler(controller.getOrderById, {
+        params: { id: "o1" },
+        user: { _id: "u1", admin: false },
+      })
+    ).body,
+    { _id: "o1" }
+  );
   assert.equal(
     (
       await runHandler(controller.addOrder, {
@@ -277,22 +295,29 @@ test("orders controller maps user, params, query, body, and default currency", a
     ).statusCode,
     201
   );
-  assert.deepEqual(calls[1], [
-    "addOrder",
-    { ownerId: "u1", orderLines: [], deliveryAddress: {}, currency: "USD" },
-  ]);
+  assert.deepEqual(
+    calls.find(([name]) => name === "addOrder"),
+    ["addOrder", { ownerId: "u1", orderLines: [], deliveryAddress: {}, currency: "USD" }]
+  );
   assert.deepEqual(
     (
       await runHandler(controller.updateOrder, {
         params: { id: "o1" },
+        user: { _id: "u1", admin: false },
         body: { orderStatus: "shipped" },
       })
     ).body,
     { _id: "o1", orderStatus: "shipped" }
   );
-  assert.deepEqual((await runHandler(controller.deleteOrder, { params: { id: "o1" } })).body, {
-    _id: "o1",
-  });
+  assert.deepEqual(
+    (
+      await runHandler(controller.deleteOrder, {
+        params: { id: "o1" },
+        user: { _id: "u1", admin: false },
+      })
+    ).body,
+    { _id: "o1" }
+  );
 });
 
 test("users controller maps authenticated user actions", async () => {

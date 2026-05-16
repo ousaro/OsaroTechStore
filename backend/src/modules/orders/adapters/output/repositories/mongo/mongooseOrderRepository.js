@@ -5,13 +5,16 @@ export const createMongooseOrderRepository = ({ dbClient }) => {
   const OrderModel = createOrderModel(dbClient);
 
   return {
-    async findAll() {
-      const docs = await OrderModel.find().sort({ createdAt: -1 });
+    async findAll({ limit = 50, offset = 0 } = {}) {
+      const docs = await OrderModel.find().sort({ createdAt: -1 }).skip(offset).limit(limit);
       return docs.map(toOrderRecord);
     },
 
-    async findByOwnerId(ownerId) {
-      const docs = await OrderModel.find({ ownerId }).sort({ createdAt: -1 });
+    async findByOwnerId(ownerId, { limit = 50, offset = 0 } = {}) {
+      const docs = await OrderModel.find({ ownerId })
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit);
       return docs.map(toOrderRecord);
     },
 

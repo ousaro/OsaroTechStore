@@ -12,6 +12,8 @@ export const buildTestEnv = (overrides = {}) =>
     tokenExpiresIn: "15m",
     databaseProvider: "mongo",
     mongoUri: undefined,
+    mongoMinPoolSize: 1,
+    mongoMaxPoolSize: 5,
     postgresUrl: undefined,
     paymentProvider: "disabled",
     stripeSecretKey: "sk_test_mock",
@@ -21,6 +23,7 @@ export const buildTestEnv = (overrides = {}) =>
     eventBusProvider: "inprocess",
     redisUrl: undefined,
     clientUrl: "http://localhost:3000",
+    corsAllowedOrigins: ["http://localhost:3000"],
     oauthProviders: {
       google: {
         clientId: undefined,

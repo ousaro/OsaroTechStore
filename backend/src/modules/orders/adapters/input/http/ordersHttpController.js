@@ -6,12 +6,20 @@ export const createOrdersHttpController = ({ ordersInputPort }) => {
 
   return {
     getAllOrders: asyncHandler(async (req, res) => {
-      const orders = await ordersInputPort.getAllOrders({ ownerId: req.query.ownerId });
+      const orders = await ordersInputPort.getAllOrders({
+        ownerId: req.query.ownerId,
+        limit: req.query.limit,
+        offset: req.query.offset,
+      });
       res.status(200).json(orders);
     }),
 
     getOrderById: asyncHandler(async (req, res) => {
-      const order = await ordersInputPort.getOrderById({ id: req.params.id });
+      const order = await ordersInputPort.getOrderById({
+        id: req.params.id,
+        requesterId: req.user._id,
+        requesterIsAdmin: req.user.admin,
+      });
       res.status(200).json(order);
     }),
 
@@ -28,13 +36,19 @@ export const createOrdersHttpController = ({ ordersInputPort }) => {
     updateOrder: asyncHandler(async (req, res) => {
       const order = await ordersInputPort.updateOrder({
         id: req.params.id,
+        requesterId: req.user._id,
+        requesterIsAdmin: req.user.admin,
         updates: req.body,
       });
       res.status(200).json(order);
     }),
 
     deleteOrder: asyncHandler(async (req, res) => {
-      const order = await ordersInputPort.deleteOrder({ id: req.params.id });
+      const order = await ordersInputPort.deleteOrder({
+        id: req.params.id,
+        requesterId: req.user._id,
+        requesterIsAdmin: req.user.admin,
+      });
       res.status(200).json(order);
     }),
   };

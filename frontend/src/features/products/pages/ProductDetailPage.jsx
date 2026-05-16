@@ -38,7 +38,9 @@ export function ProductDetailPage({ id }) {
   const handleAdd = async () => {
     setAdding(true);
     try { await addToCart(product.id, qty); }
-    catch {}
+    catch {
+      // Cart service already surfaces failures through the shared notifier.
+    }
     finally { setAdding(false); }
   };
 
@@ -46,7 +48,9 @@ export function ProductDetailPage({ id }) {
     if (!window.confirm(`Delete "${product.name}"?`)) return;
     setDeleting(true);
     try { await deleteProduct(product.id); navigate("/products"); }
-    catch {}
+    catch {
+      // Product service already surfaces failures through the shared notifier.
+    }
     finally { setDeleting(false); }
   };
 

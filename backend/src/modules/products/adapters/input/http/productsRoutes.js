@@ -1,6 +1,4 @@
 import express, { Router } from "express";
-import fs from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 
 const IMAGE_EXTENSIONS = {
@@ -12,6 +10,16 @@ const IMAGE_EXTENSIONS = {
 
 const uploadProductImage = async (req, res, next) => {
   try {
+    const uploadBaseUrl = process.env.PRODUCT_IMAGE_UPLOAD_URL;
+    const publicBaseUrl = process.env.PRODUCT_IMAGE_PUBLIC_URL;
+    const uploadToken = process.env.PRODUCT_IMAGE_UPLOAD_TOKEN;
+
+    if (!uploadBaseUrl || !publicBaseUrl) {
+      return res.status(503).json({
+        error: "Product image storage is not configured",
+      });
+    }
+
     const ext = IMAGE_EXTENSIONS[req.headers["content-type"]];
     if (!ext) {
       return res.status(415).json({ error: "Unsupported image type" });
@@ -21,13 +29,30 @@ const uploadProductImage = async (req, res, next) => {
       return res.status(400).json({ error: "Image file is required" });
     }
 
-    const uploadDir = path.resolve(process.cwd(), "uploads", "products");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const filename = `${randomUUID()}${ext}`;
-    await fs.writeFile(path.join(uploadDir, filename), req.body);
+    const uploadUrl = new URL(
+      filename,
+      uploadBaseUrl.endsWith("/") ? uploadBaseUrl : `${uploadBaseUrl}/`
+    );
+    const publicUrl = new URL(
+      filename,
+      publicBaseUrl.endsWith("/") ? publicBaseUrl : `${publicBaseUrl}/`
+    );
 
-    res.status(201).json({ url: `/uploads/products/${filename}` });
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": req.headers["content-type"],
+        ...(uploadToken ? { Authorization: `Bearer ${uploadToken}` } : {}),
+      },
+      body: req.body,
+    });
+
+    if (!uploadResponse.ok) {
+      return res.status(502).json({ error: "Product image storage upload failed" });
+    }
+
+    res.status(201).json({ url: publicUrl.toString() });
   } catch (error) {
     next(error);
   }

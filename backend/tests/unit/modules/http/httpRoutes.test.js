@@ -38,8 +38,8 @@ test("auth routes register public, admin, and disabled OAuth endpoints", () => {
   });
 
   assert.deepEqual(routeSummary(router), [
-    { path: "/register", methods: ["post"], handlerCount: 1 },
-    { path: "/login", methods: ["post"], handlerCount: 1 },
+    { path: "/register", methods: ["post"], handlerCount: 2 },
+    { path: "/login", methods: ["post"], handlerCount: 2 },
     { path: "/users", methods: ["get"], handlerCount: 3 },
     { path: "/users/:id", methods: ["get"], handlerCount: 3 },
     { path: "/users/:id", methods: ["put"], handlerCount: 3 },

@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { createUserModel } from "../../../../../auth/index.js";
 import { toUserRecord } from "../../persistence/mongo/userRecordMapper.js";
 
+// Auth owns the shared User persistence model and exposes it through its public module API.
 export const createMongooseUserRepository = ({ dbClient }) => {
   const UserModel = createUserModel(dbClient);
   return {

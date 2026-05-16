@@ -5,8 +5,13 @@ export const createCategoriesHttpController = ({ categoriesInputPort }) => {
   assertCategoriesInputPort(categoriesInputPort);
 
   return {
-    getAllCategories: asyncHandler(async (_req, res) =>
-      res.json(await categoriesInputPort.getAllCategories())
+    getAllCategories: asyncHandler(async (req, res) =>
+      res.json(
+        await categoriesInputPort.getAllCategories({
+          limit: req.query.limit,
+          offset: req.query.offset,
+        })
+      )
     ),
     getCategoryById: asyncHandler(async (req, res) =>
       res.json(await categoriesInputPort.getCategoryById({ id: req.params.id }))

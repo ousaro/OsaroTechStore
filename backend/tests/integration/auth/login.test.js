@@ -19,3 +19,19 @@ test("POST /api/auth/login authenticates existing credentials", async () => {
   assert.equal(response.body.email, user.email);
   assert.equal(typeof response.body.token, "string");
 });
+
+test("POST /api/auth/login rate limits repeated attempts", async () => {
+  for (let attempt = 0; attempt < 19; attempt += 1) {
+    await ctx.client.agent
+      .post("/api/auth/login")
+      .send({ email: "missing@example.test", password: "Password123!" })
+      .expect(401);
+  }
+
+  const response = await ctx.client.agent
+    .post("/api/auth/login")
+    .send({ email: "missing@example.test", password: "Password123!" })
+    .expect(429);
+
+  assert.equal(response.body.error.code, "RATE_LIMITED");
+});

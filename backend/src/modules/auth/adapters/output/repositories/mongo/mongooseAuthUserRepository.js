@@ -6,8 +6,11 @@ export const createMongooseAuthUserRepository = ({ dbClient }) => {
   const UserModel = createUserModel(dbClient);
 
   return {
-    async findManagedAccountsSorted() {
-      const docs = await UserModel.find({ admin: false }).sort({ createdAt: -1 });
+    async findManagedAccountsSorted({ limit = 50, offset = 0 } = {}) {
+      const docs = await UserModel.find({ admin: false })
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit);
       return docs.map(toAuthUserRecord);
     },
 

@@ -116,6 +116,7 @@ export const createTestApplication = ({
     ],
     serviceName: env.serviceName,
     version: env.appVersion,
+    corsAllowedOrigins: env.corsAllowedOrigins,
   });
 
   return {

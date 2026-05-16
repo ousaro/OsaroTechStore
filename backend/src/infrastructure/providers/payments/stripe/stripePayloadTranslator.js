@@ -1,4 +1,3 @@
-
 const WEBHOOK_STATE_BY_STRIPE_EVENT = Object.freeze({
   "checkout.session.completed": { paymentStatus: "paid" },
   "checkout.session.async_payment_failed": { paymentStatus: "failed" },

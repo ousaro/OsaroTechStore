@@ -1,4 +1,3 @@
-
 import { assertNonEmptyString, assertObject } from "../../kernel/assertions/index.js";
 
 export const assertApplicationEvent = (event, { expectedType } = {}) => {

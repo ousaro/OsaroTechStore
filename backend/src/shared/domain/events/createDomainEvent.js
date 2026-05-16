@@ -1,4 +1,3 @@
-
 import { randomUUID } from "crypto";
 import { assertNonEmptyString, assertObject } from "../../kernel/assertions/index.js";
 

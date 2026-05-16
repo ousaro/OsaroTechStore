@@ -1,4 +1,3 @@
-
 export class ApplicationError extends Error {
   constructor(message, code = "APPLICATION_ERROR") {
     super(message);

@@ -1,4 +1,3 @@
-
 const defaultTimestampFormat = "YYYY-MM-DD HH:mm:ss.SSS";
 
 const colors = {
@@ -96,6 +95,21 @@ const normalizeLogArgs = (entry, ctx = {}) => {
 
 const logToConsole = (level, consoleMethod, scope, options, entry, ctx) => {
   const normalized = normalizeLogArgs(entry, ctx);
+  if (options.outputFormat === "json") {
+    consoleMethod(
+      safeStringify({
+        timestamp: options.timestampEnabled
+          ? formatTimestamp(new Date(), options.timestampFormat)
+          : undefined,
+        level: level.toLowerCase(),
+        scope,
+        msg: normalized.msg,
+        ...normalized.ctx,
+      })
+    );
+    return;
+  }
+
   const timestamp = colorize(
     formatTimestamp(new Date(), options.timestampFormat),
     colors.dim,
@@ -128,6 +142,7 @@ export const createConsoleLogger = (scope = "app", options = {}) => {
     timestampEnabled: options.timestampEnabled ?? true,
     timestampFormat: options.timestampFormat ?? defaultTimestampFormat,
     colorize: options.colorize ?? true,
+    outputFormat: options.outputFormat ?? "pretty",
   };
   const methods = createScopedMethods(scope, loggerOptions);
   return {

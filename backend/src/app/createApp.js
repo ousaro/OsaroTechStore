@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -11,6 +10,15 @@ import { createErrorMiddleware } from "../shared/infrastructure/http/middleware/
 import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
 import { registerOpenApiDocs } from "../shared/infrastructure/http/openApiDocs.js";
 import { createHealthRoutes } from "../shared/infrastructure/http/healthRoutes.js";
+
+const createCorsOptions = ({ allowedOrigins = [] } = {}) => ({
+  credentials: true,
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+});
 
 export const createApp = ({
   logger,
@@ -25,12 +33,13 @@ export const createApp = ({
   healthChecks,
   serviceName,
   version,
+  corsAllowedOrigins = [],
 }) => {
   const app = express();
 
   app.use(requestIdMiddleware);
   app.use(createRequestLoggingMiddleware(logger));
-  app.use(cors({ origin: true, credentials: true }));
+  app.use(cors(createCorsOptions({ allowedOrigins: corsAllowedOrigins })));
   app.use(cookieParser());
 
   app.use((req, res, next) => {
@@ -40,7 +49,7 @@ export const createApp = ({
     ) {
       return next();
     }
-    return express.json()(req, res, next);
+    return express.json({ limit: "1mb" })(req, res, next);
   });
 
   const requireAuth = createRequireAuthMiddleware({ tokenService, authUserRepository });

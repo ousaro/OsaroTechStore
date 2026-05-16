@@ -117,10 +117,6 @@ fi
 ensure_pipeline_binaries
 
 echo
-echo "==> Checking formatting and applying fixes"
-npm run format
-
-echo
 echo "==> Checking formatting"
 npm run format:check
 

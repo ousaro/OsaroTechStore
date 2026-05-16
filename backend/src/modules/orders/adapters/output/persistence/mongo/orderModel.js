@@ -40,5 +40,9 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+orderSchema.index({ ownerId: 1, createdAt: -1 });
+orderSchema.index({ orderStatus: 1, createdAt: -1 });
+orderSchema.index({ paymentStatus: 1, createdAt: -1 });
+
 export const createOrderModel = (connection) =>
   connection.models.Order ?? connection.model("Order", orderSchema);

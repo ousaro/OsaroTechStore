@@ -6,11 +6,13 @@ export const createMongooseProductRepository = ({ dbClient }) => {
   const withCategory = (query) => query.populate("category", "name");
 
   return {
-    async findAll({ category, status } = {}) {
+    async findAll({ category, status, limit = 50, offset = 0 } = {}) {
       const filter = {};
       if (category) filter.category = category;
       if (status) filter.status = status;
-      const docs = await withCategory(ProductModel.find(filter).sort({ createdAt: -1 }));
+      const docs = await withCategory(
+        ProductModel.find(filter).sort({ createdAt: -1 }).skip(offset).limit(limit)
+      );
       return docs.map(toProductRecord);
     },
 

@@ -23,8 +23,6 @@ export const buildUpdateUserProfileUseCase =
   async ({ requesterId, targetId, updates }) => {
     const id = targetId ?? requesterId;
     assertNonEmptyString(id, "userId");
-    if (targetId && targetId !== requesterId) {
-    }
     const record = await userRepository.updateById(id, toProfileUpdates(updates));
     if (!record) throw new ApplicationNotFoundError(`User ${id} not found`);
     return toUserReadModel(record);

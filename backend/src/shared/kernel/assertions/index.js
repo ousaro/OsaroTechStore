@@ -1,4 +1,3 @@
-
 export const assertNonEmptyString = (value, fieldName, message) => {
   if (typeof value !== "string" || value.trim() === "") {
     throw new Error(message || `${fieldName} must be a non-empty string`);

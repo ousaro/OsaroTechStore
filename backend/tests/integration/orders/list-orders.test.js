@@ -47,3 +47,37 @@ test("orders routes read by id and filter by owner", async () => {
 
   assert.equal(getResponse.body.deliveryAddress.city, "Casablanca");
 });
+
+test("orders routes paginate list results", async () => {
+  const owner = await persistUser({
+    authUserRepository: ctx.application.repositories.authUserRepository,
+    overrides: { email: "order.pagination@example.test" },
+  });
+  const token = tokenFor(owner);
+
+  await ctx.client.agent
+    .post("/api/orders")
+    .set("Authorization", `Bearer ${token}`)
+    .send(buildOrderPayload({ deliveryAddress: { city: "First" } }))
+    .expect(201);
+  const secondOrderResponse = await ctx.client.agent
+    .post("/api/orders")
+    .set("Authorization", `Bearer ${token}`)
+    .send(buildOrderPayload({ deliveryAddress: { city: "Second" } }))
+    .expect(201);
+  const thirdOrderResponse = await ctx.client.agent
+    .post("/api/orders")
+    .set("Authorization", `Bearer ${token}`)
+    .send(buildOrderPayload({ deliveryAddress: { city: "Third" } }))
+    .expect(201);
+
+  const response = await ctx.client.agent
+    .get(`/api/orders?ownerId=${owner._id}&limit=2`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200);
+
+  assert.deepEqual(
+    response.body.map((order) => order._id),
+    [thirdOrderResponse.body._id, secondOrderResponse.body._id]
+  );
+});

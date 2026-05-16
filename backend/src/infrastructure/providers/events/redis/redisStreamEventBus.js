@@ -5,6 +5,7 @@ import {
 } from "../../../../shared/kernel/assertions/index.js";
 
 const streamNameFor = (eventType) => `events:${eventType}`;
+const DEAD_LETTER_STREAM = "events:dead-letter";
 
 const normalizeStreamEntries = (reply) => {
   if (!Array.isArray(reply)) return [];
@@ -103,7 +104,27 @@ export const createRedisStreamEventBus = ({ redisClient, logger }) => {
           for (const entry of normalizeStreamEntries(reply)) {
             lastId = entry.id;
             const event = JSON.parse(entry.fields.data);
-            await handler(event);
+            try {
+              await handler(event);
+            } catch (error) {
+              await redisClient.xAdd(DEAD_LETTER_STREAM, "*", {
+                data: JSON.stringify({
+                  event,
+                  stream,
+                  entryId: entry.id,
+                  failedAt: new Date().toISOString(),
+                  error: error?.message ?? String(error),
+                }),
+              });
+              logger?.error({
+                msg: "RedisEventBus: handler failed; event moved to dead letter stream",
+                eventType,
+                eventId: event.id,
+                stream,
+                entryId: entry.id,
+                error,
+              });
+            }
           }
         } catch (error) {
           if (!active) break;

@@ -16,7 +16,8 @@ npm start          # http://localhost:3000
 
 ## Architecture
 
-This frontend uses the **exact same architectural pattern** as the backend, mapped to React idioms.
+This frontend uses a feature-oriented React structure that keeps API adapters, service composition,
+models, hooks, pages, and shared UI separated.
 
 ### Backend → Frontend Mapping
 
@@ -24,20 +25,14 @@ This frontend uses the **exact same architectural pattern** as the backend, mapp
 |---|---|
 | `server.js` | `src/index.js` |
 | `app/createApp.js` | `src/app/Router.jsx` |
-| `infrastructure/bootstrap/configureApplicationModules.js` | `src/infrastructure/bootstrap/configureModules.js` |
-| `modules/<feature>/composition.js` | `modules/<feature>/composition.js` |
-| `modules/<feature>/domain/` | `modules/<feature>/domain/` |
-| `modules/<feature>/application/commands/` | `modules/<feature>/application/commands/` |
-| `modules/<feature>/application/queries/` | `modules/<feature>/application/queries/` |
-| `modules/<feature>/application/read-models/` | `modules/<feature>/application/read-models/` |
-| `modules/<feature>/ports/input/` | `modules/<feature>/ports/input/` |
-| `modules/<feature>/ports/output/` | `modules/<feature>/ports/output/` |
-| `modules/<feature>/adapters/input/http/` | `modules/<feature>/adapters/input/views/` ← React hook/context |
-| `modules/<feature>/adapters/input/collaboration/` | `modules/<feature>/adapters/input/collaboration/` |
-| `modules/<feature>/adapters/output/repositories/` | `modules/<feature>/adapters/output/http/` |
-| `infrastructure/providers/events/` | `infrastructure/providers/events/inProcessEventBus.js` |
-| `shared/domain/value-objects/` | `shared/domain/value-objects/` |
-| `shared/kernel/assertions/` | `shared/kernel/assertions/portAssertions.js` |
+| `infrastructure/bootstrap/configureApplicationModules.js` | `src/app/createServices.js` |
+| `modules/<feature>/composition.js` | `src/features/<feature>/<feature>Service.js` |
+| `modules/<feature>/domain/` | `src/features/<feature>/model/` |
+| `modules/<feature>/adapters/input/http/` | `src/features/<feature>/pages/` and `hooks/` |
+| `modules/<feature>/adapters/output/repositories/` | `src/features/<feature>/api/` |
+| `infrastructure/providers/events/` | `src/store/eventBus.js` |
+| shared HTTP client | `src/api/client.js` |
+| shared session adapter | `src/store/sessionStore.js` |
 
 ---
 
@@ -47,62 +42,41 @@ This frontend uses the **exact same architectural pattern** as the backend, mapp
 src/
 ├── index.js                          ← Entry (mirrors server.js)
 ├── app/
-│   ├── App.jsx                       ← Thin root (mirrors server.js)
-│   └── Router.jsx                    ← Route mounting (mirrors createApp.js)
+│   ├── App.jsx                       ← Thin root
+│   ├── Router.jsx                    ← Route mounting
+│   └── createServices.js             ← Composition root for services and repositories
 │
-├── infrastructure/
-│   ├── bootstrap/
-│   │   └── configureModules.js       ← COMPOSITION ROOT (mirrors configureApplicationModules.js)
-│   ├── config/
-│   │   └── env.js                    ← Normalized env vars
-│   └── providers/
-│       ├── http/httpClient.js        ← Single fetch wrapper
-│       ├── session/sessionStore.js   ← localStorage adapter
-│       ├── events/inProcessEventBus.js ← EventTarget-based event bus
-│       └── notifications/toastNotifier.js
+├── api/
+│   └── client.js                     ← Single fetch wrapper
 │
-├── modules/
+├── store/
+│   ├── eventBus.js                   ← EventTarget-based event bus
+│   └── sessionStore.js               ← localStorage session adapter
+│
+├── lib/
+│   ├── events.js
+│   └── toastNotifier.js
+│
+├── guards/
+│   └── ProtectedRoute.jsx
+│
+├── components/
+│   └── ui/                           ← Shared UI components
+│
+├── features/
 │   ├── auth/
-│   │   ├── composition.js            ← Wires commands+queries → input port
-│   │   ├── domain/
-│   │   │   ├── entities/AuthUser.js
-│   │   │   ├── events/AuthEvents.js
-│   │   │   └── errors/AuthErrors.js
-│   │   ├── application/
-│   │   │   ├── commands/loginCommand.js
-│   │   │   ├── commands/registerCommand.js
-│   │   │   ├── commands/logoutCommand.js
-│   │   │   └── queries/getSessionQuery.js
-│   │   ├── ports/
-│   │   │   ├── input/AuthInputPort.js
-│   │   │   └── output/AuthRepositoryPort.js
-│   │   └── adapters/
-│   │       ├── input/views/useAuthModule.js     ← React context (input adapter)
-│   │       ├── input/views/pages/LoginPage.jsx
-│   │       ├── input/views/pages/RegisterPage.jsx
-│   │       └── output/http/httpAuthRepository.js
+│   │   ├── api/authApi.js
+│   │   ├── authService.js
+│   │   ├── hooks/
+│   │   ├── model/
+│   │   └── pages/
 │   │
-│   ├── products/                     ← Same structure, + read-model + collaboration translator
+│   ├── products/
 │   ├── categories/
 │   ├── orders/
 │   ├── payments/
 │   ├── users/
-│   └── cart/                        ← Owns Cart entity + clearCart collaboration adapter
-│
-├── shared/
-│   ├── domain/
-│   │   ├── value-objects/Money.js
-│   │   ├── value-objects/Address.js
-│   │   ├── errors/DomainError.js
-│   │   └── events/DomainEvent.js    ← DomainEvent base + Events constants
-│   ├── application/
-│   │   └── ports/RepositoryPort.js
-│   ├── infrastructure/
-│   │   └── ui/                      ← Navbar, Badge, Spinner, QtyControl, PasswordInput, Link
-│   ├── kernel/
-│   │   ├── assertions/portAssertions.js
-│   │   └── guards/authGuard.js
-│   └── hooks/useNavigate.js
+│   └── cart/
 │
 └── ui/
     └── styles/index.css             ← Full design system
@@ -114,7 +88,7 @@ src/
 
 ### 1. Modules Never Import Each Other's Internals
 
-Cross-module workflows go through the **event bus + collaboration translators**, wired exclusively in `configureModules.js`:
+Cross-module workflows go through the **event bus + collaboration translators**, wired exclusively in `src/app/createServices.js`:
 
 ```
 OrderPlaced event
@@ -160,7 +134,7 @@ eventBus.subscribe(Events.PRODUCT_DELETED, (e) => setProducts(ps => ps.filter(..
 
 ### 5. Composition Root is the Only File with Full Knowledge
 
-`configureModules.js` is the only file that:
+`src/app/createServices.js` is the only file that:
 - Knows which HTTP adapter → which repository port → which module gets it
 - Subscribes collaboration translators to the event bus
 - Knows the full module dependency graph

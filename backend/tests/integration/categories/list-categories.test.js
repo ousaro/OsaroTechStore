@@ -35,3 +35,25 @@ test("public category read returns a structured error when the use case throws",
   assert.equal(response.body.error.code, "NOT_FOUND");
   assert.match(response.body.error.message, /Category .* not found/);
 });
+
+test("public category routes paginate list results", async () => {
+  await persistCategory({
+    categoryRepository: ctx.application.repositories.categoryRepository,
+    overrides: { name: "Audio" },
+  });
+  await persistCategory({
+    categoryRepository: ctx.application.repositories.categoryRepository,
+    overrides: { name: "Cameras" },
+  });
+  await persistCategory({
+    categoryRepository: ctx.application.repositories.categoryRepository,
+    overrides: { name: "Displays" },
+  });
+
+  const response = await ctx.client.agent.get("/api/categories?limit=2").expect(200);
+
+  assert.deepEqual(
+    response.body.map((category) => category.name),
+    ["Audio", "Cameras"]
+  );
+});

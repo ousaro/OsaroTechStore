@@ -1,4 +1,3 @@
-
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
 export const EVENT_BUS_METHODS = Object.freeze(["publish", "subscribe", "getName"]);

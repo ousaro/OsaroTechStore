@@ -1,4 +1,3 @@
-
 import {
   assertBoolean,
   assertNonEmptyString,

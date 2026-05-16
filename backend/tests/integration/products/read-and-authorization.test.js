@@ -18,7 +18,8 @@ test("public product read returns a product by id and structured not-found error
   const response = await ctx.client.agent.get(`/api/products/${product._id}`).expect(200);
 
   assert.equal(response.body._id, product._id.toString());
-  assert.equal(response.body.category, category._id.toString());
+  assert.equal(response.body.categoryId, category._id.toString());
+  assert.equal(response.body.category, category.name);
 
   const missingResponse = await ctx.client.agent
     .get("/api/products/64f000000000000000000000")

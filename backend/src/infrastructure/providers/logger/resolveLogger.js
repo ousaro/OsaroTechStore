@@ -1,4 +1,3 @@
-
 import { createConsoleLogger } from "./consoleLogger.js";
 import { assertLoggerPort } from "../../../shared/application/ports/loggerPort.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";
@@ -8,10 +7,10 @@ export const resolveLogger = ({ provider = "console", scope = "app", options = {
     case "console":
       return assertLoggerPort(createConsoleLogger(scope, options), "resolveLogger");
 
-    case "pino":
-      throw new ServiceUnavailableError(
-        "Pino logger is not yet implemented. " +
-          "Set LOGGER_PROVIDER=console or implement createPinoLogger."
+    case "json":
+      return assertLoggerPort(
+        createConsoleLogger(scope, { ...options, colorize: false, outputFormat: "json" }),
+        "resolveLogger"
       );
 
     case "noop":

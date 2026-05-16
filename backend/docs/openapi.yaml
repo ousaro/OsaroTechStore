@@ -219,6 +219,10 @@ components:
           example: USD
         category:
           type: string
+          description: Display name of the populated category.
+        categoryId:
+          type: string
+          description: Identifier of the category used by write requests.
         stock:
           type: number
         images:

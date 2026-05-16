@@ -1,4 +1,3 @@
-
 import { HTTP_STATUS_BY_ERROR_CODE, DEFAULT_HTTP_STATUS } from "./httpErrorCodes.js";
 
 export const resolveHttpError = (error, req, res, logger) => {

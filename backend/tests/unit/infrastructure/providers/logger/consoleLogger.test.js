@@ -97,3 +97,21 @@ test("console logger serializes Error objects in context", () => {
   assert.match(calls[0], /"message":"boom"/);
   assert.match(calls[0], /"stack":"Error: boom/);
 });
+
+test("console logger supports JSON output for production log ingestion", () => {
+  const calls = captureConsole("info", () => {
+    const logger = createConsoleLogger("app", {
+      outputFormat: "json",
+      timestampEnabled: false,
+    });
+
+    logger.info({ msg: "Order placed", orderId: "o1" });
+  });
+
+  assert.deepEqual(JSON.parse(calls[0]), {
+    level: "info",
+    scope: "app",
+    msg: "Order placed",
+    orderId: "o1",
+  });
+});

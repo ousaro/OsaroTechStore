@@ -1,4 +1,3 @@
-
 import { DomainValidationError } from "../errors/index.js";
 import { assertNonEmptyString } from "../../kernel/assertions/index.js";
 

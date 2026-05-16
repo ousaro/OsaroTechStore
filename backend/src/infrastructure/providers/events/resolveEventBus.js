@@ -1,4 +1,3 @@
-
 import { createInProcessEventBus } from "./inProcess/inProcessEventBus.js";
 import { createRedisStreamEventBus } from "./redis/redisStreamEventBus.js";
 import { ServiceUnavailableError } from "../../../shared/application/errors/index.js";

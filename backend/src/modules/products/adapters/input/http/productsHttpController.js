@@ -9,6 +9,8 @@ export const createProductsHttpController = ({ productsInputPort }) => {
       const products = await productsInputPort.getAllProducts({
         category: req.query.category,
         status: req.query.status,
+        limit: req.query.limit,
+        offset: req.query.offset,
       });
       res.status(200).json(products);
     }),

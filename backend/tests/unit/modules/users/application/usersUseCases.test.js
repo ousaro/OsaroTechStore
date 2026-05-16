@@ -93,12 +93,13 @@ test("updateUserPassword rejects incorrect current password", async () => {
   });
 
   await assert.rejects(
-    () => updateUserPassword({
-      userId: "u1",
-      currentPassword: "wrong",
-      newPassword: "BetterPassword123!",
-      confirmPassword: "BetterPassword123!",
-    }),
+    () =>
+      updateUserPassword({
+        userId: "u1",
+        currentPassword: "wrong",
+        newPassword: "BetterPassword123!",
+        confirmPassword: "BetterPassword123!",
+      }),
     /Current password is incorrect/
   );
 });

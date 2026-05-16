@@ -1,4 +1,3 @@
-
 import { assertFunction, assertObject } from "../../kernel/assertions/index.js";
 
 export const DATABASE_PROVIDER_METHODS = Object.freeze(["connect", "disconnect", "getConnection"]);

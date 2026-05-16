@@ -15,8 +15,11 @@ export const createAuthHttpController = ({ authInputPort }) => {
       res.status(200).json(payload);
     }),
 
-    listUsers: asyncHandler(async (_req, res) => {
-      const users = await authInputPort.listUsers();
+    listUsers: asyncHandler(async (req, res) => {
+      const users = await authInputPort.listUsers({
+        limit: req.query.limit,
+        offset: req.query.offset,
+      });
       res.status(200).json(users);
     }),
 

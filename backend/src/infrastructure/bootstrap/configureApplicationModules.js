@@ -1,4 +1,3 @@
-
 import { resolveDatabaseStrategy } from "../providers/databases/resolveDatabaseStrategy.js";
 import { resolvePaymentStrategy } from "../providers/payments/resolvePaymentStrategy.js";
 import { resolveLogger } from "../providers/logger/resolveLogger.js";
@@ -185,6 +184,7 @@ export const configureApplicationModules = async ({ env }) => {
     healthChecks,
     serviceName: env.serviceName,
     version: env.appVersion,
+    corsAllowedOrigins: env.corsAllowedOrigins,
 
     schedulers: [productsModule.createNewProductStatusScheduler()],
 

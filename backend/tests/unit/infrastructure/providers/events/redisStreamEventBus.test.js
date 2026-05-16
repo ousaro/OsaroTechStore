@@ -82,3 +82,60 @@ test("Redis stream event bus subscribes with XREAD and dispatches stream events"
   assert.deepEqual(handled, [{ id: "evt_1", type: "OrderPlaced", payload: { orderId: "o1" } }]);
   assert.equal(logs[0].msg, "RedisEventBus: handler subscribed");
 });
+
+test("Redis stream event bus dead-letters failed handler events", async () => {
+  const commands = [];
+  const logs = [];
+  let unsubscribe;
+  let reads = 0;
+  let deadLettered;
+  const deadLetteredPromise = new Promise((resolve) => {
+    deadLettered = resolve;
+  });
+
+  const bus = createRedisStreamEventBus({
+    redisClient: {
+      xAdd: async (...parts) => {
+        commands.push(parts);
+        deadLettered();
+        return "2-0";
+      },
+      xRead: async () => {
+        reads += 1;
+        if (reads > 1) return new Promise(() => {});
+        return [
+          {
+            name: "events:PaymentFailed",
+            messages: [
+              {
+                id: "1-0",
+                message: {
+                  data: JSON.stringify({
+                    id: "evt_2",
+                    type: "PaymentFailed",
+                    payload: { orderId: "o1" },
+                  }),
+                },
+              },
+            ],
+          },
+        ];
+      },
+    },
+    logger: {
+      debug: () => {},
+      error: (entry) => logs.push(entry),
+    },
+  });
+
+  unsubscribe = bus.subscribe("PaymentFailed", async () => {
+    unsubscribe();
+    throw new Error("boom");
+  });
+  await deadLetteredPromise;
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(commands[0][0], "events:dead-letter");
+  assert.equal(JSON.parse(commands[0][2].data).event.id, "evt_2");
+  assert.equal(logs[0].msg, "RedisEventBus: handler failed; event moved to dead letter stream");
+});

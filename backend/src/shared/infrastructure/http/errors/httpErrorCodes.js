@@ -1,4 +1,3 @@
-
 export const HTTP_STATUS_BY_ERROR_CODE = Object.freeze({
   VALIDATION: 400,
   INVALID_INPUT: 400,

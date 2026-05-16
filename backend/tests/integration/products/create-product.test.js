@@ -30,7 +30,8 @@ test("admin can create products through route, middleware, controller, use case,
     .expect(201);
 
   assert.equal(response.body.name, "ThinkPad X1");
-  assert.equal(response.body.category, category._id.toString());
+  assert.equal(response.body.categoryId, category._id.toString());
+  assert.equal(response.body.category, category.name);
 
   const persisted = await ctx.application.repositories.productRepository.findById(
     response.body._id

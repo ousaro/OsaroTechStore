@@ -40,7 +40,7 @@ OpenAPI source file:
 
 ## System Design Documentation
 
-- [System Design Choices](docs/system-design-choices.md)
+- [System Design Choices](docs/architecture/backend-system-design-choices.md)
 
 ## Local Setup
 
@@ -56,66 +56,30 @@ cd ../frontend && npm install
 
 ### 2) Configure environment variables
 
-Create these backend env files:
+Create `backend/.env` from `backend/.env.example` and set deployment-specific values:
 
 ```env
 # backend/.env
 PORT=5000
 CLIENT_URL=http://localhost:3000
-DATABASE_PROVIDER=mongo
-AUTH_PROVIDERS=credentials
-PAYMENT_PROVIDER=stripe
-SESSION_SECRET=change-me
-TOKEN_SECRET=change-me
-```
-
-```env
-# backend/.env.dev
-PORT=5000
-CLIENT_URL=http://localhost:3000
+CORS_ALLOWED_ORIGINS=http://localhost:3000
 DATABASE_PROVIDER=mongo
 MONGO_URI=<your_mongodb_connection_string>
-AUTH_PROVIDERS=credentials,google
-GOOGLE_CLIENT_ID=<google_client_id>
-GOOGLE_CLIENT_SECRET=<google_client_secret>
-CALLBACK_URL=http://localhost:5000/api/users/auth/google/callback
-PAYMENT_PROVIDER=stripe
-STRIPE_SECRET_KEY=<stripe_secret_key>
-STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
-```
-
-```env
-# backend/.env.test
-PORT=5000
-CLIENT_URL=http://localhost:3000
-DATABASE_PROVIDER=mongo
-MONGO_URI=mongodb://127.0.0.1:27017/osarotechstore-test
-AUTH_PROVIDERS=credentials,google
-GOOGLE_CLIENT_ID=test-google-client-id
-GOOGLE_CLIENT_SECRET=test-google-client-secret
-CALLBACK_URL=http://localhost:5000/api/users/auth/google/callback
-PAYMENT_PROVIDER=stripe
-STRIPE_SECRET_KEY=sk_test_backend
-STRIPE_WEBHOOK_SECRET=whsec_test_backend
-SESSION_SECRET=test-session-secret
-TOKEN_SECRET=test-token-secret
-```
-
-```env
-# backend/.env.prod
-PORT=5000
-CLIENT_URL=<your_frontend_url>
-DATABASE_PROVIDER=mongo
-MONGO_URI=<your_production_connection_string>
-AUTH_PROVIDERS=credentials,google
-GOOGLE_CLIENT_ID=<google_client_id>
-GOOGLE_CLIENT_SECRET=<google_client_secret>
-CALLBACK_URL=<your_google_callback_url>
-PAYMENT_PROVIDER=stripe
-STRIPE_SECRET_KEY=<stripe_secret_key>
-STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
-SESSION_SECRET=<strong_session_secret>
+MONGO_MIN_POOL_SIZE=2
+MONGO_MAX_POOL_SIZE=10
 TOKEN_SECRET=<strong_jwt_secret>
+TOKEN_EXPIRES_IN=15m
+LOGGER_PROVIDER=console
+EVENT_BUS_PROVIDER=inprocess
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=<stripe_secret_key>
+STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
+GOOGLE_CLIENT_ID=<google_client_id>
+GOOGLE_CLIENT_SECRET=<google_client_secret>
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+PRODUCT_IMAGE_UPLOAD_URL=https://object-storage.internal/products/
+PRODUCT_IMAGE_PUBLIC_URL=https://cdn.example.com/products/
+PRODUCT_IMAGE_UPLOAD_TOKEN=<storage_upload_token>
 ```
 
 Create `frontend/.env`:
@@ -123,13 +87,13 @@ Create `frontend/.env`:
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
 REACT_APP_GOOGLE_API_URL=http://localhost:5000/api/users/auth/google
-REACT_APP_FOR_PASSWORD_RESET=<password_reset_url_if_used>
 REACT_APP_STRIPE_PUBLIC_KEY=<stripe_publishable_key>
 ```
 
 Notes:
-- The backend loads `backend/.env` first, then overlays `backend/.env.dev`, `backend/.env.test`, or `backend/.env.prod` based on `NODE_ENV`.
-- `STRIPE_SECRET_KEY` is the preferred name now, but the backend still accepts legacy `STRIPE_SECTET_KEY`.
+- Store production secrets in the deployment secret manager and rotate any value that has been exposed locally or in logs.
+- Use `LOGGER_PROVIDER=json` in production when the host expects structured JSON logs.
+- `CORS_ALLOWED_ORIGINS` is comma-separated and should list only trusted frontend origins when credentials are enabled.
 
 Development note:
 - MongoDB is still required for backend startup.
