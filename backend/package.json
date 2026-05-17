@@ -15,6 +15,8 @@
     "test:integration": "node --test $(find tests/integration -name '*.test.js' -print)",
     "test:e2e": "cucumber-js --config cucumber.js",
     "test:cucumber": "cucumber-js --config cucumber.js",
+    "test:regression": "node --test $(find tests/regression -name '*.test.js' -print)",
+    "test:flakiness": "for i in 1 2 3; do echo \"=== Run $i ===\"; npx --yes node --test $(find tests/unit tests/integration -name '*.test.js' -print) 2>&1 | tail -5; done",
     "coverage": "c8 npm test",
     "coverage:sonar": "c8 --reporter=lcov --report-dir=coverage npm test",
     "coverage:unit:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/unit/html npm run test:unit",

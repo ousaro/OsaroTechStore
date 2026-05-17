@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { axe } from "jest-axe";
 import { CartPage } from "./CartPage.jsx";
 
 const defaultUseCart = {
@@ -29,10 +30,11 @@ beforeEach(() => {
   mockUseCartValue = defaultUseCart;
 });
 
-test("renders cart items with product details", () => {
-  render(<CartPage />);
+test("renders cart items with product details and passes axe", async () => {
+  const { container } = render(<CartPage />);
   expect(screen.getByText("Keyboard")).toBeInTheDocument();
   expect(screen.getByText("Mouse")).toBeInTheDocument();
+  await expect(axe(container)).resolves.toHaveNoViolations();
 });
 
 test("displays empty cart when cart is empty", () => {

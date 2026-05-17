@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { axe } from "jest-axe";
 import { createProductsViewAdapter, useProducts } from "./useProducts.js";
 
 jest.mock("../../auth/hooks/useAuth.js", () => ({
@@ -41,11 +42,12 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("ProductsProvider provides context and loads products on mount", async () => {
+test("ProductsProvider provides context and loads products on mount, passes axe", async () => {
   const { productsInputPort, productReadModel } = createDeps();
   const { ProductsProvider } = createProductsViewAdapter({ productsInputPort, productReadModel });
-  render(<ProductsProvider><TestChild /></ProductsProvider>);
+  const { container } = render(<ProductsProvider><TestChild /></ProductsProvider>);
   expect(await screen.findByTestId("ctx")).toBeTruthy();
+  await expect(axe(container)).resolves.toHaveNoViolations();
 });
 
 test("useProducts throws when used outside ProductsProvider", () => {

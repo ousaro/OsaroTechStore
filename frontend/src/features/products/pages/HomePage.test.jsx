@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { axe } from "jest-axe";
 import { HomePage } from "./HomePage.jsx";
 
 var mockProducts = [
@@ -34,9 +35,10 @@ beforeEach(() => {
   ];
 });
 
-test("renders hero section with live products stat", () => {
-  render(<HomePage categories={categories} />);
+test("renders hero section with live products stat and passes axe", async () => {
+  const { container } = render(<HomePage categories={categories} />);
   expect(screen.getByText("live products")).toBeInTheDocument();
+  await expect(axe(container)).resolves.toHaveNoViolations();
 });
 
 test("renders product cards", () => {

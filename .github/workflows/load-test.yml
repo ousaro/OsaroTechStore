@@ -1,0 +1,93 @@
+name: Load Test
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/src/**"
+      - "backend/tests/load/**"
+      - ".github/workflows/load-test.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  k6-load-test:
+    name: k6 API Load Test
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start backend server
+        run: |
+          echo "MONGO_URI=mongodb://localhost:27017/osarotechstore-loadtest" > .env
+          echo "REDIS_URL=redis://localhost:6379" >> .env
+          echo "SESSION_SECRET=loadtest-secret" >> .env
+          echo "JWT_SECRET=loadtest-jwt-secret" >> .env
+          echo "STRIPE_SECRET_KEY=sk_test_loadtest" >> .env
+          echo "STRIPE_WEBHOOK_SECRET=whsec_loadtest" >> .env
+          node src/server.js &
+          sleep 5
+          curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:5000/health
+
+      - name: Seed test data
+        run: |
+          curl -X POST http://localhost:5000/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"firstName":"Seed","lastName":"Admin","email":"admin@loadtest.example","password":"Password123!"}'
+
+      - name: Run k6 load tests
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: backend/tests/load/scenarios.js
+          flags: -e BASE_URL=http://localhost:5000
+
+      - name: Run individual k6 scripts
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: backend/tests/load/productList.js
+          flags: -e BASE_URL=http://localhost:5000
+
+      - name: Run product search load test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: backend/tests/load/productSearch.js
+          flags: -e BASE_URL=http://localhost:5000
+
+      - name: Run auth flow load test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: backend/tests/load/authFlow.js
+          flags: -e BASE_URL=http://localhost:5000
+
+      - name: Stop backend
+        if: always()
+        run: kill $(lsof -t -i:5000) || true

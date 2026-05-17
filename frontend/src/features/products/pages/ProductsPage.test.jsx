@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { axe } from "jest-axe";
 import { ProductsPage } from "./ProductsPage.jsx";
 
 const mockProducts = [
@@ -33,12 +34,13 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("renders product catalog with all products", () => {
-  render(<ProductsPage categories={categories} />);
+test("renders product catalog with all products and passes axe", async () => {
+  const { container } = render(<ProductsPage categories={categories} />);
   expect(screen.getByText("Products")).toBeInTheDocument();
   expect(screen.getByText("Keyboard")).toBeInTheDocument();
   expect(screen.getByText("Gaming Mouse")).toBeInTheDocument();
   expect(screen.getByText("Monitor")).toBeInTheDocument();
+  await expect(axe(container)).resolves.toHaveNoViolations();
 });
 
 test("shows correct product counts", () => {

@@ -40,3 +40,15 @@ test: ## Run backend unit and integration tests.
 
 clean: ## Remove generated backend coverage output.
 	rm -rf $(BACKEND_DIR)/coverage $(BACKEND_DIR)/tests/coverage
+
+load-test: ## Run k6 load tests (requires k6 installed).
+	k6 run $(BACKEND_DIR)/tests/load/scenarios.js -e BASE_URL=http://localhost:5000
+
+load-test-listing: ## Run product listing load test.
+	k6 run $(BACKEND_DIR)/tests/load/productList.js -e BASE_URL=http://localhost:5000
+
+load-test-auth: ## Run auth flow load test.
+	k6 run $(BACKEND_DIR)/tests/load/authFlow.js -e BASE_URL=http://localhost:5000
+
+load-test-checkout: ## Run checkout flow load test.
+	k6 run $(BACKEND_DIR)/tests/load/checkoutFlow.js -e BASE_URL=http://localhost:5000

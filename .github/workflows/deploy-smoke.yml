@@ -1,0 +1,46 @@
+name: Post-Deploy Smoke Test
+
+on:
+  workflow_run:
+    workflows: ["Build & Push to Docker Hub"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    name: Run E2E Smoke Tests Post-Deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run E2E smoke tests
+        run: npm run test:e2e
+        env:
+          CI: true
+
+      - name: Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-cucumber-report
+          path: backend/tests/coverage/cucumber-report.html
+          if-no-files-found: ignore

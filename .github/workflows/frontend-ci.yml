@@ -45,3 +45,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Run a11y audit
+        run: |
+          npx serve -s build -l 3000 &
+          SERVE_PID=$!
+          sleep 3
+          npx pa11y-ci --url "http://localhost:3000" --url "http://localhost:3000/products" --url "http://localhost:3000/cart" --url "http://localhost:3000/login" || true
+          kill $SERVE_PID 2>/dev/null || true
