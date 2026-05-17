@@ -242,12 +242,13 @@
   .products-grid { @apply grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3.5 sm:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] sm:gap-4; }
   .product-card { @apply cursor-pointer overflow-hidden; }
   .product-img-wrap { @apply relative m-2 mb-0 aspect-[4/3] overflow-hidden rounded bg-[image:var(--product-well)]; }
+  .product-img-wrap > a { @apply block h-full w-full text-inherit no-underline; }
   .product-img-wrap::after { @apply pointer-events-none absolute inset-0 rounded ring-1 ring-inset ring-white/70 content-[''] dark:ring-white/10; }
   .product-img-wrap img { @apply h-full w-full object-contain p-4 transition-transform duration-300; }
   .product-card:hover .product-img-wrap img { @apply scale-[1.06]; }
   .product-actions-overlay { @apply absolute inset-x-0 bottom-0 flex translate-y-0 gap-2 bg-[linear-gradient(transparent,rgba(7,11,18,.78))] p-2 opacity-100 transition-all duration-200 md:translate-y-1 md:p-3 md:opacity-0; }
   .product-card:hover .product-actions-overlay { @apply translate-y-0 opacity-100; }
-  .product-body { @apply px-3 pb-3.5 pt-3 sm:px-3.5 sm:pb-4; }
+  .product-body { @apply block px-3 pb-3.5 pt-3 text-inherit no-underline sm:px-3.5 sm:pb-4; }
   .product-category { @apply mb-1 text-[10px] font-bold uppercase tracking-[.04em] text-accent; }
   .product-name { @apply mb-2 min-h-[38px] text-[13px] font-extrabold leading-snug sm:text-sm; }
   .product-meta-row { @apply mb-2 flex flex-wrap gap-1; }

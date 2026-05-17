@@ -42,22 +42,18 @@ export function ProductCard({ product: p }) {
     }
   };
 
+  const productHref = `/product/${p.id}`;
+  const openProduct = (e) => {
+    e.preventDefault();
+    navigate(productHref);
+  };
+
   return (
-    <article
-      className="card card-hover product-card"
-      onClick={() => navigate(`/product/${p.id}`)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          navigate(`/product/${p.id}`);
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label={`View ${p.name}`}
-    >
+    <article className="card card-hover product-card">
       <div className="product-img-wrap">
-        <ProductImage src={p.primaryImage} alt={p.name} placeholderSize={58} />
+        <a href={productHref} onClick={openProduct} aria-label={`View ${p.name}`}>
+          <ProductImage src={p.primaryImage} alt={p.name} placeholderSize={58} />
+        </a>
         
         {p.status === "new" && <div className="absolute left-2 top-2"><Badge status="new" /></div>}
         <div className="product-actions-overlay">
@@ -69,7 +65,7 @@ export function ProductCard({ product: p }) {
           </button>
         </div>
       </div>
-      <div className="product-body">
+      <a href={productHref} onClick={openProduct} className="product-body">
         <div className="product-category">{p.category}</div>
         <div className="product-name" title={p.name}>{p.name}</div>
         <div className="product-meta-row">
@@ -83,7 +79,7 @@ export function ProductCard({ product: p }) {
         <div className={`product-stock ${p.lowStock?"low":p.inStock?"":"out"}`}>
           {p.inStock ? (p.lowStock ? `Only ${p.stock} left` : `In stock (${p.stock})`) : "Out of stock"}
         </div>
-      </div>
+      </a>
     </article>
   );
 }

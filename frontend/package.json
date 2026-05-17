@@ -16,6 +16,11 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "jest-axe": "^10.0.0",
+    "pa11y-ci": "^4.1.1",
     "prettier": "^3.8.3",
     "react-scripts": "5.0.1",
     "tailwindcss": "^3.4.4"
@@ -24,6 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false --coverage",
+    "a11y": "pa11y-ci --sitemap http://localhost:3000/sitemap.xml",
     "lint": "eslint src --ext .js,.jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md}\"",

@@ -5,6 +5,8 @@ import { createMongoMemoryTestServer } from "../../shared/utils/mongoMemoryServe
 import { createTestApplication } from "../../shared/utils/testApp.js";
 import { createStripeGatewayMock } from "../../shared/mocks/stripeGatewayMock.js";
 
+const playwrightEnabled = process.env.PLAYWRIGHT_ENABLED === "true";
+
 Before(async function () {
   this.mongo = createMongoMemoryTestServer();
   const dbClient = await this.mongo.connect();
@@ -24,11 +26,13 @@ Before(async function () {
     extraHTTPHeaders: { "content-type": "application/json" },
   });
 
-  this.browser = await chromium.launch({
-    headless: process.env.PLAYWRIGHT_HEADLESS !== "false",
-    executablePath: existsSync("/usr/bin/google-chrome") ? "/usr/bin/google-chrome" : undefined,
-  });
-  this.page = await this.browser.newPage();
+  if (playwrightEnabled) {
+    this.browser = await chromium.launch({
+      headless: process.env.PLAYWRIGHT_HEADLESS !== "false",
+      executablePath: existsSync("/usr/bin/google-chrome") ? "/usr/bin/google-chrome" : undefined,
+    });
+    this.page = await this.browser.newPage();
+  }
 });
 
 After(async function (scenario) {
