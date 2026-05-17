@@ -38,7 +38,7 @@ services:
       MONGO_URI: mongodb://mongo:27017/osarotechstore
       REDIS_URL: redis://redis:6379
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:5000/health"]
+      test: ["CMD", "node", "--eval", "require('http').get('http://localhost:5000/health', r => process.exit(r.statusCode !== 200 ? 1 : 0))"]
       interval: 30s
       timeout: 10s
       retries: 3
