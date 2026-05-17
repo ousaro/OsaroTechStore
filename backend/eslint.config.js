@@ -39,6 +39,11 @@ export default [
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      eqeqeq: ["warn", "always"],
+      "no-throw-literal": "error",
+      curly: ["warn", "all"],
+      "prefer-template": "warn",
+      "no-shadow": "warn",
     },
   },
 ];

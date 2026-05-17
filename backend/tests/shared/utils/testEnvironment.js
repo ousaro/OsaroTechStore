@@ -22,6 +22,7 @@ export const buildTestEnv = (overrides = {}) =>
     paypalClientSecret: undefined,
     eventBusProvider: "inprocess",
     redisUrl: undefined,
+    sessionSecret: "integration-test-session-secret",
     clientUrl: "http://localhost:3000",
     corsAllowedOrigins: ["http://localhost:3000"],
     oauthProviders: {
