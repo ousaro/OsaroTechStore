@@ -15,6 +15,11 @@ import { createErrorMiddleware } from "../shared/infrastructure/http/middleware/
 import { notFoundMiddleware } from "../shared/infrastructure/http/middleware/notFoundMiddleware.js";
 import { registerOpenApiDocs } from "../shared/infrastructure/http/openApiDocs.js";
 import { createHealthRoutes } from "../shared/infrastructure/http/healthRoutes.js";
+import {
+  apiVersion,
+  apiDeprecationWarning,
+  API_PREFIX,
+} from "../shared/infrastructure/http/middleware/apiVersionMiddleware.js";
 
 const createCorsOptions = ({ allowedOrigins = [] } = {}) => ({
   credentials: true,
@@ -117,12 +122,22 @@ export const createApp = ({
 
   app.use(createHealthRoutes({ healthChecks, serviceName, version }));
 
+  app.use(apiVersion);
+  app.use(apiDeprecationWarning);
+
   app.use("/api/auth", authRoutes({ requireAuth }));
   app.use("/api/users", usersRoutes({ requireAuth }));
   app.use("/api/products", productsRoutes({ requireAuth }));
   app.use("/api/categories", categoriesRoutes({ requireAuth }));
   app.use("/api/orders", ordersRoutes({ requireAuth }));
   app.use("/api/payments", paymentsRoutes({ requireAuth }));
+
+  app.use(API_PREFIX + "/auth", authRoutes({ requireAuth }));
+  app.use(API_PREFIX + "/users", usersRoutes({ requireAuth }));
+  app.use(API_PREFIX + "/products", productsRoutes({ requireAuth }));
+  app.use(API_PREFIX + "/categories", categoriesRoutes({ requireAuth }));
+  app.use(API_PREFIX + "/orders", ordersRoutes({ requireAuth }));
+  app.use(API_PREFIX + "/payments", paymentsRoutes({ requireAuth }));
 
   app.use(notFoundMiddleware);
   app.use(createErrorMiddleware(logger));

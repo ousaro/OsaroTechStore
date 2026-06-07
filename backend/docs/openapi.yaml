@@ -6,8 +6,10 @@ info:
     REST API documentation for OsaroTechStore backend.
     This specification mirrors the current Express routes and controller behavior.
 servers:
+  - url: http://localhost:5000/api/v1
+    description: Current API version (v1)
   - url: http://localhost:5000/api
-    description: Local development server
+    description: Legacy API (will be deprecated)
 tags:
   - name: Authentication
   - name: Users

@@ -1,5 +1,11 @@
 # OsaroTechStore
 
+[![CI](https://github.com/ousaro/OsaroTechStore/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/ousaro/OsaroTechStore/actions/workflows/backend-ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org)
+[![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker)](https://docker.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code Coverage](https://img.shields.io/badge/coverage-%3E70%25-brightgreen)]()
+
 OsaroTechStore is a full-stack MERN e-commerce application with customer shopping flows, admin management, Stripe payments, and Google OAuth authentication.
 
 ## Project Structure
@@ -22,11 +28,15 @@ OsaroTechStore is a full-stack MERN e-commerce application with customer shoppin
 ## Tech Stack
 
 - Frontend: React, React Router, Tailwind CSS
-- Backend: Node.js, Express, Mongoose
-- Database: MongoDB
+- Backend: Node.js (24), Express, Mongoose, TypeScript
+- Database: MongoDB (with schema validation, migrations, compound indexes)
 - Authentication: JWT + Passport Google OAuth
-- Payments: Stripe Checkout
-- Testing: Mocha/Chai/Sinon (backend), React Testing Library (frontend)
+- Payments: Stripe Checkout (idempotent, retry with backoff)
+- Logging: Pino (structured JSON, redacted secrets)
+- Validation: Zod (request validation middleware)
+- Testing: Node test runner (backend), React Testing Library (frontend)
+- API: Versioned (`/api/v1/`), OpenAPI 3.0 docs at `/api-docs`
+- Patterns: CQRS (payments), soft-delete, idempotency, retry with exponential backoff
 
 ## API Documentation (Swagger)
 
@@ -36,6 +46,7 @@ After starting the backend:
 - OpenAPI JSON: `http://localhost:5000/api/docs.json`
 
 OpenAPI source file:
+
 - `backend/docs/openapi.yaml`
 
 ## System Design Documentation
@@ -91,11 +102,13 @@ REACT_APP_STRIPE_PUBLIC_KEY=<stripe_publishable_key>
 ```
 
 Notes:
+
 - Store production secrets in the deployment secret manager and rotate any value that has been exposed locally or in logs.
 - Use `LOGGER_PROVIDER=json` in production when the host expects structured JSON logs.
 - `CORS_ALLOWED_ORIGINS` is comma-separated and should list only trusted frontend origins when credentials are enabled.
 
 Development note:
+
 - MongoDB is still required for backend startup.
 - Google OAuth is optional in development; if its env vars are omitted, `/api/users/auth/google` returns `503` instead of crashing the server.
 - Stripe is optional in development; if its env vars are omitted, payment routes return `503` instead of crashing the server.
@@ -117,6 +130,7 @@ npm start
 ## Scripts
 
 Backend (`backend/package.json`):
+
 - `npm run backend` -> alias for `npm run backend:dev`
 - `npm run backend:dev` -> starts the API with `NODE_ENV=development`
 - `npm run backend:test` -> starts the API with `NODE_ENV=test`
@@ -125,6 +139,7 @@ Backend (`backend/package.json`):
 - `npm run test:backend` -> runs backend tests with `NODE_ENV=test`
 
 Frontend (`frontend/package.json`):
+
 - `npm start` -> starts React dev server
 - `npm test` -> runs frontend tests
 - `npm run build` -> production build
@@ -147,9 +162,7 @@ npm test
 
 ## Deployment / Demo
 
-- Live app: https://osaro-tech-store.vercel.app/
-- Admin preview video: https://www.youtube.com/watch?v=STGQrQquc94
-- DevOps blog series: https://gitlab.com/ousaro/osarotechstore_blogseries
+Deployment instructions and CI/CD workflows are in `.github/workflows/`.
 
 ## License
 

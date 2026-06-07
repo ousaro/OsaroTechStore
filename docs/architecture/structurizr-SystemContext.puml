@@ -1,0 +1,120 @@
+@startuml
+title <size:24>System Context View: Express API</size>
+
+set separator none
+left to right direction
+skinparam ranksep 20
+skinparam nodesep 5
+hide stereotype
+
+<style>
+  root {
+    BackgroundColor: #ffffff;
+    FontColor: #444444;
+  }
+  // Element
+  .Element-RWxlbWVudA== {
+    BackgroundColor: #ffffff;
+    LineColor: #444444;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #444444;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Backend
+  .Element-RWxlbWVudCxCYWNrZW5k {
+    BackgroundColor: #438dd5;
+    LineColor: #2e6295;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Cache
+  .Element-RWxlbWVudCxDYWNoZQ== {
+    BackgroundColor: #f4b400;
+    LineColor: #aa7d00;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Database
+  .Element-RWxlbWVudCxEYXRhYmFzZQ== {
+    BackgroundColor: #6cb133;
+    LineColor: #4b7b23;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Frontend
+  .Element-RWxlbWVudCxGcm9udGVuZA== {
+    BackgroundColor: #85bbf0;
+    LineColor: #5d82a8;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Person
+  .Element-RWxlbWVudCxQZXJzb24= {
+    BackgroundColor: #08427b;
+    LineColor: #052e56;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Relationship
+  .Relationship-UmVsYXRpb25zaGlw {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #444444;
+    FontColor: #444444;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+</style>
+
+person "==Customer\n<size:16>[Person]</size>\n\nShopper browsing and purchasing products" <<Element-RWxlbWVudCxQZXJzb24=>> as Customer
+database "==MongoDB\n<size:16>[Software System]</size>\n\nPrimary data store with schema validation" <<Element-RWxlbWVudCxEYXRhYmFzZQ==>> as MongoDB
+rectangle "==Redis\n<size:16>[Software System]</size>\n\nSession store and cache" <<Element-RWxlbWVudCxDYWNoZQ==>> as Redis
+person "==Admin\n<size:16>[Person]</size>\n\nManages products, categories, users, and orders" <<Element-RWxlbWVudCxQZXJzb24=>> as Admin
+rectangle "==Google OAuth\n<size:16>[Software System]</size>\n\nProvides OAuth 2.0 authentication" <<Element-RWxlbWVudA==>> as GoogleOAuth
+rectangle "==Stripe\n<size:16>[Software System]</size>\n\nPayment processing and webhook events" <<Element-RWxlbWVudA==>> as Stripe
+rectangle "==React SPA\n<size:16>[Software System]</size>\n\nCustomer-facing single-page application" <<Element-RWxlbWVudCxGcm9udGVuZA==>> as ReactSPA
+rectangle "==Express API\n<size:16>[Software System]</size>\n\nBackend REST API handling business logic" <<Element-RWxlbWVudCxCYWNrZW5k>> as ExpressAPI
+
+Customer --> ReactSPA <<Relationship-UmVsYXRpb25zaGlw>> : "Browses products, manages cart, checks out\n<size:16>[HTTPS]</size>"
+Customer --> ExpressAPI <<Relationship-UmVsYXRpb25zaGlw>> : "Authenticates, views orders\n<size:16>[HTTPS]</size>"
+Admin --> ReactSPA <<Relationship-UmVsYXRpb25zaGlw>> : "Manages catalog, users, orders\n<size:16>[HTTPS]</size>"
+Admin --> ExpressAPI <<Relationship-UmVsYXRpb25zaGlw>> : "CRUD operations\n<size:16>[HTTPS]</size>"
+ReactSPA --> ExpressAPI <<Relationship-UmVsYXRpb25zaGlw>> : "All API calls\n<size:16>[HTTPS]</size>"
+ReactSPA --> GoogleOAuth <<Relationship-UmVsYXRpb25zaGlw>> : "Social login redirect\n<size:16>[HTTPS]</size>"
+ExpressAPI --> MongoDB <<Relationship-UmVsYXRpb25zaGlw>> : "Read/write data\n<size:16>[Mongoose]</size>"
+ExpressAPI --> Redis <<Relationship-UmVsYXRpb25zaGlw>> : "Session lookups\n<size:16>[ioredis]</size>"
+ExpressAPI --> Stripe <<Relationship-UmVsYXRpb25zaGlw>> : "Create checkout sessions\n<size:16>[HTTPS]</size>"
+Stripe --> ExpressAPI <<Relationship-UmVsYXRpb25zaGlw>> : "Webhook events\n<size:16>[HTTPS]</size>"
+ExpressAPI --> GoogleOAuth <<Relationship-UmVsYXRpb25zaGlw>> : "Verify tokens\n<size:16>[HTTPS]</size>"
+
+@enduml
