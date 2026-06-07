@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "allowJs": true,
+    "checkJs": false,
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@shared/*": ["./src/shared/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@app/*": ["./src/app/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "coverage", "tests"]
+}

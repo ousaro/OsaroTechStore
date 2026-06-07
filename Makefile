@@ -41,6 +41,15 @@ test: ## Run backend unit and integration tests.
 clean: ## Remove generated backend coverage output.
 	rm -rf $(BACKEND_DIR)/coverage $(BACKEND_DIR)/tests/coverage
 
+migrate: ## Run pending database migrations.
+	cd $(BACKEND_DIR) && npm run migrate
+
+migrate-down: ## Rollback last migration (add N=2 for 2 steps).
+	cd $(BACKEND_DIR) && npm run migrate:down $(N)
+
+migrate-create: ## Create a new migration file: make migrate-create NAME="add-indexes"
+	cd $(BACKEND_DIR) && npm run migrate:create "$(NAME)"
+
 load-test: ## Run k6 load tests (requires k6 installed).
 	k6 run $(BACKEND_DIR)/tests/load/scenarios.js -e BASE_URL=http://localhost:5000
 

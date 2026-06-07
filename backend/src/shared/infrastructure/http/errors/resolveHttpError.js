@@ -25,6 +25,7 @@ export const resolveHttpError = (error, req, res, logger) => {
   }
 
   return res.status(status).json({
+    success: false,
     error: {
       code: error.code ?? "INTERNAL_ERROR",
       message: status >= 500 ? "Internal server error" : error.message,

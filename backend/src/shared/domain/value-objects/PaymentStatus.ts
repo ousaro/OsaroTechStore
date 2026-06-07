@@ -7,18 +7,27 @@ export const PAYMENT_STATUSES = Object.freeze({
   FAILED: "failed",
   REFUNDED: "refunded",
   EXPIRED: "expired",
-});
+} as const);
+
+export type PaymentStatusValue = (typeof PAYMENT_STATUSES)[keyof typeof PAYMENT_STATUSES];
 
 const ALLOWED = new Set(Object.values(PAYMENT_STATUSES));
 
-export const createPaymentStatus = (value = PAYMENT_STATUSES.PENDING) => {
+interface PaymentStatus {
+  value: PaymentStatusValue;
+  toPrimitives(): PaymentStatusValue;
+  toString(): PaymentStatusValue;
+  equals(other: { value: string } | null): boolean;
+}
+
+export const createPaymentStatus = (value: string = PAYMENT_STATUSES.PENDING): PaymentStatus => {
   try {
     assertNonEmptyString(value, "paymentStatus");
-  } catch (_err) {
+  } catch {
     throw new DomainValidationError("paymentStatus must be a non-empty string");
   }
 
-  const normalized = value.trim().toLowerCase();
+  const normalized = value.trim().toLowerCase() as PaymentStatusValue;
 
   if (!ALLOWED.has(normalized)) {
     throw new DomainValidationError(
@@ -34,7 +43,7 @@ export const createPaymentStatus = (value = PAYMENT_STATUSES.PENDING) => {
     toString() {
       return normalized;
     },
-    equals(other) {
+    equals(other: { value: string } | null) {
       return other?.value === normalized;
     },
   });

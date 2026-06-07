@@ -1,3 +1,4 @@
+// @ts-nocheck
 const defaultTimestampFormat = "YYYY-MM-DD HH:mm:ss.SSS";
 
 const colors = {

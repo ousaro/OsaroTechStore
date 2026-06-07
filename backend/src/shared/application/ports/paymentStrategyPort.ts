@@ -5,33 +5,50 @@ import {
 } from "../../kernel/assertions/index.js";
 import { assertPaymentGatewayPort } from "./paymentGatewayPort.js";
 
-export const assertPaymentStrategyPort = (strategy, context = "unknown") => {
+interface PaymentGateway {
+  createRedirectPayment(data: unknown): Promise<{ url: string }>;
+  verifyWebhook(payload: unknown, signature: string): Promise<Record<string, unknown>>;
+}
+
+export interface PaymentStrategy {
+  provider: string;
+  label: string;
+  paymentsEnabled: boolean;
+  webhookEnabled: boolean;
+  gateway?: PaymentGateway;
+}
+
+export const assertPaymentStrategyPort = (
+  strategy: unknown,
+  context = "unknown"
+): PaymentStrategy => {
   assertObject(strategy, "paymentStrategy", `[${context}] payment strategy is required`);
+  const s = strategy as Record<string, unknown>;
 
   assertNonEmptyString(
-    strategy.provider,
+    s.provider as string,
     "paymentStrategy.provider",
     `[${context}] payment strategy provider is required`
   );
   assertNonEmptyString(
-    strategy.label,
+    s.label as string,
     "paymentStrategy.label",
     `[${context}] payment strategy label is required`
   );
   assertBoolean(
-    strategy.paymentsEnabled,
+    s.paymentsEnabled,
     "paymentStrategy.paymentsEnabled",
     `[${context}] payment strategy paymentsEnabled must be a boolean`
   );
   assertBoolean(
-    strategy.webhookEnabled,
+    s.webhookEnabled,
     "paymentStrategy.webhookEnabled",
     `[${context}] payment strategy webhookEnabled must be a boolean`
   );
 
-  if (strategy.paymentsEnabled || strategy.webhookEnabled) {
-    assertPaymentGatewayPort(strategy.gateway, context);
+  if (s.paymentsEnabled || s.webhookEnabled) {
+    assertPaymentGatewayPort(s.gateway, context);
   }
 
-  return strategy;
+  return s as unknown as PaymentStrategy;
 };

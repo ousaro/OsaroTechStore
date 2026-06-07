@@ -6,8 +6,13 @@
   "main": "src/server.js",
   "scripts": {
     "backend": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "lint": "eslint src --ext .js",
+    "dev": "tsx watch src/server.js",
+    "dev:js": "node --watch src/server.js",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/server.js",
+    "lint": "eslint src --ext .js,.ts",
     "format": "prettier --write \"**/*.{js,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{js,json,md,yml,yaml}\"",
     "test": "node --test $(find tests/unit tests/integration -name '*.test.js' -print)",
@@ -23,6 +28,9 @@
     "coverage:integration:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/integration/html npm run test:integration",
     "coverage:html": "c8 --reporter=html --report-dir=tests/coverage/global/html npm test",
     "coverage:e2e": "c8 --all=false --reporter=text --reporter=html --report-dir=tests/coverage/e2e npm run test:e2e",
+    "migrate": "node migrations/migrate.js",
+    "migrate:down": "node migrations/migrate.js down",
+    "migrate:create": "node migrations/migrate.js create",
     "sonar": "npx @sonar/scan",
     "sonar:local": "set -a; . ./.env.sonar; set +a; npx @sonar/scan -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.organization=$SONAR_ORGANIZATION"
   },
@@ -58,20 +66,27 @@
     "express-session": "^1.19.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "migrate-mongo": "^14.0.7",
+    "mongodb": "^7.2.0",
     "mongoose": "^8.3.4",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pino": "^10.3.1",
     "redis": "^5.12.1",
     "stripe": "^15.7.0",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.8.2",
+    "@types/node": "^25.9.2",
     "c8": "^11.0.0",
     "eslint": "^9.39.4",
     "mongodb-memory-server": "^11.1.0",
     "playwright": "^1.59.1",
     "prettier": "^3.8.3",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

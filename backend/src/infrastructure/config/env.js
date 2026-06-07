@@ -26,7 +26,9 @@ const optional = (key, fallback = undefined) => process.env[key] ?? fallback;
 
 const optionalBoolean = (key, fallback = false) => {
   const value = process.env[key];
-  if (value === undefined) {return fallback;}
+  if (value === undefined) {
+    return fallback;
+  }
   return !["false", "0", "no", "off"].includes(String(value).toLowerCase());
 };
 
@@ -57,7 +59,7 @@ export const env = Object.freeze({
   nodeEnv: optional("NODE_ENV", "development"),
   port: Number.parseInt(optional("PORT", "5000"), 10),
 
-  loggerProvider: optional("LOGGER_PROVIDER", "console"),
+  loggerProvider: optional("LOGGER_PROVIDER", "pino"),
 
   no_color: optionalBoolean("NO_COLOR", false),
   loggerTimestampFormat: optional("LOGGER_TIMESTAMP_FORMAT", "YYYY-MM-DD HH:mm:ss.SSS"),
