@@ -18,14 +18,14 @@ jobs:
     steps:
       - name: Update GitOps repo and sync ArgoCD
         run: |
-          GITOPS_DIR="$HOME/osarotechstore-infra"
+          GITOPS_DIR="$HOME/Projects/osarotechstore-infra"
           IMAGE_TAG="${{ github.event.workflow_run.head_sha || github.sha }}"
 
           # Update image tag in the local GitOps repo
           cd "$GITOPS_DIR"
-          sed -i "s/newTag: .*/newTag: ${IMAGE_TAG}/" overlays/local/kustomization.yaml
+          sed -i "s/newTag: .*/newTag: backend-${IMAGE_TAG}/" overlays/local/kustomization.yaml
           git add overlays/local/kustomization.yaml
-          git commit -m "chore: update backend image tag to ${IMAGE_TAG}" || true
+          git commit -m "chore: update backend image tag to backend-${IMAGE_TAG}" || true
           git push origin main
 
           # Sync ArgoCD
