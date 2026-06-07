@@ -76,8 +76,11 @@ export const up = async (db) => {
     },
   });
   await db.collection("products").createIndex({ category: 1 });
-  await db.collection("products").createIndex({ status: 1, createdAt: 1 });
+  await db.collection("products").createIndex({ status: 1, createdAt: -1 });
+  await db.collection("products").createIndex({ category: 1, status: 1, createdAt: -1 });
   await db.collection("products").createIndex({ name: "text", description: "text" });
+  await db.collection("products").createIndex({ price: 1 });
+  await db.collection("products").createIndex({ createdAt: -1 });
 
   // ── Orders collection ──
   await db.createCollection("orders", {
@@ -104,6 +107,9 @@ export const up = async (db) => {
     },
   });
   await db.collection("orders").createIndex({ ownerId: 1, createdAt: -1 });
+  await db.collection("orders").createIndex({ status: 1, createdAt: -1 });
+  await db.collection("orders").createIndex({ createdAt: -1 });
+  await db.collection("orders").createIndex({ isPaid: 1, ownerId: 1 });
 
   // ── Payments collection ──
   await db.createCollection("payments", {
@@ -127,6 +133,18 @@ export const up = async (db) => {
   await db.collection("payments").createIndex({ orderId: 1 }, { unique: true });
   await db.collection("payments").createIndex({ sessionId: 1 });
   await db.collection("payments").createIndex({ status: 1 });
+
+  // ── Audit logs ──
+  await db.createCollection("audit_logs");
+  await db.collection("audit_logs").createIndex({ action: 1, timestamp: -1 });
+  await db.collection("audit_logs").createIndex({ actor: 1, timestamp: -1 });
+  await db.collection("audit_logs").createIndex({ timestamp: -1 });
+
+  // ── Idempotency store ──
+  await db.createCollection("_idempotency");
+  await db.collection("_idempotency").createIndex({ key: 1 }, { unique: true });
+  await db.collection("_idempotency").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+  await db.collection("_idempotency").createIndex({ processedAt: 1 });
 
   console.log("  ✓ Created collections and indexes");
 };

@@ -3,7 +3,8 @@ import { buildVerifyWebhookUseCase } from "./application/commands/verifyWebhookU
 import { buildLinkPaymentToOrderUseCase } from "./application/commands/linkPaymentToOrderUseCase.js";
 import { buildGetPaymentByOrderIdUseCase } from "./application/queries/getPaymentByOrderIdUseCase.js";
 
-import { createPaymentsInputPort } from "./ports/input/paymentsInputPort.js";
+import { createPaymentsCommandsPort } from "./ports/input/paymentsCommandsPort.js";
+import { createPaymentsQueriesPort } from "./ports/input/paymentsQueriesPort.js";
 import {
   assertPaymentRepositoryPort,
   assertPaymentEventPublisherPort,
@@ -21,6 +22,7 @@ export const createPaymentsModule = ({
   webhookEnabled,
   clientUrl,
   logger,
+  idempotencyStore,
 }) => {
   assertNonEmptyString(
     clientUrl,
@@ -48,6 +50,7 @@ export const createPaymentsModule = ({
     paymentEventPublisher,
     webhookEnabled,
     logger,
+    idempotencyStore,
   });
 
   const linkPaymentToOrder = buildLinkPaymentToOrderUseCase({
@@ -60,20 +63,23 @@ export const createPaymentsModule = ({
 
   const getPaymentByOrderId = buildGetPaymentByOrderIdUseCase({ paymentRepository });
 
-  const paymentsInputPort = createPaymentsInputPort({
+  const paymentsCommands = createPaymentsCommandsPort({
     createPaymentIntent,
     verifyWebhook,
     linkPaymentToOrder,
+  });
+
+  const paymentsQueries = createPaymentsQueriesPort({
     getPaymentByOrderId,
   });
 
-  const controller = createPaymentsHttpController({ paymentsInputPort });
+  const controller = createPaymentsHttpController({ paymentsCommands, paymentsQueries });
 
   const createRoutes = ({ requireAuth } = {}) =>
     createPaymentsRoutes({ controller, requireAuth, webhookEnabled });
 
   return {
     createRoutes,
-    linkPaymentToOrder: paymentsInputPort.linkPaymentToOrder,
+    linkPaymentToOrder: paymentsCommands.linkPaymentToOrder,
   };
 };

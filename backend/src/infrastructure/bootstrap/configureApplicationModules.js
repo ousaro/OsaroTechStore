@@ -17,6 +17,7 @@ import { createPaymentsModule } from "../../modules/payments/composition.js";
 import { createMongooseRepositories } from "../providers/repositories/createMongooseRepositories.js";
 
 import { createJwtTokenService } from "../../modules/auth/adapters/output/services/jwtTokenService.js";
+import { createMongoIdempotencyStore } from "../../shared/infrastructure/persistence/idempotencyStore.js";
 
 import { createOrderPlacedPaymentLinkTranslator } from "../../modules/payments/adapters/input/collaboration/orderPlacedPaymentLinkTranslator.js";
 import { createOrderPlacedStockTranslator } from "../../modules/products/adapters/input/collaboration/orderPlacedStockTranslator.js";
@@ -117,6 +118,8 @@ export const configureApplicationModules = async ({ env }) => {
     logger: createScopedLogger(logger, "orders"),
   });
 
+  const idempotencyStore = createMongoIdempotencyStore(dbClient);
+
   const paymentsModule = createPaymentsModule({
     paymentGateway: paymentStrategy.gateway,
     paymentRepository,
@@ -125,6 +128,7 @@ export const configureApplicationModules = async ({ env }) => {
     webhookEnabled: paymentStrategy.webhookEnabled,
     clientUrl: env.clientUrl,
     logger: createScopedLogger(logger, "payments"),
+    idempotencyStore,
   });
 
   const paymentLinkTranslator = createOrderPlacedPaymentLinkTranslator({

@@ -4,6 +4,7 @@ import {
   toStripeWebhookStateChange,
 } from "./stripePayloadTranslator.js";
 import { assertNonEmptyString } from "../../../../shared/kernel/assertions/index.js";
+import { withRetry } from "../../../../shared/infrastructure/retry.js";
 
 export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {
   assertNonEmptyString(
@@ -18,27 +19,34 @@ export const createStripeGateway = ({ secretKey, webhookSecret, logger }) => {
   const createRedirectPayment = async ({ items, successUrl, cancelUrl }) => {
     logger?.debug({ msg: "Stripe: creating checkout session", itemCount: items.length });
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: items.map((item) => ({
-        price_data: {
-          currency: "usd",
-          product_data: { name: item.name },
-          unit_amount: Math.round(item.price * 100),
-        },
-        quantity: item.quantity,
-      })),
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-    });
+    const session = await withRetry(
+      () =>
+        stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          mode: "payment",
+          line_items: items.map((item) => ({
+            price_data: {
+              currency: "usd",
+              product_data: { name: item.name },
+              unit_amount: Math.round(item.price * 100),
+            },
+            quantity: item.quantity,
+          })),
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+        }),
+      { maxRetries: 3, baseDelayMs: 500 }
+    );
 
     logger?.info({ msg: "Stripe: checkout session created", sessionId: session.id });
     return toStripeCheckoutSessionDto(session);
   };
 
   const getRedirectPayment = async (sessionId) => {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await withRetry(() => stripe.checkout.sessions.retrieve(sessionId), {
+      maxRetries: 3,
+      baseDelayMs: 200,
+    });
     return toStripeCheckoutSessionDto(session);
   };
 

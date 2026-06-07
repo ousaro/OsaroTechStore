@@ -8,7 +8,14 @@ import { PaymentsDisabledError } from "../errors/PaymentApplicationError.js";
 import { toPaymentReadModel } from "../read-models/paymentReadModel.js";
 
 export const buildVerifyWebhookUseCase =
-  ({ paymentGateway, paymentRepository, paymentEventPublisher, webhookEnabled, logger }) =>
+  ({
+    paymentGateway,
+    paymentRepository,
+    paymentEventPublisher,
+    webhookEnabled,
+    logger,
+    idempotencyStore,
+  }) =>
   async ({ rawBody, signature }) => {
     if (!webhookEnabled) throw new PaymentsDisabledError();
 
@@ -18,18 +25,33 @@ export const buildVerifyWebhookUseCase =
       return { received: true };
     }
 
+    const eventId = stateChange.eventId;
+    if (eventId && idempotencyStore) {
+      if (await idempotencyStore.isProcessed(eventId)) {
+        logger?.debug({ msg: "Webhook: event already processed, skipping", eventId });
+        return { received: true };
+      }
+    }
+
     const existing = await paymentRepository.findBySessionId(stateChange.sessionId);
     if (!existing) {
       logger?.warn({
         msg: "Webhook: no payment found for session",
         sessionId: stateChange.sessionId,
       });
+      if (eventId && idempotencyStore) {
+        await idempotencyStore.markProcessed(eventId);
+      }
       return { received: true };
     }
 
     const workflow = createPaymentWorkflow(existing);
     const updated = applyWebhookStateChange(workflow, stateChange);
     const saved = await paymentRepository.updateById(existing._id, updated.toPrimitives());
+
+    if (eventId && idempotencyStore) {
+      await idempotencyStore.markProcessed(eventId);
+    }
 
     if (shouldPublishPaymentEvent(stateChange.paymentStatus)) {
       const event = createPaymentStateChangedEvent(updated);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { softDeletePlugin } from "../../../../../../shared/infrastructure/persistence/mongooseSoftDeletePlugin.js";
 
 const categorySchema = new mongoose.Schema(
   {
@@ -7,6 +8,8 @@ const categorySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+categorySchema.plugin(softDeletePlugin);
 
 export const createCategoryModel = (connection) =>
   connection.models.Category ?? connection.model("Category", categorySchema);
