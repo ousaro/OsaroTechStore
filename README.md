@@ -160,9 +160,17 @@ cd frontend
 npm test
 ```
 
-## Deployment / Demo
+## What I Would Add Next
 
-Deployment instructions and CI/CD workflows are in `.github/workflows/`.
+If I were to continue developing this project, these are the improvements I would prioritise:
+
+- **Full TypeScript migration** — extend from shared kernel into all 6 backend modules for end-to-end type safety
+- **Async job queue** — add BullMQ for non-blocking payment processing, email notifications, and image resizing
+- **Redis caching layer** — cache product listings, category trees, and user sessions to reduce DB load
+- **Circuit breaker** — wrap Stripe and other external calls with opossum to prevent cascading failures under load
+- **Error tracking** — integrate Sentry for production error monitoring and alerting
+- **Contract tests** — add Pact tests for Stripe webhook integration to catch API contract drift
+- **Cloud deployment** — provision ECS/Fargate with Terraform, add staging environment, and set up Prometheus alerting
 
 ## License
 

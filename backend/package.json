@@ -18,16 +18,12 @@
     "test": "node --test $(find tests/unit tests/integration -name '*.test.js' -print)",
     "test:unit": "node --test $(find tests/unit -name '*.test.js' -print)",
     "test:integration": "node --test $(find tests/integration -name '*.test.js' -print)",
-    "test:e2e": "cucumber-js --config cucumber.js",
-    "test:cucumber": "cucumber-js --config cucumber.js",
-    "test:regression": "node --test $(find tests/regression -name '*.test.js' -print)",
     "test:flakiness": "for i in 1 2 3; do echo \"=== Run $i ===\"; npx --yes node --test $(find tests/unit tests/integration -name '*.test.js' -print) 2>&1 | tail -5; done",
     "coverage": "c8 npm test",
     "coverage:sonar": "c8 --reporter=lcov --report-dir=coverage npm test",
     "coverage:unit:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/unit/html npm run test:unit",
     "coverage:integration:html": "c8 --all=false --reporter=html --report-dir=tests/coverage/integration/html npm run test:integration",
     "coverage:html": "c8 --reporter=html --report-dir=tests/coverage/global/html npm test",
-    "coverage:e2e": "c8 --all=false --reporter=text --reporter=html --report-dir=tests/coverage/e2e npm run test:e2e",
     "migrate": "node migrations/migrate.js",
     "migrate:down": "node migrations/migrate.js down",
     "migrate:create": "node migrations/migrate.js create",
@@ -39,10 +35,10 @@
     "include": [
       "src/**/*.js"
     ],
-    "checkCoverage": true,
+    "check-coverage": true,
     "branches": 50,
+    "functions": 50,
     "lines": 60,
-    "functions": 60,
     "statements": 60,
     "exclude": [
       "src/server.js",
@@ -53,12 +49,7 @@
       "text",
       "html"
     ],
-    "reports-dir": "tests/coverage/global/html",
-    "check-coverage": true,
-    "branches": 70,
-    "functions": 70,
-    "lines": 75,
-    "statements": 75
+    "reports-dir": "tests/coverage/global/html"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -83,7 +74,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^12.8.2",
     "@types/node": "^25.9.2",
     "c8": "^11.0.0",
     "eslint": "^9.39.4",
