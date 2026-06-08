@@ -39,6 +39,11 @@
     "include": [
       "src/**/*.js"
     ],
+    "checkCoverage": true,
+    "branches": 50,
+    "lines": 60,
+    "functions": 60,
+    "statements": 60,
     "exclude": [
       "src/server.js",
       "tests/**",

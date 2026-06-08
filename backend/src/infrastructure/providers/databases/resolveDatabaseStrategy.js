@@ -11,6 +11,8 @@ export const resolveDatabaseStrategy = ({ provider, logger, env }) => {
           logger,
           minPoolSize: env.mongoMinPoolSize,
           maxPoolSize: env.mongoMaxPoolSize,
+          debug: env.mongoDebug,
+          slowOpThresholdMs: env.mongoSlowOpThresholdMs,
         }),
         "resolveDatabaseStrategy"
       );

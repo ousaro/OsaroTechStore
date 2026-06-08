@@ -73,6 +73,8 @@ export const env = Object.freeze({
   mongoUri: optional("MONGO_URI"),
   mongoMinPoolSize: optionalInteger("MONGO_MIN_POOL_SIZE", 2),
   mongoMaxPoolSize: optionalInteger("MONGO_MAX_POOL_SIZE", 10),
+  mongoDebug: optionalBoolean("MONGO_DEBUG", false),
+  mongoSlowOpThresholdMs: optionalInteger("MONGO_SLOW_OP_THRESHOLD_MS", 200),
   postgresUrl: optional("POSTGRES_URL"),
 
   paymentProvider: optional("PAYMENT_PROVIDER", "disabled"),

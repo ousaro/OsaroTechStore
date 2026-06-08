@@ -1,7 +1,7 @@
 import { readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MongoClient } from "mongodb";
+import { log, ok } from "./logger.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -29,12 +29,14 @@ export const migrate = async (db) => {
   const ran = await getRanMigrations(db);
 
   for (const file of files) {
-    if (ran.has(file)) continue;
+    if (ran.has(file)) {
+      continue;
+    }
     const migration = await import(`./${file}`);
-    console.log(`  → Running migration: ${file}`);
+    log(`→ Running migration: ${file}`);
     await migration.up(db);
     await markRan(db, file);
-    console.log(`  ✓ ${file}`);
+    ok(file);
   }
 };
 
@@ -48,13 +50,19 @@ export const migrateDown = async (db, steps = 1) => {
   let count = 0;
 
   for (const file of files) {
-    if (count >= steps) break;
-    if (!ran.has(file)) continue;
+    if (count >= steps) {
+      break;
+    }
+    if (!ran.has(file)) {
+      continue;
+    }
     const migration = await import(`./${file}`);
-    console.log(`  → Rolling back: ${file}`);
-    if (migration.down) await migration.down(db);
+    log(`→ Rolling back: ${file}`);
+    if (migration.down) {
+      await migration.down(db);
+    }
     await markRolledBack(db, file);
-    console.log(`  ✓ Rolled back: ${file}`);
+    ok(`Rolled back: ${file}`);
     count++;
   }
 };
@@ -68,5 +76,5 @@ export const create = async (name) => {
   const filename = `${timestamp}-${name.replace(/\s+/g, "-")}.js`;
   const template = `// Migration: ${name}\n\nexport const up = async (db) => {\n  // TODO: implement\n};\n\nexport const down = async (db) => {\n  // TODO: implement\n};\n`;
   writeFileSync(join(__dirname, filename), template, "utf-8");
-  console.log(`  Created migration: ${filename}`);
+  ok(`Created migration: ${filename}`);
 };

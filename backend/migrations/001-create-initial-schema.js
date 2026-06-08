@@ -1,5 +1,7 @@
 // Migration: Create initial schema with indexes
 
+import { ok } from "./logger.js";
+
 export const up = async (db) => {
   // ── Users collection ──
   await db.createCollection("users", {
@@ -146,7 +148,7 @@ export const up = async (db) => {
   await db.collection("_idempotency").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection("_idempotency").createIndex({ processedAt: 1 });
 
-  console.log("  ✓ Created collections and indexes");
+  ok("Created collections and indexes");
 };
 
 export const down = async (db) => {
@@ -157,5 +159,5 @@ export const down = async (db) => {
       .drop()
       .catch(() => {});
   }
-  console.log("  ✓ Dropped collections");
+  ok("Dropped collections");
 };

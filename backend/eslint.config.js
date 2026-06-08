@@ -24,7 +24,15 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ["src/**/*.js", "tests/**/*.js", "*.js"],
+    files: [
+      "src/**/*.js",
+      "tests/**/*.js",
+      "*.js",
+      "backend/src/**/*.js",
+      "backend/tests/**/*.js",
+      "backend/*.js",
+      "backend/migrations/**/*.js",
+    ],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
