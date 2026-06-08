@@ -71,3 +71,4 @@ bundle.js
 # ignored files and directories
 .gitignore
 ignoredFiles/
+output/
