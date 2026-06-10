@@ -29,7 +29,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "react-scripts test --watchAll=false --coverage --coverageThreshold='{\"global\":{\"lines\":25}}'",
+    "test:ci": "react-scripts test --watchAll=false --coverage",
     "a11y": "pa11y-ci --sitemap http://localhost:3000/sitemap.xml",
     "lint": "eslint src --ext .js,.jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,css,md}\"",
@@ -42,6 +42,13 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "lines": 25
+      }
+    }
   },
   "overrides": {
     "@tootallnate/once": "^3.0.1",
