@@ -42,6 +42,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
+        if: github.event_name == 'push'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "${{ secrets.DOCKER_USERNAME }}/osarotechstore:backend-${{ github.sha }}"
@@ -50,6 +51,7 @@ jobs:
           severity: "HIGH,CRITICAL"
 
       - name: Upload Trivy results to GitHub Security
+        if: github.event_name == 'push'
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results-backend.sarif
