@@ -1,3 +1,13 @@
+jest.mock("./env.js", () => ({
+  env: Object.freeze({
+    apiBaseUrl: "/api",
+    googleAuthUrl: "/api/auth/google",
+    stripePublicKey: "",
+    nodeEnv: "test",
+    isDev: false,
+  }),
+}));
+
 import { httpClient } from "./client.js";
 
 beforeEach(() => {
@@ -21,7 +31,7 @@ test("httpClient serializes JSON bodies and attaches bearer tokens", async () =>
     token: "token-1",
   });
 
-  expect(fetch).toHaveBeenCalledWith("http://localhost:5000/api/orders", {
+  expect(fetch).toHaveBeenCalledWith("/api/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
