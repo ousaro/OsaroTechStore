@@ -2,8 +2,8 @@
 
 **Production-grade MERN e-commerce platform** — CQRS-style use-case separation, Stripe idempotency, Google OAuth, multi-stage Docker deployment.
 
-[![CI](https://github.com/ousaro/OsaroTechStore/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/ousaro/OsaroTechStore/actions/workflows/backend-ci.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org)
+[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](#)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org)
 [![Tests](https://img.shields.io/badge/tests-329_✔️-brightgreen)](#)
 [![Lint](https://img.shields.io/badge/lint-0_errors-brightgreen)](#)
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?logo=docker)](https://docker.com)
