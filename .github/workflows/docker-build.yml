@@ -16,6 +16,10 @@ on:
       - "backend/Dockerfile"
       - "frontend/Dockerfile"
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   backend:
     runs-on: ubuntu-latest
