@@ -21,18 +21,18 @@ models, hooks, pages, and shared UI separated.
 
 ### Backend → Frontend Mapping
 
-| Backend | Frontend |
-|---|---|
-| `server.js` | `src/index.js` |
-| `app/createApp.js` | `src/app/Router.jsx` |
-| `infrastructure/bootstrap/configureApplicationModules.js` | `src/app/createServices.js` |
-| `modules/<feature>/composition.js` | `src/features/<feature>/<feature>Service.js` |
-| `modules/<feature>/domain/` | `src/features/<feature>/model/` |
-| `modules/<feature>/adapters/input/http/` | `src/features/<feature>/pages/` and `hooks/` |
-| `modules/<feature>/adapters/output/repositories/` | `src/features/<feature>/api/` |
-| `infrastructure/providers/events/` | `src/store/eventBus.js` |
-| shared HTTP client | `src/api/client.js` |
-| shared session adapter | `src/store/sessionStore.js` |
+| Backend                                                   | Frontend                                     |
+| --------------------------------------------------------- | -------------------------------------------- |
+| `server.js`                                               | `src/index.js`                               |
+| `app/createApp.js`                                        | `src/app/Router.jsx`                         |
+| `infrastructure/bootstrap/configureApplicationModules.js` | `src/app/createServices.js`                  |
+| `modules/<feature>/composition.js`                        | `src/features/<feature>/<feature>Service.js` |
+| `modules/<feature>/domain/`                               | `src/features/<feature>/model/`              |
+| `modules/<feature>/adapters/input/http/`                  | `src/features/<feature>/pages/` and `hooks/` |
+| `modules/<feature>/adapters/output/repositories/`         | `src/features/<feature>/api/`                |
+| `infrastructure/providers/events/`                        | `src/store/eventBus.js`                      |
+| shared HTTP client                                        | `src/api/client.js`                          |
+| shared session adapter                                    | `src/store/sessionStore.js`                  |
 
 ---
 
@@ -105,7 +105,7 @@ CategoryDeleted event
 Every repository adapter is validated against its port contract at composition time. If a method is missing, the app throws immediately:
 
 ```js
-assertPort("ProductRepositoryPort", adapter, ["getAll","getById","create","update","delete"]);
+assertPort("ProductRepositoryPort", adapter, ["getAll", "getById", "create", "update", "delete"]);
 ```
 
 ### 3. View Adapters as Input Adapters
@@ -135,6 +135,7 @@ eventBus.subscribe(Events.PRODUCT_DELETED, (e) => setProducts(ps => ps.filter(..
 ### 5. Composition Root is the Only File with Full Knowledge
 
 `src/app/createServices.js` is the only file that:
+
 - Knows which HTTP adapter → which repository port → which module gets it
 - Subscribes collaboration translators to the event bus
 - Knows the full module dependency graph
@@ -172,11 +173,11 @@ productsModule                       categoriesModule.deleteCategory()
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `REACT_APP_API_BASE_URL` | `/api` | Backend base URL |
-| `REACT_APP_GOOGLE_API_URL` | `/api/auth/google` | Google OAuth |
-| `REACT_APP_STRIPE_PUBLIC_KEY` | — | Stripe publishable key |
+| Variable                      | Default            | Description            |
+| ----------------------------- | ------------------ | ---------------------- |
+| `REACT_APP_API_BASE_URL`      | `/api`             | Backend base URL       |
+| `REACT_APP_GOOGLE_API_URL`    | `/api/auth/google` | Google OAuth           |
+| `REACT_APP_STRIPE_PUBLIC_KEY` | —                  | Stripe publishable key |
 
 ---
 

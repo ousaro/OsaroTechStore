@@ -11,7 +11,10 @@ export function createCartViewAdapter({ cartInputPort, eventBus }) {
     const [cart, setCart] = useState(new Cart());
 
     useEffect(() => {
-      if (!user) { setCart(new Cart()); return; }
+      if (!user) {
+        setCart(new Cart());
+        return;
+      }
       const raw = JSON.parse(localStorage.getItem("ots_session") || "{}");
       setCart(Cart.fromRaw(raw.cart || []));
     }, [user?.id]); // eslint-disable-line
@@ -30,11 +33,7 @@ export function createCartViewAdapter({ cartInputPort, eventBus }) {
       clearCart: () => cartInputPort.clearCart(),
     };
 
-    return (
-      <CartViewContext.Provider value={value}>
-        {children}
-      </CartViewContext.Provider>
-    );
+    return <CartViewContext.Provider value={value}>{children}</CartViewContext.Provider>;
   }
 
   return { CartProvider };

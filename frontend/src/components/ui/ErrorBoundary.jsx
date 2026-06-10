@@ -15,7 +15,9 @@ export function ErrorFallback({
   return (
     <div className="error-boundary-shell">
       <div className="error-boundary-card">
-        <span className="error-boundary-icon"><FiAlertTriangle /></span>
+        <span className="error-boundary-icon">
+          <FiAlertTriangle />
+        </span>
         <div>
           <div className="section-kicker">Something went wrong</div>
           <h1 className="error-boundary-title">{title}</h1>
@@ -68,12 +70,7 @@ export class ErrorBoundary extends Component {
   render() {
     if (!this.state.error) return this.props.children;
 
-    return (
-      <ErrorFallback
-        error={this.state.error}
-        onRetry={this.reset}
-      />
-    );
+    return <ErrorFallback error={this.state.error} onRetry={this.reset} />;
   }
 }
 

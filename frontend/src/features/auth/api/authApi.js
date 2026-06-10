@@ -1,8 +1,8 @@
 const E = {
-  login:    "/auth/login",
+  login: "/auth/login",
   register: "/auth/register",
-  users:    "/auth/users",
-  user:     (id) => `/auth/users/${id}`,
+  users: "/auth/users",
+  user: (id) => `/auth/users/${id}`,
 };
 
 export function createHttpAuthRepository({ httpClient, sessionStore }) {
@@ -24,5 +24,6 @@ export function createHttpAuthRepository({ httpClient, sessionStore }) {
     async updateUser(id, patch) {
       return httpClient(E.user(id), { method: "PUT", body: patch, token: tok() });
     },
-  };  return adapter;
+  };
+  return adapter;
 }

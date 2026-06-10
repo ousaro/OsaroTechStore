@@ -8,7 +8,12 @@ jest.mock("../../auth/hooks/useAuth.js", () => ({
 
 const createDeps = () => {
   const eventBus = { subscribe: jest.fn(), unsubscribe: jest.fn() };
-  const cartInputPort = { addToCart: jest.fn(), removeFromCart: jest.fn(), setQuantity: jest.fn(), clearCart: jest.fn() };
+  const cartInputPort = {
+    addToCart: jest.fn(),
+    removeFromCart: jest.fn(),
+    setQuantity: jest.fn(),
+    clearCart: jest.fn(),
+  };
   return { cartInputPort, eventBus };
 };
 
@@ -25,14 +30,22 @@ beforeEach(() => {
 test("CartProvider provides context with empty cart", () => {
   const { cartInputPort, eventBus } = createDeps();
   const { CartProvider } = createCartViewAdapter({ cartInputPort, eventBus });
-  render(<CartProvider><TestChild /></CartProvider>);
+  render(
+    <CartProvider>
+      <TestChild />
+    </CartProvider>
+  );
   expect(screen.getByTestId("ctx").textContent).toBe("empty");
 });
 
 test("CartProvider subscribes to CART_UPDATED event", () => {
   const { cartInputPort, eventBus } = createDeps();
   const { CartProvider } = createCartViewAdapter({ cartInputPort, eventBus });
-  render(<CartProvider><TestChild /></CartProvider>);
+  render(
+    <CartProvider>
+      <TestChild />
+    </CartProvider>
+  );
   expect(eventBus.subscribe).toHaveBeenCalledWith(Events.CART_UPDATED, expect.any(Function));
 });
 

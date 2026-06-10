@@ -1,7 +1,6 @@
-
 const E = {
-  root:  "/products",
-  byId:  (id) => `/products/${id}`,
+  root: "/products",
+  byId: (id) => `/products/${id}`,
   uploads: "/products/uploads",
   reviews: (id) => `/products/${id}/reviews`,
 };
@@ -9,7 +8,9 @@ const E = {
 export function createHttpProductRepository({ httpClient }) {
   const adapter = {
     async getAll(params = {}, token) {
-      const q = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([,v]) => v))).toString();
+      const q = new URLSearchParams(
+        Object.fromEntries(Object.entries(params).filter(([, v]) => v))
+      ).toString();
       return httpClient(E.root + (q ? `?${q}` : ""), { token });
     },
     async getById(id, token) {
@@ -35,5 +36,6 @@ export function createHttpProductRepository({ httpClient }) {
     async addReview(id, payload, token) {
       return httpClient(E.reviews(id), { method: "POST", body: payload, token });
     },
-  };  return adapter;
+  };
+  return adapter;
 }

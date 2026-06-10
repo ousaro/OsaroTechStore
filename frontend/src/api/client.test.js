@@ -41,8 +41,7 @@ test("httpClient returns normalized API errors", async () => {
   fetch.mockResolvedValue({
     ok: false,
     status: 500,
-    text: async () =>
-      JSON.stringify({ error: { message: "Server unavailable" } }),
+    text: async () => JSON.stringify({ error: { message: "Server unavailable" } }),
   });
 
   await expect(httpClient("/products")).resolves.toEqual({

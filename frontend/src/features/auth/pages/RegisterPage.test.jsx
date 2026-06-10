@@ -50,8 +50,11 @@ test("calls register with form data on submit", async () => {
   await user.type(passwordInputs[1], "Secret1!");
   await user.click(screen.getByRole("button", { name: /create account/i }));
   expect(mockRegister).toHaveBeenCalledWith({
-    firstName: "John", lastName: "Doe", email: "a@b.com",
-    password: "Secret1!", confirmPassword: "Secret1!",
+    firstName: "John",
+    lastName: "Doe",
+    email: "a@b.com",
+    password: "Secret1!",
+    confirmPassword: "Secret1!",
   });
 });
 

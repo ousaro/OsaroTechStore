@@ -1,9 +1,13 @@
 import { DomainError } from "../../../lib/DomainError.js";
 
 export class InvalidCredentialsError extends DomainError {
-  constructor() { super("Invalid email or password", "INVALID_CREDENTIALS"); }
+  constructor() {
+    super("Invalid email or password", "INVALID_CREDENTIALS");
+  }
 }
 
 export class RegistrationError extends DomainError {
-  constructor(msg) { super(msg || "Registration failed", "REGISTRATION_FAILED"); }
+  constructor(msg) {
+    super(msg || "Registration failed", "REGISTRATION_FAILED");
+  }
 }

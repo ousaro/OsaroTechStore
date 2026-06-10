@@ -4,9 +4,42 @@ import { axe } from "jest-axe";
 import { ProductsPage } from "./ProductsPage.jsx";
 
 const mockProducts = [
-  { id: "p1", name: "Keyboard", category: "Peripherals", price: { currency: "$", amount: 99 }, primaryImage: "", status: "new", inStock: true, lowStock: false, stock: 10, reviews: [] },
-  { id: "p2", name: "Gaming Mouse", category: "Peripherals", price: { currency: "$", amount: 149 }, primaryImage: "", status: "active", inStock: true, lowStock: false, stock: 5, reviews: [{ id: "r1" }] },
-  { id: "p3", name: "Monitor", category: "Displays", price: { currency: "$", amount: 399 }, primaryImage: "", status: "active", inStock: false, lowStock: false, stock: 0, reviews: [] },
+  {
+    id: "p1",
+    name: "Keyboard",
+    category: "Peripherals",
+    price: { currency: "$", amount: 99 },
+    primaryImage: "",
+    status: "new",
+    inStock: true,
+    lowStock: false,
+    stock: 10,
+    reviews: [],
+  },
+  {
+    id: "p2",
+    name: "Gaming Mouse",
+    category: "Peripherals",
+    price: { currency: "$", amount: 149 },
+    primaryImage: "",
+    status: "active",
+    inStock: true,
+    lowStock: false,
+    stock: 5,
+    reviews: [{ id: "r1" }],
+  },
+  {
+    id: "p3",
+    name: "Monitor",
+    category: "Displays",
+    price: { currency: "$", amount: 399 },
+    primaryImage: "",
+    status: "active",
+    inStock: false,
+    lowStock: false,
+    stock: 0,
+    reviews: [],
+  },
 ];
 
 jest.mock("../hooks/useProducts.js", () => ({

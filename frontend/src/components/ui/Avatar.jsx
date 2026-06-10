@@ -22,7 +22,15 @@ export function Avatar({
   const initials = getInitials({ name, firstName, lastName });
 
   if (src && !imgError) {
-    return <img src={src} alt={alt} className={className} onError={() => setImgError(true)} loading="lazy" />;
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={() => setImgError(true)}
+        loading="lazy"
+      />
+    );
   }
 
   return (

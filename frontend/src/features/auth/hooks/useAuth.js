@@ -5,7 +5,7 @@ export const AuthViewContext = createContext(null);
 
 export function createAuthViewAdapter({ authInputPort, eventBus }) {
   function AuthProvider({ children }) {
-    const [user, setUser]       = useState(null);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,16 +14,16 @@ export function createAuthViewAdapter({ authInputPort, eventBus }) {
     }, []);
 
     useEffect(() => {
-      const onLogin    = (e) => setUser(e.payload.user);
-      const onLogout   = ()  => setUser(null);
+      const onLogin = (e) => setUser(e.payload.user);
+      const onLogout = () => setUser(null);
       const onRegister = (e) => setUser(e.payload.user);
 
-      eventBus.subscribe(Events.USER_LOGGED_IN,  onLogin);
+      eventBus.subscribe(Events.USER_LOGGED_IN, onLogin);
       eventBus.subscribe(Events.USER_LOGGED_OUT, onLogout);
       eventBus.subscribe(Events.USER_REGISTERED, onRegister);
 
       return () => {
-        eventBus.unsubscribe(Events.USER_LOGGED_IN,  onLogin);
+        eventBus.unsubscribe(Events.USER_LOGGED_IN, onLogin);
         eventBus.unsubscribe(Events.USER_LOGGED_OUT, onLogout);
         eventBus.unsubscribe(Events.USER_REGISTERED, onRegister);
       };
@@ -37,11 +37,7 @@ export function createAuthViewAdapter({ authInputPort, eventBus }) {
       logout: (...args) => authInputPort.logout(...args),
     };
 
-    return (
-      <AuthViewContext.Provider value={value}>
-        {children}
-      </AuthViewContext.Provider>
-    );
+    return <AuthViewContext.Provider value={value}>{children}</AuthViewContext.Provider>;
   }
 
   return { AuthProvider };

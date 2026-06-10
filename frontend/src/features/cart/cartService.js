@@ -16,7 +16,10 @@ export function createCartModule({ cart: repo, sessionStore, eventBus, notify })
 
   async function _sync(newCart) {
     const { ok, error } = await repo.saveCart(newCart.toJSON());
-    if (!ok) { notify.error(error || "Cart sync failed"); throw new Error(error); }
+    if (!ok) {
+      notify.error(error || "Cart sync failed");
+      throw new Error(error);
+    }
     return _persist(newCart);
   }
 
@@ -36,7 +39,10 @@ export function createCartModule({ cart: repo, sessionStore, eventBus, notify })
     return _sync(_cart.clear());
   }
 
-  function getCart() { return _cart; }
+  function getCart() {
+    return _cart;
+  }
 
-  const inputPort = { addToCart, removeFromCart, setQuantity, clearCart, getCart };  return inputPort;
+  const inputPort = { addToCart, removeFromCart, setQuantity, clearCart, getCart };
+  return inputPort;
 }

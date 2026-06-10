@@ -11,7 +11,17 @@ import { Link } from "../../../components/ui/Link.jsx";
 import { Avatar } from "../../../components/ui/Avatar.jsx";
 import { ProductImage } from "../../../components/ui/ProductImage.jsx";
 import { Select } from "../../../components/ui/Select.jsx";
-import { FiCreditCard, FiEdit2, FiMessageSquare, FiRefreshCcw, FiShoppingBag, FiShield, FiStar, FiTrash2, FiTruck } from "react-icons/fi";
+import {
+  FiCreditCard,
+  FiEdit2,
+  FiMessageSquare,
+  FiRefreshCcw,
+  FiShoppingBag,
+  FiShield,
+  FiStar,
+  FiTrash2,
+  FiTruck,
+} from "react-icons/fi";
 
 export function ProductDetailPage({ id }) {
   const { products, getProductById, deleteProduct, addProductReview } = useProducts();
@@ -19,10 +29,10 @@ export function ProductDetailPage({ id }) {
   const { user } = useAuth();
   const { navigate } = useNavigate();
 
-  const [product, setProduct]   = useState(() => products.find((p) => p.id === id) || null);
-  const [loading, setLoading]   = useState(!product);
-  const [qty, setQty]           = useState(1);
-  const [adding, setAdding]     = useState(false);
+  const [product, setProduct] = useState(() => products.find((p) => p.id === id) || null);
+  const [loading, setLoading] = useState(!product);
+  const [qty, setQty] = useState(1);
+  const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
@@ -41,20 +51,25 @@ export function ProductDetailPage({ id }) {
 
   const handleAdd = async () => {
     setAdding(true);
-    try { await addToCart(product.id, qty); }
-    catch {
+    try {
+      await addToCart(product.id, qty);
+    } catch {
       // Cart service already surfaces failures through the shared notifier.
+    } finally {
+      setAdding(false);
     }
-    finally { setAdding(false); }
   };
 
   const handleDelete = async () => {
     setDeleting(true);
-    try { await deleteProduct(product.id); navigate("/products"); }
-    catch {
+    try {
+      await deleteProduct(product.id);
+      navigate("/products");
+    } catch {
       // Product service already surfaces failures through the shared notifier.
+    } finally {
+      setDeleting(false);
     }
-    finally { setDeleting(false); }
   };
 
   const submitReview = async (e) => {
@@ -63,7 +78,10 @@ export function ProductDetailPage({ id }) {
     setReviewError("");
     try {
       const updatedProduct = await addProductReview(product.id, {
-        name: user.fullName || [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || "Customer",
+        name:
+          user.fullName ||
+          [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+          "Customer",
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         picture: user.picture || "",
@@ -85,7 +103,9 @@ export function ProductDetailPage({ id }) {
 
   return (
     <div className="page-shell">
-      <div className="breadcrumb"><Link to="/products">Products</Link> / <span>{product.name}</span></div>
+      <div className="breadcrumb">
+        <Link to="/products">Products</Link> / <span>{product.name}</span>
+      </div>
       <div className="mt-2 grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,.95fr)] lg:gap-12">
         <div>
           <div className="product-detail-media">
@@ -93,9 +113,18 @@ export function ProductDetailPage({ id }) {
           </div>
           {images.length > 1 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {images.slice(0,6).map((img,i) => (
-                <div key={i} onClick={() => setActiveImg(i)} className={`flex h-[72px] w-[72px] cursor-pointer items-center justify-center overflow-hidden rounded-sm border-2 bg-surface-2 ${activeImg===i ? "border-accent" : "border-border"}`}>
-                  <ProductImage src={img} alt="" placeholderSize={22} imgClassName="h-full w-full object-contain p-2" />
+              {images.slice(0, 6).map((img, i) => (
+                <div
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  className={`flex h-[72px] w-[72px] cursor-pointer items-center justify-center overflow-hidden rounded-sm border-2 bg-surface-2 ${activeImg === i ? "border-accent" : "border-border"}`}
+                >
+                  <ProductImage
+                    src={img}
+                    alt=""
+                    placeholderSize={22}
+                    imgClassName="h-full w-full object-contain p-2"
+                  />
                 </div>
               ))}
             </div>
@@ -103,36 +132,86 @@ export function ProductDetailPage({ id }) {
         </div>
         <div className="product-detail-panel">
           <div>
-            <div className="mb-3 flex gap-2"><Badge status={product.status} />{product.category && <span className="rounded-sm bg-surface-3 px-2 py-0.5 text-xs font-semibold">{product.category}</span>}</div>
-            <h1 className="mb-3 font-display text-[clamp(30px,4vw,46px)] font-extrabold leading-tight tracking-[-.03em]">{product.name}</h1>
-            <div className="mb-3 text-4xl font-black tracking-[-1px] text-accent tabular-nums">
-              <span className="text-lg font-bold">{product.price.currency} </span>{product.price.amount.toFixed(2)}
+            <div className="mb-3 flex gap-2">
+              <Badge status={product.status} />
+              {product.category && (
+                <span className="rounded-sm bg-surface-3 px-2 py-0.5 text-xs font-semibold">
+                  {product.category}
+                </span>
+              )}
             </div>
-            {product.description && <p className="text-[15px] leading-7 text-ink-muted">{product.description}</p>}
+            <h1 className="mb-3 font-display text-[clamp(30px,4vw,46px)] font-extrabold leading-tight tracking-[-.03em]">
+              {product.name}
+            </h1>
+            <div className="mb-3 text-4xl font-black tracking-[-1px] text-accent tabular-nums">
+              <span className="text-lg font-bold">{product.price.currency} </span>
+              {product.price.amount.toFixed(2)}
+            </div>
+            {product.description && (
+              <p className="text-[15px] leading-7 text-ink-muted">{product.description}</p>
+            )}
           </div>
           <div className="h-px bg-border" />
           <div className="flex items-center gap-2">
-            <span className={`status-dot ${product.inStock?(product.lowStock?"yellow":"green"):"red"}`} />
+            <span
+              className={`status-dot ${product.inStock ? (product.lowStock ? "yellow" : "green") : "red"}`}
+            />
             <span className="text-sm font-semibold">
-              {product.inStock ? (product.lowStock ? `Low stock — only ${product.stock} left` : `In stock (${product.stock} units)`) : "Out of stock"}
+              {product.inStock
+                ? product.lowStock
+                  ? `Low stock — only ${product.stock} left`
+                  : `In stock (${product.stock} units)`
+                : "Out of stock"}
             </span>
           </div>
           {product.inStock && (
             <div className="flex flex-wrap items-center gap-3">
-              <QtyControl value={qty} min={1} max={product.stock} onDecrement={() => setQty((q) => Math.max(1,q-1))} onIncrement={() => setQty((q) => Math.min(product.stock,q+1))} />
-              <button className="btn btn-primary min-w-[180px] flex-1" onClick={handleAdd} disabled={adding}><FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}</button>
+              <QtyControl
+                value={qty}
+                min={1}
+                max={product.stock}
+                onDecrement={() => setQty((q) => Math.max(1, q - 1))}
+                onIncrement={() => setQty((q) => Math.min(product.stock, q + 1))}
+              />
+              <button
+                className="btn btn-primary min-w-[180px] flex-1"
+                onClick={handleAdd}
+                disabled={adding}
+              >
+                <FiShoppingBag /> {adding ? "Adding…" : "Add to cart"}
+              </button>
             </div>
           )}
           <div className="product-trust-grid">
-            <div><FiTruck /><span>Fast dispatch</span></div>
-            <div><FiShield /><span>Protected payment</span></div>
-            <div><FiRefreshCcw /><span>Easy support</span></div>
-            <div><FiCreditCard /><span>Secure checkout</span></div>
+            <div>
+              <FiTruck />
+              <span>Fast dispatch</span>
+            </div>
+            <div>
+              <FiShield />
+              <span>Protected payment</span>
+            </div>
+            <div>
+              <FiRefreshCcw />
+              <span>Easy support</span>
+            </div>
+            <div>
+              <FiCreditCard />
+              <span>Secure checkout</span>
+            </div>
           </div>
           {user?.isAdmin && (
             <div className="flex flex-wrap gap-2">
-              <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost"><FiEdit2 /> Edit</Link>
-              <button className="btn btn-danger" onClick={() => setConfirmDelete(true)} disabled={deleting}><FiTrash2 /> {deleting ? "Deleting…" : "Delete"}</button>
+              <Link to={`/admin/edit-product/${product.id}`} className="btn btn-ghost">
+                <FiEdit2 /> Edit
+              </Link>
+              <button
+                className="btn btn-danger"
+                onClick={() => setConfirmDelete(true)}
+                disabled={deleting}
+              >
+                <FiTrash2 /> {deleting ? "Deleting…" : "Delete"}
+              </button>
             </div>
           )}
         </div>
@@ -141,7 +220,10 @@ export function ProductDetailPage({ id }) {
         open={confirmDelete}
         title={`Delete "${product?.name || ""}"?`}
         message="This action cannot be undone."
-        onConfirm={() => { setConfirmDelete(false); handleDelete(); }}
+        onConfirm={() => {
+          setConfirmDelete(false);
+          handleDelete();
+        }}
         onCancel={() => setConfirmDelete(false)}
       />
       <section className="product-review-shell">
@@ -149,16 +231,25 @@ export function ProductDetailPage({ id }) {
           <div>
             <div className="section-kicker">Customer feedback</div>
             <h2 className="text-[28px] font-extrabold text-ink">Comments and ratings</h2>
-            <p className="mt-2 text-sm leading-6 text-ink-muted">Helpful buying notes, quick reactions, and product impressions.</p>
+            <p className="mt-2 text-sm leading-6 text-ink-muted">
+              Helpful buying notes, quick reactions, and product impressions.
+            </p>
           </div>
           <div className="review-score-block">
             <div className="review-score-value">{averageRating || "—"}</div>
             <div className="review-score-stars">
               {Array.from({ length: 5 }).map((_, index) => (
-                <FiStar key={index} className={averageRating && index < Math.round(Number(averageRating)) ? "fill-current" : ""} />
+                <FiStar
+                  key={index}
+                  className={
+                    averageRating && index < Math.round(Number(averageRating)) ? "fill-current" : ""
+                  }
+                />
               ))}
             </div>
-            <div className="review-score-meta">{reviews.length} comment{reviews.length === 1 ? "" : "s"}</div>
+            <div className="review-score-meta">
+              {reviews.length} comment{reviews.length === 1 ? "" : "s"}
+            </div>
           </div>
         </div>
         <div className="product-review-grid">
@@ -172,8 +263,17 @@ export function ProductDetailPage({ id }) {
                 {reviewError && <div className="error-box">{reviewError}</div>}
                 <label className="field">
                   <span>Rating</span>
-                  <Select value={reviewDraft.rating} onChange={(e) => setReviewDraft((current) => ({ ...current, rating: e.target.value }))}>
-                    {[5, 4, 3, 2, 1].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
+                  <Select
+                    value={reviewDraft.rating}
+                    onChange={(e) =>
+                      setReviewDraft((current) => ({ ...current, rating: e.target.value }))
+                    }
+                  >
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                      <option key={rating} value={rating}>
+                        {rating} star{rating === 1 ? "" : "s"}
+                      </option>
+                    ))}
                   </Select>
                 </label>
                 <label className="field">
@@ -181,11 +281,15 @@ export function ProductDetailPage({ id }) {
                   <textarea
                     className="input min-h-[140px] resize-y"
                     value={reviewDraft.comment}
-                    onChange={(e) => setReviewDraft((current) => ({ ...current, comment: e.target.value }))}
+                    onChange={(e) =>
+                      setReviewDraft((current) => ({ ...current, comment: e.target.value }))
+                    }
                     placeholder="Share what stood out, what felt good, or what buyers should know."
                   />
                 </label>
-                <button type="submit" className="btn btn-primary self-start">Post comment</button>
+                <button type="submit" className="btn btn-primary self-start">
+                  Post comment
+                </button>
               </form>
             ) : (
               <div className="empty-state px-0 py-6 text-left">
@@ -197,7 +301,9 @@ export function ProductDetailPage({ id }) {
           <div className="product-review-list">
             {reviews.length === 0 ? (
               <div className="card empty-state">
-                <span className="icon"><FiMessageSquare size={26} /></span>
+                <span className="icon">
+                  <FiMessageSquare size={26} />
+                </span>
                 <h3>No comments yet</h3>
                 <p>This product is ready for its first review.</p>
               </div>
@@ -216,12 +322,17 @@ export function ProductDetailPage({ id }) {
                       />
                       <div>
                         <div className="font-extrabold text-ink">{review.name}</div>
-                        <div className="text-xs text-ink-faint">{new Date(review.createdAt).toLocaleDateString()}</div>
+                        <div className="text-xs text-ink-faint">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                     <div className="review-inline-stars">
                       {Array.from({ length: 5 }).map((_, index) => (
-                        <FiStar key={index} className={index < review.rating ? "fill-current" : ""} />
+                        <FiStar
+                          key={index}
+                          className={index < review.rating ? "fill-current" : ""}
+                        />
                       ))}
                     </div>
                   </div>

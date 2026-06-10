@@ -48,12 +48,8 @@ beforeEach(() => {
 test("ProductCard renders product details and passes axe checks", async () => {
   const { container } = render(<ProductCard product={product} />);
 
-  expect(
-    screen.getByRole("link", { name: /view osaro keyboard/i }),
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole("link", { name: /peripherals osaro keyboard/i }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /view osaro keyboard/i })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /peripherals osaro keyboard/i })).toBeInTheDocument();
   expect(screen.getByText("Peripherals")).toBeInTheDocument();
   expect(screen.getByText("Osaro Keyboard")).toBeInTheDocument();
   expect(screen.getByText("1 review")).toBeInTheDocument();

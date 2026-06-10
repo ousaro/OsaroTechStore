@@ -35,7 +35,11 @@ const createDeps = () => {
 
 function TestChild() {
   const ctx = useProducts();
-  return <div data-testid="ctx">{ctx.loading ? "loading" : ctx.loaded ? `products:${ctx.products.length}` : "not-loaded"}</div>;
+  return (
+    <div data-testid="ctx">
+      {ctx.loading ? "loading" : ctx.loaded ? `products:${ctx.products.length}` : "not-loaded"}
+    </div>
+  );
 }
 
 beforeEach(() => {
@@ -45,7 +49,11 @@ beforeEach(() => {
 test("ProductsProvider provides context and loads products on mount, passes axe", async () => {
   const { productsInputPort, productReadModel } = createDeps();
   const { ProductsProvider } = createProductsViewAdapter({ productsInputPort, productReadModel });
-  const { container } = render(<ProductsProvider><TestChild /></ProductsProvider>);
+  const { container } = render(
+    <ProductsProvider>
+      <TestChild />
+    </ProductsProvider>
+  );
   expect(await screen.findByTestId("ctx")).toBeTruthy();
   await expect(axe(container)).resolves.toHaveNoViolations();
 });

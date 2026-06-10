@@ -9,7 +9,8 @@ const loadProducts = ({ productsInputPort, setProducts, setLoaded, setLoading, s
 
   setLoading(true);
   setError(null);
-  productsInputPort.getAllProducts()
+  productsInputPort
+    .getAllProducts()
     .then((data) => {
       if (cancelled) return;
       setProducts(data);
@@ -22,7 +23,9 @@ const loadProducts = ({ productsInputPort, setProducts, setLoaded, setLoading, s
       if (!cancelled) setLoading(false);
     });
 
-  return () => { cancelled = true; };
+  return () => {
+    cancelled = true;
+  };
 };
 
 export function createProductsViewAdapter({ productsInputPort, productReadModel }) {
@@ -30,7 +33,8 @@ export function createProductsViewAdapter({ productsInputPort, productReadModel 
 
   function ProductsProvider({ children }) {
     const { user } = useAuth();
-    const { products, setProducts, loaded, setLoaded, loading, setLoading, error, setError } = useProductReadModel();
+    const { products, setProducts, loaded, setLoaded, loading, setLoading, error, setError } =
+      useProductReadModel();
 
     const refresh = useCallback(() => {
       setLoaded(false);
@@ -53,19 +57,15 @@ export function createProductsViewAdapter({ productsInputPort, productReadModel 
       loading,
       error,
       refresh,
-      createProduct:  productsInputPort.createProduct,
-      updateProduct:  productsInputPort.updateProduct,
+      createProduct: productsInputPort.createProduct,
+      updateProduct: productsInputPort.updateProduct,
       uploadProductImage: productsInputPort.uploadProductImage,
-      deleteProduct:  productsInputPort.deleteProduct,
+      deleteProduct: productsInputPort.deleteProduct,
       addProductReview: productsInputPort.addProductReview,
       getProductById: productsInputPort.getProductById,
     };
 
-    return (
-      <ProductsViewContext.Provider value={value}>
-        {children}
-      </ProductsViewContext.Provider>
-    );
+    return <ProductsViewContext.Provider value={value}>{children}</ProductsViewContext.Provider>;
   }
 
   return { ProductsProvider };

@@ -10,7 +10,10 @@ export function createUsersViewAdapter({ usersInputPort, sessionStore }) {
     const [profile, setProfile] = useState(null);
 
     useEffect(() => {
-      if (!authUser) { setProfile(null); return; }
+      if (!authUser) {
+        setProfile(null);
+        return;
+      }
       const raw = sessionStore.get();
       setProfile(raw ? new UserProfile(raw) : null);
     }, [authUser?.id]); // eslint-disable-line
@@ -49,11 +52,7 @@ export function createUsersViewAdapter({ usersInputPort, sessionStore }) {
       deleteUser: usersInputPort.deleteUser,
     };
 
-    return (
-      <UsersViewContext.Provider value={value}>
-        {children}
-      </UsersViewContext.Provider>
-    );
+    return <UsersViewContext.Provider value={value}>{children}</UsersViewContext.Provider>;
   }
 
   return { UsersProvider };

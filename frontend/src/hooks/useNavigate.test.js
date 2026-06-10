@@ -18,13 +18,18 @@ test("returns path from hash", () => {
 
 test("navigate updates hash and triggers path change", () => {
   const { result } = renderHook(() => useNavigate());
-  act(() => { result.current.navigate("/cart"); });
+  act(() => {
+    result.current.navigate("/cart");
+  });
   expect(window.location.hash).toBe("#/cart");
 });
 
 test("tracks hashchange events", () => {
   const { result } = renderHook(() => useNavigate());
-  act(() => { window.location.hash = "/cart"; window.dispatchEvent(new HashChangeEvent("hashchange")); });
+  act(() => {
+    window.location.hash = "/cart";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  });
   expect(result.current.path).toBe("/cart");
 });
 

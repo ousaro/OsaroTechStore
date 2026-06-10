@@ -27,14 +27,14 @@ export function AddProductPage({
     "";
 
   const [form, setForm] = useState({
-    name:        existing?.name            || "",
-    description: existing?.description    || "",
-    price:       existing?.price.amount   || "",
-    currency:    existing?.price.currency || "USD",
-    category:    existingCategoryId,
-    stock:       existing?.stock          ?? 0,
-    status:      existing?.status         || "new",
-    images:      existing?.images         || [],
+    name: existing?.name || "",
+    description: existing?.description || "",
+    price: existing?.price.amount || "",
+    currency: existing?.price.currency || "USD",
+    category: existingCategoryId,
+    stock: existing?.stock ?? 0,
+    status: existing?.status || "new",
+    images: existing?.images || [],
   });
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -58,7 +58,8 @@ export function AddProductPage({
     setLocalCategoriesLoading(true);
     setLocalCategoriesError("");
 
-    categoriesInputPort.getAllCategories()
+    categoriesInputPort
+      .getAllCategories()
       .then((data) => {
         if (cancelled) return;
         setLocalCategories(data);
@@ -74,12 +75,20 @@ export function AddProductPage({
     return () => {
       cancelled = true;
     };
-  }, [categories.length, categoriesError, categoriesInputPort, categoriesLoading, onCategoriesChange]);
+  }, [
+    categories.length,
+    categoriesError,
+    categoriesInputPort,
+    categoriesLoading,
+    onCategoriesChange,
+  ]);
 
   useEffect(() => {
     if (!editId || form.category || !existing?.category || !displayedCategories.length) return;
 
-    const categoryId = displayedCategories.find((category) => category.name === existing.category)?.id;
+    const categoryId = displayedCategories.find(
+      (category) => category.name === existing.category
+    )?.id;
     if (categoryId) setForm((f) => ({ ...f, category: categoryId }));
   }, [displayedCategories, editId, existing?.category, form.category]);
 
@@ -94,7 +103,9 @@ export function AddProductPage({
       setForm((f) => ({ ...f, images: [...f.images, ...uploadedImages] }));
       e.target.value = "";
     } catch (error) {
-      setFormError(getErrorMessage(error, "Could not upload one or more images. Please try again."));
+      setFormError(
+        getErrorMessage(error, "Could not upload one or more images. Please try again.")
+      );
     } finally {
       setUploadingImages(false);
     }
@@ -105,7 +116,8 @@ export function AddProductPage({
   };
 
   const submit = async (e) => {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault();
+    setLoading(true);
     setFormError("");
     try {
       const payload = { ...form, price: Number(form.price), stock: Number(form.stock) };
@@ -113,8 +125,15 @@ export function AddProductPage({
       eventBus.publish({ type: "products-changed" });
       navigate("/dashboard");
     } catch (error) {
-      setFormError(getErrorMessage(error, "Could not save this product. Please check the details and try again."));
-    } finally { setLoading(false); }
+      setFormError(
+        getErrorMessage(
+          error,
+          "Could not save this product. Please check the details and try again."
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -122,49 +141,149 @@ export function AddProductPage({
       <ProfileSidebar path={path} />
       <div className="content-area">
         <div className="mx-auto max-w-[800px]">
-          <div className="breadcrumb"><Link to="/dashboard">Admin</Link> / <span>{editId ? "Edit product" : "Add product"}</span></div>
+          <div className="breadcrumb">
+            <Link to="/dashboard">Admin</Link> /{" "}
+            <span>{editId ? "Edit product" : "Add product"}</span>
+          </div>
           <h1 className="page-title mb-7 mt-2">{editId ? "Edit product" : "Add new product"}</h1>
           {formError && <div className="error-box">{formError}</div>}
           <form onSubmit={submit}>
             <div className="card p-5 sm:p-7">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="field sm:col-span-2"><label>Product name *</label><input className="input" value={form.name} onChange={set("name")} required placeholder="e.g. Samsung Galaxy S24" /></div>
-                <div className="field sm:col-span-2"><label>Description</label><textarea className="input resize-y" value={form.description} onChange={set("description")} rows={3} placeholder="Product details…" /></div>
-                <div className="field"><label>Price *</label><input type="number" className="input" value={form.price} onChange={set("price")} required min={0} step="0.01" placeholder="0.00" /></div>
-                <div className="field"><label>Currency</label><Select value={form.currency} onChange={set("currency")}><option value="USD">USD</option><option value="MAD">MAD</option><option value="EUR">EUR</option></Select></div>
+                <div className="field sm:col-span-2">
+                  <label>Product name *</label>
+                  <input
+                    className="input"
+                    value={form.name}
+                    onChange={set("name")}
+                    required
+                    placeholder="e.g. Samsung Galaxy S24"
+                  />
+                </div>
+                <div className="field sm:col-span-2">
+                  <label>Description</label>
+                  <textarea
+                    className="input resize-y"
+                    value={form.description}
+                    onChange={set("description")}
+                    rows={3}
+                    placeholder="Product details…"
+                  />
+                </div>
+                <div className="field">
+                  <label>Price *</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={form.price}
+                    onChange={set("price")}
+                    required
+                    min={0}
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="field">
+                  <label>Currency</label>
+                  <Select value={form.currency} onChange={set("currency")}>
+                    <option value="USD">USD</option>
+                    <option value="MAD">MAD</option>
+                    <option value="EUR">EUR</option>
+                  </Select>
+                </div>
                 <div className="field">
                   <label>Category *</label>
-                  <Select value={form.category} onChange={set("category")} required disabled={categoryLoading || Boolean(categoryError) || !displayedCategories.length}>
+                  <Select
+                    value={form.category}
+                    onChange={set("category")}
+                    required
+                    disabled={
+                      categoryLoading || Boolean(categoryError) || !displayedCategories.length
+                    }
+                  >
                     <option value="">
-                      {categoryLoading ? "Loading categories..." : categoryError ? "Categories unavailable" : displayedCategories.length ? "Select..." : "No categories yet"}
+                      {categoryLoading
+                        ? "Loading categories..."
+                        : categoryError
+                          ? "Categories unavailable"
+                          : displayedCategories.length
+                            ? "Select..."
+                            : "No categories yet"}
                     </option>
-                    {displayedCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {displayedCategories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </Select>
                   {categoryError && (
-                    <button type="button" className="category-retry-btn" onClick={onReloadCategories}>Retry loading categories</button>
+                    <button
+                      type="button"
+                      className="category-retry-btn"
+                      onClick={onReloadCategories}
+                    >
+                      Retry loading categories
+                    </button>
                   )}
                   {!categoryLoading && !categoryError && !displayedCategories.length && (
-                    <Link to="/admin/categories" className="category-retry-btn">Create a category first</Link>
+                    <Link to="/admin/categories" className="category-retry-btn">
+                      Create a category first
+                    </Link>
                   )}
                 </div>
-                <div className="field"><label>Stock</label><input type="number" className="input" value={form.stock} onChange={set("stock")} min={0} /></div>
-                <div className="field"><label>Status</label><Select value={form.status} onChange={set("status")}>{PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</Select></div>
+                <div className="field">
+                  <label>Stock</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={form.stock}
+                    onChange={set("stock")}
+                    min={0}
+                  />
+                </div>
+                <div className="field">
+                  <label>Status</label>
+                  <Select value={form.status} onChange={set("status")}>
+                    {PRODUCT_STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
                 <div className="field sm:col-span-2">
                   <label>Product images</label>
                   <label className="image-upload-dropzone">
-                    <input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploadingImages} />
-                    <span className="image-upload-icon"><FiUploadCloud /></span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      disabled={uploadingImages}
+                    />
+                    <span className="image-upload-icon">
+                      <FiUploadCloud />
+                    </span>
                     <span className="image-upload-copy">
-                      <strong>{uploadingImages ? "Uploading photos..." : "Upload product photos"}</strong>
+                      <strong>
+                        {uploadingImages ? "Uploading photos..." : "Upload product photos"}
+                      </strong>
                       <small>PNG, JPG, WebP, or GIF files</small>
                     </span>
                   </label>
                   {form.images.length > 0 && (
                     <div className="image-upload-grid">
                       {form.images.map((image, index) => (
-                        <div className="image-upload-preview" key={`${image.slice(0, 42)}-${index}`}>
+                        <div
+                          className="image-upload-preview"
+                          key={`${image.slice(0, 42)}-${index}`}
+                        >
                           <img src={image} alt={`Product upload ${index + 1}`} />
-                          <button type="button" aria-label={`Remove image ${index + 1}`} onClick={() => removeImage(index)}>
+                          <button
+                            type="button"
+                            aria-label={`Remove image ${index + 1}`}
+                            onClick={() => removeImage(index)}
+                          >
                             <FiX />
                           </button>
                         </div>
@@ -172,13 +291,23 @@ export function AddProductPage({
                     </div>
                   )}
                   {!form.images.length && (
-                    <div className="image-upload-empty"><FiImage /> No images uploaded yet</div>
+                    <div className="image-upload-empty">
+                      <FiImage /> No images uploaded yet
+                    </div>
                   )}
                 </div>
               </div>
               <div className="mt-6 flex flex-wrap gap-2.5">
-                <button type="submit" className="btn btn-primary" disabled={loading || uploadingImages}>{loading ? "Saving…" : editId ? "Save changes" : "Create product"}</button>
-                <Link to="/dashboard" className="btn btn-ghost">Cancel</Link>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading || uploadingImages}
+                >
+                  {loading ? "Saving…" : editId ? "Save changes" : "Create product"}
+                </button>
+                <Link to="/dashboard" className="btn btn-ghost">
+                  Cancel
+                </Link>
               </div>
             </div>
           </form>

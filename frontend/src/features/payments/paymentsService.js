@@ -5,7 +5,10 @@ export function createPaymentsModule({ payments: repo, sessionStore, eventBus, n
 
   async function initiatePayment(payload) {
     const { ok, data, error } = await repo.createIntent(payload, tok());
-    if (!ok) { notify.error(error || "Payment init failed"); throw new Error(error); }
+    if (!ok) {
+      notify.error(error || "Payment init failed");
+      throw new Error(error);
+    }
     eventBus.publish(PaymentEvents.initiated(data));
     return data;
   }
@@ -15,5 +18,6 @@ export function createPaymentsModule({ payments: repo, sessionStore, eventBus, n
     return ok ? data : null;
   }
 
-  const inputPort = { initiatePayment, getPaymentByOrder };  return inputPort;
+  const inputPort = { initiatePayment, getPaymentByOrder };
+  return inputPort;
 }

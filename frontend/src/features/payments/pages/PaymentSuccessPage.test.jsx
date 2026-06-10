@@ -17,14 +17,24 @@ beforeEach(() => {
 
 test("renders success message", () => {
   mockPaymentsInputPort.getPaymentByOrder.mockResolvedValue({ paymentStatus: "paid" });
-  render(<PaymentSuccessPage paymentsInputPort={mockPaymentsInputPort} ordersInputPort={mockOrdersInputPort} />);
+  render(
+    <PaymentSuccessPage
+      paymentsInputPort={mockPaymentsInputPort}
+      ordersInputPort={mockOrdersInputPort}
+    />
+  );
   expect(screen.getByText("Payment successful")).toBeInTheDocument();
 });
 
 test("navigates to orders page on button click", async () => {
   const user = userEvent.setup();
   mockPaymentsInputPort.getPaymentByOrder.mockResolvedValue({ paymentStatus: "paid" });
-  render(<PaymentSuccessPage paymentsInputPort={mockPaymentsInputPort} ordersInputPort={mockOrdersInputPort} />);
+  render(
+    <PaymentSuccessPage
+      paymentsInputPort={mockPaymentsInputPort}
+      ordersInputPort={mockOrdersInputPort}
+    />
+  );
   await user.click(screen.getByText(/view your orders/i));
   expect(mockNavigate).toHaveBeenCalledWith("/profile/orders");
 });

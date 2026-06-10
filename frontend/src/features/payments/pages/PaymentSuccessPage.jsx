@@ -27,7 +27,9 @@ export function PaymentSuccessPage({ paymentsInputPort, ordersInputPort }) {
     };
 
     poll();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [orderId, paymentsInputPort]);
 
   return (
@@ -40,10 +42,7 @@ export function PaymentSuccessPage({ paymentsInputPort, ordersInputPort }) {
             ? "Confirming your payment…"
             : "Your order has been placed and payment confirmed."}
         </p>
-        <button
-          className="btn btn-primary btn-lg mt-6"
-          onClick={() => navigate("/profile/orders")}
-        >
+        <button className="btn btn-primary btn-lg mt-6" onClick={() => navigate("/profile/orders")}>
           View your orders <FiArrowRight />
         </button>
       </div>

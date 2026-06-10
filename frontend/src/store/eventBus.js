@@ -3,9 +3,7 @@ class InProcessEventBus {
   #handlers = new WeakMap();
 
   publish(event) {
-    this.#target.dispatchEvent(
-      new CustomEvent(event.type, { detail: event })
-    );
+    this.#target.dispatchEvent(new CustomEvent(event.type, { detail: event }));
   }
 
   subscribe(eventType, handler) {

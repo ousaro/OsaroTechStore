@@ -5,41 +5,50 @@ import { eventBus } from "../store/eventBus.js";
 import { sessionStore } from "../store/sessionStore.js";
 import { Events } from "../lib/events.js";
 
-import { createAuthViewAdapter }     from "../features/auth/hooks/useAuth.js";
+import { createAuthViewAdapter } from "../features/auth/hooks/useAuth.js";
 import { createProductsViewAdapter } from "../features/products/hooks/useProducts.js";
-import { createUsersViewAdapter }    from "../features/users/hooks/useUsers.js";
-import { createCartViewAdapter }     from "../features/cart/hooks/useCart.js";
+import { createUsersViewAdapter } from "../features/users/hooks/useUsers.js";
+import { createCartViewAdapter } from "../features/cart/hooks/useCart.js";
 
-import { Navbar }   from "../components/ui/Navbar.jsx";
-import { Spinner }  from "../components/ui/Spinner.jsx";
-import { Footer }   from "../components/ui/Footer.jsx";
+import { Navbar } from "../components/ui/Navbar.jsx";
+import { Spinner } from "../components/ui/Spinner.jsx";
+import { Footer } from "../components/ui/Footer.jsx";
 import { ErrorBoundary, ErrorFallback } from "../components/ui/ErrorBoundary.jsx";
 import { useNavigate } from "../hooks/useNavigate.js";
 import { FiLock } from "react-icons/fi";
 import { toastNotifier } from "../lib/toastNotifier.js";
 import { getErrorMessage } from "../lib/errorUtils.js";
 
-import { LoginPage }    from "../features/auth/pages/LoginPage.jsx";
+import { LoginPage } from "../features/auth/pages/LoginPage.jsx";
 import { RegisterPage } from "../features/auth/pages/RegisterPage.jsx";
 import { SetPasswordPage } from "../features/auth/pages/SetPasswordPage.jsx";
 
-import { HomePage }          from "../features/products/pages/HomePage.jsx";
-import { ProductsPage }      from "../features/products/pages/ProductsPage.jsx";
+import { HomePage } from "../features/products/pages/HomePage.jsx";
+import { ProductsPage } from "../features/products/pages/ProductsPage.jsx";
 import { ProductDetailPage } from "../features/products/pages/ProductDetailPage.jsx";
 
-import { CartPage }     from "../features/cart/pages/CartPage.jsx";
+import { CartPage } from "../features/cart/pages/CartPage.jsx";
 import { CheckoutPage } from "../features/orders/pages/CheckoutPage.jsx";
 import { PaymentSuccessPage } from "../features/payments/pages/PaymentSuccessPage.jsx";
 import { PaymentCancelledPage } from "../features/payments/pages/PaymentCancelledPage.jsx";
 
-import { ProfilePage, AddressPage, PasswordPage, FavoritesPage, DeleteAccountPage }
-  from "../features/users/pages/ProfilePages.jsx";
+import {
+  ProfilePage,
+  AddressPage,
+  PasswordPage,
+  FavoritesPage,
+  DeleteAccountPage,
+} from "../features/users/pages/ProfilePages.jsx";
 import { OrdersPage } from "../features/users/pages/OrdersPage.jsx";
 
-import { DashboardPage, ManageProductsPage, ManageUsersPage, CategoriesPage, AboutPage }
-  from "../features/categories/pages/AdminPages.jsx";
-import { AddProductPage }
-  from "../features/products/pages/AddProductPage.jsx";
+import {
+  DashboardPage,
+  ManageProductsPage,
+  ManageUsersPage,
+  CategoriesPage,
+  AboutPage,
+} from "../features/categories/pages/AdminPages.jsx";
+import { AddProductPage } from "../features/products/pages/AddProductPage.jsx";
 
 const PUBLIC_ROUTES = ["/", "/login", "/register", "/set-password"];
 const CUSTOMER_ROUTES = ["/home", "/products", "/cart", "/checkout", "/about"];
@@ -51,7 +60,9 @@ function NotFound({ homeTo = CUSTOMER_HOME, homeLabel = "Back home" }) {
     <div className="px-6 py-20 text-center">
       <div className="text-8xl font-black leading-none text-accent">404</div>
       <p className="mt-3 text-base text-ink-muted">Page not found</p>
-      <a href={`#${homeTo}`} className="mt-5 inline-block font-semibold text-accent">← {homeLabel}</a>
+      <a href={`#${homeTo}`} className="mt-5 inline-block font-semibold text-accent">
+        ← {homeLabel}
+      </a>
     </div>
   );
 }
@@ -59,7 +70,11 @@ function NotFound({ homeTo = CUSTOMER_HOME, homeLabel = "Back home" }) {
 function AccessDenied() {
   return (
     <div className="px-6 py-20 text-center">
-      <div className="empty-state p-0"><span className="icon"><FiLock size={30} /></span></div>
+      <div className="empty-state p-0">
+        <span className="icon">
+          <FiLock size={30} />
+        </span>
+      </div>
       <h2 className="font-bold">Access denied</h2>
       <p className="mt-2 text-ink-muted">You don't have permission to view this page.</p>
     </div>
@@ -68,17 +83,17 @@ function AccessDenied() {
 
 function AppShell({ modules, viewAdapters }) {
   const { path, navigate } = useNavigate();
-  const { AuthProvider }    = viewAdapters.auth;
+  const { AuthProvider } = viewAdapters.auth;
   const { ProductsProvider } = viewAdapters.products;
-  const { UsersProvider }   = viewAdapters.users;
-  const { CartProvider }    = viewAdapters.cart;
+  const { UsersProvider } = viewAdapters.users;
+  const { CartProvider } = viewAdapters.cart;
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categoriesError, setCategoriesError] = useState("");
 
   const cleanPath = path.split("?")[0];
-  const segments  = cleanPath.split("/").filter(Boolean);
-  const route     = "/" + segments.join("/");
+  const segments = cleanPath.split("/").filter(Boolean);
+  const route = "/" + segments.join("/");
 
   const sessionUser = sessionStore.get();
   const sessionUserId = sessionUser?.id || null;
@@ -98,7 +113,8 @@ function AppShell({ modules, viewAdapters }) {
     setCategoriesLoading(true);
     setCategoriesError("");
 
-    modules.categories.getAllCategories()
+    modules.categories
+      .getAllCategories()
       .then((data) => {
         if (!cancelled) setCategories(data);
       })
@@ -122,16 +138,18 @@ function AppShell({ modules, viewAdapters }) {
     if (!sessionUserId) return undefined;
 
     const syncCreated = (event) => {
-      setCategories((current) => (
+      setCategories((current) =>
         current.some((category) => category.id === event.payload.category.id)
           ? current
           : [event.payload.category, ...current]
-      ));
+      );
     };
     const syncUpdated = (event) => {
-      setCategories((current) => current.map((category) => (
-        category.id === event.payload.category.id ? event.payload.category : category
-      )));
+      setCategories((current) =>
+        current.map((category) =>
+          category.id === event.payload.category.id ? event.payload.category : category
+        )
+      );
     };
     const syncDeleted = (event) => {
       setCategories((current) => current.filter((category) => category.id !== event.payload.id));
@@ -166,39 +184,118 @@ function AppShell({ modules, viewAdapters }) {
 
   const renderPage = () => {
     switch (true) {
-      case route === "/":                           return <LoginPage />; 
-      case route === "/login":                      return <LoginPage />;
-      case route === "/register":                   return <RegisterPage />;
-      case route === "/set-password":               return <SetPasswordPage />;
-      case route === "/home":                       return sessionUserIsAdmin ? <AccessDenied /> : <HomePage categories={categories} />;
-      case route === "/products":                   return sessionUserIsAdmin ? <AccessDenied /> : <ProductsPage categories={categories} />;
-      case route.startsWith("/product/"):           return sessionUserIsAdmin ? <AccessDenied /> : <ProductDetailPage id={segments[1]} />;
-      case route === "/cart":                       return sessionUserIsAdmin ? <AccessDenied /> : <CartPage />;
-      case route === "/checkout":                   return sessionUserIsAdmin ? <AccessDenied /> : <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />;
-      case route === "/payment-success":            return <PaymentSuccessPage paymentsInputPort={modules.payments} ordersInputPort={modules.orders} />;
-      case route === "/payment-cancelled":          return <PaymentCancelledPage />;
-      case route === "/profile":                    return <ProfilePage />;
-      case route === "/profile/address":            return <AddressPage />;
-      case route === "/profile/orders":             return <OrdersPage ordersInputPort={modules.orders} />;
-      case route === "/profile/favorites":          return <FavoritesPage />;
-      case route === "/profile/password":           return <PasswordPage />;
-      case route === "/profile/delete":             return <DeleteAccountPage />;
+      case route === "/":
+        return <LoginPage />;
+      case route === "/login":
+        return <LoginPage />;
+      case route === "/register":
+        return <RegisterPage />;
+      case route === "/set-password":
+        return <SetPasswordPage />;
+      case route === "/home":
+        return sessionUserIsAdmin ? <AccessDenied /> : <HomePage categories={categories} />;
+      case route === "/products":
+        return sessionUserIsAdmin ? <AccessDenied /> : <ProductsPage categories={categories} />;
+      case route.startsWith("/product/"):
+        return sessionUserIsAdmin ? <AccessDenied /> : <ProductDetailPage id={segments[1]} />;
+      case route === "/cart":
+        return sessionUserIsAdmin ? <AccessDenied /> : <CartPage />;
+      case route === "/checkout":
+        return sessionUserIsAdmin ? (
+          <AccessDenied />
+        ) : (
+          <CheckoutPage ordersInputPort={modules.orders} paymentsInputPort={modules.payments} />
+        );
+      case route === "/payment-success":
+        return (
+          <PaymentSuccessPage
+            paymentsInputPort={modules.payments}
+            ordersInputPort={modules.orders}
+          />
+        );
+      case route === "/payment-cancelled":
+        return <PaymentCancelledPage />;
+      case route === "/profile":
+        return <ProfilePage />;
+      case route === "/profile/address":
+        return <AddressPage />;
+      case route === "/profile/orders":
+        return <OrdersPage ordersInputPort={modules.orders} />;
+      case route === "/profile/favorites":
+        return <FavoritesPage />;
+      case route === "/profile/password":
+        return <PasswordPage />;
+      case route === "/profile/delete":
+        return <DeleteAccountPage />;
       case route === "/dashboard":
-        return sessionUserIsAdmin ? <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <DashboardPage ordersInputPort={modules.orders} productsInputPort={modules.products} />
+        ) : (
+          <AccessDenied />
+        );
       case route === "/admin/products":
-        return sessionUserIsAdmin ? <ManageProductsPage productsInputPort={modules.products} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <ManageProductsPage productsInputPort={modules.products} />
+        ) : (
+          <AccessDenied />
+        );
       case route === "/admin/products/add":
-        return sessionUserIsAdmin ? <AddProductPage categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <AddProductPage
+            categories={categories}
+            categoriesLoading={categoriesLoading}
+            categoriesError={categoriesError}
+            categoriesInputPort={modules.categories}
+            onCategoriesChange={setCategories}
+            onReloadCategories={loadCategories}
+          />
+        ) : (
+          <AccessDenied />
+        );
       case route.startsWith("/admin/edit-product/"):
-        return sessionUserIsAdmin ? <AddProductPage editId={segments[2]} categories={categories} categoriesLoading={categoriesLoading} categoriesError={categoriesError} categoriesInputPort={modules.categories} onCategoriesChange={setCategories} onReloadCategories={loadCategories} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <AddProductPage
+            editId={segments[2]}
+            categories={categories}
+            categoriesLoading={categoriesLoading}
+            categoriesError={categoriesError}
+            categoriesInputPort={modules.categories}
+            onCategoriesChange={setCategories}
+            onReloadCategories={loadCategories}
+          />
+        ) : (
+          <AccessDenied />
+        );
       case route === "/admin/users":
-        return sessionUserIsAdmin ? <ManageUsersPage authInputPort={modules.auth} /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <ManageUsersPage authInputPort={modules.auth} />
+        ) : (
+          <AccessDenied />
+        );
       case route === "/admin/orders":
-        return sessionUserIsAdmin ? <OrdersPage ordersInputPort={modules.orders} adminView /> : <AccessDenied />;
+        return sessionUserIsAdmin ? (
+          <OrdersPage ordersInputPort={modules.orders} adminView />
+        ) : (
+          <AccessDenied />
+        );
       case route === "/admin/categories":
-        return sessionUserIsAdmin ? <CategoriesPage categoriesInputPort={modules.categories} onCategoriesChange={setCategories} /> : <AccessDenied />;
-      case route === "/about":                      return sessionUserIsAdmin ? <AccessDenied /> : <AboutPage />;
-      default:                                      return <NotFound homeTo={sessionUserIsAdmin ? ADMIN_HOME : CUSTOMER_HOME} homeLabel={sessionUserIsAdmin ? "Back to dashboard" : "Back home"} />;
+        return sessionUserIsAdmin ? (
+          <CategoriesPage
+            categoriesInputPort={modules.categories}
+            onCategoriesChange={setCategories}
+          />
+        ) : (
+          <AccessDenied />
+        );
+      case route === "/about":
+        return sessionUserIsAdmin ? <AccessDenied /> : <AboutPage />;
+      default:
+        return (
+          <NotFound
+            homeTo={sessionUserIsAdmin ? ADMIN_HOME : CUSTOMER_HOME}
+            homeLabel={sessionUserIsAdmin ? "Back to dashboard" : "Back home"}
+          />
+        );
     }
   };
 
@@ -210,9 +307,7 @@ function AppShell({ modules, viewAdapters }) {
             <div className="flex min-h-screen flex-col">
               {showNav && <Navbar path={path} />}
               <main className="flex-1">
-                <ErrorBoundary key={route}>
-                  {renderPage()}
-                </ErrorBoundary>
+                <ErrorBoundary key={route}>{renderPage()}</ErrorBoundary>
               </main>
               {showFooter && <Footer />}
             </div>
@@ -239,7 +334,7 @@ export function Router() {
       });
       const productsViewAdapter = createProductsViewAdapter({
         productsInputPort: mods.products,
-        productReadModel:  mods.products.readModel,
+        productReadModel: mods.products.readModel,
       });
       const usersViewAdapter = createUsersViewAdapter({
         usersInputPort: mods.users,
@@ -253,10 +348,10 @@ export function Router() {
 
       setModules(mods);
       setViewAdapters({
-        auth:     authViewAdapter,
+        auth: authViewAdapter,
         products: productsViewAdapter,
-        users:    usersViewAdapter,
-        cart:     cartViewAdapter,
+        users: usersViewAdapter,
+        cart: cartViewAdapter,
       });
       setReady(true);
     } catch (error) {
@@ -301,13 +396,16 @@ export function Router() {
           toastOptions={{
             duration: 3000,
             style: {
-              background: "#0d0e14", color: "#fff",
+              background: "#0d0e14",
+              color: "#fff",
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: 14, fontWeight: 500,
-              borderRadius: 10, padding: "12px 18px",
+              fontSize: 14,
+              fontWeight: 500,
+              borderRadius: 10,
+              padding: "12px 18px",
             },
             success: { iconTheme: { primary: "#22c55e", secondary: "#fff" } },
-            error:   { iconTheme: { primary: "#d10024", secondary: "#fff" } },
+            error: { iconTheme: { primary: "#d10024", secondary: "#fff" } },
           }}
         />
       </>
@@ -324,13 +422,16 @@ export function Router() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: "#0d0e14", color: "#fff",
+            background: "#0d0e14",
+            color: "#fff",
             fontFamily: "'DM Sans', sans-serif",
-            fontSize: 14, fontWeight: 500,
-            borderRadius: 10, padding: "12px 18px",
+            fontSize: 14,
+            fontWeight: 500,
+            borderRadius: 10,
+            padding: "12px 18px",
           },
           success: { iconTheme: { primary: "#22c55e", secondary: "#fff" } },
-          error:   { iconTheme: { primary: "#d10024", secondary: "#fff" } },
+          error: { iconTheme: { primary: "#d10024", secondary: "#fff" } },
         }}
       />
     </>

@@ -4,7 +4,9 @@ const path = require("path");
 const sourceRoot = path.join(__dirname, "features");
 const guardedFolders = new Set(["api", "model", "services"]);
 const featureNames = new Set(
-  fs.readdirSync(sourceRoot).filter((entry) => fs.statSync(path.join(sourceRoot, entry)).isDirectory())
+  fs
+    .readdirSync(sourceRoot)
+    .filter((entry) => fs.statSync(path.join(sourceRoot, entry)).isDirectory())
 );
 
 const listSourceFiles = (dir) =>
@@ -29,7 +31,11 @@ test("feature api, model, and service files do not import other feature internal
 
         for (const importPath of imports) {
           const importedFeature = importPath.match(/^\.\.\/\.\.\/([^/]+)/)?.[1];
-          if (importedFeature && importedFeature !== featureName && featureNames.has(importedFeature)) {
+          if (
+            importedFeature &&
+            importedFeature !== featureName &&
+            featureNames.has(importedFeature)
+          ) {
             violations.push(`${path.relative(__dirname, filePath)} imports ${importPath}`);
           }
         }

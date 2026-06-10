@@ -1,4 +1,3 @@
-
 const E = { cart: "/users/me/cart" };
 
 export function createHttpCartRepository({ httpClient, sessionStore }) {
@@ -8,5 +7,6 @@ export function createHttpCartRepository({ httpClient, sessionStore }) {
     async saveCart(cartLines) {
       return httpClient(E.cart, { method: "PUT", body: { cart: cartLines }, token: tok() });
     },
-  };  return adapter;
+  };
+  return adapter;
 }

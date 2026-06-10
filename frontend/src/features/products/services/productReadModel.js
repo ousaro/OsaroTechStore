@@ -4,13 +4,14 @@ import { Events } from "../../../lib/events.js";
 export function createProductReadModel({ eventBus }) {
   function useProductReadModel(initialProducts = []) {
     const [products, setProducts] = useState(initialProducts);
-    const [loaded, setLoaded]     = useState(false);
-    const [loading, setLoading]   = useState(false);
-    const [error, setError]       = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
       const onCreated = (e) => setProducts((ps) => [e.payload.product, ...ps]);
-      const onUpdated = (e) => setProducts((ps) => ps.map((p) => p.id === e.payload.product.id ? e.payload.product : p));
+      const onUpdated = (e) =>
+        setProducts((ps) => ps.map((p) => (p.id === e.payload.product.id ? e.payload.product : p)));
       const onDeleted = (e) => setProducts((ps) => ps.filter((p) => p.id !== e.payload.id));
 
       eventBus.subscribe(Events.PRODUCT_CREATED, onCreated);

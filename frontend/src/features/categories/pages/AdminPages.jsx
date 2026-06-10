@@ -32,7 +32,7 @@ import {
 
 export function DashboardPage({ ordersInputPort, productsInputPort }) {
   const { path } = useNavigate();
-  const [orders, setOrders]     = useState([]);
+  const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,17 +44,15 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
     setLoading(true);
     setError("");
 
-    Promise.all([
-      ordersInputPort.getAllOrders(),
-      productsInputPort.getAllProducts(),
-    ])
+    Promise.all([ordersInputPort.getAllOrders(), productsInputPort.getAllProducts()])
       .then(([nextOrders, nextProducts]) => {
         if (cancelled) return;
         setOrders(nextOrders);
         setProducts(nextProducts);
       })
       .catch((err) => {
-        if (!cancelled) setError(getErrorMessage(err, "Could not load dashboard data. Please try again."));
+        if (!cancelled)
+          setError(getErrorMessage(err, "Could not load dashboard data. Please try again."));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -66,39 +64,71 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
   }, [user?.id]); // eslint-disable-line
 
   const revenue = orders.reduce((s, o) => s + (o.totalPrice?.amount || 0), 0);
-  const byStatus = orders.reduce((m, o) => { m[o.orderStatus] = (m[o.orderStatus]||0)+1; return m; }, {});
+  const byStatus = orders.reduce((m, o) => {
+    m[o.orderStatus] = (m[o.orderStatus] || 0) + 1;
+    return m;
+  }, {});
 
   return (
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
-        <div className="page-header"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Store overview</p></div></div>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="page-subtitle">Store overview</p>
+          </div>
+        </div>
         {error && <div className="error-box">{error}</div>}
         {loading && <div className="info-box">Loading dashboard data...</div>}
         <div className="stats-grid">
           {[
-            [FiZap, "Revenue", "$"+revenue.toFixed(0), true],
+            [FiZap, "Revenue", "$" + revenue.toFixed(0), true],
             [FiArchive, "Orders", orders.length],
-            [FiCheckCircle, "Paid", orders.filter(o=>o.paymentStatus==="paid").length],
-            [FiClock, "Pending", orders.filter(o=>o.orderStatus==="pending").length],
+            [FiCheckCircle, "Paid", orders.filter((o) => o.paymentStatus === "paid").length],
+            [FiClock, "Pending", orders.filter((o) => o.orderStatus === "pending").length],
             [FiTag, "Products", products.length],
-          ].map(([Icon,label,value,accent])=>(
-            <div key={label} className="card stat-card"><div className="stat-label flex items-center gap-2"><Icon size={14} /> {label}</div><div className={`stat-value ${accent?"accent":""}`}>{value}</div></div>
+          ].map(([Icon, label, value, accent]) => (
+            <div key={label} className="card stat-card">
+              <div className="stat-label flex items-center gap-2">
+                <Icon size={14} /> {label}
+              </div>
+              <div className={`stat-value ${accent ? "accent" : ""}`}>{value}</div>
+            </div>
           ))}
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="card p-5 sm:p-6">
             <h2 className="mb-4 text-base font-bold">Orders by status</h2>
-            {Object.entries(byStatus).map(([s,c]) => (
-              <div key={s} className="flex items-center justify-between border-b border-border py-[9px]"><Badge status={s} /><span className="font-bold">{c}</span></div>
+            {Object.entries(byStatus).map(([s, c]) => (
+              <div
+                key={s}
+                className="flex items-center justify-between border-b border-border py-[9px]"
+              >
+                <Badge status={s} />
+                <span className="font-bold">{c}</span>
+              </div>
             ))}
           </div>
           <div className="card p-5 sm:p-6">
             <h2 className="mb-4 text-base font-bold">Recent orders</h2>
-            {orders.slice(0,6).map((o) => (
-              <div key={o.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-[9px]">
-                <div className="min-w-0"><code className="text-xs">#{o.id?.slice(-8)}</code><div className="text-xs text-ink-muted">{o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}</div></div>
-                <div className="text-left sm:text-right"><div className="text-[13px] font-bold">{Money.fromRaw(o.totalPrice).format()}</div><Badge status={o.orderStatus} /></div>
+            {orders.slice(0, 6).map((o) => (
+              <div
+                key={o.id}
+                className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-[9px]"
+              >
+                <div className="min-w-0">
+                  <code className="text-xs">#{o.id?.slice(-8)}</code>
+                  <div className="text-xs text-ink-muted">
+                    {o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "—"}
+                  </div>
+                </div>
+                <div className="text-left sm:text-right">
+                  <div className="text-[13px] font-bold">
+                    {Money.fromRaw(o.totalPrice).format()}
+                  </div>
+                  <Badge status={o.orderStatus} />
+                </div>
               </div>
             ))}
           </div>
@@ -111,7 +141,7 @@ export function DashboardPage({ ordersInputPort, productsInputPort }) {
 export function ManageUsersPage({ authInputPort }) {
   const { user } = useAuth();
   const { path } = useNavigate();
-  const [users, setUsers]       = useState([]);
+  const [users, setUsers] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState("");
@@ -124,7 +154,8 @@ export function ManageUsersPage({ authInputPort }) {
     setLoadingUsers(true);
     setError("");
 
-    authInputPort.listUsers()
+    authInputPort
+      .listUsers()
       .then((response) => {
         if (cancelled) return;
         if (response?.ok === false) {
@@ -132,11 +163,14 @@ export function ManageUsersPage({ authInputPort }) {
         }
 
         const payload = response?.data ?? response;
-        setUsers(asArray(payload).map((u) => {
-          const id = u._id || u.id;
-          const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email || "Unnamed user";
-          return { ...u, id, fullName };
-        }));
+        setUsers(
+          asArray(payload).map((u) => {
+            const id = u._id || u.id;
+            const fullName =
+              `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email || "Unnamed user";
+            return { ...u, id, fullName };
+          })
+        );
       })
       .catch((err) => {
         if (!cancelled) setError(err?.message || "Unable to load users");
@@ -170,24 +204,77 @@ export function ManageUsersPage({ authInputPort }) {
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
-        <div className="page-header"><div><h1 className="page-title">Manage users</h1><p className="page-subtitle">{users.length} users</p></div></div>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Manage users</h1>
+            <p className="page-subtitle">{users.length} users</p>
+          </div>
+        </div>
         {error && <div className="error-box">{error}</div>}
         <div className="card table-wrap">
           {loadingUsers ? (
-            <div className="empty-state"><span className="icon"><FiUsers size={30} /></span><h3>Loading users</h3></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiUsers size={30} />
+              </span>
+              <h3>Loading users</h3>
+            </div>
           ) : users.length === 0 ? (
-            <div className="empty-state"><span className="icon"><FiUsers size={30} /></span><h3>No users found</h3><p>Customer accounts will appear here.</p></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiUsers size={30} />
+              </span>
+              <h3>No users found</h3>
+              <p>Customer accounts will appear here.</p>
+            </div>
           ) : (
             <table>
-              <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id||u._id}>
-                    <td><div className="flex items-center gap-2.5"><Avatar src={u.picture} name={u.fullName} firstName={u.firstName} lastName={u.lastName} alt={u.fullName || "User"} className="table-avatar" /><span className="font-semibold">{u.fullName}</span></div></td>
+                  <tr key={u.id || u._id}>
+                    <td>
+                      <div className="flex items-center gap-2.5">
+                        <Avatar
+                          src={u.picture}
+                          name={u.fullName}
+                          firstName={u.firstName}
+                          lastName={u.lastName}
+                          alt={u.fullName || "User"}
+                          className="table-avatar"
+                        />
+                        <span className="font-semibold">{u.fullName}</span>
+                      </div>
+                    </td>
                     <td className="text-[13px] text-ink-muted">{u.email || "—"}</td>
-                    <td>{u.admin ? <span className="admin-tag">Admin</span> : <span className="text-[13px] text-ink-muted">Customer</span>}</td>
-                    <td className="text-[13px] text-ink-muted">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}</td>
-                    <td><button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(u.id||u._id)} disabled={loadingId===(u.id||u._id)||(u.id||u._id)===user?.id} aria-label="Delete user">{loadingId===(u.id||u._id) ? "…" : <FiTrash2 />}</button></td>
+                    <td>
+                      {u.admin ? (
+                        <span className="admin-tag">Admin</span>
+                      ) : (
+                        <span className="text-[13px] text-ink-muted">Customer</span>
+                      )}
+                    </td>
+                    <td className="text-[13px] text-ink-muted">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => setConfirmDelete(u.id || u._id)}
+                        disabled={loadingId === (u.id || u._id) || (u.id || u._id) === user?.id}
+                        aria-label="Delete user"
+                      >
+                        {loadingId === (u.id || u._id) ? "…" : <FiTrash2 />}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -198,7 +285,11 @@ export function ManageUsersPage({ authInputPort }) {
           open={confirmDelete !== null}
           title="Delete user"
           message="Delete this user? This action cannot be undone."
-          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); deleteUser(id); }}
+          onConfirm={() => {
+            const id = confirmDelete;
+            setConfirmDelete(null);
+            deleteUser(id);
+          }}
           onCancel={() => setConfirmDelete(null)}
         />
       </div>
@@ -208,13 +299,13 @@ export function ManageUsersPage({ authInputPort }) {
 
 export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   const { path } = useNavigate();
-  const [cats, setCats]       = useState([]);
-  const [form, setForm]       = useState({ name:"", description:"" });
+  const [cats, setCats] = useState([]);
+  const [form, setForm] = useState({ name: "", description: "" });
   const [creating, setCreating] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
-  const [editId, setEditId]   = useState(null);
-  const [editForm, setEditForm] = useState({ name:"", description:"" });
-  const [saving, setSaving]   = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState({ name: "", description: "" });
+  const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [error, setError] = useState("");
@@ -224,14 +315,16 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
     setLoadingCategories(true);
     setError("");
 
-    categoriesInputPort.getAllCategories()
+    categoriesInputPort
+      .getAllCategories()
       .then((data) => {
         if (cancelled) return;
         setCats(data);
         onCategoriesChange?.(data);
       })
       .catch((err) => {
-        if (!cancelled) setError(getErrorMessage(err, "Could not load categories. Please try again."));
+        if (!cancelled)
+          setError(getErrorMessage(err, "Could not load categories. Please try again."));
       })
       .finally(() => {
         if (!cancelled) setLoadingCategories(false);
@@ -243,7 +336,8 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
   }, []); // eslint-disable-line
 
   const create = async (e) => {
-    e.preventDefault(); if (!form.name.trim()) return;
+    e.preventDefault();
+    if (!form.name.trim()) return;
     setCreating(true);
     setError("");
     try {
@@ -253,10 +347,12 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
         onCategoriesChange?.(next);
         return next;
       });
-      setForm({ name:"", description:"" });
+      setForm({ name: "", description: "" });
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not create this category. Please try again."));
+    } finally {
+      setCreating(false);
     }
-    catch (err) { setError(getErrorMessage(err, "Could not create this category. Please try again.")); }
-    finally { setCreating(false); }
   };
 
   const startEdit = (c) => {
@@ -266,7 +362,7 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
 
   const cancelEdit = () => {
     setEditId(null);
-    setEditForm({ name:"", description:"" });
+    setEditForm({ name: "", description: "" });
   };
 
   const saveEdit = async (e) => {
@@ -282,9 +378,11 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
         return next;
       });
       cancelEdit();
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not save this category. Please try again."));
+    } finally {
+      setSaving(false);
     }
-    catch (err) { setError(getErrorMessage(err, "Could not save this category. Please try again.")); }
-    finally { setSaving(false); }
   };
 
   const del = async (id) => {
@@ -298,60 +396,166 @@ export function CategoriesPage({ categoriesInputPort, onCategoriesChange }) {
         return next;
       });
       toastNotifier.success("Category deleted");
+    } catch (err) {
+      toastNotifier.error(getErrorMessage(err, "Could not delete this category."));
+    } finally {
+      setLoadingId(null);
     }
-    catch (err) { toastNotifier.error(getErrorMessage(err, "Could not delete this category.")); }
-    finally { setLoadingId(null); }
   };
 
   return (
     <div className="sidebar-layout">
       <ProfileSidebar path={path} />
       <div className="content-area">
-        <div className="page-header"><div><h1 className="page-title">Categories</h1><p className="page-subtitle">{cats.length} categories</p></div></div>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Categories</h1>
+            <p className="page-subtitle">{cats.length} categories</p>
+          </div>
+        </div>
         {error && <div className="error-box">{error}</div>}
         <div className="card mb-5 p-5 sm:p-6">
           <h2 className="mb-4 text-base font-bold">Add new category</h2>
-          <form onSubmit={create} className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-            <div className="field flex-[1_1_160px]"><label>Name *</label><input className="input" placeholder="e.g. Smartphones" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name:e.target.value }))} required /></div>
-            <div className="field flex-[2_1_240px]"><label>Description</label><input className="input" placeholder="Optional" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description:e.target.value }))} /></div>
-            <button type="submit" className="btn btn-primary sm:w-auto" disabled={creating}>+ {creating ? "Creating…" : "Create"}</button>
+          <form
+            onSubmit={create}
+            className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end"
+          >
+            <div className="field flex-[1_1_160px]">
+              <label>Name *</label>
+              <input
+                className="input"
+                placeholder="e.g. Smartphones"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                required
+              />
+            </div>
+            <div className="field flex-[2_1_240px]">
+              <label>Description</label>
+              <input
+                className="input"
+                placeholder="Optional"
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary sm:w-auto" disabled={creating}>
+              + {creating ? "Creating…" : "Create"}
+            </button>
           </form>
         </div>
         <div className="card table-wrap">
           {loadingCategories ? (
-            <div className="empty-state"><span className="icon"><FiTag size={30} /></span><h3>Loading categories</h3></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiTag size={30} />
+              </span>
+              <h3>Loading categories</h3>
+            </div>
           ) : cats.length === 0 ? (
-            <div className="empty-state"><span className="icon"><FiTag size={30} /></span><h3>No categories yet</h3><p>Create your first category above.</p></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiTag size={30} />
+              </span>
+              <h3>No categories yet</h3>
+              <p>Create your first category above.</p>
+            </div>
           ) : (
-          <table>
-            <thead><tr><th>Name</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
-            <tbody>
-              {cats.map((c) => (
-                editId === c.id ? (
-                  <tr key={c.id}>
-                    <td><input className="input w-full" value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} required autoFocus /></td>
-                    <td><input className="input w-full" value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} /></td>
-                    <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
-                    <td><div className="flex gap-1.5"><button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>{saving ? "Saving…" : <FiCheckCircle />}</button><button className="btn btn-ghost btn-sm" onClick={cancelEdit} disabled={saving}><FiX /></button></div></td>
-                  </tr>
-                ) : (
-                  <tr key={c.id}>
-                    <td className="font-semibold">{c.name}</td>
-                    <td className="text-[13px] text-ink-muted">{c.description||"—"}</td>
-                    <td className="text-[13px] text-ink-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
-                    <td><div className="flex gap-1.5"><button className="btn btn-ghost btn-sm" onClick={() => startEdit(c)} aria-label="Edit category"><FiEdit2 /></button>                                <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(c.id)} disabled={loadingId===c.id} aria-label="Delete category">{loadingId===c.id?"…":<FiTrash2 />}</button></div></td>
-                  </tr>
-                )
-              ))}
-            </tbody>
-          </table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cats.map((c) =>
+                  editId === c.id ? (
+                    <tr key={c.id}>
+                      <td>
+                        <input
+                          className="input w-full"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                          required
+                          autoFocus
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="input w-full"
+                          value={editForm.description}
+                          onChange={(e) =>
+                            setEditForm((f) => ({ ...f, description: e.target.value }))
+                          }
+                        />
+                      </td>
+                      <td className="text-[13px] text-ink-muted">
+                        {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}
+                      </td>
+                      <td>
+                        <div className="flex gap-1.5">
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={saveEdit}
+                            disabled={saving}
+                          >
+                            {saving ? "Saving…" : <FiCheckCircle />}
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={cancelEdit}
+                            disabled={saving}
+                          >
+                            <FiX />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr key={c.id}>
+                      <td className="font-semibold">{c.name}</td>
+                      <td className="text-[13px] text-ink-muted">{c.description || "—"}</td>
+                      <td className="text-[13px] text-ink-muted">
+                        {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}
+                      </td>
+                      <td>
+                        <div className="flex gap-1.5">
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => startEdit(c)}
+                            aria-label="Edit category"
+                          >
+                            <FiEdit2 />
+                          </button>{" "}
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => setConfirmDelete(c.id)}
+                            disabled={loadingId === c.id}
+                            aria-label="Delete category"
+                          >
+                            {loadingId === c.id ? "…" : <FiTrash2 />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
           )}
         </div>
         <ConfirmDialog
           open={confirmDelete !== null}
           title="Delete category"
           message="Delete this category? This action cannot be undone."
-          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); del(id); }}
+          onConfirm={() => {
+            const id = confirmDelete;
+            setConfirmDelete(null);
+            del(id);
+          }}
           onCancel={() => setConfirmDelete(null)}
         />
       </div>
@@ -370,7 +574,8 @@ export function ManageProductsPage({ productsInputPort }) {
   const load = () => {
     setLoading(true);
     setError("");
-    productsInputPort.getAllProducts()
+    productsInputPort
+      .getAllProducts()
       .then((data) => setProducts(asArray(data)))
       .catch((err) => setError(getErrorMessage(err, "Could not load products. Please try again.")))
       .finally(() => setLoading(false));
@@ -409,24 +614,70 @@ export function ManageProductsPage({ productsInputPort }) {
         {error && <div className="error-box">{error}</div>}
         <div className="card table-wrap">
           {loading ? (
-            <div className="empty-state"><span className="icon"><FiLayers size={30} /></span><h3>Loading products</h3></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiLayers size={30} />
+              </span>
+              <h3>Loading products</h3>
+            </div>
           ) : products.length === 0 ? (
-            <div className="empty-state"><span className="icon"><FiLayers size={30} /></span><h3>No products yet</h3><p>Create your first product.</p></div>
+            <div className="empty-state">
+              <span className="icon">
+                <FiLayers size={30} />
+              </span>
+              <h3>No products yet</h3>
+              <p>Create your first product.</p>
+            </div>
           ) : (
             <table>
-              <thead><tr><th>Product</th><th>Price</th><th>Category</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id}>
-                    <td><div className="flex items-center gap-2.5 min-w-0"><div className="size-9 shrink-0 rounded-lg bg-muted overflow-hidden">{p.images?.[0] ? <img src={p.images[0]} alt="" className="size-full object-cover" /> : <FiLayers size={18} className="m-auto text-ink-muted" />}</div><span className="font-semibold truncate">{p.name}</span></div></td>
+                    <td>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="size-9 shrink-0 rounded-lg bg-muted overflow-hidden">
+                          {p.images?.[0] ? (
+                            <img src={p.images[0]} alt="" className="size-full object-cover" />
+                          ) : (
+                            <FiLayers size={18} className="m-auto text-ink-muted" />
+                          )}
+                        </div>
+                        <span className="font-semibold truncate">{p.name}</span>
+                      </div>
+                    </td>
                     <td className="font-bold">{p.price ? Money.fromRaw(p.price).format() : "—"}</td>
                     <td className="text-[13px] text-ink-muted">{p.category || "—"}</td>
                     <td>{p.stock ?? "—"}</td>
-                    <td><Badge status={p.status || "new"} /></td>
+                    <td>
+                      <Badge status={p.status || "new"} />
+                    </td>
                     <td>
                       <div className="flex gap-1.5">
-                        <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/admin/edit-product/${p.id}`)} aria-label="Edit product"><FiEdit2 /></button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(p.id)} disabled={deletingId === p.id} aria-label="Delete product">{deletingId === p.id ? "…" : <FiTrash2 />}</button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => navigate(`/admin/edit-product/${p.id}`)}
+                          aria-label="Edit product"
+                        >
+                          <FiEdit2 />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => setConfirmDelete(p.id)}
+                          disabled={deletingId === p.id}
+                          aria-label="Delete product"
+                        >
+                          {deletingId === p.id ? "…" : <FiTrash2 />}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -439,7 +690,11 @@ export function ManageProductsPage({ productsInputPort }) {
           open={confirmDelete !== null}
           title="Delete product"
           message="Delete this product? This action cannot be undone."
-          onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); del(id); }}
+          onConfirm={() => {
+            const id = confirmDelete;
+            setConfirmDelete(null);
+            del(id);
+          }}
           onCancel={() => setConfirmDelete(null)}
         />
       </div>
@@ -449,9 +704,21 @@ export function ManageProductsPage({ productsInputPort }) {
 
 export function AboutPage() {
   const values = [
-    { icon: FiTruck, title: "Delivery", sub: "Clear order status and practical fulfillment updates." },
-    { icon: FiShield, title: "Checkout", sub: "Secure payments with a straightforward purchase flow." },
-    { icon: FiHeadphones, title: "Support", sub: "Help with products, delivery, and account questions." },
+    {
+      icon: FiTruck,
+      title: "Delivery",
+      sub: "Clear order status and practical fulfillment updates.",
+    },
+    {
+      icon: FiShield,
+      title: "Checkout",
+      sub: "Secure payments with a straightforward purchase flow.",
+    },
+    {
+      icon: FiHeadphones,
+      title: "Support",
+      sub: "Help with products, delivery, and account questions.",
+    },
   ];
 
   return (
@@ -459,11 +726,20 @@ export function AboutPage() {
       <section className="about-hero">
         <div className="about-intro">
           <div className="section-kicker">About the store</div>
-          <h1 className="about-title"><span className="accent">Osaro</span>Tech Store</h1>
-          <p className="about-lede">A focused tech shop for phones, accessories, and everyday devices, built around clear product discovery, reliable checkout, and customer support that feels close to home.</p>
+          <h1 className="about-title">
+            <span className="accent">Osaro</span>Tech Store
+          </h1>
+          <p className="about-lede">
+            A focused tech shop for phones, accessories, and everyday devices, built around clear
+            product discovery, reliable checkout, and customer support that feels close to home.
+          </p>
           <div className="about-actions">
-            <a className="btn btn-primary" href="#/products">Explore products</a>
-            <a className="btn btn-ghost" href="mailto:hello@osarotech.store">Contact support</a>
+            <a className="btn btn-primary" href="#/products">
+              Explore products
+            </a>
+            <a className="btn btn-ghost" href="mailto:hello@osarotech.store">
+              Contact support
+            </a>
           </div>
         </div>
         <div className="about-summary">
@@ -483,9 +759,11 @@ export function AboutPage() {
       </section>
 
       <section className="about-grid">
-        {values.map(({ icon: Icon, title, sub })=>(
+        {values.map(({ icon: Icon, title, sub }) => (
           <div key={title} className="card about-value-card">
-            <span className="icon-pill"><Icon size={22} /></span>
+            <span className="icon-pill">
+              <Icon size={22} />
+            </span>
             <div className="mb-1 font-extrabold">{title}</div>
             <div className="text-sm text-ink-muted">{sub}</div>
           </div>
@@ -498,8 +776,15 @@ export function AboutPage() {
           <h2>Simple choices, solid gear, no noise.</h2>
         </div>
         <div className="about-story-copy">
-          <p>OsaroTech exists for shoppers who want the right device without digging through clutter. The catalog is kept direct, product pages put useful details first, and checkout stays calm even when you are moving quickly.</p>
-          <p>We focus on practical technology: the phone you use every day, the accessory that saves your battery, and the device that makes work or study smoother.</p>
+          <p>
+            OsaroTech exists for shoppers who want the right device without digging through clutter.
+            The catalog is kept direct, product pages put useful details first, and checkout stays
+            calm even when you are moving quickly.
+          </p>
+          <p>
+            We focus on practical technology: the phone you use every day, the accessory that saves
+            your battery, and the device that makes work or study smoother.
+          </p>
         </div>
       </section>
 
@@ -507,12 +792,20 @@ export function AboutPage() {
         <div>
           <div className="section-kicker">Contact</div>
           <h2>Need help choosing or ordering?</h2>
-          <p>Reach out and we will help with product questions, delivery details, or account support.</p>
+          <p>
+            Reach out and we will help with product questions, delivery details, or account support.
+          </p>
         </div>
         <div className="about-contact-list">
-          <a href="tel:+65412785285"><FiPhone /> +65 412 785 285</a>
-          <a href="mailto:hello@osarotech.store"><FiMail /> hello@osarotech.store</a>
-          <span><FiMapPin /> 1554 Hay Mohamadi, Casablanca, Morocco</span>
+          <a href="tel:+65412785285">
+            <FiPhone /> +65 412 785 285
+          </a>
+          <a href="mailto:hello@osarotech.store">
+            <FiMail /> hello@osarotech.store
+          </a>
+          <span>
+            <FiMapPin /> 1554 Hay Mohamadi, Casablanca, Morocco
+          </span>
         </div>
       </section>
     </div>

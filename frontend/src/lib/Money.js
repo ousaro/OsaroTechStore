@@ -3,16 +3,24 @@ export class Money {
   #currency;
 
   constructor(amount, currency = "USD") {
-    this.#amount   = Number(amount);
+    this.#amount = Number(amount);
     this.#currency = currency;
     Object.freeze(this);
   }
 
-  get amount()   { return this.#amount; }
-  get currency() { return this.#currency; }
+  get amount() {
+    return this.#amount;
+  }
+  get currency() {
+    return this.#currency;
+  }
 
-  add(other)      { return new Money(this.#amount + other.amount, this.#currency); }
-  multiply(qty)   { return new Money(this.#amount * qty, this.#currency); }
+  add(other) {
+    return new Money(this.#amount + other.amount, this.#currency);
+  }
+  multiply(qty) {
+    return new Money(this.#amount * qty, this.#currency);
+  }
 
   format() {
     return new Intl.NumberFormat("en-US", {
@@ -21,7 +29,9 @@ export class Money {
     }).format(this.#amount);
   }
 
-  toJSON() { return { amount: this.#amount, currency: this.#currency }; }
+  toJSON() {
+    return { amount: this.#amount, currency: this.#currency };
+  }
 
   static fromRaw(raw) {
     if (raw instanceof Money) return raw;
@@ -31,5 +41,7 @@ export class Money {
     return new Money(0);
   }
 
-  static zero(currency = "USD") { return new Money(0, currency); }
+  static zero(currency = "USD") {
+    return new Money(0, currency);
+  }
 }

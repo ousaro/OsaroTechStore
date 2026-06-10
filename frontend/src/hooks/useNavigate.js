@@ -10,6 +10,8 @@ export function useNavigate() {
     return () => window.removeEventListener("hashchange", h);
   }, []);
 
-  const navigate = useCallback((to) => { window.location.hash = to; }, []);
+  const navigate = useCallback((to) => {
+    window.location.hash = to;
+  }, []);
   return { path, navigate };
 }

@@ -13,7 +13,10 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
 
   async function createCategory(payload) {
     const { ok, data, error } = await repo.create(payload, tok());
-    if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
+    if (!ok) {
+      notify.error(error || "Failed");
+      throw new Error(error);
+    }
     const category = new Category(data);
     eventBus.publish(CategoryEvents.created(category));
     notify.success("Category created!");
@@ -22,7 +25,10 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
 
   async function updateCategory(id, payload) {
     const { ok, data, error } = await repo.update(id, payload, tok());
-    if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
+    if (!ok) {
+      notify.error(error || "Failed");
+      throw new Error(error);
+    }
     const category = new Category(data);
     eventBus.publish(CategoryEvents.updated(category));
     notify.success("Category updated!");
@@ -31,10 +37,14 @@ export function createCategoriesModule({ categories: repo, sessionStore, eventBu
 
   async function deleteCategory(id, categoryName) {
     const { ok, error } = await repo.delete(id, tok());
-    if (!ok) { notify.error(error || "Failed"); throw new Error(error); }
+    if (!ok) {
+      notify.error(error || "Failed");
+      throw new Error(error);
+    }
     eventBus.publish(CategoryEvents.deleted(id, categoryName));
     notify.success("Category deleted");
   }
 
-  const inputPort = { getAllCategories, createCategory, updateCategory, deleteCategory };  return inputPort;
+  const inputPort = { getAllCategories, createCategory, updateCategory, deleteCategory };
+  return inputPort;
 }

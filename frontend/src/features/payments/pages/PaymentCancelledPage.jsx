@@ -12,10 +12,7 @@ export function PaymentCancelledPage() {
         <p className="mt-2 text-ink-muted">
           Your payment was not completed. Your order is saved and you can try again.
         </p>
-        <button
-          className="btn btn-primary btn-lg mt-6"
-          onClick={() => navigate("/checkout")}
-        >
+        <button className="btn btn-primary btn-lg mt-6" onClick={() => navigate("/checkout")}>
           Return to checkout <FiArrowLeft />
         </button>
       </div>

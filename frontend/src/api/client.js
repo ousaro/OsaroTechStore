@@ -32,9 +32,7 @@ export async function httpClient(endpoint, { method = "GET", body, token, header
     } catch {
       data = text ? { message: text } : null;
     }
-    const error = !response.ok
-      ? normalizeApiError(data?.error || data?.message)
-      : null;
+    const error = !response.ok ? normalizeApiError(data?.error || data?.message) : null;
 
     return { data, error, ok: response.ok, status: response.status };
   } catch (error) {

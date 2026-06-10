@@ -4,8 +4,30 @@ import { axe } from "jest-axe";
 import { HomePage } from "./HomePage.jsx";
 
 var mockProducts = [
-  { id: "p1", name: "Keyboard", category: "Peripherals", price: { currency: "$", amount: 99 }, primaryImage: "", status: "new", inStock: true, lowStock: false, stock: 10, reviews: [] },
-  { id: "p2", name: "Mouse", category: "Peripherals", price: { currency: "$", amount: 49 }, primaryImage: "img.jpg", status: "active", inStock: true, lowStock: false, stock: 15, reviews: [{ id: "r1" }] },
+  {
+    id: "p1",
+    name: "Keyboard",
+    category: "Peripherals",
+    price: { currency: "$", amount: 99 },
+    primaryImage: "",
+    status: "new",
+    inStock: true,
+    lowStock: false,
+    stock: 10,
+    reviews: [],
+  },
+  {
+    id: "p2",
+    name: "Mouse",
+    category: "Peripherals",
+    price: { currency: "$", amount: 49 },
+    primaryImage: "img.jpg",
+    status: "active",
+    inStock: true,
+    lowStock: false,
+    stock: 15,
+    reviews: [{ id: "r1" }],
+  },
 ];
 const mockNavigate = jest.fn();
 
@@ -30,8 +52,30 @@ const categories = [{ id: "c1", name: "Peripherals" }];
 beforeEach(() => {
   jest.clearAllMocks();
   mockProducts = [
-    { id: "p1", name: "Keyboard", category: "Peripherals", price: { currency: "$", amount: 99 }, primaryImage: "", status: "new", inStock: true, lowStock: false, stock: 10, reviews: [] },
-    { id: "p2", name: "Mouse", category: "Peripherals", price: { currency: "$", amount: 49 }, primaryImage: "img.jpg", status: "active", inStock: true, lowStock: false, stock: 15, reviews: [{ id: "r1" }] },
+    {
+      id: "p1",
+      name: "Keyboard",
+      category: "Peripherals",
+      price: { currency: "$", amount: 99 },
+      primaryImage: "",
+      status: "new",
+      inStock: true,
+      lowStock: false,
+      stock: 10,
+      reviews: [],
+    },
+    {
+      id: "p2",
+      name: "Mouse",
+      category: "Peripherals",
+      price: { currency: "$", amount: 49 },
+      primaryImage: "img.jpg",
+      status: "active",
+      inStock: true,
+      lowStock: false,
+      stock: 15,
+      reviews: [{ id: "r1" }],
+    },
   ];
 });
 

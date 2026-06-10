@@ -4,7 +4,14 @@ import { axe } from "jest-axe";
 import { CartPage } from "./CartPage.jsx";
 
 const defaultUseCart = {
-  cart: { isEmpty: false, count: 2, lines: [{ productId: "p1", quantity: 2 }, { productId: "p2", quantity: 1 }] },
+  cart: {
+    isEmpty: false,
+    count: 2,
+    lines: [
+      { productId: "p1", quantity: 2 },
+      { productId: "p2", quantity: 1 },
+    ],
+  },
   removeFromCart: jest.fn(),
   setQuantity: jest.fn(),
 };
@@ -38,7 +45,11 @@ test("renders cart items with product details and passes axe", async () => {
 });
 
 test("displays empty cart when cart is empty", () => {
-  mockUseCartValue = { cart: { isEmpty: true, count: 0, lines: [] }, removeFromCart: jest.fn(), setQuantity: jest.fn() };
+  mockUseCartValue = {
+    cart: { isEmpty: true, count: 0, lines: [] },
+    removeFromCart: jest.fn(),
+    setQuantity: jest.fn(),
+  };
   render(<CartPage />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
 });
