@@ -1,3 +1,4 @@
+/* eslint-disable import/first -- jest.mock must precede imports */
 jest.mock("./env.js", () => ({
   env: Object.freeze({
     apiBaseUrl: "/api",
