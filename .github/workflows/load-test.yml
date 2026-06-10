@@ -28,10 +28,6 @@ jobs:
         ports:
           - 6379:6379
 
-    defaults:
-      run:
-        working-directory: backend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -41,17 +37,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Start backend server
+        working-directory: backend
         run: |
           echo "MONGO_URI=mongodb://localhost:27017/osarotechstore-loadtest" > .env
           echo "REDIS_URL=redis://localhost:6379" >> .env
           echo "SESSION_SECRET=loadtest-secret" >> .env
-          echo "JWT_SECRET=loadtest-jwt-secret" >> .env
+          echo "TOKEN_SECRET=loadtest-jwt-secret" >> .env
           echo "STRIPE_SECRET_KEY=sk_test_loadtest" >> .env
           echo "STRIPE_WEBHOOK_SECRET=whsec_loadtest" >> .env
           node src/server.js &

@@ -22,10 +22,6 @@ jobs:
   verify:
     name: Verify Backend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -35,21 +31,24 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Dependency audit
+        working-directory: backend
         run: npm audit --omit=dev --audit-level=high
 
       - name: Check formatting
         run: npm run format:check
 
       - name: Lint
+        working-directory: backend
         run: npm run lint
 
       - name: Test with coverage
+        working-directory: backend
         run: npm run coverage:sonar
 
       - name: Upload coverage artifact
@@ -61,6 +60,7 @@ jobs:
 
       - name: SonarQube Cloud scan
         if: ${{ env.SONAR_TOKEN != '' && env.SONAR_ORGANIZATION != '' }}
+        working-directory: backend
         run: >
           npm run sonar --
           -Dsonar.host.url=https://sonarcloud.io
