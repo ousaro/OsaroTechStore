@@ -11,10 +11,12 @@ RUN npm ci && npm cache clean --force
 COPY . ./
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:1.27-alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+RUN chmod 644 /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

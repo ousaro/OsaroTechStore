@@ -20,9 +20,7 @@ test("response includes X-Request-Id header", async () => {
 });
 
 test("CORS allows configured origins", async () => {
-  const res = await ctx.client.agent
-    .get("/health")
-    .set("Origin", "http://localhost:3000");
+  const res = await ctx.client.agent.get("/health").set("Origin", "http://localhost:3000");
 
   assert.equal(res.headers["access-control-allow-origin"], "http://localhost:3000");
   assert.equal(res.headers["access-control-allow-credentials"], "true");
@@ -39,9 +37,7 @@ test("CORS preflight responds with allowed methods for configured origin", async
 });
 
 test("CORS omits allow-origin header for disallowed origins", async () => {
-  const res = await ctx.client.agent
-    .get("/health")
-    .set("Origin", "http://evil-site.com");
+  const res = await ctx.client.agent.get("/health").set("Origin", "http://evil-site.com");
 
   assert.equal(res.status, 200);
   assert.equal(res.headers["access-control-allow-origin"], undefined);

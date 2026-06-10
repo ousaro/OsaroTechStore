@@ -1,4 +1,4 @@
-# ADR 003: CQRS Demonstration — Payments Module Only
+# ADR 003: CQRS Port-Level Separation — Payments Module Only
 
 **Status:** Accepted  
 **Date:** 2026-06-07  
@@ -16,7 +16,7 @@ CQRS (Command Query Responsibility Segregation) separates read and write operati
 
 ## Decision
 
-Apply **CQRS boundaries only to the payments module**, as a demonstration:
+Apply **CQRS port-level separation only to the payments module**, as a demonstration:
 
 - `paymentsCommandsPort.js` — commands (create payment intent, process webhook)
 - `paymentsQueriesPort.js` — queries (get payment by order)
@@ -25,19 +25,21 @@ The controller (`paymentsController.js`) injects both ports separately, making t
 
 Other modules (auth, users, products, categories, orders) remain with a single combined port.
 
+> **Note:** All modules independently organise their application use-cases into `commands/` and `queries/` folders, providing a lighter CQRS-style separation at the use-case layer even without port-level splitting.
+
 ## Consequences
 
 **Positive:**
 
-- Clear demonstration of CQRS pattern without full codebase migration
+- Clear demonstration of port-level CQRS pattern without full codebase migration
 - Payments module has natural read/write asymmetry (writes: Stripe intents, reads: payment history)
-- Provides a template for migrating other modules to CQRS in the future
+- Provides a template for migrating other modules to port-level CQRS in the future
 
 **Negative:**
 
-- Inconsistency: some modules have CQRS, others don't (documented design choice)
+- Inconsistency: some modules have port-level CQRS, others don't (documented design choice)
 - Added boilerplate for a single module (ports, controller changes, wiring)
 
 **Future:**
 
-- If the codebase grows, CQRS can be extended to orders module (order creation vs order status queries) and products module (admin writes vs customer reads)
+- If the codebase grows, port-level CQRS can be extended to orders module (order creation vs order status queries) and products module (admin writes vs customer reads) — these modules already have use-case-level `commands/`/`queries/` separation; only the port interface needs splitting

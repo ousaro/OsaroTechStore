@@ -2,9 +2,22 @@
   "name": "osarotechstore",
   "version": "2.0.0",
   "private": true,
-  "description": "OsaroTechStore monorepo — development tooling",
+  "description": "OsaroTechStore — full-stack MERN e-commerce monorepo",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "install:all": "npm install",
+    "dev": "npm run dev --workspace=backend & npm start --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=frontend",
+    "test:ci": "npm run test:ci --workspace=backend && npm run test:ci --workspace=frontend",
+    "lint": "npm run lint --workspace=backend && npm run lint --workspace=frontend",
+    "format": "prettier --write \"**/*.{js,ts,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,jsx,json,md,yml,yaml}\"",
+    "typecheck": "npm run typecheck --workspace=backend"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",

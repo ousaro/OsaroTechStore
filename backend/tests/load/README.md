@@ -40,12 +40,12 @@ Load tests run via GitHub Actions using `grafana/k6-action`. See `.github/workfl
 
 ## Performance Budgets
 
-| Endpoint | p95 Latency Budget |
-|----------|-------------------|
-| GET /api/products | <500ms |
-| GET /api/products?limit=20 | <500ms |
-| POST /api/auth/register | <500ms |
-| POST /api/auth/login | <500ms |
-| GET /api/users/me | <500ms |
-| POST /api/orders | <2s |
-| POST /api/payments/intent | <2s |
+| Endpoint                   | p95 Latency Budget |
+| -------------------------- | ------------------ |
+| GET /api/products          | <500ms             |
+| GET /api/products?limit=20 | <500ms             |
+| POST /api/auth/register    | <500ms             |
+| POST /api/auth/login       | <500ms             |
+| GET /api/users/me          | <500ms             |
+| POST /api/orders           | <2s                |
+| POST /api/payments/intent  | <2s                |

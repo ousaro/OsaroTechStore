@@ -1,7 +1,11 @@
 # Backend Dependency Graph
 
+> Version 2.0.0 — Last updated: 2026-06-10
+
 This backend is wired from `backend/src/infrastructure/bootstrap/configureApplicationModules.js`.
 The composition root owns infrastructure selection, repository construction, module creation, and cross-module event subscriptions.
+
+See [System Design Choices](./backend-system-design-choices.md) for rationale behind each architectural decision.
 
 ## Startup Wiring
 
@@ -18,6 +22,7 @@ flowchart TD
   Configure --> EventBusProvider["resolveEventBus"]
   Configure --> TokenService["createJwtTokenService"]
   Configure --> RepositoryFactory["createMongooseRepositories"]
+  Configure --> IdempotencyStore["createMongoIdempotencyStore"]
 
   DatabaseProvider --> DbClient["dbClient"]
   DbClient --> RepositoryFactory
@@ -40,6 +45,7 @@ flowchart TD
   EventBusProvider --> CategoriesModule
   EventBusProvider --> OrdersModule
   EventBusProvider --> PaymentsModule
+  IdempotencyStore --> PaymentsModule
 
   AuthModule --> AuthRoutes["authRoutes"]
   UsersModule --> UsersRoutes["usersRoutes"]
@@ -48,18 +54,11 @@ flowchart TD
   OrdersModule --> OrdersRoutes["ordersRoutes"]
   PaymentsModule --> PaymentsRoutes["paymentsRoutes"]
 
-  Configure --> AuthRoutes
-  Configure --> UsersRoutes
-  Configure --> ProductsRoutes
-  Configure --> CategoriesRoutes
-  Configure --> OrdersRoutes
-  Configure --> PaymentsRoutes
   Configure --> HealthChecks["health check callbacks"]
   Configure --> Schedulers["product schedulers"]
   Configure --> Shutdown["shutdown hook"]
 
   TokenService --> App
-  AuthRepo --> App
   AuthRoutes --> App
   UsersRoutes --> App
   ProductsRoutes --> App
@@ -72,6 +71,9 @@ flowchart TD
   App --> OpenApiDocs["registerOpenApiDocs"]
   App --> HealthRoutes["createHealthRoutes"]
   App --> ExpressRoutes["Express route registration"]
+  App --> Versioning["apiVersionMiddleware"]
+  App --> IdempotencyMiddleware["idempotencyMiddleware"]
+  App --> Validation["validateRequest (Zod)"]
 ```
 
 ## Module Shape
@@ -96,6 +98,24 @@ flowchart LR
   InputPort --> PublicSurface
 ```
 
+The payments module extends this with CQRS — separate input ports for commands and queries:
+
+```mermaid
+flowchart LR
+  Commands["Commands use cases\ncreatePaymentIntent, verifyWebhook, linkPaymentToOrder"]
+  Queries["Queries use cases\ngetPaymentByOrderId"]
+  CommandsPort["paymentsCommandsPort"]
+  QueriesPort["paymentsQueriesPort"]
+  Controller["paymentsHttpController"]
+  Routes["paymentsRoutes"]
+
+  Commands --> CommandsPort
+  Queries --> QueriesPort
+  CommandsPort --> Controller
+  QueriesPort --> Controller
+  Controller --> Routes
+```
+
 ## Module Dependencies
 
 ```mermaid
@@ -118,6 +138,7 @@ flowchart TD
   PaymentsModule["Payments module"] --> PaymentRepo["paymentRepository"]
   PaymentsModule --> PaymentGateway["paymentGateway"]
   PaymentsModule --> EventBus
+  PaymentsModule --> IdempotencyStore["idempotencyStore"]
 ```
 
 ## Cross-Module Event Workflows
@@ -136,11 +157,11 @@ sequenceDiagram
   participant PaymentTranslator as PaymentConfirmedOrderSyncTranslator
 
   Orders->>Bus: publish OrderPlaced
-  Bus->>PaymentsTranslator: OrderPlaced
+  Bus->>PaymentsTranslator: OrderPlaced event
   PaymentsTranslator->>Payments: linkPaymentToOrder
 
   Categories->>Bus: publish CategoryDeleted
-  Bus->>ProductTranslator: CategoryDeleted
+  Bus->>ProductTranslator: CategoryDeleted event
   ProductTranslator->>Products: removeProductsByCategory
 
   Payments->>Bus: publish PaymentConfirmed / PaymentFailed / PaymentExpired
@@ -150,20 +171,25 @@ sequenceDiagram
 
 ## HTTP Surface Wiring
 
+All routes are mounted at both `/api/` (legacy) and `/api/v1/` (versioned) prefixes.
+
 ```mermaid
 flowchart TD
   App["createApp"] --> RequireAuth["requireAuth"]
   RequireAuth --> AuthRepo["authUserRepository\nloads req.user admin flag"]
   RequireAuth --> TokenService["tokenService"]
 
-  App --> AuthRoutes["/api/auth"]
-  App --> UsersRoutes["/api/users"]
-  App --> ProductsRoutes["/api/products"]
-  App --> CategoriesRoutes["/api/categories"]
-  App --> OrdersRoutes["/api/orders"]
-  App --> PaymentsRoutes["/api/payments"]
+  App --> Versioning["apiVersion + apiDeprecationWarning"]
+
+  App --> AuthRoutes["/api/auth, /api/v1/auth"]
+  App --> UsersRoutes["/api/users, /api/v1/users"]
+  App --> ProductsRoutes["/api/products, /api/v1/products"]
+  App --> CategoriesRoutes["/api/categories, /api/v1/categories"]
+  App --> OrdersRoutes["/api/orders, /api/v1/orders"]
+  App --> PaymentsRoutes["/api/payments, /api/v1/payments"]
   App --> HealthRoutes["/health, /ready"]
   App --> OpenApiDocs["/api-docs, /api-docs/openapi.yaml"]
+  App --> Metrics["/metrics (Prometheus)"]
 
   AuthRoutes --> AuthController["authHttpController"]
   UsersRoutes --> UsersController["usersHttpController"]
@@ -174,11 +200,79 @@ flowchart TD
   HealthRoutes --> HealthChecks["database, payments, event bus checks"]
 ```
 
+## Infrastructure Providers
+
+```mermaid
+flowchart LR
+  Logger["resolveLogger"] --> Pino["pinoLogger"]
+  Logger --> Console["consoleLogger"]
+  Database["resolveDatabaseStrategy"] --> Mongo["mongoProvider (Mongoose)"]
+  Payments["resolvePaymentStrategy"] --> Stripe["stripeGateway\n(with retry wrapper)"]
+  Payments --> Disabled["disabled payments"]
+  EventBus["resolveEventBus"] --> InProcess["inProcessEventBus"]
+  EventBus --> Redis["redisStreamEventBus"]
+```
+
+## Checkout Flow Sequence
+
+```mermaid
+sequenceDiagram
+  actor Customer
+  participant Frontend as React SPA
+  participant API as Express API
+  participant Orders as Orders Module
+  participant Payments as Payments Module
+  participant Stripe
+
+  Customer->>Frontend: Adds item to cart
+  Customer->>Frontend: Proceeds to checkout
+  Frontend->>API: POST /api/orders
+  Note over API: requireAuth middleware
+  API->>Orders: addOrder({ orderLines, deliveryAddress, currency })
+  Orders-->>API: 201 { order }
+  API-->>Frontend: { success: true, data: { order } }
+
+  Frontend->>API: POST /api/payments/intent
+  Note over API: requireAuth middleware, Idempotency-Key header
+  API->>Payments: createPaymentIntent({ orderId, items, currency })
+  Payments->>Stripe: checkout.sessions.create (with retry wrapper)
+  Stripe-->>Payments: { sessionId, url }
+  Payments->>Payments: Store PaymentWorkflow document in MongoDB
+  Payments-->>API: 201 { orderId, provider, paymentStatus, url }
+  API-->>Frontend: { success: true, data: { url } }
+
+  Frontend->>Customer: Redirect to Stripe Checkout
+  Customer->>Stripe: Completes payment
+  Stripe->>API: POST /api/payments/webhook
+  Note over API: Stripe-Signature verification, express.raw body
+  API->>Payments: verifyWebhook({ rawBody, signature })
+  Payments->>Stripe: Retrieve session to verify
+  Payments->>Payments: Update PaymentWorkflow.paymentStatus
+  Payments->>Payments: Publish PaymentConfirmed domain event
+  Payments-->>API: 200 { received: true }
+
+  Note over API: Event bus delivers PaymentConfirmed to Order Sync Translator
+  Payments-->>Orders: confirmOrderPayment via event translator
+  Orders->>Orders: Update Order.paymentStatus
+
+  Customer->>API: GET /api/payments/order/:orderId
+  API->>Payments: getPaymentByOrderId({ orderId })
+  Payments-->>API: Payment status
+  API-->>Frontend: { success: true, data: { paymentStatus: "confirmed" } }
+```
+
 ## Documentation and Operations Surface
 
 Swagger UI is served from `backend/src/shared/infrastructure/http/openApiDocs.js`.
-The raw OpenAPI contract lives at `backend/docs/openapi.yaml` and documents the
-same `/api/*` routes mounted by `createApp.js`, plus the root-level `/health`
-and `/ready` endpoints. Readiness checks are built by the composition root after
-provider resolution so they report the configured database, payment, and event
-bus adapters.
+The raw OpenAPI contract lives at `backend/docs/openapi.yaml` and documents all `/api/v1/*` routes plus the root-level `/health` and `/ready` endpoints.
+Readiness checks are built by the composition root after provider resolution so they report the configured database, payment, and event bus adapters.
+Prometheus metrics are collected at `/metrics` via `express-prom-bundle`.
+
+---
+
+## Revision History
+
+| Date       | Change                                                      |
+| ---------- | ----------------------------------------------------------- |
+| 2026-06-10 | Added revision history, cross-link to system design choices |
+| 2026-06-07 | Initial version                                             |

@@ -11,7 +11,9 @@ let spec = null;
 let ajv = null;
 
 export function loadOpenApiSpec() {
-  if (spec) {return spec;}
+  if (spec) {
+    return spec;
+  }
   spec = yaml.load(fs.readFileSync(specPath, "utf8"));
   return spec;
 }
@@ -31,11 +33,17 @@ export function getPathsRequiringAuth() {
 export function getSchemaForResponse(route, method, statusCode = "200") {
   const s = loadOpenApiSpec();
   const pathItem = s.paths[route];
-  if (!pathItem) { return null; }
+  if (!pathItem) {
+    return null;
+  }
   const operation = pathItem[method.toLowerCase()];
-  if (!operation) { return null; }
+  if (!operation) {
+    return null;
+  }
   const response = operation.responses?.[statusCode];
-  if (!response) { return null; }
+  if (!response) {
+    return null;
+  }
   return response.content?.["application/json"]?.schema || null;
 }
 
@@ -46,7 +54,9 @@ export function validateResponseAgainstSchema(responseBody, schema) {
   }
   const validate = ajv.compile(schema);
   const valid = validate(responseBody);
-  if (valid) { return { valid: true, errors: null }};
+  if (valid) {
+    return { valid: true, errors: null };
+  }
   return { valid: false, errors: validate.errors };
 }
 

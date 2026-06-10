@@ -3,7 +3,7 @@ services:
     image: mongo:7
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -11,17 +11,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
+    networks:
+      - db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   backend:
     build:
@@ -33,10 +50,31 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    env_file: ./backend/.env
     environment:
+      NODE_ENV: production
+      PORT: 5000
       MONGO_URI: mongodb://mongo:27017/osarotechstore
       REDIS_URL: redis://redis:6379
+      TOKEN_SECRET: ${TOKEN_SECRET:-dev-jwt-secret-not-for-production}
+      TOKEN_EXPIRES_IN: 15m
+      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret-not-for-production}
+      LOGGER_PROVIDER: pino
+      DATABASE_PROVIDER: mongo
+      EVENT_BUS_PROVIDER: inprocess
+      PAYMENT_PROVIDER: disabled
+      CLIENT_URL: http://localhost:80
+      CORS_ALLOWED_ORIGINS: http://localhost:80
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      GOOGLE_OAUTH_ENABLED: ${GOOGLE_OAUTH_ENABLED:-false}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-}
+      PRODUCT_IMAGE_UPLOAD_URL: ${PRODUCT_IMAGE_UPLOAD_URL:-}
+      PRODUCT_IMAGE_PUBLIC_URL: ${PRODUCT_IMAGE_PUBLIC_URL:-}
+      PRODUCT_IMAGE_UPLOAD_TOKEN: ${PRODUCT_IMAGE_UPLOAD_TOKEN:-}
     healthcheck:
       test:
         [
@@ -48,20 +86,54 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 15s
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     volumes:
       - product-uploads:/app/uploads
+    networks:
+      - db
+      - api
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   stripe-cli:
-    image: stripe/stripe-cli:latest
-    entrypoint: ["sh", "-c"]
-    command: export STRIPE_API_KEY=$$STRIPE_SECRET_KEY && stripe listen --webhook-secret $$STRIPE_WEBHOOK_SECRET --forward-to http://backend:5000/api/payments/webhook
-    env_file: ./backend/.env
-    depends_on:
-      - backend
     profiles:
       - stripe
+    image: stripe/stripe-cli:latest
+    restart: unless-stopped
+    entrypoint: ["sh", "-c"]
+    command: >
+      if [ -z "$${STRIPE_SECRET_KEY}" ] || [ -z "$${STRIPE_WEBHOOK_SECRET}" ]; then
+        echo "Stripe keys not set — skipping stripe-cli";
+        exit 0;
+      fi;
+      stripe listen
+        --api-key "$${STRIPE_SECRET_KEY}"
+        --webhook-secret "$${STRIPE_WEBHOOK_SECRET}"
+        --forward-to http://backend:5000/api/payments/webhook
+    environment:
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - api
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     build:
@@ -71,6 +143,7 @@ services:
         REACT_APP_API_BASE_URL: /api
         REACT_APP_GOOGLE_API_URL: /api/auth/google
         REACT_APP_STRIPE_PUBLIC_KEY: ${REACT_APP_STRIPE_PUBLIC_KEY:-pk_test_key}
+    restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
@@ -79,9 +152,29 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
     ports:
-      - "3000:80"
+      - "80:80"
+    networks:
+      - api
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   mongo-data:
+  redis-data:
   product-uploads:
+
+networks:
+  db:
+    internal: true
+  api:

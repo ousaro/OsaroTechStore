@@ -94,7 +94,6 @@ test("resolveLogger returns console logger and rejects unavailable providers", (
 
   assert.equal(typeof resolved.info, "function");
   assert.equal(typeof resolved.child, "function");
-  assert.throws(() => resolveLogger({ provider: "pino" }), ServiceUnavailableError);
   assert.throws(() => resolveLogger({ provider: "noop" }), ServiceUnavailableError);
   assert.throws(() => resolveLogger({ provider: "unknown" }), ServiceUnavailableError);
 });

@@ -96,7 +96,9 @@ test("subscribe dispatches stream events to handler", async () => {
       xAdd: async () => "1-0",
       xRead: async (...parts) => {
         reads += 1;
-        if (reads > 1) {return new Promise(() => {});}
+        if (reads > 1) {
+          return new Promise(() => {});
+        }
         assert.deepEqual(parts, [{ key: "events:OrderPlaced", id: "$" }, { BLOCK: 1000 }]);
         return [
           {
@@ -153,7 +155,9 @@ test("dead-letters events when handler throws", async () => {
       },
       xRead: async () => {
         reads += 1;
-        if (reads > 1) { return new Promise(() => {});}
+        if (reads > 1) {
+          return new Promise(() => {});
+        }
         return [
           {
             name: "events:PaymentFailed",
@@ -203,7 +207,10 @@ test("subscription poll logs error when connect fails", async () => {
         xAdd: async () => "0-0",
         xRead: async () => null,
         isOpen: false,
-        connect: async () => { connectCalled = true; throw new Error("Connection refused"); },
+        connect: async () => {
+          connectCalled = true;
+          throw new Error("Connection refused");
+        },
         destroy: () => {},
       }),
     },
@@ -215,7 +222,9 @@ test("subscription poll logs error when connect fails", async () => {
 
   bus.subscribe("OrderPlaced", async () => {});
 
-  while (!connectCalled) {await new Promise((r) => setTimeout(r, 10));}
+  while (!connectCalled) {
+    await new Promise((r) => setTimeout(r, 10));
+  }
   await new Promise((r) => setTimeout(r, 20));
   await new Promise((r) => setTimeout(r, 20));
 

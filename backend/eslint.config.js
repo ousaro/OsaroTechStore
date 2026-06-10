@@ -10,6 +10,7 @@ const nodeGlobals = {
   global: "readonly",
   globalThis: "readonly",
   process: "readonly",
+  setImmediate: "readonly",
   setInterval: "readonly",
   setTimeout: "readonly",
   TextDecoder: "readonly",

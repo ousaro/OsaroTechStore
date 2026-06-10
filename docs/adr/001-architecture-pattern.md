@@ -43,6 +43,16 @@ Key principles:
 - **Event-driven collaboration** between modules via an in-process or Redis event bus
 - **Infrastructure abstraction** via resolver/strategy pattern (logger, database, payment, event bus)
 
+## Alternatives Considered
+
+| Alternative                                  | Why Rejected                                                                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Flat MVC (controllers, models, views)**    | No separation of concerns; business logic leaks into controllers; not demonstrably testable                                                       |
+| **Feature-based (group by UI feature)**      | Better for monoliths with tight frontend coupling; this is a backend-first project with distinct bounded contexts                                 |
+| **Microservices**                            | Premature at 6 modules; would add network latency, distributed tracing, and deployment complexity without proven need                             |
+| **Clean Architecture (outer/inner rings)**   | Conceptually equivalent to hexagonal; hexagonal has better tooling support and community adoption in Node.js                                      |
+| **Event Sourcing + CQRS across all modules** | Adds significant complexity (event store, projection rebuilds, eventual consistency). Reserved for payments only ([ADR-003](./003-cqrs-scope.md)) |
+
 ## Consequences
 
 **Positive:**

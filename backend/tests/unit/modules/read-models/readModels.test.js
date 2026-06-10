@@ -19,6 +19,8 @@ test("order read model defaults missing collections and address", () => {
   assert.deepEqual(toOrderReadModel({ _id: "o1" }), {
     _id: "o1",
     ownerId: undefined,
+    customerName: "",
+    customerEmail: "",
     orderLines: [],
     deliveryAddress: {},
     currency: undefined,

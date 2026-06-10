@@ -84,8 +84,8 @@ test("createPaymentIntent creates gateway session and persists workflow", async 
     clientUrl: "http://localhost:3000",
     paymentGateway: {
       createRedirectPayment: async (payload) => {
-        assert.equal(payload.successUrl, "http://localhost:3000/payment-success?orderId=o1");
-        assert.equal(payload.cancelUrl, "http://localhost:3000/payment-cancelled?orderId=o1");
+        assert.equal(payload.successUrl, "http://localhost:3000/#/payment-success?orderId=o1");
+        assert.equal(payload.cancelUrl, "http://localhost:3000/#/payment-cancelled?orderId=o1");
         return session;
       },
     },
@@ -153,8 +153,8 @@ test("linkPaymentToOrder creates payment session and persists workflow when enab
           { name: "Keyboard", price: 50, quantity: 2 },
           { name: "Mouse", price: 20, quantity: 1 },
         ]);
-        assert.equal(payload.successUrl, "http://localhost:3000/payment-success?orderId=o1");
-        assert.equal(payload.cancelUrl, "http://localhost:3000/payment-cancelled?orderId=o1");
+        assert.equal(payload.successUrl, "http://localhost:3000/#/payment-success?orderId=o1");
+        assert.equal(payload.cancelUrl, "http://localhost:3000/#/payment-cancelled?orderId=o1");
         return session;
       },
     },

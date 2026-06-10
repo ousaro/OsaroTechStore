@@ -22,7 +22,9 @@ test("every documented protected route returns 401 without a token", async () =>
     const sendMethod = method.toLowerCase();
     const response = await ctx.client.agent[sendMethod](`/api${route}`);
     if (response.status !== 401) {
-      failures.push(`${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`);
+      failures.push(
+        `${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`
+      );
     }
   }
 
@@ -35,10 +37,14 @@ test("every documented protected route returns 401 with an invalid token", async
 
   for (const { route, method } of protectedPaths) {
     const sendMethod = method.toLowerCase();
-    const response = await ctx.client.agent[sendMethod](`/api${route}`)
-      .set("Authorization", "Bearer invalid-token-that-is-not-valid");
+    const response = await ctx.client.agent[sendMethod](`/api${route}`).set(
+      "Authorization",
+      "Bearer invalid-token-that-is-not-valid"
+    );
     if (response.status !== 401) {
-      failures.push(`${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`);
+      failures.push(
+        `${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`
+      );
     }
   }
 
@@ -49,17 +55,20 @@ test("every documented protected route returns 401 with an expired token", async
   const protectedPaths = getProtectedRoutes();
   const failures = [];
 
-  const expiredToken = ctx.application.tokenService.signUserId(
-    "000000000000000000000000",
-    { expiresIn: "0s" }
-  );
+  const expiredToken = ctx.application.tokenService.signUserId("000000000000000000000000", {
+    expiresIn: "0s",
+  });
 
   for (const { route, method } of protectedPaths) {
     const sendMethod = method.toLowerCase();
-    const response = await ctx.client.agent[sendMethod](`/api${route}`)
-      .set("Authorization", `Bearer ${expiredToken}`);
+    const response = await ctx.client.agent[sendMethod](`/api${route}`).set(
+      "Authorization",
+      `Bearer ${expiredToken}`
+    );
     if (response.status !== 401) {
-      failures.push(`${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`);
+      failures.push(
+        `${method} ${route} returned ${response.status} (expected 401) — ${JSON.stringify(response.body).slice(0, 120)}`
+      );
     }
   }
 
@@ -73,8 +82,9 @@ test("every documented protected route does not return 401 with a valid user tok
 
   for (const { route, method } of protectedPaths) {
     const sendMethod = method.toLowerCase();
-    const response = await ctx.client.agent[sendMethod](`/api${route}`)
-      .set(ctx.authHeadersFor(user));
+    const response = await ctx.client.agent[sendMethod](`/api${route}`).set(
+      ctx.authHeadersFor(user)
+    );
 
     if (response.status === 401) {
       failures.push(`${method} ${route} returned 401 despite valid token`);

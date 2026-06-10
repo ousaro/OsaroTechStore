@@ -33,6 +33,7 @@ test("resolveHttpError maps client errors and logs warnings", () => {
 
   assert.equal(res.statusCode, 404);
   assert.deepEqual(res.body, {
+    success: false,
     error: {
       code: "NOT_FOUND",
       message: "Product not found",
@@ -66,6 +67,7 @@ test("resolveHttpError hides server error details and logs errors", () => {
 
   assert.equal(res.statusCode, 500);
   assert.deepEqual(res.body, {
+    success: false,
     error: {
       code: "INTERNAL_ERROR",
       message: "Internal server error",

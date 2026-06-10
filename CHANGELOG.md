@@ -1,7 +1,11 @@
 # Changelog
 
-## 2.1.0 (2026-06-07)
+## 2.0.0 (2026-06-07)
 
+- Documented the modular backend architecture and current frontend feature layout.
+- Added product browsing, categories, cart, orders, payments, auth, Google OAuth, admin management, and health/readiness endpoints.
+- Added backend unit and integration coverage for architecture boundaries, auth, products, categories, orders, payments, users, and system routes.
+- Added CI quality gates for backend verification and frontend verification.
 - Added TypeScript infrastructure (tsconfig.json, strict mode, path aliases)
 - Added Zod request validation middleware with schemas for all modules
 - Added Pino structured logging adapter (JSON output, redacted secrets)
@@ -17,15 +21,7 @@
 - Added pre-commit hooks (Husky + lint-staged + commitlint + Prettier)
 - Added API versioning (/api/v1/ prefix with deprecation headers)
 - Added Renovate config for automated dependency updates
-- Added C4 architecture diagrams (Structurizr DSL → PlantUML → PNG)
-- Added Postman collection (30+ requests, env vars, auth flow)
 - Added CONTRIBUTING.md with developer conventions
 - Added docker-compose healthchecks for all services
+- Added comprehensive docs/ (ADR, functional + non-functional requirements, architecture docs)
 - Removed GitOps deployment workflow (out of scope for backend showcase)
-
-## 2.0.0 (Initial)
-
-- Documented the modular backend architecture and current frontend feature layout.
-- Added product browsing, categories, cart, orders, payments, auth, Google OAuth, admin management, and health/readiness endpoints.
-- Added backend unit and integration coverage for architecture boundaries, auth, products, categories, orders, payments, users, and system routes.
-- Added CI quality gates for backend verification and frontend verification.

@@ -34,7 +34,9 @@ const runHandler = async (handler, req = {}) => {
     errors.push(error)
   );
   await new Promise((resolve) => setImmediate(resolve));
-  if (errors[0]) throw errors[0];
+  if (errors[0]) {
+    throw errors[0];
+  }
   return res;
 };
 
@@ -137,7 +139,7 @@ test("auth oauthCallback redirects authenticated and unauthenticated requests", 
     },
     authenticated
   );
-  assert.match(authenticated.redirectUrl, /^http:\/\/client\.test\/SetPassword\?user=/);
+  assert.match(authenticated.redirectUrl, /^http:\/\/client\.test\/#\/set-password\?user=/);
 
   const anonymous = createResponse();
   controller.oauthCallback(
@@ -147,7 +149,7 @@ test("auth oauthCallback redirects authenticated and unauthenticated requests", 
     },
     anonymous
   );
-  assert.equal(anonymous.redirectUrl, "http://client.test/login");
+  assert.equal(anonymous.redirectUrl, "http://client.test/#/login");
 });
 
 test("products controller maps params, query, body, and status codes", async () => {
@@ -401,7 +403,7 @@ test("users controller maps authenticated user actions", async () => {
 test("payments controller maps intent, webhook, and order lookup handlers", async () => {
   const calls = [];
   const controller = createPaymentsHttpController({
-    paymentsInputPort: {
+    paymentsCommands: {
       createPaymentIntent: async (payload) => {
         calls.push(["createPaymentIntent", payload]);
         return { _id: "pay1" };
@@ -410,11 +412,13 @@ test("payments controller maps intent, webhook, and order lookup handlers", asyn
         calls.push(["verifyWebhook", payload]);
         return { received: true };
       },
+      linkPaymentToOrder: fn(null),
+    },
+    paymentsQueries: {
       getPaymentByOrderId: async (payload) => {
         calls.push(["getPaymentByOrderId", payload]);
         return { orderId: payload.orderId };
       },
-      linkPaymentToOrder: fn(null),
     },
   });
 

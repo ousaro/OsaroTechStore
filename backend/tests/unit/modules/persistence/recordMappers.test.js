@@ -82,7 +82,12 @@ test("order record mapper preserves order lines and money fields", () => {
   const order = toOrderRecord(
     doc({
       _id: objectIdLike("o1"),
-      ownerId: objectIdLike("u1"),
+      ownerId: {
+        _id: objectIdLike("u1"),
+        firstName: "Ada",
+        lastName: "Lovelace",
+        email: "ada@test.com",
+      },
       orderLines: [
         {
           productId: "p1",
@@ -102,6 +107,8 @@ test("order record mapper preserves order lines and money fields", () => {
 
   assert.equal(order._id, "o1");
   assert.equal(order.ownerId, "u1");
+  assert.equal(order.customerName, "Ada Lovelace");
+  assert.equal(order.customerEmail, "ada@test.com");
   assert.deepEqual(order.orderLines[0].subtotal, { amount: 100, currency: "USD" });
 });
 

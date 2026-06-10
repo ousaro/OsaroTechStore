@@ -1,3 +1,4 @@
+/* global __ENV, __VU */
 import http from "k6/http";
 import { check, sleep } from "k6";
 
@@ -63,8 +64,11 @@ export function productListing() {
   check(res, {
     "listing status is 200": (r) => r.status === 200,
     "listing returns array": (r) => {
-      try { return Array.isArray(JSON.parse(r.body)); }
-      catch { return false; }
+      try {
+        return Array.isArray(JSON.parse(r.body));
+      } catch {
+        return false;
+      }
     },
   });
 
@@ -72,16 +76,17 @@ export function productListing() {
 }
 
 export function productSearch() {
-  const terms = ["phone", "keyboard", "mouse", "monitor", "laptop"];
-  const term = terms[Math.floor(Math.random() * terms.length)];
-
   const res = http.get(`${BASE_URL}/api/products?limit=20&offset=0`);
 
   check(res, {
     "search status is 200": (r) => r.status === 200,
     "search returns valid JSON": (r) => {
-      try { JSON.parse(r.body); return true; }
-      catch { return false; }
+      try {
+        JSON.parse(r.body);
+        return true;
+      } catch {
+        return false;
+      }
     },
   });
 
@@ -92,7 +97,8 @@ export function authFlow() {
   const userId = `k6scenario${__VU}_${Date.now()}`;
   const email = `${userId}@loadtest.example`;
 
-  const registerRes = http.post(`${BASE_URL}/api/auth/register`,
+  const registerRes = http.post(
+    `${BASE_URL}/api/auth/register`,
     JSON.stringify({
       firstName: `Load${userId}`,
       lastName: "Tester",
@@ -108,9 +114,15 @@ export function authFlow() {
   }
 
   let token;
-  try { token = JSON.parse(registerRes.body).token; } catch { sleep(1); return; }
+  try {
+    token = JSON.parse(registerRes.body).token;
+  } catch {
+    sleep(1);
+    return;
+  }
 
-  const loginRes = http.post(`${BASE_URL}/api/auth/login`,
+  const loginRes = http.post(
+    `${BASE_URL}/api/auth/login`,
     JSON.stringify({ email, password: "Password123!" }),
     { headers: { "Content-Type": "application/json" } }
   );
@@ -122,8 +134,11 @@ export function authFlow() {
   check(profileRes, {
     "profile status is 200": (r) => r.status === 200,
     "profile email matches": (r) => {
-      try { return JSON.parse(r.body).email === email; }
-      catch { return false; }
+      try {
+        return JSON.parse(r.body).email === email;
+      } catch {
+        return false;
+      }
     },
   });
 
@@ -134,7 +149,8 @@ export function checkoutFlow() {
   const userId = `k6checkout${__VU}_${Date.now()}`;
   const email = `${userId}@loadtest.example`;
 
-  const registerRes = http.post(`${BASE_URL}/api/auth/register`,
+  const registerRes = http.post(
+    `${BASE_URL}/api/auth/register`,
     JSON.stringify({
       firstName: `Checkout${userId}`,
       lastName: "Tester",
@@ -144,17 +160,34 @@ export function checkoutFlow() {
     { headers: { "Content-Type": "application/json" } }
   );
 
-  if (registerRes.status !== 201) { sleep(2); return; }
+  if (registerRes.status !== 201) {
+    sleep(2);
+    return;
+  }
 
   let token;
-  try { token = JSON.parse(registerRes.body).token; } catch { sleep(2); return; }
+  try {
+    token = JSON.parse(registerRes.body).token;
+  } catch {
+    sleep(2);
+    return;
+  }
 
   const productsRes = http.get(`${BASE_URL}/api/products`);
   let productId;
-  try { productId = JSON.parse(productsRes.body)[0]?._id; } catch { sleep(2); return; }
-  if (!productId) { sleep(2); return; }
+  try {
+    productId = JSON.parse(productsRes.body)[0]?._id;
+  } catch {
+    sleep(2);
+    return;
+  }
+  if (!productId) {
+    sleep(2);
+    return;
+  }
 
-  const orderRes = http.post(`${BASE_URL}/api/orders`,
+  const orderRes = http.post(
+    `${BASE_URL}/api/orders`,
     JSON.stringify({
       orderLine: { productId, name: "Load Test Product", price: 99, quantity: 1 },
     }),
@@ -164,9 +197,15 @@ export function checkoutFlow() {
   check(orderRes, { "order status is 201": (r) => r.status === 201 });
 
   let orderId;
-  try { orderId = JSON.parse(orderRes.body)._id; } catch { sleep(2); return; }
+  try {
+    orderId = JSON.parse(orderRes.body)._id;
+  } catch {
+    sleep(2);
+    return;
+  }
 
-  const paymentRes = http.post(`${BASE_URL}/api/payments/intent`,
+  const paymentRes = http.post(
+    `${BASE_URL}/api/payments/intent`,
     JSON.stringify({
       orderId,
       items: [{ name: "Load Test Product", price: 99, quantity: 1 }],
@@ -181,7 +220,9 @@ export function checkoutFlow() {
       try {
         const body = JSON.parse(r.body);
         return body.provider === "stripe" && typeof body.sessionId === "string";
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     },
   });
 
