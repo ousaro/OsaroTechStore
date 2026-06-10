@@ -11,7 +11,7 @@
 
 ---
 
-![OsaroTechStore Screenshot](docs/screenshot.png)
+![OsaroTechStore Screenshot](screenshot.png)
 
 ---
 
