@@ -11,7 +11,7 @@
 
 ---
 
-![OsaroTechStore Screenshot](app-preview.jpeg)
+![OsaroTechStore Screenshot](docs/screenshoot.png)
 
 ---
 
