@@ -4,7 +4,7 @@
 
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org)
-[![Tests](https://img.shields.io/badge/tests-329_✔️-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-332_✔️-brightgreen)](#)
 [![Lint](https://img.shields.io/badge/lint-0_errors-brightgreen)](#)
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?logo=docker)](https://docker.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -17,11 +17,11 @@
 
 ## Key Achievements
 
-- **329 tests passing** (229 backend unit/integration + 100 frontend component tests)
+- **332 tests passing** (231 backend unit/integration + 101 frontend component tests)
 - **0 ESLint errors** across the entire codebase
 - **Multi-stage Docker build** — 86% size reduction vs. single-stage.
 - **CQRS-style organization across all 6 modules** — use-cases split into `commands/` and `queries/` folders; payments extends this to full port-level separation
-- **Idempotent Stripe integration** with retry-and-backoff — safe to retry failed payments
+- **Idempotent Stripe integration** with idempotency keys
 - **One-command deploy** — `docker compose up -d` starts the full stack with zero config
 - **npm workspaces monorepo** — shared scripts across backend and frontend
 
@@ -31,11 +31,11 @@
 
 | Layer              | Technology                                | Key Details                                                                   |
 | ------------------ | ----------------------------------------- | ----------------------------------------------------------------------------- |
-| **Frontend**       | React 18, React Router 6, Tailwind CSS    | CRA, lazy-loaded routes, context-based auth/cart state                        |
+| **Frontend**       | React 18, React Router 6, Tailwind CSS    | CRA, context-based auth/cart state                                            |
 | **Backend**        | Node.js 24, Express 4, TypeScript 6       | Hexagonal Architecture (domain → application → ports → adapters)              |
 | **Database**       | MongoDB 7, Mongoose 8                     | Schema validation + `$jsonSchema`, compound indexes, soft-delete, migrations  |
-| **Auth**           | JWT access tokens + Passport Google OAuth | 15-min token expiry, session rotation                                         |
-| **Payments**       | Stripe Checkout                           | Idempotency keys, exponential backoff retry, idempotent webhook handling      |
+| **Auth**           | JWT access tokens + Passport Google OAuth | 15-min token expiry                                                           |
+| **Payments**       | Stripe Checkout                           | Idempotency keys, idempotent webhook handling                                 |
 | **Validation**     | Zod                                       | Request body/query/params validation middleware with typed errors             |
 | **Logging**        | Pino                                      | Structured JSON, auto-redacted secrets (`token`, `secret`, `password`, `key`) |
 | **API Docs**       | OpenAPI 3.0.3 + Swagger UI                | Versioned at `/api/v1/`, live at `http://localhost:5000/api-docs`             |
@@ -88,10 +88,10 @@ No env files, no installs, no config — all variables have dev-safe defaults. S
 OsaroTechStore/
 ├── backend/          Express API (TypeScript, DDD / Hexagonal Architecture)
 │   ├── src/          modules/{domain,application,ports,adapters} + shared kernel
-│   ├── tests/        Unit + integration tests (229 passing)
+│   ├── tests/        Unit + integration tests (231 passing)
 │   ├── migrations/   Database migrations
 │   └── docs/         OpenAPI specification
-├── frontend/         React SPA (100 component tests passing)
+├── frontend/         React SPA (101 component tests passing)
 ├── docs/             ADRs, architecture docs, functional/non-functional requirements
 ├── .github/          6 CI/CD pipelines
 └── docker-compose.yml  Full-stack topology (5 services, 2 networks)
@@ -204,7 +204,7 @@ Full reference at [configuration.md](docs/configuration.md).
 
 | Command             | Description                            |
 | ------------------- | -------------------------------------- |
-| `npm test`          | Run all 329 tests (backend + frontend) |
+| `npm test`          | Run all 332 tests (backend + frontend) |
 | `npm run lint`      | Lint entire monorepo (0 errors)        |
 | `npm run build`     | Build all packages                     |
 | `npm run typecheck` | TypeScript type checking               |
