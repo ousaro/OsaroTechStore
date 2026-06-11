@@ -141,12 +141,19 @@ The application creates the following internal MongoDB collections:
 
 ## Docker Compose Overrides
 
-When running via `docker-compose.yml`, the following variables are overridden:
+When running via `docker-compose.yml`, the following variables are overridden (or given defaults) compared to standalone backend/frontend defaults:
 
-| Variable                      | Docker Value                                              |
-| ----------------------------- | --------------------------------------------------------- |
-| `MONGO_URI`                   | `mongodb://mongo:27017/osarotechstore`                    |
-| `REDIS_URL`                   | `redis://redis:6379`                                      |
-| `REACT_APP_STRIPE_PUBLIC_KEY` | `${REACT_APP_STRIPE_PUBLIC_KEY:-pk_test_key}` (build arg) |
-| `STRIPE_SECRET_KEY`           | Loaded from `backend/.env` (stripe-cli service)           |
-| `STRIPE_WEBHOOK_SECRET`       | Loaded from `backend/.env` (stripe-cli service)           |
+| Variable                      | Docker Value                                               |
+| ----------------------------- | ---------------------------------------------------------- |
+| `NODE_ENV`                    | `production`                                               |
+| `MONGO_URI`                   | `mongodb://mongo:27017/osarotechstore`                     |
+| `REDIS_URL`                   | `redis://redis:6379`                                       |
+| `CLIENT_URL`                  | `http://localhost:80`                                      |
+| `CORS_ALLOWED_ORIGINS`        | `http://localhost:80`                                      |
+| `TOKEN_SECRET`                | `${TOKEN_SECRET:-dev-jwt-secret-not-for-production}`       |
+| `SESSION_SECRET`              | `${SESSION_SECRET:-dev-session-secret-not-for-production}` |
+| `STRIPE_SECRET_KEY`           | `${STRIPE_SECRET_KEY:-}` (empty = payments disabled)       |
+| `STRIPE_WEBHOOK_SECRET`       | `${STRIPE_WEBHOOK_SECRET:-}` (empty = webhooks disabled)   |
+| `REACT_APP_STRIPE_PUBLIC_KEY` | `${REACT_APP_STRIPE_PUBLIC_KEY:-pk_test_key}` (build arg)  |
+| `REACT_APP_API_BASE_URL`      | `/api` (build arg)                                         |
+| `REACT_APP_GOOGLE_API_URL`    | `/api/auth/google` (build arg)                             |

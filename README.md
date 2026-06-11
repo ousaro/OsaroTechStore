@@ -137,23 +137,23 @@ export TOKEN_SECRET=my-secret && docker compose up -d
 
 All overridable variables:
 
-| Variable                      | Default                                 | For                 | Description                         |
-| ----------------------------- | --------------------------------------- | ------------------- | ----------------------------------- |
-| `TOKEN_SECRET`                | `dev-jwt-secret-not-for-production`     | Backend             | JWT signing key                     |
-| `SESSION_SECRET`              | `dev-session-secret-not-for-production` | Backend             | Express session secret              |
-| `ADMIN_EMAIL`                 | _(empty — no seed)_                     | Backend             | Auto-create admin on startup        |
-| `ADMIN_PASSWORD`              | _(empty)_                               | Backend             | Admin password for auto-seed        |
-| `STRIPE_SECRET_KEY`           | _(empty — payments disabled)_           | Backend             | Stripe API secret key               |
-| `STRIPE_WEBHOOK_SECRET`       | _(empty)_                               | Backend, stripe-cli | Stripe webhook signing secret       |
-| `GOOGLE_OAUTH_ENABLED`        | `false`                                 | Backend             | Enable Google OAuth                 |
-| `GOOGLE_CLIENT_ID`            | _(empty)_                               | Backend             | Google OAuth client ID              |
-| `GOOGLE_CLIENT_SECRET`        | _(empty)_                               | Backend             | Google OAuth client secret          |
-| `GOOGLE_CALLBACK_URL`         | _(empty)_                               | Backend             | Google OAuth callback URL           |
-| `PRODUCT_IMAGE_UPLOAD_URL`    | _(empty — local saves)_                 | Backend             | Object storage endpoint             |
-| `PRODUCT_IMAGE_PUBLIC_URL`    | _(empty)_                               | Backend             | Public CDN URL for images           |
-| `PRODUCT_IMAGE_UPLOAD_TOKEN`  | _(empty)_                               | Backend             | Upload auth token                   |
-| `MONGO_ROOT_PASSWORD`         | `dev-mongo-password-123`                | MongoDB             | Root password (fresh volume only)   |
-| `REACT_APP_STRIPE_PUBLIC_KEY` | `pk_test_key`                           | Frontend            | Stripe publishable key (build-time) |
+| Variable                      | Default                                           | For                 | Description                         |
+| ----------------------------- | ------------------------------------------------- | ------------------- | ----------------------------------- |
+| `TOKEN_SECRET`                | _(required — no default)_                         | Backend             | JWT signing key                     |
+| `SESSION_SECRET`              | `development-session-secret-change-in-production` | Backend             | Express session secret              |
+| `ADMIN_EMAIL`                 | _(empty — no seed)_                               | Backend             | Auto-create admin on startup        |
+| `ADMIN_PASSWORD`              | _(empty)_                                         | Backend             | Admin password for auto-seed        |
+| `STRIPE_SECRET_KEY`           | _(empty — payments disabled)_                     | Backend             | Stripe API secret key               |
+| `STRIPE_WEBHOOK_SECRET`       | _(empty)_                                         | Backend, stripe-cli | Stripe webhook signing secret       |
+| `GOOGLE_OAUTH_ENABLED`        | `false`                                           | Backend             | Enable Google OAuth                 |
+| `GOOGLE_CLIENT_ID`            | _(empty)_                                         | Backend             | Google OAuth client ID              |
+| `GOOGLE_CLIENT_SECRET`        | _(empty)_                                         | Backend             | Google OAuth client secret          |
+| `GOOGLE_CALLBACK_URL`         | _(empty)_                                         | Backend             | Google OAuth callback URL           |
+| `PRODUCT_IMAGE_UPLOAD_URL`    | _(empty — local saves)_                           | Backend             | Object storage endpoint             |
+| `PRODUCT_IMAGE_PUBLIC_URL`    | _(empty)_                                         | Backend             | Public CDN URL for images           |
+| `PRODUCT_IMAGE_UPLOAD_TOKEN`  | _(empty)_                                         | Backend             | Upload auth token                   |
+| `MONGO_ROOT_PASSWORD`         | `dev-mongo-password-123`                          | MongoDB             | Root password (fresh volume only)   |
+| `REACT_APP_STRIPE_PUBLIC_KEY` | `pk_test_key`                                     | Frontend            | Stripe publishable key (build-time) |
 
 ### 3) Run with the features you need
 
