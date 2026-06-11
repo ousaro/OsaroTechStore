@@ -130,22 +130,24 @@ erDiagram
 | Index | Fields     | Unique? |
 | ----- | ---------- | ------- |
 | email | `email: 1` | Yes     |
+| admin | `admin: 1` | No      |
 
 ### Products
 
-| Index            | Fields                     | Notes                                            |
-| ---------------- | -------------------------- | ------------------------------------------------ |
-| category         | `category: 1`              | Single-field lookup                              |
-| status+createdAt | `status: 1, createdAt: -1` | Compound for listing by status sorted by recency |
-| price            | `price: 1`                 | For price-range queries                          |
-| createdAt        | `createdAt: -1`            | For recent-products listing                      |
+| Index            | Fields                                  | Notes                                            |
+| ---------------- | --------------------------------------- | ------------------------------------------------ |
+| category         | `category: 1`                           | Single-field lookup                              |
+| status+createdAt | `status: 1, createdAt: -1`              | Compound for listing by status sorted by recency |
+| cat+status+date  | `category: 1, status: 1, createdAt: -1` | Compound for filtered listings                   |
+| price            | `price: 1`                              | For price-range queries                          |
+| createdAt        | `createdAt: -1`                         | For recent-products listing                      |
+| text             | `name: "text", description: "text"`     | Full-text search on name and description         |
 
 ### Categories
 
-| Index               | Fields                        | Unique?                       |
-| ------------------- | ----------------------------- | ----------------------------- |
-| name                | `name: 1`                     | Yes                           |
-| isDeleted+createdAt | `isDeleted: 1, createdAt: -1` | For active-categories listing |
+| Index | Fields    | Unique? |
+| ----- | --------- | ------- |
+| name  | `name: 1` | Yes     |
 
 ### Orders
 
@@ -154,9 +156,11 @@ erDiagram
 | ownerId+createdAt       | `ownerId: 1, createdAt: -1`       | User's order history             |
 | orderStatus+createdAt   | `orderStatus: 1, createdAt: -1`   | Admin order management by status |
 | paymentStatus+createdAt | `paymentStatus: 1, createdAt: -1` | Payment reconciliation           |
-| isPaid+ownerId          | `isPaid: 1, ownerId: 1`           | Filter paid/unpaid by user       |
+| createdAt               | `createdAt: -1`                   | Global listing                   |
 
 ### PaymentWorkflows
+
+Actual collection: `paymentworkflows` (Mongoose model name).
 
 | Index     | Fields         | Notes                   |
 | --------- | -------------- | ----------------------- |
@@ -165,22 +169,22 @@ erDiagram
 
 ### System Collections
 
-| Collection     | Index                                    | Purpose                             |
-| -------------- | ---------------------------------------- | ----------------------------------- |
-| `_migrations`  | `name: 1` (unique)                       | Migration tracking                  |
-| `_idempotency` | `key: 1` (unique), `expiresAt: 1` (TTL)  | Idempotency store with auto-cleanup |
-| `audit_logs`   | `actor+timerange`, `timestamp`, `action` | Audit trail for product mutations   |
+| Collection     | Index                                                                  | Purpose                             |
+| -------------- | ---------------------------------------------------------------------- | ----------------------------------- |
+| `_migrations`  | `_id` (default)                                                        | Migration tracking                  |
+| `_idempotency` | `key: 1` (unique), `expiresAt: 1` (TTL)                                | Idempotency store with auto-cleanup |
+| `audit_logs`   | `action: 1, timestamp: -1`, `actor: 1, timestamp: -1`, `timestamp: -1` | Audit trail for product mutations   |
 
 ## Schema Validation
 
-MongoDB `$jsonSchema` validators enforce the same constraints at the database level. Defined in `backend/migrations/001-create-initial-schema.js`.
+MongoDB `$jsonSchema` validators enforce basic type constraints at the database level. Defined in `backend/migrations/001-create-initial-schema.js`.
 
 Key validations:
 
-- **Users**: email pattern match, password minLength 6
-- **Products**: price >= 0, stock >= 0, rating 1-5
-- **Orders**: non-empty orderLines, valid currency codes
-- **Payments**: valid paymentStatus values
+- **Users**: required fields (firstName, lastName, email, password); password minLength 6 and email pattern enforced at application layer (Mongoose + bcrypt)
+- **Products**: required fields (name, price, category); price >= 0, stock >= 0, rating 1-5 enforced at application layer (Mongoose validators + domain assertions)
+- **Orders**: required fields; non-empty orderLines, valid currency codes enforced at application layer
+- **Payments**: required fields (orderId, provider, paymentStatus); valid paymentStatus values enforced at application layer
 
 ## Embedded vs Referenced
 
