@@ -19,7 +19,7 @@
 
 - **329 tests passing** (229 backend unit/integration + 100 frontend component tests)
 - **0 ESLint errors** across the entire codebase
-- **Multi-stage Docker build** — 86% size reduction vs. single-stage (`1.2 GB → 168 MB` backend)
+- **Multi-stage Docker build** — 86% size reduction vs. single-stage.
 - **CQRS-style organization across all 6 modules** — use-cases split into `commands/` and `queries/` folders; payments extends this to full port-level separation
 - **Idempotent Stripe integration** with retry-and-backoff — safe to retry failed payments
 - **One-command deploy** — `docker compose up -d` starts the full stack with zero config
@@ -32,7 +32,7 @@
 | Layer              | Technology                                | Key Details                                                                   |
 | ------------------ | ----------------------------------------- | ----------------------------------------------------------------------------- |
 | **Frontend**       | React 18, React Router 6, Tailwind CSS    | CRA, lazy-loaded routes, context-based auth/cart state                        |
-| **Backend**        | Node.js 24, Express 4, TypeScript 6       | Layered architecture (routes → controllers → services → repositories)         |
+| **Backend**        | Node.js 24, Express 4, TypeScript 6       | Hexagonal Architecture (domain → application → ports → adapters)              |
 | **Database**       | MongoDB 7, Mongoose 8                     | Schema validation + `$jsonSchema`, compound indexes, soft-delete, migrations  |
 | **Auth**           | JWT access tokens + Passport Google OAuth | 15-min token expiry, session rotation                                         |
 | **Payments**       | Stripe Checkout                           | Idempotency keys, exponential backoff retry, idempotent webhook handling      |
@@ -62,7 +62,7 @@
               └───────────┘ └───────────┘
 ```
 
-- **Layered backend**: routes → validation → controllers → services → repositories — testable in isolation
+- **Hexagonal backend**: modules split into `domain/`, `application/`, `ports/`, `adapters/` — domain isolated from infrastructure
 - **CQRS-style use-case separation**: all 6 modules separate `commands/` from `queries/` at the application layer; payments additionally splits the port interface into `paymentsCommandsPort` / `paymentsQueriesPort`
 - **Idempotency**: Stripe checkout creation uses idempotency keys; webhooks deduplicate via `stripe-event-id` unique index
 - **Graceful degradation**: missing Stripe/Google OAuth keys return `503` instead of crashing — safe for development
@@ -86,8 +86,8 @@ No env files, no installs, no config — all variables have dev-safe defaults. S
 
 ```
 OsaroTechStore/
-├── backend/          Express API (TypeScript, layered architecture)
-│   ├── src/          Routes → validation → controllers → services → repositories
+├── backend/          Express API (TypeScript, DDD / Hexagonal Architecture)
+│   ├── src/          modules/{domain,application,ports,adapters} + shared kernel
 │   ├── tests/        Unit + integration tests (229 passing)
 │   ├── migrations/   Database migrations
 │   └── docs/         OpenAPI specification
