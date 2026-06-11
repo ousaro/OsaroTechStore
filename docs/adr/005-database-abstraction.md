@@ -12,7 +12,6 @@ The backend needs database connectivity. Requirements:
 
 1. Must support at least MongoDB (primary target for rapid prototyping and document-oriented product/category/order data)
 2. Should allow switching to PostgreSQL without changing module business logic
-3. Must be demonstrable as a CV-worthy infrastructure abstraction pattern
 
 Options:
 
@@ -36,12 +35,11 @@ Repository implementations (e.g., `mongooseUserRepository.js`) remain specific t
 | Factor               | Single DB              | Provider Abstraction                          |
 | -------------------- | ---------------------- | --------------------------------------------- |
 | Implementation speed | Fastest                | Slightly slower (strategy file + assertion)   |
-| CV demonstration     | Minimal                | Shows abstract factory + port-adapter pattern |
 | Future-proofing      | Full rewrite to switch | Add a new provider module                     |
 | Testing              | Mock Mongoose directly | Swap to `postgres` provider + test both paths |
 | Runtime flexibility  | Locked to one DB       | Change `DATABASE_PROVIDER` env var            |
 
-The abstraction cost is a single `resolveDatabaseStrategy.js` (~30 lines) plus `assertDatabasePort.ts` (~15 lines). The CV and flexibility benefits far outweigh this cost.
+The abstraction cost is a single `resolveDatabaseStrategy.js` (~30 lines) plus `assertDatabasePort.ts` (~15 lines). The flexibility benefits far outweigh this cost.
 
 ## Consequences
 
@@ -60,7 +58,6 @@ The abstraction cost is a single `resolveDatabaseStrategy.js` (~30 lines) plus `
 
 **Risks:**
 
-- Teams may leak database-specific logic into use cases (mitigated by architecture tests and port interfaces)
 - Postgres implementation, if built, will require different migration tooling and schema design (SQL DDL vs Mongo migration scripts)
 
 ## Related

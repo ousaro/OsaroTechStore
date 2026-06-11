@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2026-06-07  
-**Deciders:** Project lead (backend engineering showcase)
+**Deciders:** Project lead
 
 ---
 
@@ -14,7 +14,6 @@ The backend needed an architecture that:
 2. Allows modules (auth, users, products, categories, orders, payments) to evolve independently
 3. Supports event-driven cross-module communication without tight coupling
 4. Is demonstrably testable — each layer can be tested in isolation
-5. Serves as a strong CV showcase for backend engineering practices
 
 ## Decision
 
@@ -48,7 +47,7 @@ Key principles:
 | Alternative                                  | Why Rejected                                                                                                                                      |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Flat MVC (controllers, models, views)**    | No separation of concerns; business logic leaks into controllers; not demonstrably testable                                                       |
-| **Feature-based (group by UI feature)**      | Better for monoliths with tight frontend coupling; this is a backend-first project with distinct bounded contexts                                 |
+| **Feature-based (group by UI feature)**      | Better for monoliths with tight frontend coupling                                                                                                 |
 | **Microservices**                            | Premature at 6 modules; would add network latency, distributed tracing, and deployment complexity without proven need                             |
 | **Clean Architecture (outer/inner rings)**   | Conceptually equivalent to hexagonal; hexagonal has better tooling support and community adoption in Node.js                                      |
 | **Event Sourcing + CQRS across all modules** | Adds significant complexity (event store, projection rebuilds, eventual consistency). Reserved for payments only ([ADR-003](./003-cqrs-scope.md)) |
@@ -65,7 +64,3 @@ Key principles:
 
 - More boilerplate per module (ports, adapters, composition wiring)
 - Manual DI wiring scales linearly with module count — a DI container (awilix, inversify) would help at higher complexity
-
-**Risks:**
-
-- Teams may shortcut the pattern by adding business logic to controllers or routes (guarded by architecture tests)

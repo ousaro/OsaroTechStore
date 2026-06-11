@@ -10,7 +10,7 @@
 
 CQRS (Command Query Responsibility Segregation) separates read and write operations into different models. This is a valuable pattern for complex domains but adds overhead. The project needed to:
 
-1. Demonstrate CQRS as a CV-worthy architectural pattern
+1. Demonstrate CQRS
 2. Keep implementation effort proportional to the value gained
 3. Show the pattern without over-engineering the entire codebase
 
